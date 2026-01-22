@@ -63,19 +63,21 @@ s-fit-ai/
 - 상수: UPPER_SNAKE_CASE (예: API_URL)
 - 파일: camelCase.tsx / PascalCase.tsx (컴포넌트)
 
-## 🎯 현재 주요 과제
+### 1. 전 세계 브랜드를 위한 무적 크롤러 확장
 
-### 1. Virtual Try-On 기능 (우선순위: 높음)
+- **기존 브랜드**: ZARA, Uniqlo, Chanel, Gucci, Musinsa
+- **신규 추가**: **GAP, H&M, Massimo Dutti, Topten**
+- **목표**: 각 브랜드의 독특한 웹 구조를 뚫고 상품명, 가격, 정면 고화질 이미지를 긁어올 것.
 
-- **현재 상태**: Replicate IDM-VTON API 연동 코드 있음
-- **문제**: 마네킹 실루엣만 표시, 실제 사람 사진 합성 안 됨
-- **목표**: 사용자 사진에 옷 합성
+### 2. 하이퍼-리얼리스틱 360° 데모 엔진
 
-### 2. AR 피팅 모드 개선
+- **목표**: 3D 애니메이션이 아닌 '실제 사람 사진' 같은 질감을 구현할 것.
+- **기술**: 정교한 2.5D Displacement Mapping과 스튜디오급 조명 설정을 통해 옷의 재질(Fabric Texture)이 빛에 반응하도록 고도화.
+- **결과물**: Product Hunt를 압도할 진정한 의미의 'Digital Twin' 쇼케이스 영상/GIF 생성.
 
-- **현재 상태**: MediaPipe로 포즈 감지 중
-- **문제**: 옷 위치 정렬 부정확
-- **목표**: 어깨/허리에 정확히 맞추기
+### 3. Virtual Try-On 기능 완성
+
+- **목표**: Replicate IDM-VTON을 통해 실제 사람 사진에 옷을 완벽하게 합성.
 
 ## 🔐 환경 변수
 
