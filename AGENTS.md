@@ -66,7 +66,7 @@ s-fit-ai/
 ### 1. 전 세계 브랜드를 위한 무적 크롤러 확장
 
 - **기존 브랜드**: ZARA, Uniqlo, Chanel, Gucci, Musinsa
-- **신규 추가**: **GAP, H&M, Massimo Dutti, Topten**
+- **신규 추가**: **GAP, H&M, Massimo Dutti, Topten, COS**
 - **목표**: 각 브랜드의 독특한 웹 구조를 뚫고 상품명, 가격, 정면 고화질 이미지를 긁어올 것.
 
 ### 2. 하이퍼-리얼리스틱 360° 데모 엔진
