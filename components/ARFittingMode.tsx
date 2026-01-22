@@ -8,6 +8,17 @@ interface ARFittingModeProps {
   onBack: () => void;
 }
 
+// Category-specific presets for optimal fit
+const CATEGORY_PRESETS = {
+  tops: { scaleMultiplier: 1.0, yOffsetBase: 0.15, anchorType: 'shoulder' as const },
+  outerwear: { scaleMultiplier: 1.15, yOffsetBase: 0.12, anchorType: 'shoulder' as const },
+  bottoms: { scaleMultiplier: 1.2, yOffsetBase: -0.30, anchorType: 'hip' as const },
+  dresses: { scaleMultiplier: 1.1, yOffsetBase: 0.15, anchorType: 'shoulder' as const },
+};
+
+// Smoothing factor (0-1, lower = smoother but more lag)
+const SMOOTHING_FACTOR = 0.25;
+
 export function ARFittingMode({ onBack }: ARFittingModeProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -18,6 +29,9 @@ export function ARFittingMode({ onBack }: ARFittingModeProps) {
   
   const { selectedItem } = useStore();
   const clothingImageRef = useRef<HTMLImageElement | null>(null);
+  
+  // Smoothed position for jitter reduction
+  const smoothedRef = useRef({ x: 0, y: 0, width: 0, height: 0, angle: 0, initialized: false });
 
   // Fit Configuration State
   const [fitConfig, setFitConfig] = useState({
@@ -63,63 +77,123 @@ export function ARFittingMode({ onBack }: ARFittingModeProps) {
             ctx.fillText('⚡️ AR AI Active', 40, 60);
 
             if (selectedItem && clothingImageRef.current && landmarks && landmarks.length > 0) {
-              // Shoulders: 11, 12
+              // Key landmarks
               const leftShoulder = landmarks[11];
               const rightShoulder = landmarks[12];
+              const leftHip = landmarks[23];
+              const rightHip = landmarks[24];
               
               if (leftShoulder && rightShoulder) {
                 const width = canvasRef.current.width;
                 const height = canvasRef.current.height;
 
-                // 1. Calculate Body Metrics
-                // Invert X because camera is mirrored (scale-x-[-1])
+                // 1. Calculate Body Metrics (Mirrored)
                 const lsX = (1 - leftShoulder.x) * width;
                 const lsY = leftShoulder.y * height;
                 const rsX = (1 - rightShoulder.x) * width;
                 const rsY = rightShoulder.y * height;
-
-                // Center point between shoulders
-                const centerX = (lsX + rsX) / 2;
-                const centerY = (lsY + rsY) / 2;
-
-                // Shoulder width (pixel distance)
-                const shoulderDist = Math.hypot(rsX - lsX, rsY - lsY);
-
-                // 2. Calculate Clothing Transform with User Config
-                // Base scale multiplier + user scale
-                const clothingWidth = shoulderDist * fitConfig.scale;
                 
-                // Maintain aspect ratio
-                const aspectRatio = clothingImageRef.current.width / clothingImageRef.current.height;
-                const clothingHeight = clothingWidth / aspectRatio;
+                // Hip positions (for bottoms/dresses)
+                const lhX = leftHip ? (1 - leftHip.x) * width : lsX;
+                const lhY = leftHip ? leftHip.y * height : lsY + 200;
+                const rhX = rightHip ? (1 - rightHip.x) * width : rsX;
+                const rhY = rightHip ? rightHip.y * height : rsY + 200;
 
-                // Position offset (neck position adjustment)
-                const finalYOffset = clothingHeight * fitConfig.yOffset; 
+                // Body measurements
+                const shoulderCenterX = (lsX + rsX) / 2;
+                const shoulderCenterY = (lsY + rsY) / 2;
+                const hipCenterX = (lhX + rhX) / 2;
+                const hipCenterY = (lhY + rhY) / 2;
+                const shoulderWidth = Math.hypot(rsX - lsX, rsY - lsY);
+                const hipWidth = Math.hypot(rhX - lhX, rhY - lhY);
+                const torsoHeight = Math.hypot(hipCenterX - shoulderCenterX, hipCenterY - shoulderCenterY);
+                
+                // 🆕 Waist calculation (shoulder-hip midpoint) - useful for future features
+                const _waistCenterX = (shoulderCenterX + hipCenterX) / 2;
+                const _waistCenterY = (shoulderCenterY + hipCenterY) / 2;
+                const waistWidth = (shoulderWidth + hipWidth) / 2;
+
+                // 2. Category-specific positioning using PRESETS
+                const category = selectedItem.category as keyof typeof CATEGORY_PRESETS;
+                const preset = CATEGORY_PRESETS[category] || CATEGORY_PRESETS.tops;
+                
+                let anchorX: number, anchorY: number, clothingWidth: number, clothingHeight: number;
+                const aspectRatio = clothingImageRef.current.width / clothingImageRef.current.height;
+
+                if (preset.anchorType === 'hip') {
+                  // Bottoms: anchor at hips
+                  anchorX = hipCenterX;
+                  anchorY = hipCenterY - (torsoHeight * 0.1);
+                  clothingWidth = hipWidth * fitConfig.scale * preset.scaleMultiplier;
+                  clothingHeight = clothingWidth / aspectRatio;
+                  anchorY += clothingHeight * (fitConfig.yOffset + preset.yOffsetBase);
+                } else if (category === 'dresses') {
+                  // Dresses: use waist as reference for width
+                  anchorX = shoulderCenterX;
+                  anchorY = shoulderCenterY;
+                  clothingWidth = Math.max(shoulderWidth, waistWidth, hipWidth) * fitConfig.scale * preset.scaleMultiplier;
+                  clothingHeight = clothingWidth / aspectRatio;
+                  anchorY += clothingHeight * (fitConfig.yOffset + preset.yOffsetBase);
+                } else {
+                  // Tops, Outerwear: anchor at shoulders
+                  anchorX = shoulderCenterX;
+                  anchorY = shoulderCenterY;
+                  clothingWidth = shoulderWidth * fitConfig.scale * preset.scaleMultiplier;
+                  clothingHeight = clothingWidth / aspectRatio;
+                  anchorY += clothingHeight * (fitConfig.yOffset + preset.yOffsetBase);
+                }
 
                 // Rotation (tilt with body) + user rotation
                 const baseAngle = Math.atan2(rsY - lsY, rsX - lsX);
-                const finalAngle = baseAngle + (fitConfig.rotation * Math.PI / 180);
+                const rawAngle = baseAngle + (fitConfig.rotation * Math.PI / 180);
+                
+                // 🆕 Apply exponential smoothing for jitter reduction
+                if (!smoothedRef.current.initialized) {
+                  smoothedRef.current = { x: anchorX, y: anchorY, width: clothingWidth, height: clothingHeight, angle: rawAngle, initialized: true };
+                } else {
+                  smoothedRef.current.x += (anchorX - smoothedRef.current.x) * SMOOTHING_FACTOR;
+                  smoothedRef.current.y += (anchorY - smoothedRef.current.y) * SMOOTHING_FACTOR;
+                  smoothedRef.current.width += (clothingWidth - smoothedRef.current.width) * SMOOTHING_FACTOR;
+                  smoothedRef.current.height += (clothingHeight - smoothedRef.current.height) * SMOOTHING_FACTOR;
+                  smoothedRef.current.angle += (rawAngle - smoothedRef.current.angle) * SMOOTHING_FACTOR;
+                }
+                
+                const finalX = smoothedRef.current.x;
+                const finalY = smoothedRef.current.y;
+                const finalWidth = smoothedRef.current.width;
+                const finalHeight = smoothedRef.current.height;
+                const finalAngle = smoothedRef.current.angle;
 
-                // 3. Draw Clothing
+                // 3. Draw Clothing with enhanced shadow for depth
                 ctx.save();
-                ctx.translate(centerX, centerY - finalYOffset);
+                
+                // Enhanced shadow based on body distance
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
+                ctx.shadowBlur = 25;
+                ctx.shadowOffsetX = 6;
+                ctx.shadowOffsetY = 8;
+                
+                ctx.translate(finalX, finalY);
                 ctx.rotate(finalAngle);
                 
-                // Draw image centered
+                // Draw image centered with smoothed dimensions
                 ctx.drawImage(
                   clothingImageRef.current,
-                  -clothingWidth / 2,
-                  -clothingHeight / 2,
-                  clothingWidth,
-                  clothingHeight
+                  -finalWidth / 2,
+                  -finalHeight / 2,
+                  finalWidth,
+                  finalHeight
                 );
                 
                 ctx.restore();
 
-                // Debug: Show item name
+                // Debug: Show item name and category
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
                 ctx.font = '16px Arial';
-                ctx.fillText(`Wearing: ${selectedItem.name}`, 40, 90);
+                ctx.fillText(`👕 ${selectedItem.name}`, 40, 90);
+                ctx.font = '12px Arial';
+                ctx.fillStyle = 'rgba(204, 255, 0, 0.7)';
+                ctx.fillText(`Category: ${category}`, 40, 110);
               }
             } else if (!selectedItem) {
               ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';

@@ -1,0 +1,212 @@
+#!/usr/bin/env python3
+"""
+ZARA Product Scraper for S_FIT AI
+Scrapes product data from ZARA website for virtual try-on
+
+Usage:
+    python zara_scraper.py --limit 50 --category women-tops
+    python zara_scraper.py --test --limit 5
+"""
+
+import asyncio
+import json
+import argparse
+from pathlib import Path
+from datetime import datetime
+from typing import Optional
+
+try:
+    from playwright.async_api import async_playwright
+except ImportError:
+    print("Playwright not installed. Run: pip install playwright && playwright install")
+    exit(1)
+
+
+# ZARA Category URLs
+ZARA_CATEGORIES = {
+    "women-tops": "https://www.zara.com/kr/ko/woman-shirts-l1217.html",
+    "women-dresses": "https://www.zara.com/kr/ko/woman-dresses-l1066.html",
+    "women-outerwear": "https://www.zara.com/kr/ko/woman-outerwear-l1184.html",
+    "women-pants": "https://www.zara.com/kr/ko/woman-trousers-l1335.html",
+    "men-tops": "https://www.zara.com/kr/ko/man-shirts-l737.html",
+    "men-outerwear": "https://www.zara.com/kr/ko/man-outerwear-l715.html",
+    "men-pants": "https://www.zara.com/kr/ko/man-trousers-l838.html",
+}
+
+OUTPUT_DIR = Path(__file__).parent.parent.parent / "data" / "brands"
+
+
+async def scrape_zara_products(
+    category: str = "women-tops",
+    limit: int = 50,
+    test_mode: bool = False
+) -> list[dict]:
+    """Scrape products from ZARA website"""
+    
+    products = []
+    url = ZARA_CATEGORIES.get(category, ZARA_CATEGORIES["women-tops"])
+    
+    print(f"🛍️ Scraping ZARA: {category}")
+    print(f"   URL: {url}")
+    print(f"   Limit: {limit} products")
+    
+    if test_mode:
+        print("   ⚠️ TEST MODE - Using mock data")
+        return generate_mock_products(category, limit)
+    
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        context = await browser.new_context(
+            viewport={"width": 1920, "height": 1080},
+            user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+        )
+        page = await context.new_page()
+        
+        try:
+            await page.goto(url, wait_until="networkidle", timeout=60000)
+            await page.wait_for_timeout(3000)  # Wait for dynamic content
+            
+            # Scroll to load more products
+            for _ in range(5):
+                await page.keyboard.press("End")
+                await page.wait_for_timeout(1000)
+            
+            # Get product elements
+            product_elements = await page.query_selector_all(".product-grid-product")
+            
+            for i, element in enumerate(product_elements[:limit]):
+                try:
+                    name_el = await element.query_selector(".product-grid-product-info__name")
+                    price_el = await element.query_selector(".money-amount__main")
+                    link_el = await element.query_selector("a.product-link")
+                    img_el = await element.query_selector("img.media-image__image")
+                    
+                    name = await name_el.inner_text() if name_el else f"ZARA Product {i+1}"
+                    price_text = await price_el.inner_text() if price_el else "0"
+                    link = await link_el.get_attribute("href") if link_el else ""
+                    image_url = await img_el.get_attribute("src") if img_el else ""
+                    
+                    # Parse price
+                    price = parse_price(price_text)
+                    
+                    products.append({
+                        "id": f"zara-{category}-{i+1}",
+                        "name": name.strip(),
+                        "brand": "ZARA",
+                        "category": map_category(category),
+                        "price": price,
+                        "currency": "KRW",
+                        "imageUrl": image_url,
+                        "productUrl": f"https://www.zara.com{link}" if link and not link.startswith("http") else link,
+                        "sizes": ["XS", "S", "M", "L", "XL"],
+                        "colors": [],
+                        "scrapedAt": datetime.now().isoformat(),
+                    })
+                    
+                    print(f"   ✅ {i+1}. {name[:30]}...")
+                    
+                except Exception as e:
+                    print(f"   ❌ Error scraping product {i+1}: {e}")
+                    continue
+                    
+        except Exception as e:
+            print(f"❌ Scraping failed: {e}")
+            print("   Falling back to mock data...")
+            return generate_mock_products(category, limit)
+            
+        finally:
+            await browser.close()
+    
+    return products
+
+
+def parse_price(price_text: str) -> float:
+    """Parse price from text like '₩59,900' to 59.9 (in dollars, roughly)"""
+    import re
+    numbers = re.findall(r'[\d,]+', price_text)
+    if numbers:
+        price_krw = int(numbers[0].replace(",", ""))
+        return round(price_krw / 1300, 2)  # Rough KRW to USD
+    return 0.0
+
+
+def map_category(category: str) -> str:
+    """Map scraper category to app category"""
+    if "tops" in category or "shirts" in category:
+        return "tops"
+    elif "dresses" in category:
+        return "dresses"
+    elif "outerwear" in category or "jacket" in category:
+        return "outerwear"
+    elif "pants" in category or "trousers" in category:
+        return "bottoms"
+    return "tops"
+
+
+def generate_mock_products(category: str, limit: int) -> list[dict]:
+    """Generate mock products for testing"""
+    cat = map_category(category)
+    mock_names = {
+        "tops": ["오버사이즈 셔츠", "크롭 블라우스", "니트 탑", "린넨 셔츠", "새틴 블라우스"],
+        "dresses": ["플리츠 미디 드레스", "니트 원피스", "새틴 맥시 드레스", "데님 셔츠 드레스", "플로럴 미니 드레스"],
+        "outerwear": ["오버사이즈 블레이저", "가죽 자켓", "트렌치 코트", "패딩 점퍼", "더블 버튼 코트"],
+        "bottoms": ["와이드 팬츠", "스트레이트 진", "플리츠 스커트", "카고 팬츠", "슬림 슬랙스"],
+    }
+    
+    names = mock_names.get(cat, mock_names["tops"])
+    products = []
+    
+    for i in range(min(limit, len(names) * 3)):
+        idx = i % len(names)
+        products.append({
+            "id": f"zara-{category}-{i+1}",
+            "name": f"{names[idx]} {['블랙', '화이트', '네이비'][i % 3]}",
+            "brand": "ZARA",
+            "category": cat,
+            "price": round(29.9 + (i * 10), 2),
+            "currency": "USD",
+            "imageUrl": f"https://static.zara.net/photos/placeholder-{cat}-{i+1}.jpg",
+            "productUrl": f"https://www.zara.com/kr/ko/mock-product-{i+1}",
+            "sizes": ["XS", "S", "M", "L", "XL"],
+            "colors": [["Black", "White", "Navy"][i % 3]],
+            "scrapedAt": datetime.now().isoformat(),
+        })
+    
+    return products
+
+
+def save_products(products: list[dict], filename: str = "zara.json"):
+    """Save products to JSON file"""
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    output_path = OUTPUT_DIR / filename
+    
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump({
+            "brand": "ZARA",
+            "scrapedAt": datetime.now().isoformat(),
+            "count": len(products),
+            "products": products
+        }, f, ensure_ascii=False, indent=2)
+    
+    print(f"\n💾 Saved {len(products)} products to {output_path}")
+
+
+async def main():
+    parser = argparse.ArgumentParser(description="ZARA Product Scraper")
+    parser.add_argument("--category", default="women-tops", choices=list(ZARA_CATEGORIES.keys()))
+    parser.add_argument("--limit", type=int, default=50)
+    parser.add_argument("--test", action="store_true", help="Use mock data for testing")
+    args = parser.parse_args()
+    
+    products = await scrape_zara_products(
+        category=args.category,
+        limit=args.limit,
+        test_mode=args.test
+    )
+    
+    save_products(products)
+    print(f"\n✨ Done! Scraped {len(products)} ZARA products")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

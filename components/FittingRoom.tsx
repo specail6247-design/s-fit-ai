@@ -291,6 +291,16 @@ function OuterwearClothing({
   );
 }
 
+// Fallback placeholder when texture fails to load
+function FallbackPlaceholder({ position, scale }: { position: [number, number, number], scale: [number, number, number] }) {
+  return (
+    <mesh position={position}>
+      <boxGeometry args={scale} />
+      <meshBasicMaterial color="#3a3a3a" transparent opacity={0.5} />
+    </mesh>
+  );
+}
+
 function ClothingOverlay({ 
   item, 
   isLuxury, 
@@ -306,7 +316,7 @@ function ClothingOverlay({
   if (!item) return null;
 
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<FallbackPlaceholder position={[0, 0.7, 0.1]} scale={[0.5, 0.7, 0.02]} />}>
       {item.category === 'tops' && <TopClothing item={item} isLuxury={isLuxury} widthScale={widthScale} shapeScale={shapeScale} />}
       {item.category === 'bottoms' && <BottomsClothing item={item} isLuxury={isLuxury} widthScale={widthScale} shapeScale={shapeScale} />}
       {item.category === 'dresses' && <DressClothing item={item} isLuxury={isLuxury} widthScale={widthScale} shapeScale={shapeScale} />}
@@ -314,6 +324,8 @@ function ClothingOverlay({
     </Suspense>
   );
 }
+
+
 
 function Platform() {
   return (
@@ -825,6 +837,200 @@ function CompareModal({
   );
 }
 
+// AI Try-On Modal Component
+function AITryOnModal({
+  isOpen,
+  onClose,
+  selectedItem,
+  userPhotoPreview,
+  onPhotoSelect,
+  isLoading,
+  result,
+  error,
+  onGenerateTryOn,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  selectedItem: ClothingItem | null;
+  userPhotoPreview: string | null;
+  onPhotoSelect: (file: File) => void;
+  isLoading: boolean;
+  result: string | null;
+  error: string | null;
+  onGenerateTryOn: () => void;
+}) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  if (!isOpen) return null;
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      onPhotoSelect(file);
+    }
+  };
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <div className="absolute inset-0 bg-void-black/90 backdrop-blur-md" onClick={onClose} />
+      <motion.div
+        className="relative glass-card p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto"
+        initial={{ scale: 0.9, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-lg font-bold text-pure-white flex items-center gap-2">
+              <span>✨</span> AI Virtual Try-On
+            </h3>
+            <p className="text-xs text-soft-gray/70">인스타그램에서 본 그 AI 피팅!</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-soft-gray hover:text-pure-white text-xl"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Step 1: Upload User Photo */}
+        <div className="mb-4">
+          <label className="text-xs uppercase tracking-wider text-soft-gray mb-2 block">
+            1. 전신 사진 업로드
+          </label>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          {userPhotoPreview ? (
+            <div className="relative">
+              <img
+                src={userPhotoPreview}
+                alt="User photo"
+                className="w-full h-48 object-contain rounded-lg border border-border-color bg-charcoal/30"
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute bottom-2 right-2 bg-void-black/80 text-pure-white text-xs px-2 py-1 rounded"
+              >
+                변경
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full h-32 border-2 border-dashed border-border-color rounded-lg flex flex-col items-center justify-center gap-2 hover:border-cyber-lime/50 transition-colors"
+            >
+              <span className="text-3xl">📷</span>
+              <span className="text-sm text-soft-gray">전신 사진을 업로드하세요</span>
+              <span className="text-xs text-soft-gray/60">정면 전신 샷이 가장 좋아요!</span>
+            </button>
+          )}
+        </div>
+
+        {/* Step 2: Selected Clothing */}
+        <div className="mb-4">
+          <label className="text-xs uppercase tracking-wider text-soft-gray mb-2 block">
+            2. 선택한 옷
+          </label>
+          {selectedItem ? (
+            <div className="flex items-center gap-3 p-3 rounded-lg border border-border-color bg-charcoal/30">
+              <span className="text-2xl">{getCategoryIcon(selectedItem.category)}</span>
+              <div>
+                <p className="text-sm text-pure-white font-medium">{selectedItem.name}</p>
+                <p className="text-xs text-soft-gray">{selectedItem.brand} • ${selectedItem.price}</p>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-soft-gray/60 text-center py-4">
+              먼저 아래에서 옷을 선택해주세요
+            </p>
+          )}
+        </div>
+
+        {/* Error Message with Setup Guide */}
+        {error && (
+          <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30">
+            <p className="text-sm text-red-400">{error}</p>
+            {error.includes('REPLICATE') && (
+              <div className="mt-2 p-2 rounded bg-charcoal/50 text-xs text-soft-gray">
+                <p className="font-bold text-pure-white mb-1">🔧 설정 방법:</p>
+                <ol className="list-decimal list-inside space-y-1">
+                  <li><a href="https://replicate.com" target="_blank" rel="noopener noreferrer" className="text-cyber-lime hover:underline">replicate.com</a> 가입</li>
+                  <li><a href="https://replicate.com/account/api-tokens" target="_blank" rel="noopener noreferrer" className="text-cyber-lime hover:underline">API Tokens</a> 페이지에서 토큰 생성</li>
+                  <li><code className="bg-void-black px-1 rounded">.env.local</code> 파일에 추가:</li>
+                </ol>
+                <pre className="mt-2 bg-void-black p-2 rounded text-[0.65rem] overflow-x-auto">REPLICATE_API_TOKEN=r8_your_token_here</pre>
+                <p className="mt-2 text-soft-gray/70">💡 비용: 이미지 1개당 약 $0.05</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Result Image */}
+        {result && (
+          <div className="mb-4">
+            <label className="text-xs uppercase tracking-wider text-cyber-lime mb-2 block">
+              ✨ AI 피팅 결과
+            </label>
+            <img
+              src={result}
+              alt="AI Try-On Result"
+              className="w-full rounded-lg border border-cyber-lime/30"
+            />
+            <button
+              onClick={() => {
+                const link = document.createElement('a');
+                link.href = result;
+                link.download = 'sfit-ai-tryon.png';
+                link.click();
+              }}
+              className="w-full mt-2 btn-secondary"
+            >
+              📥 이미지 다운로드
+            </button>
+          </div>
+        )}
+
+        {/* Generate Button */}
+        <button
+          onClick={onGenerateTryOn}
+          disabled={isLoading || !userPhotoPreview || !selectedItem}
+          className={`w-full py-3 rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2 ${
+            isLoading || !userPhotoPreview || !selectedItem
+              ? 'bg-charcoal text-soft-gray cursor-not-allowed'
+              : 'bg-gradient-to-r from-cyber-lime to-green-400 text-void-black hover:opacity-90'
+          }`}
+        >
+          {isLoading ? (
+            <>
+              <div className="w-4 h-4 border-2 border-void-black border-t-transparent rounded-full animate-spin" />
+              AI가 피팅 중... (약 30초)
+            </>
+          ) : (
+            <>
+              <span>👕</span> AI 피팅 시작하기
+            </>
+          )}
+        </button>
+
+        {/* Info Note */}
+        <p className="text-[0.65rem] text-soft-gray/50 text-center mt-3">
+          💡 Replicate IDM-VTON API 사용 • 호출당 약 $0.04
+        </p>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 // Main Fitting Room Component
 export function FittingRoom() {
   const {
@@ -840,6 +1046,13 @@ export function FittingRoom() {
   const [isRotating, setIsRotating] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
+  const [showAITryOnModal, setShowAITryOnModal] = useState(false);
+  const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
+  const [aiTryOnLoading, setAITryOnLoading] = useState(false);
+  const [aiTryOnError, setAITryOnError] = useState<string | null>(null);
+  const [userPhotoFile, setUserPhotoFile] = useState<File | null>(null);
+  const [userPhotoPreview, setUserPhotoPreview] = useState<string | null>(null);
+  const [webglFailed, setWebglFailed] = useState(false);
   const [autoCycleEnabled, setAutoCycleEnabled] = useState(() => {
     if (typeof window !== 'undefined') {
       return window.localStorage.getItem('sfit-ai-auto-cycle') === 'true';
@@ -1055,6 +1268,56 @@ export function FittingRoom() {
     [setSelectedItem, topPicks]
   );
 
+  // AI Try-On handlers
+  const handlePhotoSelect = useCallback((file: File) => {
+    setUserPhotoFile(file);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setUserPhotoPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  }, []);
+
+  const handleGenerateAITryOn = useCallback(async () => {
+    if (!userPhotoPreview || !currentItem?.imageUrl) {
+      setAITryOnError('사진과 옷을 모두 선택해주세요');
+      return;
+    }
+
+    setAITryOnLoading(true);
+    setAITryOnError(null);
+    setAITryOnResult(null);
+
+    try {
+      const response = await fetch('/api/try-on', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userPhotoUrl: userPhotoPreview,
+          garmentImageUrl: currentItem.imageUrl,
+          category: currentItem.category === 'tops' || currentItem.category === 'outerwear' 
+            ? 'upper_body' 
+            : currentItem.category === 'bottoms' 
+              ? 'lower_body' 
+              : 'dresses'
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.imageUrl) {
+        setAITryOnResult(data.imageUrl);
+      } else {
+        setAITryOnError(data.error || 'AI 피팅 생성에 실패했습니다');
+      }
+    } catch (error) {
+      setAITryOnError('네트워크 오류가 발생했습니다');
+      console.error('AI Try-On error:', error);
+    } finally {
+      setAITryOnLoading(false);
+    }
+  }, [userPhotoPreview, currentItem]);
+
   // Effect to sync storage
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -1100,34 +1363,98 @@ export function FittingRoom() {
 
   return (
     <div className="w-full h-full flex flex-col">
-      {/* 3D Canvas */}
+      {/* 3D Canvas or 2D Fallback */}
       <div className="flex-1 relative min-h-[350px]">
-        <Suspense fallback={<LoadingSpinner />}>
-          <Canvas
-            ref={canvasRef}
-            shadows
-            camera={{ position: [0, 0.5, 2.8], fov: 45 }}
-            gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
+        {webglFailed ? (
+          /* 2D Fallback View - CSS based image overlay */
+          <div 
+            className="absolute inset-0 flex items-center justify-center"
             style={{ background: 'linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%)' }}
           >
-            <Scene 
-              userStats={userStats} 
-              selectedItem={currentItem}
-              isLuxury={isLuxury}
-            />
-            <OrbitControls
-              enabled={selectedMode !== 'digital-twin'}
-              enablePan={false}
-              enableZoom={true}
-              minDistance={1.8}
-              maxDistance={4}
-              minPolarAngle={Math.PI / 4}
-              maxPolarAngle={Math.PI / 1.8}
-              onChange={() => setIsRotating(true)}
-              onEnd={() => setIsRotating(false)}
-            />
-          </Canvas>
-        </Suspense>
+            <div className="relative w-64 h-96">
+              {/* Mannequin silhouette */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <svg viewBox="0 0 100 160" className="w-full h-full opacity-30">
+                  <ellipse cx="50" cy="20" rx="12" ry="15" fill="#444" />
+                  <path d="M38 35 L30 80 L35 80 L40 55 L45 80 L55 80 L60 55 L65 80 L70 80 L62 35 Z" fill="#444" />
+                  <path d="M35 80 L30 140 L40 140 L45 100 L50 100 L55 100 L60 140 L70 140 L65 80 Z" fill="#444" />
+                </svg>
+              </div>
+              
+              {/* Selected clothing overlay */}
+              {currentItem && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <img 
+                    src={currentItem.imageUrl}
+                    alt={currentItem.name}
+                    className="max-w-[70%] max-h-[50%] object-contain drop-shadow-2xl"
+                    style={{
+                      marginTop: currentItem.category === 'tops' || currentItem.category === 'outerwear' 
+                        ? '-20%' 
+                        : currentItem.category === 'bottoms' 
+                          ? '30%' 
+                          : '0%'
+                    }}
+                  />
+                </div>
+              )}
+              
+              {/* Platform */}
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-40 h-4 bg-gradient-to-t from-charcoal to-transparent rounded-full opacity-50" />
+            </div>
+            
+            {/* 2D Mode indicator */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs text-soft-gray/50 bg-void-black/50 px-3 py-1 rounded-full">
+              2D Preview Mode
+            </div>
+          </div>
+        ) : (
+          /* 3D Canvas */
+          <Suspense fallback={<LoadingSpinner />}>
+            <Canvas
+              ref={canvasRef}
+              shadows
+              camera={{ position: [0, 0.5, 2.8], fov: 45 }}
+              gl={{ 
+                antialias: true, 
+                alpha: true, 
+                preserveDrawingBuffer: true,
+                powerPreference: 'high-performance',
+                failIfMajorPerformanceCaveat: false
+              }}
+              style={{ background: 'linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%)' }}
+              onCreated={({ gl }) => {
+                const canvas = gl.domElement;
+                canvas.addEventListener('webglcontextlost', (e) => {
+                  e.preventDefault();
+                  console.warn('WebGL context lost, switching to 2D fallback...');
+                  setWebglFailed(true);
+                });
+                canvas.addEventListener('webglcontextrestored', () => {
+                  console.log('WebGL context restored');
+                  setWebglFailed(false);
+                });
+              }}
+            >
+              <Scene 
+                userStats={userStats} 
+                selectedItem={currentItem}
+                isLuxury={isLuxury}
+              />
+              <OrbitControls
+                enabled={selectedMode !== 'digital-twin'}
+                enablePan={false}
+                enableZoom={true}
+                minDistance={1.8}
+                maxDistance={4}
+                minPolarAngle={Math.PI / 4}
+                maxPolarAngle={Math.PI / 1.8}
+                onChange={() => setIsRotating(true)}
+                onEnd={() => setIsRotating(false)}
+              />
+            </Canvas>
+          </Suspense>
+        )}
         
         {/* Rotation hint */}
         {!isRotating && (
@@ -1157,6 +1484,29 @@ export function FittingRoom() {
         >
           <span>📤</span> Share
         </button>
+
+        {/* AI Try-On Button - Enhanced & Prominent */}
+        <motion.button
+          onClick={() => setShowAITryOnModal(true)}
+          className="absolute top-4 left-28 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-xl shadow-purple-500/30 border border-white/20"
+          whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(168, 85, 247, 0.5)' }}
+          whileTap={{ scale: 0.95 }}
+          animate={{ 
+            boxShadow: [
+              '0 0 20px rgba(168, 85, 247, 0.3)',
+              '0 0 30px rgba(236, 72, 153, 0.4)',
+              '0 0 20px rgba(168, 85, 247, 0.3)'
+            ]
+          }}
+          transition={{ 
+            boxShadow: { duration: 2, repeat: Infinity },
+            scale: { duration: 0.2 }
+          }}
+        >
+          <span className="text-lg">✨</span> 
+          <span>AI 피팅</span>
+          <span className="text-[0.6rem] bg-white/20 px-1.5 py-0.5 rounded-full">NEW</span>
+        </motion.button>
 
         {topPicks.length > 0 && (
           <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-20">
@@ -1468,6 +1818,23 @@ export function FittingRoom() {
         onClose={() => setShowCompareModal(false)}
         picks={topPicks}
         onSelect={(item) => handleSelectItem(item)}
+      />
+
+      {/* AI Try-On Modal */}
+      <AITryOnModal
+        isOpen={showAITryOnModal}
+        onClose={() => {
+          setShowAITryOnModal(false);
+          setAITryOnResult(null);
+          setAITryOnError(null);
+        }}
+        selectedItem={currentItem}
+        userPhotoPreview={userPhotoPreview}
+        onPhotoSelect={handlePhotoSelect}
+        isLoading={aiTryOnLoading}
+        result={aiTryOnResult}
+        error={aiTryOnError}
+        onGenerateTryOn={handleGenerateAITryOn}
       />
     </div>
   );
