@@ -1,20 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateVirtualTryOn } from '@/lib/virtualTryOn';
 import * as fs from 'fs';
 import * as path from 'path';
 
-// Config for Node.js Runtime (required for Replicate SDK)
+// Config for Node.js Runtime
 export const runtime = 'nodejs';
 export const maxDuration = 120;
 
 // Helper: Convert local file to base64 data URI
 function localFileToDataUri(localPath: string): string | null {
   try {
-    // Remove leading slash and resolve to public directory
     const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
     const absolutePath = path.join(process.cwd(), 'public', relativePath);
-    
-    console.log('Reading local file:', absolutePath);
     
     if (!fs.existsSync(absolutePath)) {
       console.error('File not found:', absolutePath);
@@ -23,8 +19,6 @@ function localFileToDataUri(localPath: string): string | null {
     
     const fileBuffer = fs.readFileSync(absolutePath);
     const base64 = fileBuffer.toString('base64');
-    
-    // Determine MIME type from extension
     const ext = path.extname(localPath).toLowerCase();
     const mimeTypes: Record<string, string> = {
       '.png': 'image/png',
@@ -34,7 +28,6 @@ function localFileToDataUri(localPath: string): string | null {
       '.gif': 'image/gif'
     };
     const mimeType = mimeTypes[ext] || 'image/png';
-    
     return `data:${mimeType};base64,${base64}`;
   } catch (error) {
     console.error('Error reading local file:', error);
@@ -54,57 +47,48 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Process User Photo - Keep as data URI string for Replicate
-    const userPhotoInput: string = userPhotoUrl;
-    // Replicate accepts data URIs directly
-
     // Process Garment Image
     let garmentImageInput: string = garmentImageUrl;
-
-    if (typeof garmentImageUrl === 'string') {
-      if (garmentImageUrl.startsWith('data:')) {
-        // Already a data URI - use as is
-        garmentImageInput = garmentImageUrl;
-      } else if (garmentImageUrl.startsWith('/')) {
-        // Local file in public directory - convert to base64 data URI
-        const dataUri = localFileToDataUri(garmentImageUrl);
-        if (!dataUri) {
-          return NextResponse.json(
-            { error: `Failed to read local image: ${garmentImageUrl}` },
-            { status: 400 }
-          );
-        }
+    if (typeof garmentImageUrl === 'string' && garmentImageUrl.startsWith('/')) {
+      const dataUri = localFileToDataUri(garmentImageUrl);
+      if (dataUri) {
         garmentImageInput = dataUri;
-        console.log('Converted local file to data URI, length:', dataUri.length);
-      } else if (garmentImageUrl.startsWith('http://') || garmentImageUrl.startsWith('https://')) {
-        // External URL - Replicate can fetch this directly
-        garmentImageInput = garmentImageUrl;
       }
     }
 
-    console.log('Calling Replicate with:');
-    console.log('- userPhoto type:', userPhotoInput.startsWith('data:') ? 'data URI' : 'URL');
-    console.log('- garmentImage type:', garmentImageInput.startsWith('data:') ? 'data URI' : 'URL');
-    console.log('- category:', category || 'upper_body');
+    // Call Python Backend
+    const backendUrl = (process.env.PYTHON_BACKEND_URL || 'http://127.0.0.1:8000') + '/try-on';
+    console.log(`Forwarding request to Python Backend: ${backendUrl}`);
 
-    // Call Replicate API
-    const result = await generateVirtualTryOn({
-      userPhoto: userPhotoInput,
-      garmentImage: garmentImageInput,
-      category: category || 'upper_body'
-    });
-
-    if (result.success) {
-      return NextResponse.json({
-        success: true,
-        imageUrl: result.imageUrl
+    try {
+      const response = await fetch(backendUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userPhotoUrl: userPhotoUrl,
+          garmentImageUrl: garmentImageInput,
+          category: category || 'upper_body'
+        }),
       });
-    } else {
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Backend error: ${response.status} ${errorText}`);
+      }
+
+      const data = await response.json();
+      return NextResponse.json(data);
+
+    } catch (backendError) {
+      console.error('Python Backend Connection Error:', backendError);
       return NextResponse.json(
-        { error: result.error },
-        { status: 500 }
+        { error: 'Failed to connect to AI Engine (Python Backend). Ensure it is running on port 8000.' },
+        { status: 503 }
       );
     }
+
   } catch (error) {
     console.error('Try-on API error:', error);
     return NextResponse.json(
