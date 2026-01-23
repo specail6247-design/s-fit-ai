@@ -57,6 +57,8 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
       return '🧥';
     case 'dresses':
       return '👗';
+    case 'accessories':
+      return '👜';
     default:
       return '👔';
   }
@@ -212,6 +214,36 @@ function TopClothing({
   );
 }
 
+function AccessoryClothing({
+  item,
+  widthScale = 1,
+}: {
+  item: ClothingItem;
+  isLuxury?: boolean;
+  widthScale?: number;
+}) {
+  const texture = useTexture(item.textureUrl || item.imageUrl);
+  const img = texture.image as HTMLImageElement;
+  const aspect = img ? img.width / img.height : 1;
+  const baseWidth = 0.4;
+
+  return (
+    <mesh position={[0.4, 0.7, 0.2]} renderOrder={4} castShadow receiveShadow>
+      <planeGeometry args={[baseWidth * widthScale, (baseWidth * widthScale) / aspect, 32, 32]} />
+      <meshStandardMaterial
+        map={texture}
+        transparent
+        side={THREE.DoubleSide}
+        roughness={0.4}
+        metalness={item.isLuxury ? 0.5 : 0.1}
+        displacementMap={texture}
+        displacementScale={0.02}
+        alphaTest={0.5}
+      />
+    </mesh>
+  );
+}
+
 function BottomsClothing({ 
   item, 
   widthScale = 1,
@@ -338,6 +370,7 @@ function ClothingOverlay({
       {item.category === 'bottoms' && <BottomsClothing item={item} isLuxury={isLuxury} widthScale={widthScale} shapeScale={shapeScale} />}
       {item.category === 'dresses' && <DressClothing item={item} isLuxury={isLuxury} widthScale={widthScale} shapeScale={shapeScale} />}
       {item.category === 'outerwear' && <OuterwearClothing item={item} isLuxury={isLuxury} widthScale={widthScale} shapeScale={shapeScale} />}
+      {item.category === 'accessories' && <AccessoryClothing item={item} isLuxury={isLuxury} widthScale={widthScale} />}
     </Suspense>
   );
 }
@@ -873,6 +906,9 @@ function AITryOnModal({
   result,
   error,
   onGenerateTryOn,
+  cinematicLoading,
+  cinematicResult,
+  onGenerateCinematic,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -883,6 +919,9 @@ function AITryOnModal({
   result: string | null;
   error: string | null;
   onGenerateTryOn: () => void;
+  cinematicLoading: boolean;
+  cinematicResult: string | null;
+  onGenerateCinematic: () => void;
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -1011,17 +1050,52 @@ function AITryOnModal({
               alt="AI Try-On Result"
               className="w-full rounded-lg border border-cyber-lime/30"
             />
-            <button
-              onClick={() => {
-                const link = document.createElement('a');
-                link.href = result;
-                link.download = 'sfit-ai-tryon.png';
-                link.click();
-              }}
-              className="w-full mt-2 btn-secondary"
-            >
-              📥 이미지 다운로드
-            </button>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              <button
+                onClick={() => {
+                  const link = document.createElement('a');
+                  link.href = result;
+                  link.download = 'sfit-ai-tryon.png';
+                  link.click();
+                }}
+                className="btn-secondary text-xs"
+              >
+                📥 이미지 저장
+              </button>
+              <button
+                onClick={onGenerateCinematic}
+                disabled={cinematicLoading}
+                className="bg-purple-600 text-white rounded-lg font-bold text-xs flex items-center justify-center gap-1 hover:bg-purple-700 transition-colors"
+              >
+                {cinematicLoading ? (
+                  <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <span>🎬</span> Cinematic Mode
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Cinematic Result */}
+        {cinematicResult && (
+          <div className="mb-4">
+            <label className="text-xs uppercase tracking-wider text-purple-400 mb-2 block">
+              🎬 Cinematic Motion
+            </label>
+            <video
+              src={cinematicResult}
+              autoPlay
+              loop
+              muted
+              controls
+              className="w-full rounded-lg border border-purple-500/30"
+            />
+             <p className="text-[0.6rem] text-soft-gray/70 mt-1">
+              Generated with Runway Gen-3 (Mock)
+            </p>
           </div>
         )}
 
@@ -1075,6 +1149,8 @@ export function FittingRoom() {
   const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
   const [aiTryOnLoading, setAITryOnLoading] = useState(false);
   const [aiTryOnError, setAITryOnError] = useState<string | null>(null);
+  const [cinematicLoading, setCinematicLoading] = useState(false);
+  const [cinematicResult, setCinematicResult] = useState<string | null>(null);
   const [userPhotoFile, setUserPhotoFile] = useState<File | null>(null);
   const [userPhotoPreview, setUserPhotoPreview] = useState<string | null>(null);
   const [webglFailed, setWebglFailed] = useState(false);
@@ -1312,6 +1388,7 @@ export function FittingRoom() {
     setAITryOnLoading(true);
     setAITryOnError(null);
     setAITryOnResult(null);
+    setCinematicResult(null); // Reset cinematic result
 
     try {
       const response = await fetch('/api/try-on', {
@@ -1342,6 +1419,34 @@ export function FittingRoom() {
       setAITryOnLoading(false);
     }
   }, [userPhotoPreview, currentItem]);
+
+  const handleGenerateCinematic = useCallback(async () => {
+    if (!aiTryOnResult) return;
+
+    setCinematicLoading(true);
+    try {
+      const response = await fetch('/api/cinematic-motion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageUrl: aiTryOnResult,
+          prompt: "Cinematic slow motion fashion shoot, luxury lighting, 4k"
+        })
+      });
+
+      const data = await response.json();
+      if (data.success && data.videoUrl) {
+        setCinematicResult(data.videoUrl);
+      } else {
+        setAITryOnError('Failed to generate cinematic video');
+      }
+    } catch (error) {
+      console.error("Cinematic error:", error);
+      setAITryOnError('Network error during cinematic generation');
+    } finally {
+      setCinematicLoading(false);
+    }
+  }, [aiTryOnResult]);
 
   // Effect to sync storage
   useEffect(() => {
@@ -1865,6 +1970,9 @@ export function FittingRoom() {
         result={aiTryOnResult}
         error={aiTryOnError}
         onGenerateTryOn={handleGenerateAITryOn}
+        cinematicLoading={cinematicLoading}
+        cinematicResult={cinematicResult}
+        onGenerateCinematic={handleGenerateCinematic}
       />
     </div>
   );

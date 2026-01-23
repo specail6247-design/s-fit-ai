@@ -6,7 +6,7 @@ export interface ClothingItem {
   id: string;
   name: string;
   brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP';
-  category: 'tops' | 'bottoms' | 'outerwear' | 'dresses';
+  category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   price: number;
   currency: string;
   imageUrl: string;
@@ -215,6 +215,34 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Black'],
     description: 'Genuine leather bomber with embroidered patches',
+  },
+  {
+    id: 'gucci-acc-001',
+    name: 'Marmont Small Matelassé Bag',
+    brand: 'Gucci',
+    category: 'accessories',
+    price: 2550.00,
+    currency: 'USD',
+    imageUrl: '/clothing/gucci_bag.png',
+    textureUrl: '/clothing/gucci_bag.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Black', 'Dusty Pink', 'Red'],
+    description: 'Soft structured shape with Double G hardware',
+  },
+  {
+    id: 'gucci-acc-002',
+    name: 'GG Flora Silk Scarf',
+    brand: 'Gucci',
+    category: 'accessories',
+    price: 495.00,
+    currency: 'USD',
+    imageUrl: '/clothing/gucci_scarf.png',
+    textureUrl: '/clothing/gucci_scarf.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Multicolor'],
+    description: 'Organic silk twill with colorful Flora print',
   },
 
   // UNIQLO - Basic (5 items)

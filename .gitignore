@@ -40,3 +40,23 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 client_secret_*.json
+
+# python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.pytest_cache/
