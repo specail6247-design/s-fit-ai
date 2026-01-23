@@ -13,10 +13,15 @@ export interface TryOnResult {
   success: boolean;
   imageUrl?: string;
   error?: string;
+  videoUrl?: string;
 }
 
 // cuuupid/idm-vton
 const IDM_VTON_MODEL = "cuuupid/idm-vton:c871bb9b046607b680449ecbae55fd8c6d945e0a1948644bf2361b3d021d3ff4";
+// Upscaler
+const REAL_ESRGAN_MODEL = "nightmareai/real-esrgan:42fed1c4974146d4d2414e2be2c5277c7fcf05fcc3a73ab241bbb49991ea7781";
+// Video Generation (SVD)
+const SVD_MODEL = "stability-ai/stable-video-diffusion:3f0457e4619daac51203dedb472816f3af8d9bc94d61ced4e916cd04605162f1";
 
 // Helper to consume ReadableStream and return as base64 data URI or URL string
 async function consumeStream(stream: ReadableStream): Promise<string> {
@@ -56,6 +61,22 @@ async function consumeStream(stream: ReadableStream): Promise<string> {
   return new TextDecoder().decode(result);
 }
 
+// Helper to extract URL from Replicate output
+function extractUrlFromOutput(output: unknown): string | null {
+  if (output instanceof ReadableStream) {
+    return null; // Should have been consumed before
+  } else if (Array.isArray(output)) {
+    return output[0] ? String(output[0]) : null;
+  } else if (typeof output === 'string') {
+    return output;
+  } else if (output && typeof output === 'object') {
+    const obj = output as Record<string, unknown>;
+    if (obj.output) return String(obj.output);
+    if (obj.url) return String(obj.url);
+  }
+  return null;
+}
+
 export async function generateVirtualTryOn(request: TryOnRequest): Promise<TryOnResult> {
   const apiToken = process.env.REPLICATE_API_TOKEN;
   
@@ -72,7 +93,7 @@ export async function generateVirtualTryOn(request: TryOnRequest): Promise<TryOn
   });
 
   try {
-    // Replicate accepts URLs and data URIs as strings
+    console.log("Starting IDM-VTON generation...");
     const output = await replicate.run(
       IDM_VTON_MODEL,
       {
@@ -89,31 +110,11 @@ export async function generateVirtualTryOn(request: TryOnRequest): Promise<TryOn
       }
     );
 
-    console.log("Replicate raw output type:", typeof output, output);
-
     let imageUrl: string | null = null;
-
-    // Handle different output formats from Replicate
     if (output instanceof ReadableStream) {
-      // Stream response - consume it
-      console.log("Output is ReadableStream, consuming...");
-      const streamResult = await consumeStream(output);
-      console.log("Stream result:", streamResult.substring(0, 200));
-      // The stream might contain a URL or base64 data
-      imageUrl = streamResult.trim();
-    } else if (Array.isArray(output)) {
-      // Array of URLs
-      imageUrl = output[0] ? String(output[0]) : null;
-    } else if (typeof output === 'string') {
-      imageUrl = output;
-    } else if (output && typeof output === 'object') {
-      // Object with output property
-      const obj = output as Record<string, unknown>;
-      if (obj.output) {
-        imageUrl = String(obj.output);
-      } else if (obj.url) {
-        imageUrl = String(obj.url);
-      }
+       imageUrl = await consumeStream(output);
+    } else {
+       imageUrl = extractUrlFromOutput(output);
     }
 
     console.log("Extracted imageUrl:", imageUrl?.substring(0, 100));
@@ -138,3 +139,70 @@ export async function generateVirtualTryOn(request: TryOnRequest): Promise<TryOn
   }
 }
 
+export async function upscaleImage(imageUrl: string): Promise<string | null> {
+  const apiToken = process.env.REPLICATE_API_TOKEN;
+  if (!apiToken) return null;
+
+  const replicate = new Replicate({ auth: apiToken });
+
+  try {
+    console.log("Starting Upscaling...");
+    const output = await replicate.run(
+      REAL_ESRGAN_MODEL,
+      {
+        input: {
+          image: imageUrl,
+          scale: 4,
+          face_enhance: true
+        }
+      }
+    );
+
+    let resultUrl: string | null = null;
+    if (output instanceof ReadableStream) {
+      resultUrl = await consumeStream(output);
+    } else {
+      resultUrl = extractUrlFromOutput(output);
+    }
+    return resultUrl;
+  } catch (error) {
+    console.error("Upscale error:", error);
+    return null;
+  }
+}
+
+export async function generateRunwayVideo(imageUrl: string): Promise<string | null> {
+  const apiToken = process.env.REPLICATE_API_TOKEN;
+  if (!apiToken) return null;
+
+  const replicate = new Replicate({ auth: apiToken });
+
+  try {
+    console.log("Starting SVD Video Generation...");
+    const output = await replicate.run(
+      SVD_MODEL,
+      {
+        input: {
+          input_image: imageUrl,
+          video_length: "25_frames_with_svd_xt",
+          sizing_strategy: "maintain_aspect_ratio",
+          frames_per_second: 6,
+          motion_bucket_id: 127,
+          cond_aug: 0.02
+        }
+      }
+    );
+
+    // SVD output is usually a URL to an MP4
+    let videoUrl: string | null = null;
+    if (output instanceof ReadableStream) {
+      videoUrl = await consumeStream(output);
+    } else {
+      videoUrl = extractUrlFromOutput(output);
+    }
+    return videoUrl;
+  } catch (error) {
+    console.error("SVD error:", error);
+    return null;
+  }
+}
