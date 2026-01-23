@@ -72,5 +72,14 @@ BRAND_URLS = {
         "women-ready-to-wear": "https://www.gucci.com/kr/ko/ca/women/ready-to-wear-c-women-readytowear",
         "women-dresses": "https://www.gucci.com/kr/ko/ca/women/ready-to-wear/dresses-c-women-dresses",
         "women-outerwear": "https://www.gucci.com/kr/ko/ca/women/ready-to-wear/coats-jackets-c-women-coats-jackets",
+        "women-bags": "https://www.gucci.com/kr/ko/ca/women/handbags-c-women-handbags",
+    },
+    "LOUIS_VUITTON": {
+        "women-bags": "https://kr.louisvuitton.com/kor-kr/women/handbags/all-handbags/_/N-tfr7qdp",
+        "women-small-leather-goods": "https://kr.louisvuitton.com/kor-kr/women/wallets-and-small-leather-goods/all-wallets-and-small-leather-goods/_/N-t191562z",
+    },
+    "DIOR": {
+        "women-bags": "https://www.dior.com/ko_kr/fashion/womens-fashion/bags/all-bags",
+        "women-jewelry": "https://www.dior.com/ko_kr/fashion/womens-fashion/jewelry/all-jewelry",
     }
 }
