@@ -1,0 +1,32 @@
+{
+  "output_dir": "public/demo",
+  "url": "http://localhost:3000",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "recording": {
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "format": "mp4",
+    "filename": "raw_recording.mp4"
+  },
+  "steps": [
+    { "name": "landing", "duration": 2000, "label": "Welcome to S_FIT AI" },
+    { "name": "mode_selection", "duration": 1000, "label": "Select Mode" },
+    { "name": "measurements", "duration": 1000, "label": "Input Stats" },
+    { "name": "brand_selection", "duration": 1000, "label": "Choose Brand" },
+    { "name": "fitting_room", "duration": 3000, "label": "Virtual Fitting" },
+    { "name": "ar_result", "duration": 3000, "label": "AR Try-On" },
+    { "name": "fit_analysis", "duration": 2000, "label": "Fit Analysis" }
+  ],
+  "overlay": {
+    "font_path": null,
+    "font_size": 32,
+    "watermark_text": "S_FIT AI",
+    "watermark_position": "bottom-right",
+    "step_color": "white",
+    "watermark_color": "rgba(255, 255, 255, 128)"
+  }
+}
