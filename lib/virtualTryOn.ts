@@ -4,8 +4,8 @@
 import Replicate from "replicate";
 
 export interface TryOnRequest {
-  userPhoto: string | Buffer;      // URL or Buffer
-  garmentImage: string | Buffer;   // URL or Buffer
+  userPhoto: string;      // URL or data URI
+  garmentImage: string;   // URL or data URI
   category?: 'upper_body' | 'lower_body' | 'dresses';
 }
 
@@ -17,6 +17,44 @@ export interface TryOnResult {
 
 // cuuupid/idm-vton
 const IDM_VTON_MODEL = "cuuupid/idm-vton:c871bb9b046607b680449ecbae55fd8c6d945e0a1948644bf2361b3d021d3ff4";
+
+// Helper to consume ReadableStream and return as base64 data URI or URL string
+async function consumeStream(stream: ReadableStream): Promise<string> {
+  const reader = stream.getReader();
+  const chunks: Uint8Array[] = [];
+  
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (value) chunks.push(value);
+  }
+  
+  // Combine all chunks
+  const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
+  const result = new Uint8Array(totalLength);
+  let offset = 0;
+  for (const chunk of chunks) {
+    result.set(chunk, offset);
+    offset += chunk.length;
+  }
+  
+  // Check if it's binary image data (JPEG starts with FF D8, PNG starts with 89 50 4E 47)
+  if (result.length > 2) {
+    const isJPEG = result[0] === 0xFF && result[1] === 0xD8;
+    const isPNG = result[0] === 0x89 && result[1] === 0x50;
+    
+    if (isJPEG || isPNG) {
+      // Convert binary to base64 data URI
+      const base64 = Buffer.from(result).toString('base64');
+      const mimeType = isJPEG ? 'image/jpeg' : 'image/png';
+      console.log(`Converted ${mimeType} binary (${result.length} bytes) to base64`);
+      return `data:${mimeType};base64,${base64}`;
+    }
+  }
+  
+  // Otherwise, assume it's text (URL)
+  return new TextDecoder().decode(result);
+}
 
 export async function generateVirtualTryOn(request: TryOnRequest): Promise<TryOnResult> {
   const apiToken = process.env.REPLICATE_API_TOKEN;
@@ -34,14 +72,14 @@ export async function generateVirtualTryOn(request: TryOnRequest): Promise<TryOn
   });
 
   try {
-    // Replicate client automatically uploads Buffer/Blob inputs
+    // Replicate accepts URLs and data URIs as strings
     const output = await replicate.run(
       IDM_VTON_MODEL,
       {
         input: {
           human_img: request.userPhoto,
           garm_img: request.garmentImage,
-          garment_des: 'A clothing item', // Prompt is required but often ignored or generic is fine for IDM-VTON
+          garment_des: 'A clothing item',
           is_checked: true,
           is_checked_crop: false,
           denoise_steps: 30,
@@ -51,20 +89,44 @@ export async function generateVirtualTryOn(request: TryOnRequest): Promise<TryOn
       }
     );
 
-    console.log("Replicate output:", output);
+    console.log("Replicate raw output type:", typeof output, output);
 
-    // The output is typically an array of image URLs
-    const imageUrl = Array.isArray(output) ? output[0] : output;
+    let imageUrl: string | null = null;
 
-    if (imageUrl) {
+    // Handle different output formats from Replicate
+    if (output instanceof ReadableStream) {
+      // Stream response - consume it
+      console.log("Output is ReadableStream, consuming...");
+      const streamResult = await consumeStream(output);
+      console.log("Stream result:", streamResult.substring(0, 200));
+      // The stream might contain a URL or base64 data
+      imageUrl = streamResult.trim();
+    } else if (Array.isArray(output)) {
+      // Array of URLs
+      imageUrl = output[0] ? String(output[0]) : null;
+    } else if (typeof output === 'string') {
+      imageUrl = output;
+    } else if (output && typeof output === 'object') {
+      // Object with output property
+      const obj = output as Record<string, unknown>;
+      if (obj.output) {
+        imageUrl = String(obj.output);
+      } else if (obj.url) {
+        imageUrl = String(obj.url);
+      }
+    }
+
+    console.log("Extracted imageUrl:", imageUrl?.substring(0, 100));
+
+    if (imageUrl && imageUrl.length > 0) {
       return {
         success: true,
-        imageUrl: String(imageUrl)
+        imageUrl: imageUrl
       };
     } else {
       return {
         success: false,
-        error: 'Failed to generate try-on image'
+        error: 'Failed to generate try-on image - no output received'
       };
     }
   } catch (error) {
@@ -75,3 +137,4 @@ export async function generateVirtualTryOn(request: TryOnRequest): Promise<TryOn
     };
   }
 }
+

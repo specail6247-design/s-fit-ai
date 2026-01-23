@@ -5,7 +5,7 @@ import {
   type Detection,
 } from '@mediapipe/tasks-vision';
 
-const TASKS_VERSION = '0.10.22-rc.20250304';
+const TASKS_VERSION = '0.10.14';
 const WASM_BASE_URL = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${TASKS_VERSION}/wasm`;
 const FACE_MODEL_URL =
   'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite';
@@ -220,7 +220,14 @@ export const analyzePose = async (dataUrl: string): Promise<PoseAnalysis> => {
     };
   } catch (error: unknown) {
     console.error('Pose Analysis Error:', error);
-    throw new Error(`Pose analysis failed: ${(error as Error).message}`);
+    // Return a graceful fallback instead of crashing
+    return {
+      landmarkCount: 0,
+      score: 0,
+      note: 'Could not analyze pose. Please try again or use a clearer photo.',
+      proportions: null,
+      landmarks: [],
+    };
   }
 };
 

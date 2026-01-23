@@ -1,15 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateVirtualTryOn } from '@/lib/virtualTryOn';
+import * as fs from 'fs';
+import * as path from 'path';
 
-// Config for Vercel Edge Runtime
-export const runtime = 'edge';
-export const maxDuration = 60;
+// Config for Node.js Runtime (required for Replicate SDK)
+export const runtime = 'nodejs';
+export const maxDuration = 120;
 
-// Helper to convert data URI to Buffer
-function dataUriToBuffer(dataUri: string): Buffer {
-  const split = dataUri.split(',');
-  const base64 = split.length > 1 ? split[1] : split[0];
-  return Buffer.from(base64, 'base64');
+// Helper: Convert local file to base64 data URI
+function localFileToDataUri(localPath: string): string | null {
+  try {
+    // Remove leading slash and resolve to public directory
+    const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
+    const absolutePath = path.join(process.cwd(), 'public', relativePath);
+    
+    console.log('Reading local file:', absolutePath);
+    
+    if (!fs.existsSync(absolutePath)) {
+      console.error('File not found:', absolutePath);
+      return null;
+    }
+    
+    const fileBuffer = fs.readFileSync(absolutePath);
+    const base64 = fileBuffer.toString('base64');
+    
+    // Determine MIME type from extension
+    const ext = path.extname(localPath).toLowerCase();
+    const mimeTypes: Record<string, string> = {
+      '.png': 'image/png',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.webp': 'image/webp',
+      '.gif': 'image/gif'
+    };
+    const mimeType = mimeTypes[ext] || 'image/png';
+    
+    return `data:${mimeType};base64,${base64}`;
+  } catch (error) {
+    console.error('Error reading local file:', error);
+    return null;
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -24,28 +54,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Process User Photo
-    let userPhotoInput: Buffer | string = userPhotoUrl;
-    if (typeof userPhotoUrl === 'string' && userPhotoUrl.startsWith('data:')) {
-      // Convert Data URI to Buffer
-      userPhotoInput = dataUriToBuffer(userPhotoUrl);
-    }
+    // Process User Photo - Keep as data URI string for Replicate
+    const userPhotoInput: string = userPhotoUrl;
+    // Replicate accepts data URIs directly
 
     // Process Garment Image
-    let garmentImageInput: Buffer | string = garmentImageUrl;
+    let garmentImageInput: string = garmentImageUrl;
 
     if (typeof garmentImageUrl === 'string') {
-        if (garmentImageUrl.startsWith('/')) {
-             // Local file in public directory - resolve to absolute URL
-             // Note: In Edge Runtime we cannot use fs, so we provide the URL
-             // for Replicate to fetch.
-             const appUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin;
-             const baseUrl = appUrl.endsWith('/') ? appUrl.slice(0, -1) : appUrl;
-             garmentImageInput = `${baseUrl}${garmentImageUrl}`;
-        } else if (garmentImageUrl.startsWith('data:')) {
-             garmentImageInput = dataUriToBuffer(garmentImageUrl);
+      if (garmentImageUrl.startsWith('data:')) {
+        // Already a data URI - use as is
+        garmentImageInput = garmentImageUrl;
+      } else if (garmentImageUrl.startsWith('/')) {
+        // Local file in public directory - convert to base64 data URI
+        const dataUri = localFileToDataUri(garmentImageUrl);
+        if (!dataUri) {
+          return NextResponse.json(
+            { error: `Failed to read local image: ${garmentImageUrl}` },
+            { status: 400 }
+          );
         }
+        garmentImageInput = dataUri;
+        console.log('Converted local file to data URI, length:', dataUri.length);
+      } else if (garmentImageUrl.startsWith('http://') || garmentImageUrl.startsWith('https://')) {
+        // External URL - Replicate can fetch this directly
+        garmentImageInput = garmentImageUrl;
+      }
     }
+
+    console.log('Calling Replicate with:');
+    console.log('- userPhoto type:', userPhotoInput.startsWith('data:') ? 'data URI' : 'URL');
+    console.log('- garmentImage type:', garmentImageInput.startsWith('data:') ? 'data URI' : 'URL');
+    console.log('- category:', category || 'upper_body');
 
     // Call Replicate API
     const result = await generateVirtualTryOn({
@@ -68,7 +108,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Try-on API error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }
     );
   }

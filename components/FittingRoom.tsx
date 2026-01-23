@@ -1428,9 +1428,10 @@ export function FittingRoom() {
               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-40 h-4 bg-gradient-to-t from-charcoal to-transparent rounded-full opacity-50" />
             </div>
             
-            {/* 2D Mode indicator */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs text-soft-gray/50 bg-void-black/50 px-3 py-1 rounded-full">
-              2D Preview Mode
+            {/* Info indicator */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs text-soft-gray/70 bg-void-black/70 px-4 py-2 rounded-full flex items-center gap-2">
+              <span>👆</span>
+              <span>AI 피팅으로 실제 착용 모습 확인</span>
             </div>
           </div>
         ) : (

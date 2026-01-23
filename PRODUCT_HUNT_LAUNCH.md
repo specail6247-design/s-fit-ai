@@ -51,6 +51,62 @@ Built for fashion lovers who are tired of returns! 🛍️
 
 ---
 
+## 🏷️ Topics (Product Hunt 카테고리)
+
+선택할 Topics (최대 3개):
+
+1. **Artificial Intelligence** ⭐ 필수
+2. **Fashion** ⭐ 필수
+3. **Augmented Reality**
+4. **E-commerce**
+5. **Design Tools**
+
+---
+
+## 🔗 Product Hunt 링크
+
+```
+📍 제출 후 링크 업데이트:
+https://www.producthunt.com/posts/s-fit-ai
+
+📍 Maker 프로필:
+https://www.producthunt.com/@your_username
+```
+
+---
+
+## 💬 Maker's Comment
+
+### English Version
+
+```
+👋 Hey everyone! I'm the maker of S_FIT AI.
+
+I built this because I was frustrated with online shopping returns.
+Every time I ordered clothes, the sizes never matched!
+
+S_FIT AI uses MediaPipe to scan your body and show exactly how clothes will fit.
+
+Would love your feedback! What features would make this more useful for you?
+```
+
+### 한국어 버전 (Korean)
+
+```
+👋 안녕하세요! S_FIT AI를 만든 개발자입니다.
+
+온라인 쇼핑을 할 때마다 사이즈가 안 맞아서 반품하는 게 너무 불편했어요.
+"이 옷 나한테 맞을까?" 고민하면서 주문하고, 막상 받으면 안 맞고...
+
+그래서 만들었습니다! 📸 사진 한 장으로 AI가 체형을 분석하고,
+옷이 나한테 어떻게 맞는지 미리 보여주는 가상 피팅 서비스예요.
+
+ZARA, H&M, Gucci 등 다양한 브랜드 옷을
+집에서 편하게 입어볼 수 있어요! 🛍️
+
+피드백 환영합니다! 어떤 기능이 추가되면 더 유용할까요? 💬
+```
+
 ## 🖼️ Visual Assets 체크리스트
 
 ### 필수 스크린샷 (5장)
