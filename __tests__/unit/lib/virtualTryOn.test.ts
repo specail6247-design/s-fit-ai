@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { generateVirtualTryOn } from '@/lib/virtualTryOn';
+import { generateVirtualTryOn, generateCinematicVideo } from '@/lib/virtualTryOn';
 
 // Mock Replicate
 const mockReplicateRun = vi.fn();
@@ -67,5 +67,42 @@ describe('Virtual Try-On Service', () => {
     });
 
     expect(result.success).toBe(false);
+  });
+});
+
+describe('Cinematic Video Generation', () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    process.env.REPLICATE_API_TOKEN = 'mock-token';
+  });
+
+  afterEach(() => {
+    delete process.env.REPLICATE_API_TOKEN;
+  });
+
+  it('should generate cinematic video successfully', async () => {
+    mockReplicateRun.mockResolvedValue('https://replicate.com/video.mp4');
+
+    const result = await generateCinematicVideo('https://replicate.com/image.jpg');
+
+    expect(result.success).toBe(true);
+    expect(result.videoUrl).toBe('https://replicate.com/video.mp4');
+    expect(mockReplicateRun).toHaveBeenCalledWith(
+        expect.stringContaining('stable-video-diffusion'),
+        expect.objectContaining({
+            input: expect.objectContaining({
+                input_image: 'https://replicate.com/image.jpg'
+            })
+        })
+    );
+  });
+
+  it('should handle API errors', async () => {
+    mockReplicateRun.mockRejectedValue(new Error('API Error'));
+
+    const result = await generateCinematicVideo('https://replicate.com/image.jpg');
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe('API Error');
   });
 });

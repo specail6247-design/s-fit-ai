@@ -15,6 +15,12 @@ export interface TryOnResult {
   error?: string;
 }
 
+export interface CinematicVideoResult {
+  success: boolean;
+  videoUrl?: string;
+  error?: string;
+}
+
 // cuuupid/idm-vton
 const IDM_VTON_MODEL = "cuuupid/idm-vton:c871bb9b046607b680449ecbae55fd8c6d945e0a1948644bf2361b3d021d3ff4";
 
@@ -138,3 +144,67 @@ export async function generateVirtualTryOn(request: TryOnRequest): Promise<TryOn
   }
 }
 
+// stability-ai/stable-video-diffusion
+const SVD_MODEL = "stability-ai/stable-video-diffusion:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b";
+
+export async function generateCinematicVideo(imageUrl: string): Promise<CinematicVideoResult> {
+  const apiToken = process.env.REPLICATE_API_TOKEN;
+
+  if (!apiToken) {
+    console.error("REPLICATE_API_TOKEN is not set");
+    return {
+      success: false,
+      error: 'REPLICATE_API_TOKEN not configured'
+    };
+  }
+
+  const replicate = new Replicate({
+    auth: apiToken,
+  });
+
+  try {
+    const output = await replicate.run(
+      SVD_MODEL,
+      {
+        input: {
+          input_image: imageUrl,
+          video_length: "25_frames_with_svd_xt",
+          sizing_strategy: "maintain_aspect_ratio",
+          motion_bucket_id: 127,
+          frames_per_second: 6,
+        }
+      }
+    );
+
+    console.log("SVD output:", output);
+
+    let videoUrl = "";
+    if (typeof output === 'string') {
+        videoUrl = output;
+    } else if (Array.isArray(output) && output.length > 0) {
+        videoUrl = String(output[0]);
+    } else if (output && typeof output === 'object') {
+         // @ts-expect-error - Handling unknown output structure
+         videoUrl = output.output || output.url || "";
+    }
+
+    if (videoUrl) {
+      return {
+        success: true,
+        videoUrl: videoUrl
+      };
+    } else {
+      return {
+        success: false,
+        error: "No video URL in output"
+      };
+    }
+
+  } catch (error) {
+    console.error('Cinematic video generation error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    };
+  }
+}
