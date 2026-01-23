@@ -16,9 +16,7 @@ import { motion } from 'framer-motion';
 import { useStore } from '@/store/useStore';
 import { getItemsByBrand, ClothingItem } from '@/data/mockData';
 import type { PoseProportions } from '@/lib/mediapipe';
-import { getComplementaryItems, ClothingStyleAnalysis } from '@/lib/visionService';
-import { calculateRecommendedSize } from '@/lib/sizeRecommendation';
-import { ClothingBillboard } from '@/lib/clothingRenderer';
+import { calculateRecommendedSize, getComplementaryItems, ClothingStyleAnalysis } from '@/lib/visionService';
 import * as THREE from 'three';
 
 // Loading Component
@@ -178,6 +176,138 @@ function Mannequin({
   );
 }
 
+// 2.5D Mockup Clothing Components (Billboards)
+// These render the product image as a correct 2D plane ("sticker" style)
+// to ensure perfect realism for the mockup look.
+
+function TopClothing({ 
+  item, 
+  widthScale = 1,
+  shapeScale = { shoulders: 1, waist: 1, hips: 1 },
+}: { 
+  item: ClothingItem; 
+  isLuxury?: boolean;
+  widthScale?: number;
+  shapeScale?: { shoulders: number; waist: number; hips: number };
+}) {
+  const texture = useTexture(item.textureUrl || item.imageUrl);
+  const img = texture.image as HTMLImageElement;
+  const aspect = img ? img.width / img.height : 1;
+  const baseWidth = 0.65; // Standard width in world units
+
+  return (
+    <mesh position={[0, 0.95, 0.1]} renderOrder={2} castShadow receiveShadow>
+      <planeGeometry args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]} />
+      <meshStandardMaterial
+        map={texture} 
+        transparent 
+        side={THREE.DoubleSide}
+        roughness={0.7}
+        metalness={item.isLuxury ? 0.3 : 0.1}
+        displacementMap={texture} // Cinematic displacement
+        displacementScale={0.02}
+        alphaTest={0.5}
+      />
+    </mesh>
+  );
+}
+
+function BottomsClothing({ 
+  item, 
+  widthScale = 1,
+  shapeScale = { shoulders: 1, waist: 1, hips: 1 },
+}: { 
+  item: ClothingItem; 
+  isLuxury?: boolean;
+  widthScale?: number;
+  shapeScale?: { shoulders: number; waist: number; hips: number };
+}) {
+  const texture = useTexture(item.textureUrl || item.imageUrl);
+  const img = texture.image as HTMLImageElement;
+  const aspect = img ? img.width / img.height : 1;
+  const baseWidth = 0.55;
+
+  return (
+    <mesh position={[0, 0.35, 0.1]} renderOrder={2} castShadow receiveShadow>
+      <planeGeometry args={[baseWidth * widthScale * shapeScale.hips, (baseWidth * widthScale * shapeScale.hips) / aspect, 32, 32]} />
+      <meshStandardMaterial
+        map={texture} 
+        transparent 
+        side={THREE.DoubleSide}
+        roughness={0.8}
+        metalness={0.1}
+        displacementMap={texture}
+        displacementScale={0.02}
+        alphaTest={0.5}
+      />
+    </mesh>
+  );
+}
+
+function DressClothing({ 
+  item, 
+  widthScale = 1,
+  shapeScale = { shoulders: 1, waist: 1, hips: 1 },
+}: { 
+  item: ClothingItem; 
+  isLuxury?: boolean;
+  widthScale?: number;
+  shapeScale?: { shoulders: number; waist: number; hips: number };
+}) {
+  const texture = useTexture(item.textureUrl || item.imageUrl);
+  const img = texture.image as HTMLImageElement;
+  const aspect = img ? img.width / img.height : 1;
+  const baseWidth = 0.65;
+
+  return (
+    <mesh position={[0, 0.65, 0.1]} renderOrder={2} castShadow receiveShadow>
+      <planeGeometry args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]} />
+      <meshStandardMaterial
+        map={texture} 
+        transparent 
+        side={THREE.DoubleSide}
+        roughness={0.5} // Silkier
+        metalness={item.isLuxury ? 0.2 : 0.0}
+        displacementMap={texture}
+        displacementScale={0.02}
+        alphaTest={0.5}
+      />
+    </mesh>
+  );
+}
+
+function OuterwearClothing({ 
+  item, 
+  widthScale = 1,
+  shapeScale = { shoulders: 1, waist: 1, hips: 1 },
+}: { 
+  item: ClothingItem; 
+  isLuxury?: boolean;
+  widthScale?: number;
+  shapeScale?: { shoulders: number; waist: number; hips: number };
+}) {
+  const texture = useTexture(item.textureUrl || item.imageUrl);
+  const img = texture.image as HTMLImageElement;
+  const aspect = img ? img.width / img.height : 1;
+  const baseWidth = 0.70; // Slightly wider
+
+  return (
+    <mesh position={[0, 0.95, 0.15]} renderOrder={3} castShadow receiveShadow>
+      <planeGeometry args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]} />
+      <meshStandardMaterial
+        map={texture} 
+        transparent 
+        side={THREE.DoubleSide}
+        roughness={0.6}
+        metalness={0.1}
+        displacementMap={texture}
+        displacementScale={0.03} // More depth for outerwear
+        alphaTest={0.5}
+      />
+    </mesh>
+  );
+}
+
 // Fallback placeholder when texture fails to load
 function FallbackPlaceholder({ position, scale }: { position: [number, number, number], scale: [number, number, number] }) {
   return (
@@ -204,13 +334,10 @@ function ClothingOverlay({
 
   return (
     <Suspense fallback={<FallbackPlaceholder position={[0, 0.7, 0.1]} scale={[0.5, 0.7, 0.02]} />}>
-       <ClothingBillboard
-         item={item}
-         isLuxury={isLuxury}
-         widthScale={widthScale}
-         shapeScale={shapeScale}
-         position={[0, 0, item.category === 'outerwear' ? 0.15 : 0.1]}
-       />
+      {item.category === 'tops' && <TopClothing item={item} isLuxury={isLuxury} widthScale={widthScale} shapeScale={shapeScale} />}
+      {item.category === 'bottoms' && <BottomsClothing item={item} isLuxury={isLuxury} widthScale={widthScale} shapeScale={shapeScale} />}
+      {item.category === 'dresses' && <DressClothing item={item} isLuxury={isLuxury} widthScale={widthScale} shapeScale={shapeScale} />}
+      {item.category === 'outerwear' && <OuterwearClothing item={item} isLuxury={isLuxury} widthScale={widthScale} shapeScale={shapeScale} />}
     </Suspense>
   );
 }
