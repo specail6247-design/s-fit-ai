@@ -5,6 +5,7 @@ Unit and Integration Tests for Scrapers
 
 import unittest
 import asyncio
+from unittest.mock import AsyncMock
 from base_scraper import BaseScraper
 from config import BRAND_URLS
 
@@ -41,11 +42,41 @@ class TestBaseScraper(unittest.TestCase):
         self.assertEqual(self.scraper.normalize_price("$10.00", "USD"), 10.0)
         self.assertEqual(self.scraper.normalize_price("13,500", "KRW"), 10.0)
 
+    def test_image_quality_check(self):
+        """Test the image quality validation logic using mocks"""
+        async def run_check():
+            # Mock page
+            mock_page = AsyncMock()
+
+            # Case 1: High quality
+            mock_page.evaluate.return_value = {'width': 2000, 'height': 2000}
+            result_good = await self.scraper.validate_image_quality(mock_page, ".img")
+
+            # Case 2: Low quality
+            mock_page.evaluate.return_value = {'width': 500, 'height': 500}
+            result_bad = await self.scraper.validate_image_quality(mock_page, ".img")
+
+            # Case 3: Element not found (evaluate returns None)
+            mock_page.evaluate.return_value = None
+            result_none = await self.scraper.validate_image_quality(mock_page, ".img")
+
+            return result_good, result_bad, result_none
+
+        good, bad, none = asyncio.run(run_check())
+        self.assertTrue(good)
+        self.assertFalse(bad)
+        self.assertFalse(none)
+
     def test_category_mapping(self):
         self.assertEqual(self.scraper.map_category("Women Shirts"), "tops")
         self.assertEqual(self.scraper.map_category("Dresses"), "dresses")
         self.assertEqual(self.scraper.map_category("Coats & Jackets"), "outerwear")
         self.assertEqual(self.scraper.map_category("Trousers"), "bottoms")
+
+        # Accessories
+        self.assertEqual(self.scraper.map_category("Leather Handbag"), "accessories-bags")
+        self.assertEqual(self.scraper.map_category("Gold Necklace"), "accessories-jewelry")
+        self.assertEqual(self.scraper.map_category("Wool Beanie"), "accessories-hats")
 
 class TestBrandIntegrations(unittest.TestCase):
     """Test that each brand scraper can be instantiated and has URL configs"""

@@ -6,7 +6,8 @@ export interface ClothingItem {
   id: string;
   name: string;
   brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP';
-  category: 'tops' | 'bottoms' | 'outerwear' | 'dresses';
+  category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
+  subCategory?: string; // e.g. 'bag', 'necklace', 'hat'
   price: number;
   currency: string;
   imageUrl: string;
@@ -461,6 +462,38 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Gray', 'Navy'],
     description: 'Comfortable athletic joggers',
+  },
+
+  // ACCESSORIES (New)
+  {
+    id: 'gucci-acc-001',
+    name: 'Jackie 1961 Small Bag',
+    brand: 'Gucci',
+    category: 'accessories',
+    subCategory: 'bag',
+    price: 2950.00,
+    currency: 'USD',
+    imageUrl: '/clothing/gucci_bag.png',
+    textureUrl: '/clothing/gucci_bag.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Black Leather'],
+    description: 'The reintroduction of the Jackie bag',
+  },
+  {
+    id: 'zara-acc-001',
+    name: 'Minimalist Hoop Earrings',
+    brand: 'ZARA',
+    category: 'accessories',
+    subCategory: 'jewelry',
+    price: 19.99,
+    currency: 'USD',
+    imageUrl: '/clothing/zara_earrings.png',
+    textureUrl: '/clothing/zara_earrings.png',
+    isLuxury: false,
+    sizes: ['One Size'],
+    colors: ['Gold'],
+    description: 'Gold-plated hoop earrings',
   },
 ];
 

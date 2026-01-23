@@ -16,6 +16,7 @@ RETRY_COUNT = 3
 RETRY_DELAY = 5  # seconds
 REQUEST_DELAY_MIN = 2
 REQUEST_DELAY_MAX = 5
+MIN_IMAGE_RESOLUTION = 1000  # Minimum width/height in pixels
 
 # Anti-Detection
 USE_PROXY = False  # Set to True if proxies are available
@@ -24,6 +25,9 @@ PROXY_LIST = []  # Add proxy URLs here if available
 # Currency Conversion (Approximate)
 KRW_TO_USD_RATE = 1350.0
 
+# Categories
+ACCESSORY_CATEGORIES = ["bags", "jewelry", "hats", "scarves"]
+
 # Brand URLs
 BRAND_URLS = {
     "ZARA": {
@@ -31,6 +35,9 @@ BRAND_URLS = {
         "women-dresses": "https://www.zara.com/kr/ko/woman-dresses-l1066.html",
         "women-outerwear": "https://www.zara.com/kr/ko/woman-outerwear-l1184.html",
         "women-bottoms": "https://www.zara.com/kr/ko/woman-trousers-l1335.html",
+        # Accessories placeholders
+        "women-bags": "https://www.zara.com/kr/ko/woman-bags-l1024.html",
+        "women-jewelry": "https://www.zara.com/kr/ko/woman-accessories-jewelry-l1030.html",
     },
     "HM": {
         "women-tops": "https://www2.hm.com/ko_kr/women/shop-by-product/tops.html",

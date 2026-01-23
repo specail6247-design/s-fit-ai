@@ -39,7 +39,10 @@ async def run_scraper(name, scraper_cls, limit, test_mode):
     # But BaseScraper.scrape takes one category.
     # We will scrape a default set of categories for each brand.
 
-    categories = ["women-tops", "women-dresses", "women-outerwear", "women-bottoms"]
+    categories = [
+        "women-tops", "women-dresses", "women-outerwear", "women-bottoms",
+        "women-bags", "women-jewelry"
+    ]
     all_products = []
 
     for cat in categories:
