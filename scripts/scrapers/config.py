@@ -31,6 +31,8 @@ BRAND_URLS = {
         "women-dresses": "https://www.zara.com/kr/ko/woman-dresses-l1066.html",
         "women-outerwear": "https://www.zara.com/kr/ko/woman-outerwear-l1184.html",
         "women-bottoms": "https://www.zara.com/kr/ko/woman-trousers-l1335.html",
+        "women-bags": "https://www.zara.com/kr/ko/woman-bags-l1024.html",
+        "women-accessories": "https://www.zara.com/kr/ko/woman-accessories-l1003.html",
     },
     "HM": {
         "women-tops": "https://www2.hm.com/ko_kr/women/shop-by-product/tops.html",

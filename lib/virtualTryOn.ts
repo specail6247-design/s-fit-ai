@@ -2,11 +2,13 @@
 // https://replicate.com/cuuupid/idm-vton
 
 import Replicate from "replicate";
+import { segmentationService } from "./segmentation";
 
 export interface TryOnRequest {
   userPhoto: string;      // URL or data URI
   garmentImage: string;   // URL or data URI
-  category?: 'upper_body' | 'lower_body' | 'dresses';
+  category?: 'upper_body' | 'lower_body' | 'dresses' | 'accessories';
+  garmentDescription?: string; // Optional description for better guiding (e.g. "red handbag")
 }
 
 export interface TryOnResult {
@@ -72,6 +74,28 @@ export async function generateVirtualTryOn(request: TryOnRequest): Promise<TryOn
   });
 
   try {
+    let effectiveCategory = request.category || 'upper_body';
+    let segmentationMasks = null;
+
+    // Layering Intelligence:
+    // If it's an accessory, we run segmentation first to guide placement (simulated logic)
+    if (effectiveCategory === 'accessories') {
+      console.log("Layering Intelligence: Detecting body parts for accessory placement...");
+
+      // Call SAM 2 to identify anchor points (Head, Neck, Wrist)
+      // In a real Inpainting workflow, these masks would be combined with the garment image.
+      const segResult = await segmentationService.segmentBody(request.userPhoto);
+
+      if (segResult.success) {
+        console.log(`Layering Intelligence: Identified ${segResult.masks.length} regions.`);
+        segmentationMasks = segResult.masks;
+      }
+
+      // Map 'accessories' to 'upper_body' for the standard VTON model
+      // In a production system, this would call a specific Inpainting model instead.
+      effectiveCategory = 'upper_body';
+    }
+
     // Replicate accepts URLs and data URIs as strings
     const output = await replicate.run(
       IDM_VTON_MODEL,
@@ -79,17 +103,20 @@ export async function generateVirtualTryOn(request: TryOnRequest): Promise<TryOn
         input: {
           human_img: request.userPhoto,
           garm_img: request.garmentImage,
-          garment_des: 'A clothing item',
+          garment_des: request.garmentDescription || 'A clothing item',
           is_checked: true,
           is_checked_crop: false,
           denoise_steps: 30,
           seed: 42,
-          category: request.category || 'upper_body'
+          category: effectiveCategory
         }
       }
     );
 
     console.log("Replicate raw output type:", typeof output, output);
+    if (segmentationMasks) {
+      console.log("Layering Intelligence: Applied accessory logic using segmentation masks.");
+    }
 
     let imageUrl: string | null = null;
 

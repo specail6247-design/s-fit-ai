@@ -57,6 +57,8 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
       return '🧥';
     case 'dresses':
       return '👗';
+    case 'accessories':
+      return '👜';
     default:
       return '👔';
   }
@@ -308,6 +310,40 @@ function OuterwearClothing({
   );
 }
 
+function AccessoryClothing({
+  item,
+  widthScale = 1,
+  shapeScale = { shoulders: 1, waist: 1, hips: 1 },
+}: {
+  item: ClothingItem;
+  isLuxury?: boolean;
+  widthScale?: number;
+  shapeScale?: { shoulders: number; waist: number; hips: number };
+}) {
+  const texture = useTexture(item.textureUrl || item.imageUrl);
+  const img = texture.image as HTMLImageElement;
+  const aspect = img ? img.width / img.height : 1;
+
+  // Dynamic positioning based on subCategory would be ideal
+  // For now, place generically near torso/hip
+  const position: [number, number, number] = [0.35, 0.8, 0.2];
+  const baseWidth = 0.4;
+
+  return (
+    <mesh position={position} renderOrder={4} castShadow receiveShadow>
+      <planeGeometry args={[baseWidth, baseWidth / aspect, 32, 32]} />
+      <meshStandardMaterial
+        map={texture}
+        transparent
+        side={THREE.DoubleSide}
+        roughness={0.4}
+        metalness={item.isLuxury ? 0.5 : 0.2}
+        alphaTest={0.5}
+      />
+    </mesh>
+  );
+}
+
 // Fallback placeholder when texture fails to load
 function FallbackPlaceholder({ position, scale }: { position: [number, number, number], scale: [number, number, number] }) {
   return (
@@ -338,6 +374,7 @@ function ClothingOverlay({
       {item.category === 'bottoms' && <BottomsClothing item={item} isLuxury={isLuxury} widthScale={widthScale} shapeScale={shapeScale} />}
       {item.category === 'dresses' && <DressClothing item={item} isLuxury={isLuxury} widthScale={widthScale} shapeScale={shapeScale} />}
       {item.category === 'outerwear' && <OuterwearClothing item={item} isLuxury={isLuxury} widthScale={widthScale} shapeScale={shapeScale} />}
+      {item.category === 'accessories' && <AccessoryClothing item={item} isLuxury={isLuxury} widthScale={widthScale} shapeScale={shapeScale} />}
     </Suspense>
   );
 }
