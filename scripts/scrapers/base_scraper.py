@@ -157,4 +157,6 @@ class BaseScraper(ABC):
             return "outerwear"
         elif "bottom" in cat_lower or "pant" in cat_lower or "trouser" in cat_lower:
             return "bottoms"
+        elif "bag" in cat_lower or "accessory" in cat_lower or "hat" in cat_lower or "jewel" in cat_lower:
+            return "accessories"
         return "tops"
