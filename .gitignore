@@ -46,3 +46,7 @@ __pycache__/
 *.pyc
 data/brands/
 data/scraped_products.json
+
+# playwright
+/test-results/
+/playwright-report/
