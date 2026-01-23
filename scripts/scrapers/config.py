@@ -72,5 +72,29 @@ BRAND_URLS = {
         "women-ready-to-wear": "https://www.gucci.com/kr/ko/ca/women/ready-to-wear-c-women-readytowear",
         "women-dresses": "https://www.gucci.com/kr/ko/ca/women/ready-to-wear/dresses-c-women-dresses",
         "women-outerwear": "https://www.gucci.com/kr/ko/ca/women/ready-to-wear/coats-jackets-c-women-coats-jackets",
+    },
+    "FARFETCH": {
+        "women-tops": "https://www.farfetch.com/kr/shopping/women/tops-1/items.aspx",
+        "women-dresses": "https://www.farfetch.com/kr/shopping/women/dresses-1/items.aspx",
+        "women-outerwear": "https://www.farfetch.com/kr/shopping/women/coats-1/items.aspx",
+        "women-bottoms": "https://www.farfetch.com/kr/shopping/women/trousers-1/items.aspx",
+    },
+    "SSENSE": {
+        "women-tops": "https://www.ssense.com/en-kr/women/tops",
+        "women-dresses": "https://www.ssense.com/en-kr/women/dresses",
+        "women-outerwear": "https://www.ssense.com/en-kr/women/outerwear",
+        "women-bottoms": "https://www.ssense.com/en-kr/women/pants",
+    },
+    "MUSINSA": {
+        "women-tops": "https://www.musinsa.com/categories/item/001",
+        "women-dresses": "https://www.musinsa.com/categories/item/020",
+        "women-outerwear": "https://www.musinsa.com/categories/item/002",
+        "women-bottoms": "https://www.musinsa.com/categories/item/003",
+    },
+    "WCONCEPT": {
+        "women-tops": "https://www.wconcept.co.kr/Women/003001",
+        "women-dresses": "https://www.wconcept.co.kr/Women/003004",
+        "women-outerwear": "https://www.wconcept.co.kr/Women/003002",
+        "women-bottoms": "https://www.wconcept.co.kr/Women/003003",
     }
 }
