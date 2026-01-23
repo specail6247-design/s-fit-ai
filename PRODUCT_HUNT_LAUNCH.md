@@ -1,165 +1,82 @@
-# S_FIT AI - Product Hunt 런칭 자료
+# Product Hunt Launch Submission: S_FIT AI
 
-## 📝 기본 정보
+## 📦 Basic Info
 
-### Product Name
+**Name:** S_FIT AI
 
-**S_FIT AI**
+**Tagline (Options):**
+1. Virtual Fitting Room with Hyper-Realistic AI Try-On
+2. Try on any clothes instantly with AI-powered 3D fitting
+3. Your Digital Twin for Perfect Fit & Style
+4. Shop with confidence: AI Virtual Try-On for everyone
+5. From Screen to Reality: The Hyper-Real Virtual Fitting Room
 
-### Tagline (선택 1개)
+**Description:**
+Experience the future of fashion. S_FIT AI turns your photo into a 3D digital twin for hyper-realistic virtual try-ons. Shop top global brands (ZARA, COS, Gucci), analyze your unique fit, and visualize styles instantly. No more returns.
 
-1. "Try clothes virtually with AI body scanning" ⭐ 추천
-2. "AI-powered virtual fitting room for online shopping"
-3. "See how clothes fit before you buy - powered by AI"
+**Topics:**
+- Fashion Tech
+- Artificial Intelligence
+- E-commerce
+- Virtual Reality
+- Style & Fashion
 
-### Short Description (160자 이내)
-
-```
-S_FIT AI uses MediaPipe body scanning to let you try on clothes virtually. Upload a photo or use your camera - our AI analyzes your body proportions and shows you exactly how garments will fit. No more size guessing!
-```
-
-### Full Description
-
-```markdown
-# 👔 Virtual Try-On Powered by AI
-
-S_FIT AI solves the #1 problem with online shopping: **"Will it fit me?"**
-
-## How it works:
-
-1. 📸 Upload a selfie or full-body photo
-2. 🤖 AI analyzes your body proportions using MediaPipe
-3. 👕 Browse clothes from brands like ZARA, GUCCI
-4. ✨ See clothes overlay on your body in real-time
-5. 📏 Get personalized size recommendations
-
-## Key Features:
-
-- **3 Fitting Modes**: Vibe Check, Digital Twin, Easy Fit
-- **Real-time AR fitting** with webcam
-- **AI Size Recommendations** based on body analysis
-- **Multi-brand support**: Fast fashion to luxury
-
-## Tech Stack:
-
-- MediaPipe Pose Landmarker
-- Next.js 15 + React Three Fiber
-- Claude AI for fit predictions
-
-Built for fashion lovers who are tired of returns! 🛍️
-```
+**Website URL:** https://s-fit-ai.vercel.app
+**Thumbnail:** Animated GIF (240x240px) showing the transformation from user photo to 3D model with clothes.
 
 ---
 
-## 🖼️ Visual Assets 체크리스트
+## 🖼️ Media Assets Required
 
-### 필수 스크린샷 (5장)
+**1. Gallery Images (1270x760px):**
+1. **Hero Shot:** Split screen showing "Upload Photo" -> "Perfect AI Fit Result" with S_FIT AI logo.
+2. **The 3D Experience:** Screenshot of the 3D fitting room with a user rotating their digital twin.
+3. **Brand Collection:** Montage of ZARA, COS, Massimo Dutti items available in the app.
+4. **AI Analysis:** Visual of the "Fit Score" and "Style Analysis" panels (MediaPipe landmarks overlay).
+5. **Real-time Comparison:** "Before vs After" or "Size S vs Size M" comparison view.
 
-| #   | 설명                  | 파일명               |
-| --- | --------------------- | -------------------- |
-| 1   | 랜딩 페이지 (Hero)    | `ph_landing.png`     |
-| 2   | 모드 선택 화면        | `ph_mode_select.png` |
-| 3   | AI 분석 중 화면       | `ph_analyzing.png`   |
-| 4   | AR 피팅 결과          | `ph_ar_fitting.png`  |
-| 5   | 핏 예측 + 사이즈 추천 | `ph_fit_result.png`  |
-
-### GIF/영상 (필수!)
-
-- **메인 데모 GIF** (15-30초): 전체 플로우
-- **AR 피팅 GIF**: 실시간 카메라 + 옷 오버레이
-
----
-
-## 🚀 런칭 전략
-
-### 최적 런칭 시간
-
-- **화요일~목요일**
-- **12:01 AM PST** (한국시간 오후 5:01)
-- 첫 6시간이 승부!
-
-### Maker 댓글 전략
-
-```
-👋 Hey everyone! I'm [Name], maker of S_FIT AI.
-
-I built this because I was frustrated with online shopping returns.
-Every time I ordered clothes, the sizes never matched!
-
-S_FIT AI uses MediaPipe to scan your body and show exactly how clothes will fit.
-
-Would love your feedback! What features would make this more useful for you?
-```
-
-### 투표 요청 메시지 (친구/커뮤니티용)
-
-```
-🚀 Just launched S_FIT AI on Product Hunt!
-
-It's an AI virtual fitting room - upload a photo, try on clothes virtually.
-
-Would really appreciate your support!
-[Product Hunt Link]
-
-#ProductHunt #AI #Fashion #Startup
-```
+**2. Video (Demo Script):**
+*Duration: 60-90 seconds*
+- **0:00-0:10:** Intro "Shopping online is hard. Will it fit?" (Problem)
+- **0:10-0:25:** Upload photo -> 3D Digital Twin creation (Magic Moment)
+- **0:25-0:45:** Browsing brands (COS, GAP, etc.) & Instant Try-On (Core Feature)
+- **0:45-0:55:** Rotating 360°, checking fabric details & fit score (Hyper-Realism)
+- **0:55-1:00:** Outro "S_FIT AI. Your Perfect Fit, Found." (Call to Action)
 
 ---
 
-## 📸 스크린샷 촬영 가이드
+## 💬 Maker's Comment
 
-### 1. 랜딩 페이지
+### English
+Hey Product Hunt! 👋
 
-- URL: `http://localhost:3000`
-- 전체 화면 캡처
-- 다크 모드 유지
+I'm Taejune, the maker behind **S_FIT AI**.
 
-### 2. 모드 선택
+As a fashion lover who buys 90% of my clothes online, I was tired of the "buy 3 sizes, return 2" cycle. It's wasteful, frustrating, and honestly, a joy-killer. Existing virtual fitting tools felt... fake. They were either flat 2D stickers or unrealistic avatars that didn't look like *me*.
 
-- 3가지 모드 카드가 보이게
-- "바이브 체크", "디지털 트윈", "이지핏"
+So I built **S_FIT AI** to bridge that gap.
 
-### 3. AI 분석 중
+**What makes it different?**
+*   **Hyper-Realism:** We use the latest Generative AI (IDM-VTON) combined with 3D body mapping to create a result that respects your actual silhouette.
+*   **Real Brands:** We scraped real collections from brands like COS, ZARA, and Massimo Dutti so you can try on *actual* products, not generic 3D assets.
+*   **Fit Analytics:** It doesn't just show you the look; it analyzes the fit based on your body measurements.
 
-- 사진 업로드 후 분석 로딩 상태
-- "분석 중..." 텍스트 보이게
+This is just the beginning of our journey to fix online fashion. I'd love to hear your feedback—does this solve your online shopping anxiety?
 
-### 4. AR 피팅
+Let me know in the comments! 👇
 
-- 카메라 켜고 옷 오버레이된 상태
-- "⚡️ AR AI Active" 텍스트 보이게
+### Korean (한국어)
+안녕하세요, Product Hunt 커뮤니티 여러분! 👋 **S_FIT AI**를 만든 김태준입니다.
 
-### 5. 핏 결과
+저는 옷을 정말 좋아하지만, 온라인 쇼핑의 실패 경험 때문에 항상 스트레스를 받아왔습니다. "이 옷이 나한테 맞을까?"라는 고민 끝에 결국 여러 사이즈를 주문하고 반품하는 과정이 너무 소모적이었죠. 기존의 가상 피팅 서비스들은 너무 게임 캐릭터 같거나, 옷이 스티커처럼 붙어있는 느낌이라 현실감이 떨어졌습니다.
 
-- 피팅룸에서 옷 선택 + 핏 스코어 표시
-- 사이즈 추천 보이게
+그래서 진짜 '나' 같은 핏을 보여주는 **S_FIT AI**를 만들게 되었습니다.
 
----
+**S_FIT AI의 특별한 점:**
+*   **초현실적인 AI 합성:** 최신 IDM-VTON 모델을 활용해 내 사진 위에 옷의 주름과 질감까지 자연스럽게 합성합니다.
+*   **실제 브랜드 데이터:** COS, ZARA, Massimo Dutti 등 실제 브랜드의 신상품을 바로 입어볼 수 있습니다.
+*   **핏 정밀 분석:** 단순히 입은 모습뿐만 아니라, 내 체형에 맞춰 사이즈를 추천하고 핏 점수를 알려줍니다.
 
-## ✅ 런칭 체크리스트
+패션 테크의 새로운 기준을 만들기 위해 끊임없이 개선하고 있습니다. 여러분의 피드백이 정말 큰 힘이 됩니다!
 
-```
-[ ] Product Hunt 계정 생성/로그인
-[ ] Maker 프로필 완성 (사진, 바이오)
-[ ] 스크린샷 5장 촬영
-[ ] 메인 데모 GIF 제작
-[ ] Tagline 및 설명 입력
-[ ] 런칭 스케줄 예약
-[ ] 친구/커뮤니티에 투표 요청 준비
-[ ] Maker 첫 댓글 작성
-```
-
----
-
-## 🎬 GIF 제작 도구 추천
-
-1. **Kap** (Mac) - 무료, 간단
-2. **ScreenToGif** (Windows) - 무료
-3. **LICEcap** - 크로스플랫폼
-
-### 권장 설정
-
-- 해상도: 800x600 이상
-- 프레임: 15-24fps
-- 길이: 15-30초
-- 파일 크기: 5MB 이하
+감사합니다! 👇
