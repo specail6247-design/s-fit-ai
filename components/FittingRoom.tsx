@@ -10,6 +10,7 @@ import {
   Environment, 
   ContactShadows,
   useTexture,
+  SpotLight,
 } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import { useStore } from '@/store/useStore';
@@ -195,13 +196,17 @@ function TopClothing({
   const baseWidth = 0.65; // Standard width in world units
 
   return (
-    <mesh position={[0, 0.95, 0.1]} renderOrder={2}>
-      <planeGeometry args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect]} />
-      <meshBasicMaterial 
+    <mesh position={[0, 0.95, 0.1]} renderOrder={2} castShadow receiveShadow>
+      <planeGeometry args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]} />
+      <meshStandardMaterial
         map={texture} 
         transparent 
         side={THREE.DoubleSide}
-        toneMapped={false} // Keep original colors
+        roughness={0.7}
+        metalness={item.isLuxury ? 0.3 : 0.1}
+        displacementMap={texture} // Cinematic displacement
+        displacementScale={0.02}
+        alphaTest={0.5}
       />
     </mesh>
   );
@@ -223,13 +228,17 @@ function BottomsClothing({
   const baseWidth = 0.55;
 
   return (
-    <mesh position={[0, 0.35, 0.1]} renderOrder={2}>
-      <planeGeometry args={[baseWidth * widthScale * shapeScale.hips, (baseWidth * widthScale * shapeScale.hips) / aspect]} />
-      <meshBasicMaterial 
+    <mesh position={[0, 0.35, 0.1]} renderOrder={2} castShadow receiveShadow>
+      <planeGeometry args={[baseWidth * widthScale * shapeScale.hips, (baseWidth * widthScale * shapeScale.hips) / aspect, 32, 32]} />
+      <meshStandardMaterial
         map={texture} 
         transparent 
         side={THREE.DoubleSide}
-        toneMapped={false}
+        roughness={0.8}
+        metalness={0.1}
+        displacementMap={texture}
+        displacementScale={0.02}
+        alphaTest={0.5}
       />
     </mesh>
   );
@@ -251,13 +260,17 @@ function DressClothing({
   const baseWidth = 0.65;
 
   return (
-    <mesh position={[0, 0.65, 0.1]} renderOrder={2}>
-      <planeGeometry args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect]} />
-      <meshBasicMaterial 
+    <mesh position={[0, 0.65, 0.1]} renderOrder={2} castShadow receiveShadow>
+      <planeGeometry args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]} />
+      <meshStandardMaterial
         map={texture} 
         transparent 
         side={THREE.DoubleSide}
-        toneMapped={false}
+        roughness={0.5} // Silkier
+        metalness={item.isLuxury ? 0.2 : 0.0}
+        displacementMap={texture}
+        displacementScale={0.02}
+        alphaTest={0.5}
       />
     </mesh>
   );
@@ -279,13 +292,17 @@ function OuterwearClothing({
   const baseWidth = 0.70; // Slightly wider
 
   return (
-    <mesh position={[0, 0.95, 0.15]} renderOrder={3}>
-      <planeGeometry args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect]} />
-      <meshBasicMaterial 
+    <mesh position={[0, 0.95, 0.15]} renderOrder={3} castShadow receiveShadow>
+      <planeGeometry args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]} />
+      <meshStandardMaterial
         map={texture} 
         transparent 
         side={THREE.DoubleSide}
-        toneMapped={false}
+        roughness={0.6}
+        metalness={0.1}
+        displacementMap={texture}
+        displacementScale={0.03} // More depth for outerwear
+        alphaTest={0.5}
       />
     </mesh>
   );
@@ -427,8 +444,16 @@ function Scene({
 
   return (
     <>
-      <ambientLight intensity={1.5} /> 
-      <Environment preset="city" />
+      <ambientLight intensity={0.8} />
+      <SpotLight
+        position={[5, 10, 7.5]}
+        angle={0.3}
+        penumbra={1}
+        intensity={200}
+        castShadow
+        shadow-bias={-0.0001}
+      />
+      <Environment preset="studio" blur={0.8} />
       
       {/* Background for Digital Twin */}
       {selectedMode === 'digital-twin' && selfieData.fullBodyImage && (
@@ -1449,6 +1474,10 @@ export function FittingRoom() {
                 maxDistance={4}
                 minPolarAngle={Math.PI / 4}
                 maxPolarAngle={Math.PI / 1.8}
+                autoRotate
+                autoRotateSpeed={0.5}
+                enableDamping
+                dampingFactor={0.05}
                 onChange={() => setIsRotating(true)}
                 onEnd={() => setIsRotating(false)}
               />
