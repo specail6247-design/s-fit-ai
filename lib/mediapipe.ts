@@ -26,6 +26,14 @@ export interface PoseProportions {
   torsoHeight: number;
   legLength: number;
   overallRatio: number; // aspect ratio of the body
+  // HMR 2.0 Extended Fields
+  chest_circumference?: number;
+  waist_circumference?: number;
+  hip_circumference?: number;
+  sleeve_length?: number;
+  inseam?: number;
+  thigh_circumference?: number;
+  neck_circumference?: number;
 }
 
 export interface PoseLandmark {

@@ -16,7 +16,9 @@ import { motion } from 'framer-motion';
 import { useStore } from '@/store/useStore';
 import { getItemsByBrand, ClothingItem } from '@/data/mockData';
 import type { PoseProportions } from '@/lib/mediapipe';
-import { calculateRecommendedSize, getComplementaryItems, ClothingStyleAnalysis } from '@/lib/visionService';
+import { calculateRecommendedSize, getComplementaryItems, ClothingStyleAnalysis, FitZone } from '@/lib/visionService';
+import { FitConsultant } from '@/components/fit/FitConsultant';
+import { FitHeatmap } from '@/components/fit/FitHeatmap';
 import * as THREE from 'three';
 
 // Loading Component
@@ -873,6 +875,7 @@ function AITryOnModal({
   result,
   error,
   onGenerateTryOn,
+  heatmapData = [],
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -883,8 +886,10 @@ function AITryOnModal({
   result: string | null;
   error: string | null;
   onGenerateTryOn: () => void;
+  heatmapData?: FitZone[];
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showHeatmap, setShowHeatmap] = useState(false);
 
   if (!isOpen) return null;
 
@@ -1003,14 +1008,25 @@ function AITryOnModal({
         {/* Result Image */}
         {result && (
           <div className="mb-4">
-            <label className="text-xs uppercase tracking-wider text-cyber-lime mb-2 block">
-              ✨ AI 피팅 결과
+            <label className="text-xs uppercase tracking-wider text-cyber-lime mb-2 flex justify-between items-center">
+              <span>✨ AI 피팅 결과</span>
+              <button
+                onClick={() => setShowHeatmap(!showHeatmap)}
+                className={`text-[0.6rem] px-2 py-1 rounded border transition-colors ${showHeatmap ? 'bg-cyber-lime text-void-black border-cyber-lime' : 'border-border-color text-soft-gray hover:text-pure-white'}`}
+              >
+                {showHeatmap ? 'Hide Heatmap' : 'Show Fit Heatmap'}
+              </button>
             </label>
-            <img
-              src={result}
-              alt="AI Try-On Result"
-              className="w-full rounded-lg border border-cyber-lime/30"
-            />
+            <div className="relative">
+              <img
+                src={result}
+                alt="AI Try-On Result"
+                className="w-full rounded-lg border border-cyber-lime/30"
+              />
+              {showHeatmap && (
+                <FitHeatmap imageUrl={result} zones={heatmapData} />
+              )}
+            </div>
             <button
               onClick={() => {
                 const link = document.createElement('a');
@@ -1279,6 +1295,19 @@ export function FittingRoom() {
     ? getRecommendedSize(currentItem.sizes, userStats)
     : null;
   const isLuxury = currentItem?.isLuxury || false;
+
+  const masterpieceFitData = useMemo(() => {
+    if (poseAnalysis?.proportions && userStats?.height && currentItem) {
+      return calculateRecommendedSize(
+         poseAnalysis.proportions,
+         userStats.height,
+         currentItem.brand,
+         currentItem.category,
+         clothingAnalysis
+       );
+    }
+    return null;
+  }, [poseAnalysis, userStats, currentItem, clothingAnalysis]);
 
   const handleSelectItem = useCallback(
     (item: ClothingItem) => {
@@ -1762,23 +1791,14 @@ export function FittingRoom() {
             </p>
             
             {/* Masterpiece Insights */}
-            {poseAnalysis?.proportions && userStats?.height && currentItem && (
-              <div className="mt-4 pt-3 border-t border-border-color/30 space-y-2">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs">✨</span>
-                  <span className="text-[0.65rem] font-bold text-pure-white uppercase tracking-wider italic">Masterpiece Fit Insight</span>
-                </div>
-                {calculateRecommendedSize(
-                  poseAnalysis.proportions,
-                  userStats.height,
-                  currentItem.brand,
-                  currentItem.category,
-                  clothingAnalysis
-                ).fitNotes.map((note, idx) => (
-                  <p key={idx} className="text-[0.65rem] text-soft-gray bg-void-black/40 px-2 py-1 rounded border-l-2 border-cyber-lime/50">
-                    {note}
-                  </p>
-                ))}
+            {masterpieceFitData && (
+              <div className="mt-4 pt-3 border-t border-border-color/30">
+                 <FitConsultant
+                   recommendedSize={masterpieceFitData.recommendedSize}
+                   fitNotes={masterpieceFitData.fitNotes}
+                   heatmapData={masterpieceFitData.heatmapData || []}
+                   confidence={masterpieceFitData.confidence}
+                 />
               </div>
             )}
             {/* AI Stylist Recommendations */}
@@ -1865,6 +1885,7 @@ export function FittingRoom() {
         result={aiTryOnResult}
         error={aiTryOnError}
         onGenerateTryOn={handleGenerateAITryOn}
+        heatmapData={masterpieceFitData?.heatmapData || []}
       />
     </div>
   );
