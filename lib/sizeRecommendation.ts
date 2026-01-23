@@ -110,7 +110,7 @@ export function calculateRecommendedSize(
 
   // Adjustments based on clothing analysis (material, fit type)
   let targetChest = measurements.chestCircumference;
-  let targetShoulder = measurements.shoulderWidth;
+  const targetShoulder = measurements.shoulderWidth;
 
   // Phase 3: Material Stretch awareness
   if (clothingAnalysis?.stretchFactor) {

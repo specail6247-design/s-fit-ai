@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateVirtualTryOn } from '@/lib/virtualTryOn';
-import fs from 'fs';
-import path from 'path';
+
+// Config for Vercel Edge Runtime
+export const runtime = 'edge';
+export const maxDuration = 60;
 
 // Helper to convert data URI to Buffer
 function dataUriToBuffer(dataUri: string): Buffer {
@@ -23,42 +25,32 @@ export async function POST(request: NextRequest) {
     }
 
     // Process User Photo
-    let userPhotoBuffer: Buffer | string = userPhotoUrl;
+    let userPhotoInput: Buffer | string = userPhotoUrl;
     if (typeof userPhotoUrl === 'string' && userPhotoUrl.startsWith('data:')) {
       // Convert Data URI to Buffer
-      userPhotoBuffer = dataUriToBuffer(userPhotoUrl);
+      userPhotoInput = dataUriToBuffer(userPhotoUrl);
     }
 
     // Process Garment Image
-    let garmentImageBuffer: Buffer | string = garmentImageUrl;
-    if (typeof garmentImageUrl === 'string' && garmentImageUrl.startsWith('/')) {
-      // Local file in public directory - resolve to absolute path
-      const filePath = path.join(process.cwd(), 'public', garmentImageUrl);
-      try {
-        if (fs.existsSync(filePath)) {
-          garmentImageBuffer = fs.readFileSync(filePath);
-        } else {
-          console.error(`Garment file not found at ${filePath}`);
-          return NextResponse.json(
-            { error: 'Garment image file not found' },
-            { status: 404 }
-          );
+    let garmentImageInput: Buffer | string = garmentImageUrl;
+
+    if (typeof garmentImageUrl === 'string') {
+        if (garmentImageUrl.startsWith('/')) {
+             // Local file in public directory - resolve to absolute URL
+             // Note: In Edge Runtime we cannot use fs, so we provide the URL
+             // for Replicate to fetch.
+             const appUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin;
+             const baseUrl = appUrl.endsWith('/') ? appUrl.slice(0, -1) : appUrl;
+             garmentImageInput = `${baseUrl}${garmentImageUrl}`;
+        } else if (garmentImageUrl.startsWith('data:')) {
+             garmentImageInput = dataUriToBuffer(garmentImageUrl);
         }
-      } catch (err) {
-        console.error('Error reading garment file:', err);
-        return NextResponse.json(
-          { error: 'Failed to read garment file' },
-          { status: 500 }
-        );
-      }
-    } else if (typeof garmentImageUrl === 'string' && garmentImageUrl.startsWith('data:')) {
-       garmentImageBuffer = dataUriToBuffer(garmentImageUrl);
     }
 
     // Call Replicate API
     const result = await generateVirtualTryOn({
-      userPhoto: userPhotoBuffer,
-      garmentImage: garmentImageBuffer,
+      userPhoto: userPhotoInput,
+      garmentImage: garmentImageInput,
       category: category || 'upper_body'
     });
 
@@ -81,6 +73,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-// Config for Vercel
-export const maxDuration = 60;
