@@ -16,7 +16,8 @@ except ImportError:
 
 from config import (
     HEADLESS, VIEWPORT, DEFAULT_TIMEOUT, RETRY_COUNT, RETRY_DELAY,
-    REQUEST_DELAY_MIN, REQUEST_DELAY_MAX, DATA_DIR, KRW_TO_USD_RATE
+    REQUEST_DELAY_MIN, REQUEST_DELAY_MAX, DATA_DIR, KRW_TO_USD_RATE,
+    MIN_IMAGE_RESOLUTION
 )
 
 class BaseScraper(ABC):
@@ -98,6 +99,28 @@ class BaseScraper(ABC):
         delay = random.uniform(REQUEST_DELAY_MIN, REQUEST_DELAY_MAX)
         await asyncio.sleep(delay)
 
+    async def validate_image_quality(self, page: Page, image_selector: str) -> bool:
+        """Check if image meets quality standards"""
+        try:
+            # Check natural dimensions
+            dimensions = await page.evaluate(f'''(selector) => {{
+                const img = document.querySelector(selector);
+                if (!img) return null;
+                return {{ width: img.naturalWidth, height: img.naturalHeight }};
+            }}''', image_selector)
+
+            if not dimensions:
+                return False
+
+            if dimensions['width'] < MIN_IMAGE_RESOLUTION and dimensions['height'] < MIN_IMAGE_RESOLUTION:
+                print(f"   ⚠️ Image quality low: {dimensions['width']}x{dimensions['height']}")
+                return False
+
+            return True
+        except Exception as e:
+            print(f"   ⚠️ Image validation failed: {e}")
+            return False
+
     @abstractmethod
     def get_category_url(self, category: str) -> Optional[str]:
         """Return URL for the given category"""
@@ -149,6 +172,17 @@ class BaseScraper(ABC):
     def map_category(self, category: str) -> str:
         """Map generic category to standardized format"""
         cat_lower = category.lower()
+
+        # Accessories
+        if any(x in cat_lower for x in ["bag", "handbag", "purse"]):
+            return "accessories-bags"
+        elif any(x in cat_lower for x in ["jewelry", "necklace", "ring", "earring"]):
+            return "accessories-jewelry"
+        elif any(x in cat_lower for x in ["hat", "cap", "beanie"]):
+            return "accessories-hats"
+        elif any(x in cat_lower for x in ["scarf", "muffler"]):
+            return "accessories-scarves"
+
         if "top" in cat_lower or "shirt" in cat_lower:
             return "tops"
         elif "dress" in cat_lower:
