@@ -1,3 +1,4 @@
 playwright==1.55.0
 fake-useragent==2.2.0
 imageio==2.37.2
+aiohttp==3.9.5
