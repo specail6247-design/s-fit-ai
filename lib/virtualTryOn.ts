@@ -7,6 +7,8 @@ export interface TryOnRequest {
   userPhoto: string;      // URL or data URI
   garmentImage: string;   // URL or data URI
   category?: 'upper_body' | 'lower_body' | 'dresses';
+  description?: string;   // Description of the garment for better generation
+  quality?: 'standard' | 'high'; // 'high' uses more steps
 }
 
 export interface TryOnResult {
@@ -79,10 +81,10 @@ export async function generateVirtualTryOn(request: TryOnRequest): Promise<TryOn
         input: {
           human_img: request.userPhoto,
           garm_img: request.garmentImage,
-          garment_des: 'A clothing item',
+          garment_des: request.description || 'A clothing item',
           is_checked: true,
           is_checked_crop: false,
-          denoise_steps: 30,
+          denoise_steps: request.quality === 'high' ? 50 : 30,
           seed: 42,
           category: request.category || 'upper_body'
         }
