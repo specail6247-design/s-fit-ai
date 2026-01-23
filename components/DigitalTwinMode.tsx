@@ -68,11 +68,42 @@ export function DigitalTwinMode({ onComplete }: DigitalTwinModeProps) {
       setPoseResult(null);
 
       try {
+        // 1. Run MediaPipe (Fast, Client-side)
         const result = await analyzePose(dataUrl);
+
+        // 2. Run HMR 2.0 3D Scan (Server-side)
+        try {
+          // Convert DataURL to Blob
+          const res = await fetch(dataUrl);
+          const blob = await res.blob();
+          const formData = new FormData();
+          formData.append('image', blob, 'body-scan.jpg');
+
+          const hmrResponse = await fetch('/api/scan-body', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (hmrResponse.ok) {
+            const hmrData = await hmrResponse.json();
+            if (hmrData.success && hmrData.measurements && result.proportions) {
+              // Merge HMR measurements into the proportions
+              result.proportions = {
+                ...result.proportions,
+                ...hmrData.measurements
+              };
+              result.note = (result.note || '') + ' • 3D Scan Active';
+            }
+          }
+        } catch (e) {
+          console.warn('HMR 3D Scan failed, using 2D estimation only:', e);
+        }
+
         setPoseResult(result);
         setStoredPoseAnalysis(result);
         setPoseStatus('ready');
-      } catch {
+      } catch (e) {
+        console.error(e);
         setPoseStatus('error');
         setPoseError('MediaPipe pose analysis failed.');
         setStoredPoseAnalysis(null);
