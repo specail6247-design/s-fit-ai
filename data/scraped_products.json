@@ -1,17 +1,64 @@
 {
-  "generatedAt": "2026-01-22T16:17:13.768396",
-  "totalCount": 50,
+  "generatedAt": "2026-01-23T03:09:36.388271",
+  "totalCount": 31,
   "products": [
     {
-      "id": "gap-001",
-      "name": "Classic Logo Hoodie",
-      "brand": "GAP",
+      "id": "zara-women-tops-1",
+      "name": "Oversized Shirt",
+      "brand": "ZARA",
+      "category": "tops",
+      "price": 29.9,
+      "currency": "USD",
+      "imageUrl": "https://placehold.co/600x800?text=ZARA+tops+1",
+      "productUrl": "https://www.zara.com/mock-1",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "colors": [
+        "Black",
+        "White",
+        "Navy"
+      ],
+      "isLuxury": false,
+      "scrapedAt": "2026-01-23T03:08:33.867507"
+    },
+    {
+      "id": "zara-women-dresses-1",
+      "name": "Pleated Midi Dress",
+      "brand": "ZARA",
+      "category": "dresses",
+      "price": 29.9,
+      "currency": "USD",
+      "imageUrl": "https://placehold.co/600x800?text=ZARA+dresses+1",
+      "productUrl": "https://www.zara.com/mock-1",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "colors": [
+        "Black",
+        "White",
+        "Navy"
+      ],
+      "isLuxury": false,
+      "scrapedAt": "2026-01-23T03:08:35.869149"
+    },
+    {
+      "id": "zara-women-outerwear-1",
+      "name": "Oversized Blazer",
+      "brand": "ZARA",
       "category": "outerwear",
-      "price": 49.95,
+      "price": 29.9,
       "currency": "USD",
-      "imageUrl": "/clothing/gap_hoodie.png",
-      "textureUrl": "/clothing/gap_hoodie.png",
-      "isLuxury": false,
+      "imageUrl": "https://placehold.co/600x800?text=ZARA+outerwear+1",
+      "productUrl": "https://www.zara.com/mock-1",
       "sizes": [
         "XS",
         "S",
@@ -22,74 +69,20 @@
       "colors": [
         "Black",
         "White",
-        "Navy",
-        "Beige"
+        "Navy"
       ],
-      "description": "High-quality Classic Logo Hoodie from GAP. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.765951"
-    },
-    {
-      "id": "gap-002",
-      "name": "1969 Denim Shirt",
-      "brand": "GAP",
-      "category": "tops",
-      "price": 59.95,
-      "currency": "USD",
-      "imageUrl": "/clothing/gap_shirt.png",
-      "textureUrl": "/clothing/gap_shirt.png",
       "isLuxury": false,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality 1969 Denim Shirt from GAP. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.765976"
+      "scrapedAt": "2026-01-23T03:08:37.871528"
     },
     {
-      "id": "gap-003",
-      "name": "Vintage Soft Tee",
-      "brand": "GAP",
-      "category": "tops",
-      "price": 29.95,
-      "currency": "USD",
-      "imageUrl": "/clothing/gap_hoodie.png",
-      "textureUrl": "/clothing/gap_hoodie.png",
-      "isLuxury": false,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Vintage Soft Tee from GAP. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.765983"
-    },
-    {
-      "id": "gap-004",
-      "name": "Modern Khaki Pants",
-      "brand": "GAP",
+      "id": "zara-women-bottoms-1",
+      "name": "Wide Leg Pants",
+      "brand": "ZARA",
       "category": "bottoms",
-      "price": 69.95,
+      "price": 29.9,
       "currency": "USD",
-      "imageUrl": "/clothing/gap_shirt.png",
-      "textureUrl": "/clothing/gap_shirt.png",
-      "isLuxury": false,
+      "imageUrl": "https://placehold.co/600x800?text=ZARA+bottoms+1",
+      "productUrl": "https://www.zara.com/mock-1",
       "sizes": [
         "XS",
         "S",
@@ -100,178 +93,20 @@
       "colors": [
         "Black",
         "White",
-        "Navy",
-        "Beige"
+        "Navy"
       ],
-      "description": "High-quality Modern Khaki Pants from GAP. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766052"
-    },
-    {
-      "id": "gap-005",
-      "name": "GapBody Joggers",
-      "brand": "GAP",
-      "category": "outerwear",
-      "price": 39.95,
-      "currency": "USD",
-      "imageUrl": "/clothing/gap_hoodie.png",
-      "textureUrl": "/clothing/gap_hoodie.png",
       "isLuxury": false,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality GapBody Joggers from GAP. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766060"
+      "scrapedAt": "2026-01-23T03:08:39.873857"
     },
     {
-      "id": "gap-006",
-      "name": "Classic Logo Hoodie",
-      "brand": "GAP",
-      "category": "outerwear",
-      "price": 49.95,
-      "currency": "USD",
-      "imageUrl": "/clothing/gap_shirt.png",
-      "textureUrl": "/clothing/gap_shirt.png",
-      "isLuxury": false,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Classic Logo Hoodie from GAP. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766066"
-    },
-    {
-      "id": "gap-007",
-      "name": "1969 Denim Shirt",
-      "brand": "GAP",
-      "category": "tops",
-      "price": 59.95,
-      "currency": "USD",
-      "imageUrl": "/clothing/gap_hoodie.png",
-      "textureUrl": "/clothing/gap_hoodie.png",
-      "isLuxury": false,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality 1969 Denim Shirt from GAP. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766070"
-    },
-    {
-      "id": "gap-008",
-      "name": "Vintage Soft Tee",
-      "brand": "GAP",
-      "category": "tops",
-      "price": 29.95,
-      "currency": "USD",
-      "imageUrl": "/clothing/gap_shirt.png",
-      "textureUrl": "/clothing/gap_shirt.png",
-      "isLuxury": false,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Vintage Soft Tee from GAP. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766075"
-    },
-    {
-      "id": "gap-009",
-      "name": "Modern Khaki Pants",
-      "brand": "GAP",
-      "category": "bottoms",
-      "price": 69.95,
-      "currency": "USD",
-      "imageUrl": "/clothing/gap_hoodie.png",
-      "textureUrl": "/clothing/gap_hoodie.png",
-      "isLuxury": false,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Modern Khaki Pants from GAP. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766080"
-    },
-    {
-      "id": "gap-010",
-      "name": "GapBody Joggers",
-      "brand": "GAP",
-      "category": "outerwear",
-      "price": 39.95,
-      "currency": "USD",
-      "imageUrl": "/clothing/gap_shirt.png",
-      "textureUrl": "/clothing/gap_shirt.png",
-      "isLuxury": false,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality GapBody Joggers from GAP. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766084"
-    },
-    {
-      "id": "hm-001",
+      "id": "hm-women-tops-1",
       "name": "Oversized Cotton Shirt",
       "brand": "HM",
       "category": "tops",
       "price": 24.99,
       "currency": "USD",
-      "imageUrl": "/clothing/hm_shirt.png",
-      "textureUrl": "/clothing/hm_shirt.png",
-      "isLuxury": false,
+      "imageUrl": "https://placehold.co/600x800?text=HM+tops+1",
+      "productUrl": "https://www2.hm.com/mock-1",
       "sizes": [
         "XS",
         "S",
@@ -281,127 +116,21 @@
       ],
       "colors": [
         "Black",
-        "White",
-        "Navy",
-        "Beige"
+        "Beige",
+        "Blue"
       ],
-      "description": "High-quality Oversized Cotton Shirt from HM. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766109"
-    },
-    {
-      "id": "hm-002",
-      "name": "Ribbed Tank Top",
-      "brand": "HM",
-      "category": "tops",
-      "price": 9.99,
-      "currency": "USD",
-      "imageUrl": "/clothing/hm_jeans.png",
-      "textureUrl": "/clothing/hm_jeans.png",
       "isLuxury": false,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Ribbed Tank Top from HM. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766114"
+      "scrapedAt": "2026-01-23T03:08:41.942463"
     },
     {
-      "id": "hm-003",
-      "name": "Wide High Jeans",
-      "brand": "HM",
-      "category": "bottoms",
-      "price": 39.99,
-      "currency": "USD",
-      "imageUrl": "/clothing/hm_shirt.png",
-      "textureUrl": "/clothing/hm_shirt.png",
-      "isLuxury": false,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Wide High Jeans from HM. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766152"
-    },
-    {
-      "id": "hm-004",
-      "name": "Linen Blend Blazer",
-      "brand": "HM",
-      "category": "outerwear",
-      "price": 49.99,
-      "currency": "USD",
-      "imageUrl": "/clothing/hm_jeans.png",
-      "textureUrl": "/clothing/hm_jeans.png",
-      "isLuxury": false,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Linen Blend Blazer from HM. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766197"
-    },
-    {
-      "id": "hm-005",
-      "name": "Satin Slip Dress",
+      "id": "hm-women-dresses-1",
+      "name": "Ribbed Knit Dress",
       "brand": "HM",
       "category": "dresses",
-      "price": 29.99,
-      "currency": "USD",
-      "imageUrl": "/clothing/hm_shirt.png",
-      "textureUrl": "/clothing/hm_shirt.png",
-      "isLuxury": false,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Satin Slip Dress from HM. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766204"
-    },
-    {
-      "id": "hm-006",
-      "name": "Oversized Cotton Shirt",
-      "brand": "HM",
-      "category": "tops",
       "price": 24.99,
       "currency": "USD",
-      "imageUrl": "/clothing/hm_jeans.png",
-      "textureUrl": "/clothing/hm_jeans.png",
-      "isLuxury": false,
+      "imageUrl": "https://placehold.co/600x800?text=HM+dresses+1",
+      "productUrl": "https://www2.hm.com/mock-1",
       "sizes": [
         "XS",
         "S",
@@ -411,23 +140,21 @@
       ],
       "colors": [
         "Black",
-        "White",
-        "Navy",
-        "Beige"
+        "Beige",
+        "Blue"
       ],
-      "description": "High-quality Oversized Cotton Shirt from HM. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766208"
+      "isLuxury": false,
+      "scrapedAt": "2026-01-23T03:08:43.944857"
     },
     {
-      "id": "hm-007",
-      "name": "Ribbed Tank Top",
+      "id": "hm-women-outerwear-1",
+      "name": "Single-breasted Jacket",
       "brand": "HM",
-      "category": "tops",
-      "price": 9.99,
+      "category": "outerwear",
+      "price": 24.99,
       "currency": "USD",
-      "imageUrl": "/clothing/hm_shirt.png",
-      "textureUrl": "/clothing/hm_shirt.png",
-      "isLuxury": false,
+      "imageUrl": "https://placehold.co/600x800?text=HM+outerwear+1",
+      "productUrl": "https://www2.hm.com/mock-1",
       "sizes": [
         "XS",
         "S",
@@ -437,361 +164,45 @@
       ],
       "colors": [
         "Black",
-        "White",
-        "Navy",
-        "Beige"
+        "Beige",
+        "Blue"
       ],
-      "description": "High-quality Ribbed Tank Top from HM. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766212"
+      "isLuxury": false,
+      "scrapedAt": "2026-01-23T03:08:45.947325"
     },
     {
-      "id": "hm-008",
+      "id": "hm-women-bottoms-1",
       "name": "Wide High Jeans",
       "brand": "HM",
       "category": "bottoms",
-      "price": 39.99,
+      "price": 24.99,
       "currency": "USD",
-      "imageUrl": "/clothing/hm_jeans.png",
-      "textureUrl": "/clothing/hm_jeans.png",
+      "imageUrl": "https://placehold.co/600x800?text=HM+bottoms+1",
+      "productUrl": "https://www2.hm.com/mock-1",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "colors": [
+        "Black",
+        "Beige",
+        "Blue"
+      ],
       "isLuxury": false,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Wide High Jeans from HM. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766217"
+      "scrapedAt": "2026-01-23T03:08:47.949143"
     },
     {
-      "id": "hm-009",
-      "name": "Linen Blend Blazer",
-      "brand": "HM",
-      "category": "outerwear",
-      "price": 49.99,
-      "currency": "USD",
-      "imageUrl": "/clothing/hm_shirt.png",
-      "textureUrl": "/clothing/hm_shirt.png",
-      "isLuxury": false,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Linen Blend Blazer from HM. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766221"
-    },
-    {
-      "id": "hm-010",
-      "name": "Satin Slip Dress",
-      "brand": "HM",
-      "category": "dresses",
-      "price": 29.99,
-      "currency": "USD",
-      "imageUrl": "/clothing/hm_jeans.png",
-      "textureUrl": "/clothing/hm_jeans.png",
-      "isLuxury": false,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Satin Slip Dress from HM. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766272"
-    },
-    {
-      "id": "md-001",
-      "name": "100% Linen Shirt",
-      "brand": "MassimoDutti",
-      "category": "tops",
-      "price": 89.9,
-      "currency": "USD",
-      "imageUrl": "/clothing/md_linen.png",
-      "textureUrl": "/clothing/md_linen.png",
-      "isLuxury": true,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality 100% Linen Shirt from MassimoDutti. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766295"
-    },
-    {
-      "id": "md-002",
-      "name": "Nappa Leather Jacket",
-      "brand": "MassimoDutti",
-      "category": "outerwear",
-      "price": 349.0,
-      "currency": "USD",
-      "imageUrl": "/clothing/md_leather.png",
-      "textureUrl": "/clothing/md_leather.png",
-      "isLuxury": true,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Nappa Leather Jacket from MassimoDutti. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766301"
-    },
-    {
-      "id": "md-003",
-      "name": "Slim Fit Wool Trousers",
-      "brand": "MassimoDutti",
-      "category": "outerwear",
-      "price": 129.0,
-      "currency": "USD",
-      "imageUrl": "/clothing/md_linen.png",
-      "textureUrl": "/clothing/md_linen.png",
-      "isLuxury": true,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Slim Fit Wool Trousers from MassimoDutti. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766305"
-    },
-    {
-      "id": "md-004",
-      "name": "Silk Mulberry Dress",
-      "brand": "MassimoDutti",
-      "category": "dresses",
-      "price": 199.0,
-      "currency": "USD",
-      "imageUrl": "/clothing/md_leather.png",
-      "textureUrl": "/clothing/md_leather.png",
-      "isLuxury": true,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Silk Mulberry Dress from MassimoDutti. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766348"
-    },
-    {
-      "id": "md-005",
-      "name": "Cashmere Sweater",
-      "brand": "MassimoDutti",
-      "category": "outerwear",
-      "price": 159.0,
-      "currency": "USD",
-      "imageUrl": "/clothing/md_linen.png",
-      "textureUrl": "/clothing/md_linen.png",
-      "isLuxury": true,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Cashmere Sweater from MassimoDutti. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766354"
-    },
-    {
-      "id": "md-006",
-      "name": "100% Linen Shirt",
-      "brand": "MassimoDutti",
-      "category": "tops",
-      "price": 89.9,
-      "currency": "USD",
-      "imageUrl": "/clothing/md_leather.png",
-      "textureUrl": "/clothing/md_leather.png",
-      "isLuxury": true,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality 100% Linen Shirt from MassimoDutti. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766359"
-    },
-    {
-      "id": "md-007",
-      "name": "Nappa Leather Jacket",
-      "brand": "MassimoDutti",
-      "category": "outerwear",
-      "price": 349.0,
-      "currency": "USD",
-      "imageUrl": "/clothing/md_linen.png",
-      "textureUrl": "/clothing/md_linen.png",
-      "isLuxury": true,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Nappa Leather Jacket from MassimoDutti. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766456"
-    },
-    {
-      "id": "md-008",
-      "name": "Slim Fit Wool Trousers",
-      "brand": "MassimoDutti",
-      "category": "outerwear",
-      "price": 129.0,
-      "currency": "USD",
-      "imageUrl": "/clothing/md_leather.png",
-      "textureUrl": "/clothing/md_leather.png",
-      "isLuxury": true,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Slim Fit Wool Trousers from MassimoDutti. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766473"
-    },
-    {
-      "id": "md-009",
-      "name": "Silk Mulberry Dress",
-      "brand": "MassimoDutti",
-      "category": "dresses",
-      "price": 199.0,
-      "currency": "USD",
-      "imageUrl": "/clothing/md_linen.png",
-      "textureUrl": "/clothing/md_linen.png",
-      "isLuxury": true,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Silk Mulberry Dress from MassimoDutti. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766478"
-    },
-    {
-      "id": "md-010",
-      "name": "Cashmere Sweater",
-      "brand": "MassimoDutti",
-      "category": "outerwear",
-      "price": 159.0,
-      "currency": "USD",
-      "imageUrl": "/clothing/md_leather.png",
-      "textureUrl": "/clothing/md_leather.png",
-      "isLuxury": true,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Cashmere Sweater from MassimoDutti. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766483"
-    },
-    {
-      "id": "topten-001",
-      "name": "Cool Air T-Shirt",
-      "brand": "Topten",
+      "id": "uniqlo-women-tops-1",
+      "name": "Airism Cotton Tee",
+      "brand": "Uniqlo",
       "category": "tops",
       "price": 19.9,
       "currency": "USD",
-      "imageUrl": "/clothing/topten_tee.png",
-      "textureUrl": "/clothing/topten_tee.png",
-      "isLuxury": false,
+      "imageUrl": "https://placehold.co/600x800?text=UNIQLO+tops+1",
+      "productUrl": "https://www.uniqlo.com/mock-1",
       "sizes": [
         "XS",
         "S",
@@ -802,22 +213,68 @@
       "colors": [
         "Black",
         "White",
-        "Navy",
-        "Beige"
+        "Gray"
       ],
-      "description": "High-quality Cool Air T-Shirt from Topten. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766508"
+      "isLuxury": false,
+      "scrapedAt": "2026-01-23T03:08:50.017574"
     },
     {
-      "id": "topten-002",
-      "name": "Smart Casual Slacks",
-      "brand": "Topten",
+      "id": "uniqlo-women-dresses-1",
+      "name": "Mercerized Cotton Dress",
+      "brand": "Uniqlo",
+      "category": "dresses",
+      "price": 19.9,
+      "currency": "USD",
+      "imageUrl": "https://placehold.co/600x800?text=UNIQLO+dresses+1",
+      "productUrl": "https://www.uniqlo.com/mock-1",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "colors": [
+        "Black",
+        "White",
+        "Gray"
+      ],
+      "isLuxury": false,
+      "scrapedAt": "2026-01-23T03:08:52.019875"
+    },
+    {
+      "id": "uniqlo-women-outerwear-1",
+      "name": "Ultra Light Down",
+      "brand": "Uniqlo",
+      "category": "outerwear",
+      "price": 19.9,
+      "currency": "USD",
+      "imageUrl": "https://placehold.co/600x800?text=UNIQLO+outerwear+1",
+      "productUrl": "https://www.uniqlo.com/mock-1",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "colors": [
+        "Black",
+        "White",
+        "Gray"
+      ],
+      "isLuxury": false,
+      "scrapedAt": "2026-01-23T03:08:54.022216"
+    },
+    {
+      "id": "uniqlo-women-bottoms-1",
+      "name": "Easy Ankle Pants",
+      "brand": "Uniqlo",
       "category": "bottoms",
-      "price": 39.9,
+      "price": 19.9,
       "currency": "USD",
-      "imageUrl": "/clothing/topten_slacks.png",
-      "textureUrl": "/clothing/topten_slacks.png",
-      "isLuxury": false,
+      "imageUrl": "https://placehold.co/600x800?text=UNIQLO+bottoms+1",
+      "productUrl": "https://www.uniqlo.com/mock-1",
       "sizes": [
         "XS",
         "S",
@@ -828,22 +285,20 @@
       "colors": [
         "Black",
         "White",
-        "Navy",
-        "Beige"
+        "Gray"
       ],
-      "description": "High-quality Smart Casual Slacks from Topten. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766513"
+      "isLuxury": false,
+      "scrapedAt": "2026-01-23T03:08:56.024405"
     },
     {
-      "id": "topten-003",
-      "name": "Oxford Shirt",
-      "brand": "Topten",
+      "id": "gap-women-tops-1",
+      "name": "Modern Crewneck T-Shirt",
+      "brand": "GAP",
       "category": "tops",
-      "price": 29.9,
+      "price": 39.95,
       "currency": "USD",
-      "imageUrl": "/clothing/topten_tee.png",
-      "textureUrl": "/clothing/topten_tee.png",
-      "isLuxury": false,
+      "imageUrl": "https://placehold.co/600x800?text=GAP+tops+1",
+      "productUrl": "https://www.gap.com/mock-1",
       "sizes": [
         "XS",
         "S",
@@ -852,24 +307,46 @@
         "XL"
       ],
       "colors": [
-        "Black",
-        "White",
         "Navy",
-        "Beige"
+        "White",
+        "Grey"
       ],
-      "description": "High-quality Oxford Shirt from Topten. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766517"
+      "isLuxury": false,
+      "scrapedAt": "2026-01-23T03:08:58.090973"
     },
     {
-      "id": "topten-004",
-      "name": "Basic Fleece Zip-up",
-      "brand": "Topten",
+      "id": "gap-women-dresses-1",
+      "name": "Tiered Midi Dress",
+      "brand": "GAP",
+      "category": "dresses",
+      "price": 39.95,
+      "currency": "USD",
+      "imageUrl": "https://placehold.co/600x800?text=GAP+dresses+1",
+      "productUrl": "https://www.gap.com/mock-1",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "colors": [
+        "Navy",
+        "White",
+        "Grey"
+      ],
+      "isLuxury": false,
+      "scrapedAt": "2026-01-23T03:09:00.093367"
+    },
+    {
+      "id": "gap-women-outerwear-1",
+      "name": "Icon Denim Jacket",
+      "brand": "GAP",
       "category": "outerwear",
-      "price": 25.9,
+      "price": 39.95,
       "currency": "USD",
-      "imageUrl": "/clothing/topten_slacks.png",
-      "textureUrl": "/clothing/topten_slacks.png",
-      "isLuxury": false,
+      "imageUrl": "https://placehold.co/600x800?text=GAP+outerwear+1",
+      "productUrl": "https://www.gap.com/mock-1",
       "sizes": [
         "XS",
         "S",
@@ -878,429 +355,381 @@
         "XL"
       ],
       "colors": [
-        "Black",
-        "White",
         "Navy",
-        "Beige"
+        "White",
+        "Grey"
       ],
-      "description": "High-quality Basic Fleece Zip-up from Topten. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766606"
+      "isLuxury": false,
+      "scrapedAt": "2026-01-23T03:09:02.095634"
     },
     {
-      "id": "topten-005",
-      "name": "Light Down Vest",
-      "brand": "Topten",
+      "id": "gap-women-bottoms-1",
+      "name": "90s Loose Jeans",
+      "brand": "GAP",
+      "category": "bottoms",
+      "price": 39.95,
+      "currency": "USD",
+      "imageUrl": "https://placehold.co/600x800?text=GAP+bottoms+1",
+      "productUrl": "https://www.gap.com/mock-1",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "colors": [
+        "Navy",
+        "White",
+        "Grey"
+      ],
+      "isLuxury": false,
+      "scrapedAt": "2026-01-23T03:09:04.098006"
+    },
+    {
+      "id": "md-women-tops-1",
+      "name": "100% Linen Shirt",
+      "brand": "Massimo Dutti",
+      "category": "tops",
+      "price": 89.9,
+      "currency": "USD",
+      "imageUrl": "https://placehold.co/600x800?text=MD+tops+1",
+      "productUrl": "https://www.massimodutti.com/mock-1",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L"
+      ],
+      "colors": [
+        "Beige",
+        "White",
+        "Navy"
+      ],
+      "isLuxury": true,
+      "scrapedAt": "2026-01-23T03:09:06.164537"
+    },
+    {
+      "id": "md-women-dresses-1",
+      "name": "Linen Midi Dress",
+      "brand": "Massimo Dutti",
+      "category": "dresses",
+      "price": 89.9,
+      "currency": "USD",
+      "imageUrl": "https://placehold.co/600x800?text=MD+dresses+1",
+      "productUrl": "https://www.massimodutti.com/mock-1",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L"
+      ],
+      "colors": [
+        "Beige",
+        "White",
+        "Navy"
+      ],
+      "isLuxury": true,
+      "scrapedAt": "2026-01-23T03:09:08.166702"
+    },
+    {
+      "id": "md-women-outerwear-1",
+      "name": "Nappa Leather Jacket",
+      "brand": "Massimo Dutti",
       "category": "outerwear",
-      "price": 49.9,
+      "price": 89.9,
       "currency": "USD",
-      "imageUrl": "/clothing/topten_tee.png",
-      "textureUrl": "/clothing/topten_tee.png",
-      "isLuxury": false,
+      "imageUrl": "https://placehold.co/600x800?text=MD+outerwear+1",
+      "productUrl": "https://www.massimodutti.com/mock-1",
       "sizes": [
         "XS",
         "S",
         "M",
-        "L",
-        "XL"
+        "L"
+      ],
+      "colors": [
+        "Beige",
+        "White",
+        "Navy"
+      ],
+      "isLuxury": true,
+      "scrapedAt": "2026-01-23T03:09:10.169040"
+    },
+    {
+      "id": "md-women-bottoms-1",
+      "name": "Linen Trousers",
+      "brand": "Massimo Dutti",
+      "category": "bottoms",
+      "price": 89.9,
+      "currency": "USD",
+      "imageUrl": "https://placehold.co/600x800?text=MD+bottoms+1",
+      "productUrl": "https://www.massimodutti.com/mock-1",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L"
+      ],
+      "colors": [
+        "Beige",
+        "White",
+        "Navy"
+      ],
+      "isLuxury": true,
+      "scrapedAt": "2026-01-23T03:09:12.171342"
+    },
+    {
+      "id": "cos-women-tops-1",
+      "name": "Oversized T-Shirt",
+      "brand": "COS",
+      "category": "tops",
+      "price": 69.0,
+      "currency": "USD",
+      "imageUrl": "https://placehold.co/600x800?text=COS+tops+1",
+      "productUrl": "https://www.cos.com/mock-1",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L"
       ],
       "colors": [
         "Black",
         "White",
-        "Navy",
-        "Beige"
+        "Navy"
       ],
-      "description": "High-quality Light Down Vest from Topten. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766614"
+      "isLuxury": false,
+      "scrapedAt": "2026-01-23T03:09:14.236218"
     },
     {
-      "id": "topten-006",
+      "id": "cos-women-dresses-1",
+      "name": "Volume Midi Dress",
+      "brand": "COS",
+      "category": "dresses",
+      "price": 69.0,
+      "currency": "USD",
+      "imageUrl": "https://placehold.co/600x800?text=COS+dresses+1",
+      "productUrl": "https://www.cos.com/mock-1",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L"
+      ],
+      "colors": [
+        "Black",
+        "White",
+        "Navy"
+      ],
+      "isLuxury": false,
+      "scrapedAt": "2026-01-23T03:09:16.238496"
+    },
+    {
+      "id": "cos-women-outerwear-1",
+      "name": "Wool Coat",
+      "brand": "COS",
+      "category": "outerwear",
+      "price": 69.0,
+      "currency": "USD",
+      "imageUrl": "https://placehold.co/600x800?text=COS+outerwear+1",
+      "productUrl": "https://www.cos.com/mock-1",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L"
+      ],
+      "colors": [
+        "Black",
+        "White",
+        "Navy"
+      ],
+      "isLuxury": false,
+      "scrapedAt": "2026-01-23T03:09:18.240823"
+    },
+    {
+      "id": "cos-women-bottoms-1",
+      "name": "Wide-Leg Trousers",
+      "brand": "COS",
+      "category": "bottoms",
+      "price": 69.0,
+      "currency": "USD",
+      "imageUrl": "https://placehold.co/600x800?text=COS+bottoms+1",
+      "productUrl": "https://www.cos.com/mock-1",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L"
+      ],
+      "colors": [
+        "Black",
+        "White",
+        "Navy"
+      ],
+      "isLuxury": false,
+      "scrapedAt": "2026-01-23T03:09:20.243210"
+    },
+    {
+      "id": "topten-women-tops-1",
       "name": "Cool Air T-Shirt",
-      "brand": "Topten",
+      "brand": "TOPTEN",
       "category": "tops",
       "price": 19.9,
       "currency": "USD",
-      "imageUrl": "/clothing/topten_slacks.png",
-      "textureUrl": "/clothing/topten_slacks.png",
-      "isLuxury": false,
+      "imageUrl": "https://placehold.co/600x800?text=TOPTEN+tops+1",
+      "productUrl": "https://topten.topten10mall.com/mock-1",
       "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
+        "90",
+        "95",
+        "100",
+        "105"
       ],
       "colors": [
         "Black",
         "White",
-        "Navy",
-        "Beige"
+        "Grey"
       ],
-      "description": "High-quality Cool Air T-Shirt from Topten. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766619"
+      "isLuxury": false,
+      "scrapedAt": "2026-01-23T03:09:22.307116"
     },
     {
-      "id": "topten-007",
-      "name": "Smart Casual Slacks",
-      "brand": "Topten",
-      "category": "bottoms",
-      "price": 39.9,
+      "id": "topten-women-dresses-1",
+      "name": "Pique Dress",
+      "brand": "TOPTEN",
+      "category": "dresses",
+      "price": 19.9,
       "currency": "USD",
-      "imageUrl": "/clothing/topten_tee.png",
-      "textureUrl": "/clothing/topten_tee.png",
-      "isLuxury": false,
+      "imageUrl": "https://placehold.co/600x800?text=TOPTEN+dresses+1",
+      "productUrl": "https://topten.topten10mall.com/mock-1",
       "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
+        "90",
+        "95",
+        "100",
+        "105"
       ],
       "colors": [
         "Black",
         "White",
-        "Navy",
-        "Beige"
+        "Grey"
       ],
-      "description": "High-quality Smart Casual Slacks from Topten. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766623"
-    },
-    {
-      "id": "topten-008",
-      "name": "Oxford Shirt",
-      "brand": "Topten",
-      "category": "tops",
-      "price": 29.9,
-      "currency": "USD",
-      "imageUrl": "/clothing/topten_slacks.png",
-      "textureUrl": "/clothing/topten_slacks.png",
       "isLuxury": false,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Oxford Shirt from Topten. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766627"
+      "scrapedAt": "2026-01-23T03:09:24.309610"
     },
     {
-      "id": "topten-009",
-      "name": "Basic Fleece Zip-up",
-      "brand": "Topten",
-      "category": "outerwear",
-      "price": 25.9,
-      "currency": "USD",
-      "imageUrl": "/clothing/topten_tee.png",
-      "textureUrl": "/clothing/topten_tee.png",
-      "isLuxury": false,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Basic Fleece Zip-up from Topten. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766631"
-    },
-    {
-      "id": "topten-010",
+      "id": "topten-women-outerwear-1",
       "name": "Light Down Vest",
-      "brand": "Topten",
+      "brand": "TOPTEN",
       "category": "outerwear",
-      "price": 49.9,
+      "price": 19.9,
       "currency": "USD",
-      "imageUrl": "/clothing/topten_slacks.png",
-      "textureUrl": "/clothing/topten_slacks.png",
+      "imageUrl": "https://placehold.co/600x800?text=TOPTEN+outerwear+1",
+      "productUrl": "https://topten.topten10mall.com/mock-1",
+      "sizes": [
+        "90",
+        "95",
+        "100",
+        "105"
+      ],
+      "colors": [
+        "Black",
+        "White",
+        "Grey"
+      ],
       "isLuxury": false,
+      "scrapedAt": "2026-01-23T03:09:26.311933"
+    },
+    {
+      "id": "topten-women-bottoms-1",
+      "name": "Slacks",
+      "brand": "TOPTEN",
+      "category": "bottoms",
+      "price": 19.9,
+      "currency": "USD",
+      "imageUrl": "https://placehold.co/600x800?text=TOPTEN+bottoms+1",
+      "productUrl": "https://topten.topten10mall.com/mock-1",
       "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
+        "90",
+        "95",
+        "100",
+        "105"
       ],
       "colors": [
         "Black",
         "White",
-        "Navy",
-        "Beige"
+        "Grey"
       ],
-      "description": "High-quality Light Down Vest from Topten. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766636"
+      "isLuxury": false,
+      "scrapedAt": "2026-01-23T03:09:28.314296"
     },
     {
-      "id": "cos-001",
-      "name": "Asymmetric Hem Top",
-      "brand": "COS",
+      "id": "gucci-women-ready-to-wear-1",
+      "name": "GG Jacquard Silk Blouse",
+      "brand": "Gucci",
       "category": "tops",
-      "price": 89.0,
+      "price": 1500,
       "currency": "USD",
-      "imageUrl": "/clothing/cos_top.png",
-      "textureUrl": "/clothing/cos_top.png",
-      "isLuxury": true,
+      "imageUrl": "https://placehold.co/600x800?text=GUCCI+tops+1",
+      "productUrl": "https://www.gucci.com/mock-1",
       "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
+        "IT 36",
+        "IT 38",
+        "IT 40",
+        "IT 42"
       ],
       "colors": [
         "Black",
-        "White",
-        "Navy",
-        "Beige"
+        "Ivory",
+        "Multi"
       ],
-      "description": "High-quality Asymmetric Hem Top from COS. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766654"
-    },
-    {
-      "id": "cos-002",
-      "name": "Wide-Leg Wool Trousers",
-      "brand": "COS",
-      "category": "outerwear",
-      "price": 135.0,
-      "currency": "USD",
-      "imageUrl": "/clothing/cos_dress.png",
-      "textureUrl": "/clothing/cos_dress.png",
       "isLuxury": true,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Wide-Leg Wool Trousers from COS. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766659"
+      "scrapedAt": "2026-01-23T03:09:30.376534"
     },
     {
-      "id": "cos-003",
-      "name": "Gathered Midi Dress",
-      "brand": "COS",
+      "id": "gucci-women-dresses-1",
+      "name": "Flora Print Silk Dress",
+      "brand": "Gucci",
       "category": "dresses",
-      "price": 115.0,
+      "price": 1500,
       "currency": "USD",
-      "imageUrl": "/clothing/cos_top.png",
-      "textureUrl": "/clothing/cos_top.png",
-      "isLuxury": true,
+      "imageUrl": "https://placehold.co/600x800?text=GUCCI+dresses+1",
+      "productUrl": "https://www.gucci.com/mock-1",
       "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
+        "IT 36",
+        "IT 38",
+        "IT 40",
+        "IT 42"
       ],
       "colors": [
         "Black",
-        "White",
-        "Navy",
-        "Beige"
+        "Ivory",
+        "Multi"
       ],
-      "description": "High-quality Gathered Midi Dress from COS. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766704"
-    },
-    {
-      "id": "cos-004",
-      "name": "Boxy Fit T-Shirt",
-      "brand": "COS",
-      "category": "tops",
-      "price": 45.0,
-      "currency": "USD",
-      "imageUrl": "/clothing/cos_dress.png",
-      "textureUrl": "/clothing/cos_dress.png",
       "isLuxury": true,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Boxy Fit T-Shirt from COS. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766881"
+      "scrapedAt": "2026-01-23T03:09:32.378828"
     },
     {
-      "id": "cos-005",
-      "name": "Leather Crossbody Bag",
-      "brand": "COS",
+      "id": "gucci-women-outerwear-1",
+      "name": "GG Jacquard Blazer",
+      "brand": "Gucci",
       "category": "outerwear",
-      "price": 150.0,
+      "price": 1500,
       "currency": "USD",
-      "imageUrl": "/clothing/cos_top.png",
-      "textureUrl": "/clothing/cos_top.png",
-      "isLuxury": true,
+      "imageUrl": "https://placehold.co/600x800?text=GUCCI+outerwear+1",
+      "productUrl": "https://www.gucci.com/mock-1",
       "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
+        "IT 36",
+        "IT 38",
+        "IT 40",
+        "IT 42"
       ],
       "colors": [
         "Black",
-        "White",
-        "Navy",
-        "Beige"
+        "Ivory",
+        "Multi"
       ],
-      "description": "High-quality Leather Crossbody Bag from COS. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766890"
-    },
-    {
-      "id": "cos-006",
-      "name": "Asymmetric Hem Top",
-      "brand": "COS",
-      "category": "tops",
-      "price": 89.0,
-      "currency": "USD",
-      "imageUrl": "/clothing/cos_dress.png",
-      "textureUrl": "/clothing/cos_dress.png",
       "isLuxury": true,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Asymmetric Hem Top from COS. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766895"
-    },
-    {
-      "id": "cos-007",
-      "name": "Wide-Leg Wool Trousers",
-      "brand": "COS",
-      "category": "outerwear",
-      "price": 135.0,
-      "currency": "USD",
-      "imageUrl": "/clothing/cos_top.png",
-      "textureUrl": "/clothing/cos_top.png",
-      "isLuxury": true,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Wide-Leg Wool Trousers from COS. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766899"
-    },
-    {
-      "id": "cos-008",
-      "name": "Gathered Midi Dress",
-      "brand": "COS",
-      "category": "dresses",
-      "price": 115.0,
-      "currency": "USD",
-      "imageUrl": "/clothing/cos_dress.png",
-      "textureUrl": "/clothing/cos_dress.png",
-      "isLuxury": true,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Gathered Midi Dress from COS. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766904"
-    },
-    {
-      "id": "cos-009",
-      "name": "Boxy Fit T-Shirt",
-      "brand": "COS",
-      "category": "tops",
-      "price": 45.0,
-      "currency": "USD",
-      "imageUrl": "/clothing/cos_top.png",
-      "textureUrl": "/clothing/cos_top.png",
-      "isLuxury": true,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Boxy Fit T-Shirt from COS. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766907"
-    },
-    {
-      "id": "cos-010",
-      "name": "Leather Crossbody Bag",
-      "brand": "COS",
-      "category": "outerwear",
-      "price": 150.0,
-      "currency": "USD",
-      "imageUrl": "/clothing/cos_dress.png",
-      "textureUrl": "/clothing/cos_dress.png",
-      "isLuxury": true,
-      "sizes": [
-        "XS",
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "colors": [
-        "Black",
-        "White",
-        "Navy",
-        "Beige"
-      ],
-      "description": "High-quality Leather Crossbody Bag from COS. Perfect for the season.",
-      "scrapedAt": "2026-01-22T16:17:13.766912"
+      "scrapedAt": "2026-01-23T03:09:34.381183"
     }
   ]
 }

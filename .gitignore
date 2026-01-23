@@ -40,3 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 client_secret_*.json
+
+# python
+__pycache__/
+*.pyc
+data/brands/
+data/scraped_products.json

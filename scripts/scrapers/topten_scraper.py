@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-ZARA Product Scraper
+TOPTEN Product Scraper
 """
 
 import asyncio
@@ -11,23 +11,22 @@ from playwright.async_api import Page
 from base_scraper import BaseScraper
 from config import BRAND_URLS
 
-class ZaraScraper(BaseScraper):
+class ToptenScraper(BaseScraper):
     def __init__(self, limit: int = 50, test_mode: bool = False):
-        super().__init__("ZARA", limit, test_mode)
+        super().__init__("TOPTEN", limit, test_mode)
 
     def get_category_url(self, category: str) -> Optional[str]:
-        return BRAND_URLS["ZARA"].get(category)
+        return BRAND_URLS["TOPTEN"].get(category)
 
     async def _extract_products(self, page: Page, category: str):
-        # Specific ZARA selectors
-        product_elements = await page.query_selector_all(".product-grid-product")
-        
+        product_elements = await page.query_selector_all(".item_box")
+
         for i, element in enumerate(product_elements[:self.limit]):
             try:
-                name_el = await element.query_selector(".product-grid-product-info__name")
-                price_el = await element.query_selector(".money-amount__main")
-                link_el = await element.query_selector("a.product-link")
-                img_el = await element.query_selector("img.media-image__image")
+                name_el = await element.query_selector(".name")
+                price_el = await element.query_selector(".price")
+                link_el = await element.query_selector("a")
+                img_el = await element.query_selector(".thumb img")
 
                 if not name_el: continue
 
@@ -36,22 +35,16 @@ class ZaraScraper(BaseScraper):
                 link = await link_el.get_attribute("href") if link_el else ""
                 image_url = await img_el.get_attribute("src") if img_el else ""
 
-                # ZARA image lazy loading handling
-                if not image_url or "data:image" in image_url:
-                    # try to get from srcset or other attributes if needed,
-                    # but usually scroll handles it. fallback:
-                    pass
-
                 self.products.append({
-                    "id": f"zara-{category}-{i+1}",
+                    "id": f"topten-{category}-{i+1}",
                     "name": name.strip(),
-                    "brand": "ZARA",
+                    "brand": "TOPTEN",
                     "category": self.map_category(category),
                     "price": self.normalize_price(price_text, "KRW"),
                     "currency": "USD",
                     "imageUrl": image_url,
-                    "productUrl": f"https://www.zara.com{link}" if link and not link.startswith("http") else link,
-                    "sizes": ["XS", "S", "M", "L", "XL"],
+                    "productUrl": link if link.startswith("http") else f"https://topten.topten10mall.com{link}",
+                    "sizes": ["85", "90", "95", "100", "105"],
                     "colors": [],
                     "isLuxury": False,
                     "scrapedAt": datetime.now().isoformat(),
@@ -66,10 +59,10 @@ class ZaraScraper(BaseScraper):
     def generate_mock_products(self, category: str, limit: int) -> List[Dict[str, Any]]:
         cat = self.map_category(category)
         mock_names = {
-            "tops": ["Oversized Shirt", "Cropped Blouse", "Knit Top", "Linen Shirt", "Satin Blouse"],
-            "dresses": ["Pleated Midi Dress", "Knit Dress", "Satin Maxi Dress", "Denim Shirt Dress", "Floral Mini Dress"],
-            "outerwear": ["Oversized Blazer", "Leather Jacket", "Trench Coat", "Puffer Jacket", "Double Breasted Coat"],
-            "bottoms": ["Wide Leg Pants", "Straight Jeans", "Pleated Skirt", "Cargo Pants", "Slim Slacks"],
+            "tops": ["Cool Air T-Shirt", "Oxford Shirt", "Fleece Zip-Up", "Cotton Tee", "Hoodie"],
+            "dresses": ["Pique Dress", "Linen Dress", "Shirt Dress", "Sweat Dress", "Maxi Dress"],
+            "outerwear": ["Light Down Vest", "Fleece Jacket", "Windbreaker", "Puffer Coat", "Wool Coat"],
+            "bottoms": ["Slacks", "Chino Pants", "Denim Jeans", "Jogger Pants", "Shorts"],
         }
 
         names = mock_names.get(cat, mock_names["tops"])
@@ -78,29 +71,29 @@ class ZaraScraper(BaseScraper):
         for i in range(limit):
             idx = i % len(names)
             products.append({
-                "id": f"zara-{category}-{i+1}",
+                "id": f"topten-{category}-{i+1}",
                 "name": f"{names[idx]}",
-                "brand": "ZARA",
+                "brand": "TOPTEN",
                 "category": cat,
-                "price": round(29.9 + (i * 10), 2),
+                "price": round(19.90 + (i * 5), 2),
                 "currency": "USD",
-                "imageUrl": f"https://placehold.co/600x800?text=ZARA+{cat}+{i+1}",
-                "productUrl": f"https://www.zara.com/mock-{i+1}",
-                "sizes": ["XS", "S", "M", "L", "XL"],
-                "colors": ["Black", "White", "Navy"],
+                "imageUrl": f"https://placehold.co/600x800?text=TOPTEN+{cat}+{i+1}",
+                "productUrl": f"https://topten.topten10mall.com/mock-{i+1}",
+                "sizes": ["90", "95", "100", "105"],
+                "colors": ["Black", "White", "Grey"],
                 "isLuxury": False,
                 "scrapedAt": datetime.now().isoformat(),
             })
         return products
 
 async def main():
-    parser = argparse.ArgumentParser(description="ZARA Scraper")
+    parser = argparse.ArgumentParser(description="TOPTEN Scraper")
     parser.add_argument("--category", default="women-tops")
     parser.add_argument("--limit", type=int, default=50)
     parser.add_argument("--test", action="store_true")
     args = parser.parse_args()
-    
-    scraper = ZaraScraper(limit=args.limit, test_mode=args.test)
+
+    scraper = ToptenScraper(limit=args.limit, test_mode=args.test)
     await scraper.scrape(args.category)
     scraper.save_products()
 

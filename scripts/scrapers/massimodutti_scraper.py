@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Gucci Product Scraper
+Massimo Dutti Product Scraper
 """
 
 import asyncio
@@ -11,29 +11,24 @@ from playwright.async_api import Page
 from base_scraper import BaseScraper
 from config import BRAND_URLS
 
-class GucciScraper(BaseScraper):
-    def __init__(self, limit: int = 20, test_mode: bool = False):
-        super().__init__("Gucci", limit, test_mode)
+class MassimoDuttiScraper(BaseScraper):
+    def __init__(self, limit: int = 50, test_mode: bool = False):
+        super().__init__("Massimo_Dutti", limit, test_mode)
 
     def get_category_url(self, category: str) -> Optional[str]:
-        return BRAND_URLS["GUCCI"].get(category, BRAND_URLS["GUCCI"].get("women-ready-to-wear"))
+        return BRAND_URLS["MASSIMO_DUTTI"].get(category)
 
     async def _extract_products(self, page: Page, category: str):
-        # Cookie consent might be needed
-        try:
-            accept_btn = await page.query_selector("[data-testid='accept-all-cookies']")
-            if accept_btn:
-                await accept_btn.click()
-                await asyncio.sleep(1)
-        except:
-            pass
+        product_elements = await page.query_selector_all("product-card") # Simplified selector assumption
+        # If web components are used, might need different selection strategy
+        if not product_elements:
+            product_elements = await page.query_selector_all(".product-item")
 
-        product_elements = await page.query_selector_all(".product-tiles-grid-item")
-        
         for i, element in enumerate(product_elements[:self.limit]):
             try:
-                name_el = await element.query_selector(".product-tiles-grid-item-title")
-                price_el = await element.query_selector(".product-tiles-grid-item-price")
+                # Selectors depend on actual site structure which can be complex for Inditex brands
+                name_el = await element.query_selector(".product-name") or await element.query_selector("h3")
+                price_el = await element.query_selector(".product-price") or await element.query_selector(".price")
                 link_el = await element.query_selector("a")
                 img_el = await element.query_selector("img")
 
@@ -45,15 +40,15 @@ class GucciScraper(BaseScraper):
                 image_url = await img_el.get_attribute("src") if img_el else ""
 
                 self.products.append({
-                    "id": f"gucci-{category}-{i+1}",
+                    "id": f"md-{category}-{i+1}",
                     "name": name.strip(),
-                    "brand": "Gucci",
+                    "brand": "Massimo Dutti",
                     "category": self.map_category(category),
                     "price": self.normalize_price(price_text, "KRW"),
                     "currency": "USD",
                     "imageUrl": image_url,
-                    "productUrl": link if link.startswith("http") else f"https://www.gucci.com{link}",
-                    "sizes": ["IT 36", "IT 38", "IT 40", "IT 42", "IT 44"],
+                    "productUrl": link if link.startswith("http") else f"https://www.massimodutti.com{link}",
+                    "sizes": ["XS", "S", "M", "L"],
                     "colors": [],
                     "isLuxury": True,
                     "scrapedAt": datetime.now().isoformat(),
@@ -68,9 +63,10 @@ class GucciScraper(BaseScraper):
     def generate_mock_products(self, category: str, limit: int) -> List[Dict[str, Any]]:
         cat = self.map_category(category)
         mock_names = {
-            "tops": ["GG Jacquard Silk Blouse", "Flora Print Crepe Top", "Interlocking G Knit Top", "Lace Trim Silk Shirt", "GG Monogram Cashmere Sweater"],
-            "dresses": ["Flora Print Silk Dress", "GG Canvas Midi Dress", "Lace Cocktail Dress", "Horsebit Detail Jersey Dress", "Crystal Embroidery Gown"],
-            "outerwear": ["GG Jacquard Blazer", "Wool Cashmere Coat", "Down Quilted Jacket", "Double G Tweed Jacket", "Leather Biker Jacket"],
+            "tops": ["100% Linen Shirt", "Silk Shirt", "Cotton Poplin Shirt", "Knit Polo", "Cashmere Sweater"],
+            "dresses": ["Linen Midi Dress", "Silk Slip Dress", "Pleated Dress", "Halter Neck Dress", "Knit Dress"],
+            "outerwear": ["Nappa Leather Jacket", "Wool Coat", "Trench Coat", "Structured Blazer", "Down Jacket"],
+            "bottoms": ["Linen Trousers", "Wool Trousers", "Straight Fit Jeans", "Pleated Skirt", "Bermuda Shorts"],
         }
 
         names = mock_names.get(cat, mock_names["tops"])
@@ -79,29 +75,29 @@ class GucciScraper(BaseScraper):
         for i in range(limit):
             idx = i % len(names)
             products.append({
-                "id": f"gucci-{category}-{i+1}",
+                "id": f"md-{category}-{i+1}",
                 "name": f"{names[idx]}",
-                "brand": "Gucci",
+                "brand": "Massimo Dutti",
                 "category": cat,
-                "price": round(1500 + (i * 300), 2),
+                "price": round(89.90 + (i * 20), 2),
                 "currency": "USD",
-                "imageUrl": f"https://placehold.co/600x800?text=GUCCI+{cat}+{i+1}",
-                "productUrl": f"https://www.gucci.com/mock-{i+1}",
-                "sizes": ["IT 36", "IT 38", "IT 40", "IT 42"],
-                "colors": ["Black", "Ivory", "Multi"],
+                "imageUrl": f"https://placehold.co/600x800?text=MD+{cat}+{i+1}",
+                "productUrl": f"https://www.massimodutti.com/mock-{i+1}",
+                "sizes": ["XS", "S", "M", "L"],
+                "colors": ["Beige", "White", "Navy"],
                 "isLuxury": True,
                 "scrapedAt": datetime.now().isoformat(),
             })
         return products
 
 async def main():
-    parser = argparse.ArgumentParser(description="Gucci Scraper")
-    parser.add_argument("--category", default="women-ready-to-wear")
-    parser.add_argument("--limit", type=int, default=20)
+    parser = argparse.ArgumentParser(description="Massimo Dutti Scraper")
+    parser.add_argument("--category", default="women-tops")
+    parser.add_argument("--limit", type=int, default=50)
     parser.add_argument("--test", action="store_true")
     args = parser.parse_args()
-    
-    scraper = GucciScraper(limit=args.limit, test_mode=args.test)
+
+    scraper = MassimoDuttiScraper(limit=args.limit, test_mode=args.test)
     await scraper.scrape(args.category)
     scraper.save_products()
 
