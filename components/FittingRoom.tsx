@@ -17,6 +17,7 @@ import { useStore } from '@/store/useStore';
 import { getItemsByBrand, ClothingItem } from '@/data/mockData';
 import type { PoseProportions } from '@/lib/mediapipe';
 import { calculateRecommendedSize, getComplementaryItems, ClothingStyleAnalysis } from '@/lib/visionService';
+import { MasterpieceViewer, LIGHTING_PRESETS } from './ui/MasterpieceViewer';
 import * as THREE from 'three';
 
 // Loading Component
@@ -873,6 +874,7 @@ function AITryOnModal({
   result,
   error,
   onGenerateTryOn,
+  clothingAnalysis,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -883,8 +885,11 @@ function AITryOnModal({
   result: string | null;
   error: string | null;
   onGenerateTryOn: () => void;
+  clothingAnalysis?: ClothingStyleAnalysis | null;
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [lightingPreset, setLightingPreset] = useState('studio');
+  const [isMacroMode, setIsMacroMode] = useState(false);
 
   if (!isOpen) return null;
 
@@ -1000,17 +1005,50 @@ function AITryOnModal({
           </div>
         )}
 
-        {/* Result Image */}
+        {/* Result Image (Masterpiece Viewer) */}
         {result && (
           <div className="mb-4">
-            <label className="text-xs uppercase tracking-wider text-cyber-lime mb-2 block">
-              ✨ AI 피팅 결과
-            </label>
-            <img
-              src={result}
-              alt="AI Try-On Result"
-              className="w-full rounded-lg border border-cyber-lime/30"
-            />
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs uppercase tracking-wider text-cyber-lime block">
+                ✨ AI 피팅 결과
+              </label>
+              <div className="flex gap-2">
+                 {/* Macro Toggle */}
+                 <button
+                   onClick={() => setIsMacroMode(!isMacroMode)}
+                   className={`text-[0.6rem] px-2 py-0.5 rounded border ${isMacroMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-transparent text-soft-gray border-soft-gray'}`}
+                 >
+                   {isMacroMode ? '🔍 Macro On' : '🔍 Macro Off'}
+                 </button>
+              </div>
+            </div>
+
+            <div className="w-full h-96 rounded-lg border border-cyber-lime/30 overflow-hidden relative">
+              <MasterpieceViewer
+                imageUrl={result}
+                clothingAnalysis={clothingAnalysis}
+                lightingPreset={lightingPreset}
+                isMacroMode={isMacroMode}
+              />
+            </div>
+
+            {/* Lighting Controls */}
+            <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
+              {Object.keys(LIGHTING_PRESETS).map((key) => (
+                <button
+                  key={key}
+                  onClick={() => setLightingPreset(key)}
+                  className={`px-3 py-1.5 rounded-full text-[0.65rem] border transition-all whitespace-nowrap ${
+                    lightingPreset === key
+                      ? 'bg-pure-white text-void-black border-pure-white font-bold'
+                      : 'bg-void-black text-soft-gray border-border-color hover:border-soft-gray'
+                  }`}
+                >
+                  💡 {LIGHTING_PRESETS[key].name}
+                </button>
+              ))}
+            </div>
+
             <button
               onClick={() => {
                 const link = document.createElement('a');
@@ -1865,6 +1903,7 @@ export function FittingRoom() {
         result={aiTryOnResult}
         error={aiTryOnError}
         onGenerateTryOn={handleGenerateAITryOn}
+        clothingAnalysis={clothingAnalysis}
       />
     </div>
   );
