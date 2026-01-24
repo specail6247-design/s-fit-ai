@@ -18,6 +18,160 @@ import { getItemsByBrand, ClothingItem } from '@/data/mockData';
 import type { PoseProportions } from '@/lib/mediapipe';
 import { calculateRecommendedSize, getComplementaryItems, ClothingStyleAnalysis } from '@/lib/visionService';
 import * as THREE from 'three';
+// @ts-ignore
+import AmmoLib from 'ammo.js';
+
+let Ammo: any = null;
+const initPhysics = async () => {
+  if (Ammo) return Ammo;
+  const loadAmmo = (AmmoLib as any).default || AmmoLib;
+  Ammo = await loadAmmo();
+  return Ammo;
+};
+
+const PhysicsContext = React.createContext<any>(null);
+
+const PHYSICS_PRESETS = {
+  'silk': { stiffness: 0.1, mass: 0.5, damping: 0.01 },
+  'denim': { stiffness: 0.8, mass: 1.2, damping: 0.05 },
+  'leather': { stiffness: 0.9, mass: 2.0, damping: 0.1 },
+  'default': { stiffness: 0.5, mass: 1.0, damping: 0.02 }
+};
+
+function PhysicsProvider({ children }: { children: React.ReactNode }) {
+  const [world, setWorld] = useState<any>(null);
+
+  useEffect(() => {
+    initPhysics().then((AmmoLib) => {
+        if (!AmmoLib) return;
+        const collisionConfiguration = new AmmoLib.btSoftBodyRigidBodyCollisionConfiguration();
+        const dispatcher = new AmmoLib.btCollisionDispatcher(collisionConfiguration);
+        const broadphase = new AmmoLib.btDbvtBroadphase();
+        const solver = new AmmoLib.btSequentialImpulseConstraintSolver();
+        const softBodySolver = new AmmoLib.btDefaultSoftBodySolver();
+        const physicsWorld = new AmmoLib.btSoftRigidDynamicsWorld(
+          dispatcher, broadphase, solver, collisionConfiguration, softBodySolver
+        );
+        physicsWorld.setGravity(new AmmoLib.btVector3(0, -9.8, 0));
+        physicsWorld.getWorldInfo().set_m_gravity(new AmmoLib.btVector3(0, -0.5, 0)); // Low gravity for gentle cloth
+        setWorld(physicsWorld);
+    });
+  }, []);
+
+  useFrame((state, delta) => {
+    if (world) {
+      world.stepSimulation(delta, 10);
+    }
+  });
+
+  return <PhysicsContext.Provider value={world}>{children}</PhysicsContext.Provider>;
+}
+
+function SoftBodyPlane({
+  position,
+  args,
+  materialProps,
+  stiffness = 0.5,
+  mass = 1.0,
+  damping = 0.02,
+  renderOrder
+}: any) {
+  const world = React.useContext(PhysicsContext);
+  const meshRef = useRef<THREE.Mesh>(null);
+  const bodyRef = useRef<any>(null);
+  const camera = useThree((state) => state.camera);
+  const [isMicroMode, setMicroMode] = useState(false);
+
+  useEffect(() => {
+    if (!world || !meshRef.current || !Ammo) return;
+
+    // Args: width, height, segX, segY
+    const width = args[0];
+    const height = args[1];
+    const nx = args[2] || 32;
+    const ny = args[3] || 32;
+
+    const pos = new THREE.Vector3(...position);
+    // Corners relative to center (Top-Left, Top-Right, Bottom-Left, Bottom-Right)
+    const c00 = new Ammo.btVector3(pos.x - width/2, pos.y + height/2, pos.z);
+    const c10 = new Ammo.btVector3(pos.x + width/2, pos.y + height/2, pos.z);
+    const c01 = new Ammo.btVector3(pos.x - width/2, pos.y - height/2, pos.z);
+    const c11 = new Ammo.btVector3(pos.x + width/2, pos.y - height/2, pos.z);
+
+    const softBodyHelper = Ammo.btSoftBodyHelpers;
+    const sb = softBodyHelper.CreatePatch(
+      world.getWorldInfo(),
+      c00, c10, c01, c11,
+      nx + 1, ny + 1,
+      1+2, // Anchor Top Left (1) and Top Right (2)
+      true
+    );
+
+    sb.get_m_cfg().set_kDP(damping);
+    sb.get_m_materials().at(0).set_m_kLST(stiffness);
+    sb.setTotalMass(mass, false);
+
+    world.addSoftBody(sb, 1, -1);
+    bodyRef.current = sb;
+
+    return () => {
+      world.removeSoftBody(sb);
+      // Clean up ammo object memory if needed (omitted for brevity)
+    };
+  }, [world, position, args, stiffness, mass, damping]);
+
+  useFrame(() => {
+    if (!bodyRef.current || !meshRef.current || !Ammo) return;
+
+    const sb = bodyRef.current;
+    const geometry = meshRef.current.geometry;
+    const positions = geometry.attributes.position.array;
+    const nodes = sb.get_m_nodes();
+    const nodeCount = nodes.size();
+
+    // Sync vertices
+    for (let i = 0; i < nodeCount; i++) {
+      const node = nodes.at(i);
+      const nodePos = node.get_m_x();
+      positions[i * 3] = nodePos.x();
+      positions[i * 3 + 1] = nodePos.y();
+      positions[i * 3 + 2] = nodePos.z();
+    }
+
+    geometry.attributes.position.needsUpdate = true;
+    geometry.computeVertexNormals();
+
+    // Micro Zoom Logic
+    const dist = camera.position.distanceTo(new THREE.Vector3(positions[0], positions[1], positions[2]));
+    if (dist < 2.0 && !isMicroMode) setMicroMode(true);
+    if (dist >= 2.0 && isMicroMode) setMicroMode(false);
+  });
+
+  const handleClick = (e: any) => {
+     if (!bodyRef.current) return;
+     // Add a ripple force
+     const force = new Ammo.btVector3(0, 0, 10 * mass);
+     // Apply to a central node for ripple effect
+     const nodes = bodyRef.current.get_m_nodes();
+     if(nodes.size() > 0) {
+        nodes.at(Math.floor(nodes.size()/2)).addForce(force);
+     }
+  };
+
+  const finalMaterialProps = { ...materialProps };
+  if (isMicroMode) {
+      // Exaggerate normal map in micro mode
+      finalMaterialProps.normalScale = new THREE.Vector2(3, 3);
+  }
+
+  // Position 0,0,0 because vertices are in world space
+  return (
+    <mesh ref={meshRef} position={[0,0,0]} renderOrder={renderOrder} onClick={handleClick} castShadow receiveShadow>
+       <planeGeometry args={args} />
+       <meshStandardMaterial {...finalMaterialProps} />
+    </mesh>
+  );
+}
 
 // Loading Component
 function LoadingSpinner() {
@@ -196,19 +350,22 @@ function TopClothing({
   const baseWidth = 0.65; // Standard width in world units
 
   return (
-    <mesh position={[0, 0.95, 0.1]} renderOrder={2} castShadow receiveShadow>
-      <planeGeometry args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]} />
-      <meshStandardMaterial
-        map={texture} 
-        transparent 
-        side={THREE.DoubleSide}
-        roughness={0.7}
-        metalness={item.isLuxury ? 0.3 : 0.1}
-        displacementMap={texture} // Cinematic displacement
-        displacementScale={0.02}
-        alphaTest={0.5}
-      />
-    </mesh>
+    <SoftBodyPlane
+      position={[0, 0.95, 0.1]}
+      args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]}
+      materialProps={{
+        map: texture,
+        transparent: true,
+        side: THREE.DoubleSide,
+        roughness: 0.7,
+        metalness: item.isLuxury ? 0.3 : 0.1,
+        displacementMap: texture,
+        displacementScale: 0.02,
+        alphaTest: 0.5
+      }}
+      renderOrder={2}
+      {...PHYSICS_PRESETS['silk']}
+    />
   );
 }
 
@@ -228,19 +385,22 @@ function BottomsClothing({
   const baseWidth = 0.55;
 
   return (
-    <mesh position={[0, 0.35, 0.1]} renderOrder={2} castShadow receiveShadow>
-      <planeGeometry args={[baseWidth * widthScale * shapeScale.hips, (baseWidth * widthScale * shapeScale.hips) / aspect, 32, 32]} />
-      <meshStandardMaterial
-        map={texture} 
-        transparent 
-        side={THREE.DoubleSide}
-        roughness={0.8}
-        metalness={0.1}
-        displacementMap={texture}
-        displacementScale={0.02}
-        alphaTest={0.5}
-      />
-    </mesh>
+    <SoftBodyPlane
+      position={[0, 0.35, 0.1]}
+      args={[baseWidth * widthScale * shapeScale.hips, (baseWidth * widthScale * shapeScale.hips) / aspect, 32, 32]}
+      materialProps={{
+        map: texture,
+        transparent: true,
+        side: THREE.DoubleSide,
+        roughness: 0.8,
+        metalness: 0.1,
+        displacementMap: texture,
+        displacementScale: 0.02,
+        alphaTest: 0.5
+      }}
+      renderOrder={2}
+      {...PHYSICS_PRESETS['denim']}
+    />
   );
 }
 
@@ -260,19 +420,22 @@ function DressClothing({
   const baseWidth = 0.65;
 
   return (
-    <mesh position={[0, 0.65, 0.1]} renderOrder={2} castShadow receiveShadow>
-      <planeGeometry args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]} />
-      <meshStandardMaterial
-        map={texture} 
-        transparent 
-        side={THREE.DoubleSide}
-        roughness={0.5} // Silkier
-        metalness={item.isLuxury ? 0.2 : 0.0}
-        displacementMap={texture}
-        displacementScale={0.02}
-        alphaTest={0.5}
-      />
-    </mesh>
+    <SoftBodyPlane
+      position={[0, 0.65, 0.1]}
+      args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]}
+      materialProps={{
+        map: texture,
+        transparent: true,
+        side: THREE.DoubleSide,
+        roughness: 0.5,
+        metalness: item.isLuxury ? 0.2 : 0.0,
+        displacementMap: texture,
+        displacementScale: 0.02,
+        alphaTest: 0.5
+      }}
+      renderOrder={2}
+      {...PHYSICS_PRESETS['silk']}
+    />
   );
 }
 
@@ -292,19 +455,22 @@ function OuterwearClothing({
   const baseWidth = 0.70; // Slightly wider
 
   return (
-    <mesh position={[0, 0.95, 0.15]} renderOrder={3} castShadow receiveShadow>
-      <planeGeometry args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]} />
-      <meshStandardMaterial
-        map={texture} 
-        transparent 
-        side={THREE.DoubleSide}
-        roughness={0.6}
-        metalness={0.1}
-        displacementMap={texture}
-        displacementScale={0.03} // More depth for outerwear
-        alphaTest={0.5}
-      />
-    </mesh>
+    <SoftBodyPlane
+      position={[0, 0.95, 0.15]}
+      args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]}
+      materialProps={{
+        map: texture,
+        transparent: true,
+        side: THREE.DoubleSide,
+        roughness: 0.6,
+        metalness: 0.1,
+        displacementMap: texture,
+        displacementScale: 0.03,
+        alphaTest: 0.5
+      }}
+      renderOrder={3}
+      {...PHYSICS_PRESETS['leather']}
+    />
   );
 }
 
@@ -1092,6 +1258,13 @@ export function FittingRoom() {
     return false;
   });
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Initialize Physics
+  useEffect(() => {
+    initPhysics().then(() => {
+      console.log('Ammo.js initialized');
+    }).catch(e => console.error('Failed to init Ammo', e));
+  }, []);
   
   // Get items for selected brand
   const brandItems = useMemo(() => {
@@ -1462,11 +1635,13 @@ export function FittingRoom() {
                 });
               }}
             >
-              <Scene 
-                userStats={userStats} 
-                selectedItem={currentItem}
-                isLuxury={isLuxury}
-              />
+              <PhysicsProvider>
+                <Scene
+                  userStats={userStats}
+                  selectedItem={currentItem}
+                  isLuxury={isLuxury}
+                />
+              </PhysicsProvider>
               <OrbitControls
                 enabled={selectedMode !== 'digital-twin'}
                 enablePan={false}
