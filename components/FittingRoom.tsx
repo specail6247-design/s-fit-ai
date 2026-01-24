@@ -1261,8 +1261,11 @@ export function FittingRoom() {
     const recId = scored[0]?.item.id ?? null;
     const sorted = scored.map((entry) => entry.item);
     const picks = scored.slice(0, 3);
-    const scoredById = new Map(scored.map((entry) => [entry.item.id, entry]));
-    const ranks = new Map(picks.map((entry, index) => [entry.item.id, index + 1]));
+    const scoredById = new Map<string, (typeof scored)[number]>();
+    scored.forEach((entry) => scoredById.set(entry.item.id, entry));
+
+    const ranks = new Map<string, number>();
+    picks.forEach((entry, index) => ranks.set(entry.item.id, index + 1));
 
     return {
       scoredItems: scored,
