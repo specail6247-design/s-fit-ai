@@ -32,6 +32,8 @@ import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
+import { DataSafetyBadge } from './ui/DataSafetyBadge';
+import { generateStoryImage } from '@/lib/storyGenerator';
 
 // --- PHYSICS ENGINE (Ammo.js) ---
 
@@ -607,9 +609,10 @@ interface ShareModalProps {
   brandName?: string;
   fitScore: number;
   recommendedSize?: string;
+  snapshotUrl?: string | null;
 }
 
-function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize }: ShareModalProps) {
+function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize, snapshotUrl }: ShareModalProps) {
   const [hasPublished, setHasPublished] = useState(false);
   if (!isOpen) return null;
 
@@ -630,6 +633,19 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
     onClose();
   };
 
+  const handleStory = async () => {
+      if (!snapshotUrl) return;
+      try {
+          const storyUrl = await generateStoryImage(snapshotUrl);
+          const a = document.createElement('a');
+          a.href = storyUrl;
+          a.download = 's_fit_story.png';
+          a.click();
+      } catch (e) {
+          console.error(e);
+      }
+  };
+
   return (
     <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="absolute inset-0 bg-void-black/80 backdrop-blur-sm" onClick={onClose} />
@@ -642,6 +658,11 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
           <button onClick={() => handleShare('instagram')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-[#833AB4] to-[#F77737] text-xs"><span>📷</span> Instagram</button>
           <button onClick={() => handleShare('kakao')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#FEE500] text-black text-xs"><span>💬</span> KakaoStory</button>
         </div>
+        {snapshotUrl && (
+            <button onClick={handleStory} className="w-full mb-4 py-2 bg-[#E1306C] text-white rounded-lg text-xs font-bold flex items-center justify-center gap-2 hover:bg-[#C13584] transition-colors">
+                <span className="material-symbols-outlined text-sm">ios_share</span> Share to Story (Image)
+            </button>
+        )}
         <div className="pt-4 border-t border-border-color">
           {hasPublished ? (
             <div className="bg-cyber-lime/10 border border-cyber-lime/30 rounded-lg p-2 text-center text-[10px] text-cyber-lime font-bold">✨ Published to Community Runway!</div>
@@ -730,6 +751,19 @@ function AITryOnModal({
     const [videoUrl, setVideoUrl] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    const handleShareStory = async () => {
+        if (!result) return;
+        try {
+            const storyUrl = await generateStoryImage(result);
+            const a = document.createElement('a');
+            a.href = storyUrl;
+            a.download = 's_fit_story.png';
+            a.click();
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -771,11 +805,17 @@ function AITryOnModal({
                       accept="image/*"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => onPhotoSelect(e.target.files?.[0] ?? null)}
                     />
+                    <DataSafetyBadge />
 
                     {(result || videoUrl) && (
                         <div className="space-y-4">
                             <div className="flex items-center justify-between"><div className="flex items-center gap-2"><span className="text-cyber-lime">⚡️</span><span className="text-xs font-bold uppercase tracking-wider">Analysis Result</span></div>
-                                {result && <button onClick={() => { const a = document.createElement('a'); a.href = result; a.download = 'sfit-result.png'; a.click(); }} className="text-[9px] text-cyber-lime hover:underline">Download Image</button>}
+                                {result && (
+                                    <div className="flex gap-2">
+                                        <button onClick={handleShareStory} className="text-[9px] text-[#E1306C] hover:underline font-bold">Share Story</button>
+                                        <button onClick={() => { const a = document.createElement('a'); a.href = result; a.download = 'sfit-result.png'; a.click(); }} className="text-[9px] text-cyber-lime hover:underline">Download Image</button>
+                                    </div>
+                                )}
                             </div>
                             {videoUrl ? (
                               <CinematicViewer videoUrl={videoUrl} posterUrl={result || undefined} className="w-full aspect-[9/16] rounded-xl shadow-2xl" />
@@ -838,6 +878,7 @@ export function FittingRoom() {
   const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
   const [aiTryOnLoading, setAITryOnLoading] = useState(false);
   const [userPhotoPreview, setUserPhotoPreview] = useState<string | null>(null);
+  const [snapshotUrl, setSnapshotUrl] = useState<string | null>(null);
   const [isMasterpieceMode, setIsMasterpieceMode] = useState(true);
   const [isMacroView, setIsMacroView] = useState(false);
   const [showHeatmap, setShowHeatmap] = useState(false);
@@ -1011,7 +1052,15 @@ export function FittingRoom() {
         )}
 
         <div className="absolute top-4 left-4 flex gap-2 z-20">
-            <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
+            <button onClick={() => {
+                if (canvasRef.current) {
+                    try {
+                        const dataUrl = canvasRef.current.toDataURL('image/png');
+                        setSnapshotUrl(dataUrl);
+                    } catch(e) { console.warn('Canvas capture failed', e); }
+                }
+                setShowShareModal(true);
+            }} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
                 <span>📤</span>
             </button>
             <motion.button onClick={() => setShowAITryOnModal(true)} 
@@ -1133,6 +1182,7 @@ export function FittingRoom() {
         brandName={currentItem?.brand} 
         fitScore={fitScore}
         recommendedSize={recommendedFit?.recommendedSize}
+        snapshotUrl={snapshotUrl}
       />
       <CompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} picks={topPicks} onSelect={setSelectedItem} />
       <AITryOnModal
