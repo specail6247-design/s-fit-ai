@@ -329,9 +329,10 @@ interface ClothingProps {
   shapeScale?: { shoulders: number; waist: number; hips: number };
   fabricType?: FabricType;
   useMasterpiece?: boolean;
+  isMacro?: boolean;
 }
 
-function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacro }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -346,12 +347,12 @@ function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist:
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacro={isMacro} />
     </SoftBodyPlane>
   );
 }
 
-function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacro }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -366,12 +367,12 @@ function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, wa
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacro={isMacro} />
     </SoftBodyPlane>
   );
 }
 
-function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacro }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -386,12 +387,12 @@ function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, wais
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacro={isMacro} />
     </SoftBodyPlane>
   );
 }
 
-function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacro }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -406,7 +407,7 @@ function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, 
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacro={isMacro} />
     </SoftBodyPlane>
   );
 }
@@ -433,22 +434,24 @@ function ClothingOverlay({
   widthScale,
   shapeScale,
   clothingAnalysis,
+  isMacro
 }: {
   item: ClothingItem | null;
   widthScale: number;
   shapeScale: { shoulders: number; waist: number; hips: number };
   clothingAnalysis?: ClothingStyleAnalysis | null; 
   useMasterpiece: boolean;
+  isMacro: boolean;
 }) {
   if (!item) return null;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
 
   return (
     <Suspense fallback={null}>
-      {item.category === 'tops' && <TopClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'bottoms' && <BottomsClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'dresses' && <DressClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'outerwear' && <OuterwearClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
+      {item.category === 'tops' && <TopClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacro={isMacro} />}
+      {item.category === 'bottoms' && <BottomsClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacro={isMacro} />}
+      {item.category === 'dresses' && <DressClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacro={isMacro} />}
+      {item.category === 'outerwear' && <OuterwearClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacro={isMacro} />}
       {item.category === 'accessories' && <AccessoryClothing item={item} widthScale={widthScale} shapeScale={shapeScale} />}
     </Suspense>
   );
@@ -561,6 +564,7 @@ function Scene({
           shapeScale={{ shoulders: 1, waist: 1, hips: 1 }}
           clothingAnalysis={clothingAnalysis}
           useMasterpiece={isMasterpieceMode}
+          isMacro={isMacroView}
         />
       </group>
     </>
@@ -778,7 +782,20 @@ function AITryOnModal({
                                 {result && <button onClick={() => { const a = document.createElement('a'); a.href = result; a.download = 'sfit-result.png'; a.click(); }} className="text-[9px] text-cyber-lime hover:underline">Download Image</button>}
                             </div>
                             {videoUrl ? (
-                              <CinematicViewer videoUrl={videoUrl} posterUrl={result || undefined} className="w-full aspect-[9/16] rounded-xl shadow-2xl" />
+                              <div className="space-y-3">
+                                <CinematicViewer videoUrl={videoUrl} posterUrl={result || undefined} className="w-full aspect-[9/16] rounded-xl shadow-2xl" />
+                                <button onClick={() => {
+                                  const shareText = `Check out my Masterpiece Fit on S_FIT AI! #SFIT #RunwayGen3`;
+                                  if (navigator.share) {
+                                    navigator.share({ title: 'S_FIT Cinematic', text: shareText, url: videoUrl }).catch(console.error);
+                                  } else {
+                                    navigator.clipboard.writeText(`${shareText} ${videoUrl}`);
+                                    alert('Cinematic clip URL copied to clipboard! 🎬');
+                                  }
+                                }} className="w-full py-3 bg-white text-black font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors shadow-lg">
+                                  <span>📤</span> Share Cinematic Clip
+                                </button>
+                              </div>
                             ) : result && (
                                 <div className="relative w-full aspect-[9/16] rounded-xl border-2 border-cyber-lime/20 shadow-xl overflow-hidden">
                                   <Image
