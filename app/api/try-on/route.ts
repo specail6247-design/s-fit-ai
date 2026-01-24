@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateVirtualTryOn } from '@/lib/virtualTryOn';
+import { tryOnCache } from '@/lib/cache/TryOnCache';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -87,6 +88,19 @@ export async function POST(request: NextRequest) {
     console.log('- garmentImage type:', garmentImageInput.startsWith('data:') ? 'data URI' : 'URL');
     console.log('- category:', category || 'upper_body');
 
+    // Generate Cache Key
+    const cacheKey = tryOnCache.generateKey(userPhotoInput, garmentImageInput, category || 'upper_body');
+
+    // Check Cache
+    const cachedImageUrl = await tryOnCache.get(cacheKey);
+    if (cachedImageUrl) {
+      return NextResponse.json({
+        success: true,
+        imageUrl: cachedImageUrl,
+        cached: true
+      });
+    }
+
     // Call Replicate API
     const result = await generateVirtualTryOn({
       userPhoto: userPhotoInput,
@@ -94,7 +108,10 @@ export async function POST(request: NextRequest) {
       category: category || 'upper_body'
     });
 
-    if (result.success) {
+    if (result.success && result.imageUrl) {
+      // Save to Cache
+      await tryOnCache.set(cacheKey, result.imageUrl);
+
       return NextResponse.json({
         success: true,
         imageUrl: result.imageUrl

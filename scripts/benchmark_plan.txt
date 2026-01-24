@@ -1,0 +1,12 @@
+
+import { generateVirtualTryOn } from '@/lib/virtualTryOn';
+
+// Mock the generateVirtualTryOn function for benchmarking
+const originalGenerate = generateVirtualTryOn;
+
+// We will mock this in the test runner, but for a standalone script
+// we might need to be creative since we can't easily overwrite the export
+// from another file in a simple node script without a test framework.
+
+// Instead, I'll create a test file using the project's test runner (Vitest)
+// which is already set up.
