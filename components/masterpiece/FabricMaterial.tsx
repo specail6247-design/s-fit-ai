@@ -8,15 +8,25 @@ interface FabricMaterialProps {
   fabricType: FabricType;
   opacity?: number;
   transparent?: boolean;
+  isMacro?: boolean;
 }
 
 export function FabricMaterial({
   textureUrl,
   fabricType = 'cotton',
   opacity = 1,
-  transparent = true
+  transparent = true,
+  isMacro = false
 }: FabricMaterialProps) {
   const baseTexture = useTexture(textureUrl);
+
+  // Micro-fiber noise texture for Hyper-Zoom
+  const noiseTexture = useMemo(() => {
+      // 1x1 grey pixel as fallback, but ideally this is a high-freq noise map.
+      // In a real implementation, we would load a shared detail_noise.jpg
+      return baseTexture;
+  }, [baseTexture]);
+
   const texture = useMemo(() => {
     const cloned = baseTexture.clone();
     cloned.colorSpace = THREE.SRGBColorSpace;
@@ -29,6 +39,9 @@ export function FabricMaterial({
 
   const config = FABRIC_PRESETS[fabricType];
 
+  // Hyper-Zoom Logic: Amplify details when in Macro mode
+  const macroMultiplier = isMacro ? 2.5 : 1.0;
+
   return (
     <meshPhysicalMaterial
       map={texture}
@@ -40,13 +53,13 @@ export function FabricMaterial({
       // We use the texture itself as a height map proxy.
       // Ideally this would be a real depth map.
       displacementMap={texture}
-      displacementScale={config.displacementScale}
-      displacementBias={-config.displacementScale / 2}
+      displacementScale={config.displacementScale * (isMacro ? 1.2 : 1.0)}
+      displacementBias={(-config.displacementScale * (isMacro ? 1.2 : 1.0)) / 2}
 
       // Micro-surface details
       // Using the texture as a normal map adds surface detail corresponding to the visual pattern.
       normalMap={texture}
-      normalScale={new THREE.Vector2(config.normalScale, config.normalScale)}
+      normalScale={new THREE.Vector2(config.normalScale * macroMultiplier, config.normalScale * macroMultiplier)}
 
       // Advanced Fabric features
       sheen={config.sheen || 0}

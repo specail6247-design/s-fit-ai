@@ -5,7 +5,7 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Wooyoungmi' | 'Gentle Monster' | 'Andersson Bell';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -91,6 +91,27 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=TIFFANY',
     isLuxury: true,
     tier: 'luxury',
+  },
+  {
+    id: 'wooyoungmi',
+    name: 'Wooyoungmi',
+    logo: 'https://placehold.co/100x100?text=WYM',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'gentlemonster',
+    name: 'Gentle Monster',
+    logo: 'https://placehold.co/100x100?text=GM',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'anderssonbell',
+    name: 'Andersson Bell',
+    logo: 'https://placehold.co/100x100?text=AB',
+    isLuxury: false,
+    tier: 'mass',
   },
 ];
 
@@ -534,6 +555,66 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+  },
+
+  // K-FASHION & NEW LUXURY
+  {
+    id: 'wym-001',
+    name: 'Back Logo T-Shirt',
+    brand: 'Wooyoungmi',
+    category: 'tops',
+    price: 320.00,
+    currency: 'USD',
+    imageUrl: '/clothing/wym_tee.png',
+    textureUrl: '/clothing/wym_tee.png',
+    isLuxury: true,
+    sizes: ['44', '46', '48', '50'],
+    colors: ['Black', 'White'],
+    description: 'Signature back logo cotton t-shirt with boxy fit',
+  },
+  {
+    id: 'wym-002',
+    name: 'Cropped Wool Jacket',
+    brand: 'Wooyoungmi',
+    category: 'outerwear',
+    price: 950.00,
+    currency: 'USD',
+    imageUrl: '/clothing/wym_jacket.png',
+    textureUrl: '/clothing/wym_jacket.png',
+    isLuxury: true,
+    sizes: ['46', '48', '50'],
+    colors: ['Black', 'Charcoal'],
+    description: 'Minimalist cropped wool jacket with sharp tailoring',
+  },
+  {
+    id: 'gm-001',
+    name: 'Lilit 01',
+    brand: 'Gentle Monster',
+    category: 'accessories',
+    subCategory: 'glasses',
+    zIndex: 60,
+    price: 269.00,
+    currency: 'USD',
+    imageUrl: '/accessories/gm_lilit.png',
+    textureUrl: '/accessories/gm_lilit.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Black'],
+    description: 'Square black acetate sunglasses with FLATBA lens',
+  },
+  {
+    id: 'ab-001',
+    name: 'Unisex Knit Vest',
+    brand: 'Andersson Bell',
+    category: 'tops',
+    price: 180.00,
+    currency: 'USD',
+    imageUrl: '/clothing/ab_vest.png',
+    textureUrl: '/clothing/ab_vest.png',
+    isLuxury: false,
+    sizes: ['S', 'M', 'L'],
+    colors: ['Multi'],
+    description: 'Color-block knit vest with distressed details',
   },
 ];
 

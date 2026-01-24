@@ -2,6 +2,7 @@
 // https://replicate.com/cuuupid/idm-vton
 
 import Replicate from "replicate";
+import { generateRunwayGen3Video } from './runway';
 import type { SegmentationResult } from './segmentation';
 
 export interface TryOnRequest {
@@ -198,6 +199,26 @@ export async function upscaleImage(imageUrl: string): Promise<string | null> {
 
 // Unified Video Generation (Runway/SVD)
 export async function generateCinematicVideo(imageUrl: string): Promise<CinematicVideoResult> {
+  // 1. Try Runway Gen-3 First (if configured)
+  if (process.env.RUNWAY_API_SECRET) {
+    console.log("Attempting Runway Gen-3 Cinematic generation...");
+    try {
+      const runwayVideo = await generateRunwayGen3Video(imageUrl);
+      if (runwayVideo) {
+        return {
+          success: true,
+          videoUrl: runwayVideo
+        };
+      } else {
+        console.warn("Runway generation failed or timed out. Falling back to SVD...");
+      }
+    } catch (e) {
+      console.error("Runway generation error:", e);
+      // Fallthrough to SVD
+    }
+  }
+
+  // 2. Fallback to SVD (Replicate)
   const apiToken = process.env.REPLICATE_API_TOKEN;
 
   if (!apiToken) {
