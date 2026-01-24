@@ -145,7 +145,7 @@ export default function PressPage() {
                 <h3 className="text-2xl font-bold mb-2">Jules</h3>
                 <p className="text-cyber-lime mb-4">Founder & Lead Engineer</p>
                 <p className="text-gray-400 max-w-xl leading-relaxed mb-6">
-                    "I built S_FIT AI to solve the 'return walk of shame'. Fashion should be about expression, not guessing sizes. We're using MediaPipe and WebGL to bring the fitting room to your browser."
+                    &ldquo;I built S_FIT AI to solve the &apos;return walk of shame&apos;. Fashion should be about expression, not guessing sizes. We&apos;re using MediaPipe and WebGL to bring the fitting room to your browser.&rdquo;
                 </p>
                 <div className="flex gap-4">
                      <a href="#" className="text-sm text-gray-500 hover:text-white transition-colors">Twitter / X</a>

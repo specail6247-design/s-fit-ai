@@ -132,27 +132,23 @@ export function calculateRecommendedSize(
     };
   }
 
-  // Convert normalized proportions to estimated cm using user's height
-  const estimatedShoulderCm = userProportions.shoulderWidth * 100 * (userHeight / 170) * 45; // Rough heuristic
-  let estimatedChestCm = estimatedShoulderCm * 2.2; // Chest is usually 2.2x shoulder width
-
-  // Phase 3: Material Stretch awareness
-  if (clothingAnalysis?.stretchFactor) {
-    // If stretch is high (e.g. 8), we can tolerate a smaller size.
-    // We effectively "reduce" the body's space requirement.
-    const stretchBuffer = (clothingAnalysis.stretchFactor - 5) * 0.02; // max ~10% adjustment
-    estimatedChestCm *= (1 - stretchBuffer);
-  }
+  // Convert normalized proportions to estimated cm
+  // Refined heuristics for Masterpiece Fit
+  const estimatedShoulderCm = userProportions.shoulderWidth * 100 * (userHeight / 170) * 45;
+  const estimatedChestCm = estimatedShoulderCm * 2.1;
+  const estimatedWaistCm = userProportions.waistWidth * 100 * (userHeight / 170) * 45 * 2.0;
+  const estimatedSleeveCm = userProportions.armLength * 100 * (userHeight / 170) * 35;
 
   let bestSize = 'M';
   let minDiff = Infinity;
   const fitNotes: string[] = [];
 
   Object.entries(sizeChart.chart).forEach(([size, dims]) => {
-    // Compare chest and shoulder
-    const chestDiff = Math.abs(dims.chest - estimatedChestCm);
-    const shoulderDiff = Math.abs(dims.shoulder - estimatedShoulderCm);
-    const totalDiff = chestDiff + shoulderDiff;
+    // Multi-dimensional comparison
+    const chestDiff = dims.chest ? Math.abs(dims.chest - estimatedChestCm) : 0;
+    const shoulderDiff = dims.shoulder ? Math.abs(dims.shoulder - estimatedShoulderCm) : 0;
+    const sleeveDiff = dims.sleeve ? Math.abs(dims.sleeve - estimatedSleeveCm) : 0;
+    const totalDiff = chestDiff + shoulderDiff + (sleeveDiff * 0.5);
 
     if (totalDiff < minDiff) {
       minDiff = totalDiff;
@@ -160,21 +156,68 @@ export function calculateRecommendedSize(
     }
   });
 
-  // Generate dynamic notes
-  const selectedDims = sizeChart.chart[bestSize];
-  if (estimatedShoulderCm > selectedDims.shoulder) {
-    fitNotes.push(`Shoulder fit might be slightly snug but stylish.`);
-  } else {
-    fitNotes.push(`Perfect shoulder drop for your frame.`);
+  // Generate dynamic professional notes
+  const dims = sizeChart.chart[bestSize];
+  
+  // Shoulder & Slope analysis
+  if (userProportions.shoulderSlope > 0.15) {
+    fitNotes.push(`Your shoulders have a sharp slope; this ${category.slice(0, -1)}'s structure will complement your silhouette.`);
   }
 
-  if (estimatedChestCm < selectedDims.chest) {
-    fitNotes.push(`Comfortable room in the chest area.`);
+  if (dims.shoulder && estimatedShoulderCm > dims.shoulder + 2) {
+    fitNotes.push(`Shoulder fit will be "Power Fit" (slightly snug). Size up if you prefer a relaxed look.`);
+  } else if (dims.shoulder && estimatedShoulderCm < dims.shoulder - 2) {
+    fitNotes.push(`Perfect "Drop Shoulder" effect for your frame.`);
+  }
+
+  // Sleeve analysis
+  if (dims.sleeve && estimatedSleeveCm > dims.sleeve + 3) {
+    fitNotes.push(`Sleeves might be slightly cropped/fashionably short on your arms.`);
+  }
+
+  // Waist analysis
+  if (dims.waist && estimatedWaistCm > dims.waist && clothingAnalysis?.fitType === 'slim') {
+    fitNotes.push(`The waist area is tailored; expect a defined, close-to-body fit.`);
+  }
+
+  // Stretch adjustment
+  if (clothingAnalysis?.stretchFactor && clothingAnalysis.stretchFactor > 7) {
+    fitNotes.push(`High stretch fabric (${clothingAnalysis.materialType}) ensures comfort despite the precise fit.`);
   }
 
   return {
     recommendedSize: bestSize,
-    confidence: Math.max(0, Math.min(100, 100 - minDiff)),
-    fitNotes: fitNotes.length > 0 ? fitNotes : ['A great overall match for your proportions.']
+    confidence: Math.max(0, Math.min(100, 100 - (minDiff / 3))),
+    fitNotes: fitNotes.length > 0 ? fitNotes : ['Balanced fit across all key measurements.']
+  };
+}
+
+/**
+ * Generates data for the Fit Heatmap
+ * 0: loose (blue), 0.5: perfect (green), 1.0: tight (red)
+ */
+export function generateFitHeatmap(userProportions: PoseProportions, userHeight: number, brand: string, category: string) {
+  const sizeChart = getSizeChart(brand, category);
+  if (!sizeChart) return { shoulders: 0.5, chest: 0.5, waist: 0.5, sleeves: 0.5 };
+
+  const rec = calculateRecommendedSize(userProportions, userHeight, brand, category);
+  const dims = sizeChart.chart[rec.recommendedSize];
+
+  const estimatedShoulderCm = userProportions.shoulderWidth * 100 * (userHeight / 170) * 45;
+  const estimatedChestCm = estimatedShoulderCm * 2.1;
+  const estimatedWaistCm = userProportions.waistWidth * 100 * (userHeight / 170) * 45 * 2.0;
+  const estimatedSleeveCm = userProportions.armLength * 100 * (userHeight / 170) * 35;
+
+  const getHeatValue = (actual: number, target: number | undefined) => {
+    if (target === undefined) return 0.5;
+    const diff = (actual - target) / 10; 
+    return Math.max(0, Math.min(1, 0.5 + diff));
+  };
+
+  return {
+    shoulders: getHeatValue(estimatedShoulderCm, dims.shoulder),
+    chest: getHeatValue(estimatedChestCm, dims.chest),
+    waist: getHeatValue(estimatedWaistCm, dims.waist),
+    sleeves: getHeatValue(estimatedSleeveCm, dims.sleeve)
   };
 }

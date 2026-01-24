@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { PoseLandmarker, FilesetResolver, PoseLandmarkerResult } from '@mediapipe/tasks-vision';
 import { useStore } from '@/store/useStore';
-import type { PoseAnalysis as PoseAnalysisType, PoseProportions } from '@/lib/mediapipe';
+import { analyzePose } from '@/lib/mediapipe';
 
 interface PoseAnalysisProps {
   imageFile: File | null;
@@ -93,72 +93,39 @@ export default function PoseAnalysis({ imageFile }: PoseAnalysisProps) {
   };
 
   useEffect(() => {
-    if (imageFile && landmarker) {
-      const img = new Image();
-      img.src = URL.createObjectURL(imageFile);
-      img.onload = () => {
-        // Detect pose
-        const poseResult = landmarker.detect(img);
-        setResult(poseResult);
+    const processImage = async () => {
+      if (imageFile) {
+        const imageUrl = URL.createObjectURL(imageFile);
+        const img = new Image();
+        img.src = imageUrl;
         
-        // Draw logs for debug
-        console.log("Pose/Landmarks:", poseResult);
-        
-        // Draw on canvas
-        drawLandmarks(img, poseResult);
+        img.onload = async () => {
+          // Draw image and detect landmarks (for debug view)
+          if (landmarker) {
+            const poseResult = landmarker.detect(img);
+            setResult(poseResult);
+            drawLandmarks(img, poseResult);
+          }
 
-        // Update Store
-        const landmarks = poseResult.landmarks?.[0] ?? [];
-        const landmarkCount = landmarks.length;
-        const coverage = landmarkCount ? landmarkCount / 33 : 0;
-        const score = Math.round(Math.min(100, 60 + coverage * 40));
-        const note = landmarkCount >= 28
-          ? 'Full body captured. Ready for fitting.'
-          : 'Pose detected but body is partially missing.';
-        
-        let proportions: PoseProportions | null = null;
-
-        if (landmarkCount >= 25) { // Ensure we have enough points for body calculation
-          const L_SHOULDER = 11, R_SHOULDER = 12;
-          const L_HIP = 23, R_HIP = 24;
-          const L_ANKLE = 27, R_ANKLE = 28;
-
-          const dist = (i1: number, i2: number) => {
-            const p1 = landmarks[i1];
-            const p2 = landmarks[i2];
-            return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
-          };
-
-          const shoulderWidth = dist(L_SHOULDER, R_SHOULDER);
-          const hipWidth = dist(L_HIP, R_HIP);
-          const torsoHeight = (dist(L_SHOULDER, L_HIP) + dist(R_SHOULDER, R_HIP)) / 2;
-          const legLength = (dist(L_HIP, L_ANKLE) + dist(R_HIP, R_ANKLE)) / 2;
-          
-          // Overall body height estimate (head to toe approx)
-          const bodyHeight = dist(0, L_ANKLE); // Nose to ankle as proxy
-          
-          proportions = {
-            shoulderWidth,
-            hipWidth,
-            torsoHeight,
-            legLength,
-            overallRatio: shoulderWidth / (bodyHeight || 1)
-          };
-          
-          console.log("Calculated Proportions:", proportions);
-        }
-
-        const analysisData: PoseAnalysisType = {
-          landmarkCount,
-          score,
-          note,
-          proportions,
+          // Use the unified analyzePose service for store updates
+          try {
+            const analysisData = await analyzePose(imageUrl);
+            console.log("Pose Analysis Result (Unified):", analysisData);
+            setPoseAnalysis(analysisData);
+          } catch (error) {
+            console.error("Unified Pose Analysis Error:", error);
+          }
         };
-        
-        console.log("Updating Store:", analysisData);
-        setPoseAnalysis(analysisData);
-      };
-    }
+      }
+    };
+
+    processImage();
+
+    return () => {
+      if (imageFile) {
+        URL.revokeObjectURL(URL.createObjectURL(imageFile));
+      }
+    };
   }, [imageFile, landmarker, setPoseAnalysis]);
 
   if (isLoading) {

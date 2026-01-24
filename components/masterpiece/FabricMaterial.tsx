@@ -1,7 +1,7 @@
 import { useTexture } from '@react-three/drei';
 import { FabricType, FABRIC_PRESETS } from './types';
 import * as THREE from 'three';
-import { useEffect } from 'react';
+import { useMemo } from 'react';
 
 interface FabricMaterialProps {
   textureUrl: string;
@@ -16,18 +16,16 @@ export function FabricMaterial({
   opacity = 1,
   transparent = true
 }: FabricMaterialProps) {
-  const texture = useTexture(textureUrl);
-
-  // Configure texture settings for high fidelity
-  useEffect(() => {
-    if (texture) {
-      // Modern Three.js color space handling
-      texture.colorSpace = THREE.SRGBColorSpace;
-      texture.anisotropy = 16; // Max quality
-      texture.wrapS = THREE.RepeatWrapping;
-      texture.wrapT = THREE.RepeatWrapping;
-    }
-  }, [texture]);
+  const baseTexture = useTexture(textureUrl);
+  const texture = useMemo(() => {
+    const cloned = baseTexture.clone();
+    cloned.colorSpace = THREE.SRGBColorSpace;
+    cloned.anisotropy = 16;
+    cloned.wrapS = THREE.RepeatWrapping;
+    cloned.wrapT = THREE.RepeatWrapping;
+    cloned.needsUpdate = true;
+    return cloned;
+  }, [baseTexture]);
 
   const config = FABRIC_PRESETS[fabricType];
 

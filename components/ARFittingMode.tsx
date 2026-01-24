@@ -109,8 +109,6 @@ export function ARFittingMode({ onBack }: ARFittingModeProps) {
                 const torsoHeight = Math.hypot(hipCenterX - shoulderCenterX, hipCenterY - shoulderCenterY);
                 
                 // 🆕 Waist calculation (shoulder-hip midpoint) - useful for future features
-                const _waistCenterX = (shoulderCenterX + hipCenterX) / 2;
-                const _waistCenterY = (shoulderCenterY + hipCenterY) / 2;
                 const waistWidth = (shoulderWidth + hipWidth) / 2;
 
                 // 2. Category-specific positioning using PRESETS

@@ -23,8 +23,11 @@ export interface FaceAnalysis {
 export interface PoseProportions {
   shoulderWidth: number;
   hipWidth: number;
+  waistWidth: number;
   torsoHeight: number;
   legLength: number;
+  armLength: number;
+  shoulderSlope: number; // Angle or relative slope
   overallRatio: number; // aspect ratio of the body
 }
 
@@ -201,11 +204,28 @@ export const analyzePose = async (dataUrl: string): Promise<PoseAnalysis> => {
         const overallHeight = Math.max(0.0001, torsoHeight + legLength);
         const overallRatio = ((shoulderWidth + hipWidth) / 2) / overallHeight;
 
+        // New Detailed Proportions
+        // Waist estimation (roughly midpoint between shoulders and hips)
+        const leftWaistPos = { x: (leftShoulder.x + leftHip.x) / 2, y: (leftShoulder.y + leftHip.y) / 2 };
+        const rightWaistPos = { x: (rightShoulder.x + rightHip.x) / 2, y: (rightShoulder.y + rightHip.y) / 2 };
+        const waistWidth = getDistance(leftWaistPos, rightWaistPos);
+
+        // Arm length (average of both arms)
+        const leftArmLen = getDistance(leftShoulder, landmarks[13] || leftShoulder) + getDistance(landmarks[13] || leftShoulder, landmarks[15] || leftShoulder);
+        const rightArmLen = getDistance(rightShoulder, landmarks[14] || rightShoulder) + getDistance(landmarks[14] || rightShoulder, landmarks[16] || rightShoulder);
+        const armLength = (leftArmLen + rightArmLen) / 2;
+
+        // Shoulder slope (y difference normalized by width)
+        const shoulderSlope = Math.abs(leftShoulder.y - rightShoulder.y) / shoulderWidth;
+
         proportions = {
           shoulderWidth,
           hipWidth,
+          waistWidth,
           torsoHeight,
           legLength,
+          armLength,
+          shoulderSlope,
           overallRatio,
         };
       }

@@ -145,8 +145,8 @@ export function calculateRecommendedSize(
     let diff = 0;
 
     if (category === 'tops' || category === 'outerwear' || category === 'dresses') {
-        const chestDiff = Math.abs(dims.chest - targetChest);
-        const shoulderDiff = Math.abs(dims.shoulder - targetShoulder);
+        const chestDiff = dims.chest ? Math.abs(dims.chest - targetChest) : 0;
+        const shoulderDiff = dims.shoulder ? Math.abs(dims.shoulder - targetShoulder) : 0;
         diff = chestDiff * 0.7 + shoulderDiff * 0.3; // Weight chest more
     } else if (category === 'bottoms') {
         const hipDiff = dims.hips ? Math.abs(dims.hips - measurements.hipCircumference) : 0;
@@ -156,9 +156,11 @@ export function calculateRecommendedSize(
             diff = hipDiff * 0.6 + waistDiff * 0.4;
         } else if (dims.hips) {
             diff = hipDiff;
+        } else if (dims.waist) {
+            diff = waistDiff;
         } else {
-            // Fallback if no hip/waist data (unlikely for bottoms chart)
-            diff = Math.abs(dims.chest - targetChest); // clearly wrong but fallback
+            // Fallback if no hip/waist data
+            diff = dims.chest ? Math.abs(dims.chest - targetChest) : 0; 
         }
     }
 
@@ -177,23 +179,23 @@ export function calculateRecommendedSize(
   const selectedDims = sizeChart.chart[bestSize];
 
   if (category === 'tops' || category === 'outerwear') {
-      if (measurements.shoulderWidth > selectedDims.shoulder) {
+      if (selectedDims.shoulder && measurements.shoulderWidth > selectedDims.shoulder) {
         fitNotes.push(`Shoulders might be slightly snug.`);
-      } else if (measurements.shoulderWidth < selectedDims.shoulder - 4) {
+      } else if (selectedDims.shoulder && measurements.shoulderWidth < selectedDims.shoulder - 4) {
         fitNotes.push(`Relaxed drop-shoulder look.`);
-      } else {
+      } else if (selectedDims.shoulder) {
         fitNotes.push(`Perfect shoulder alignment.`);
       }
 
-      if (measurements.chestCircumference > selectedDims.chest) {
+      if (selectedDims.chest && measurements.chestCircumference > selectedDims.chest) {
          fitNotes.push(`Form-fitting around the chest.`);
-      } else {
+      } else if (selectedDims.chest) {
          fitNotes.push(`Comfortable room in the chest.`);
       }
   } else if (category === 'bottoms') {
        if (selectedDims.hips && measurements.hipCircumference > selectedDims.hips) {
            fitNotes.push(`Tight fit around the hips.`);
-       } else {
+       } else if (selectedDims.hips) {
            fitNotes.push(`Comfortable hip fit.`);
        }
   }

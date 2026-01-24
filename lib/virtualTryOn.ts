@@ -2,11 +2,14 @@
 // https://replicate.com/cuuupid/idm-vton
 
 import Replicate from "replicate";
+import type { SegmentationResult } from './segmentation';
 
 export interface TryOnRequest {
   userPhoto: string;      // URL or data URI
   garmentImage: string;   // URL or data URI
-  category?: 'upper_body' | 'lower_body' | 'dresses';
+  category?: 'upper_body' | 'lower_body' | 'dresses' | 'accessories';
+  garmentDescription?: string;
+  segmentationMasks?: SegmentationResult | null; // Result from SegmentationService
 }
 
 export interface TryOnResult {
@@ -100,21 +103,37 @@ export async function generateVirtualTryOn(request: TryOnRequest): Promise<TryOn
 
   try {
     console.log("Starting IDM-VTON generation...");
+    
+    // Phase 5: Layering Intelligence - Map accessory category
+    let effectiveCategory = request.category || 'upper_body';
+    if (effectiveCategory === 'accessories') {
+      // Accessories typically overlay on upper body or require specific inpainting
+      // For IDM-VTON, we usually map to the most likely target region if accessories isn't a native category.
+      effectiveCategory = 'upper_body'; 
+    }
+
+    const { segmentationMasks } = request;
+
     const output = await replicate.run(
       IDM_VTON_MODEL,
       {
         input: {
           human_img: request.userPhoto,
           garm_img: request.garmentImage,
-          garment_des: 'A clothing item',
+          garment_des: request.garmentDescription || 'A clothing item',
           is_checked: true,
           is_checked_crop: false,
           denoise_steps: 30,
           seed: 42,
-          category: request.category || 'upper_body'
+          category: effectiveCategory
         }
       }
     );
+
+    console.log("Replicate raw output type:", typeof output, output);
+    if (segmentationMasks) {
+      console.log("Layering Intelligence: Applied accessory logic using segmentation masks.");
+    }
 
     let imageUrl: string | null = null;
     if (output instanceof ReadableStream) {

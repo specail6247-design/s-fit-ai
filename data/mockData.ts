@@ -5,8 +5,10 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP';
-  category: 'tops' | 'bottoms' | 'outerwear' | 'dresses';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
+  subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
+  zIndex?: number;
   price: number;
   currency: string;
   imageUrl: string;
@@ -68,6 +70,27 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=GAP',
     isLuxury: false,
     tier: 'basic',
+  },
+  {
+    id: 'chanel',
+    name: 'Chanel',
+    logo: 'https://placehold.co/100x100?text=CHANEL',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'supreme',
+    name: 'Supreme',
+    logo: 'https://placehold.co/100x100?text=SUPREME',
+    isLuxury: false,
+    tier: 'mass',
+  },
+  {
+    id: 'tiffany',
+    name: 'Tiffany',
+    logo: 'https://placehold.co/100x100?text=TIFFANY',
+    isLuxury: true,
+    tier: 'luxury',
   },
 ];
 
@@ -461,6 +484,56 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Gray', 'Navy'],
     description: 'Comfortable athletic joggers',
+  },
+
+  // ACCESSORIES - New Category
+  {
+    id: 'chanel-bag-001',
+    name: 'Classic Flap Bag',
+    brand: 'Chanel',
+    category: 'accessories',
+    subCategory: 'bag',
+    zIndex: 50,
+    price: 10200.00,
+    currency: 'USD',
+    imageUrl: '/accessories/chanel_bag.png',
+    textureUrl: '/accessories/chanel_bag.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Black', 'Beige'],
+    description: 'Iconic quilted leather handbag with chain strap',
+  },
+  {
+    id: 'supreme-hat-001',
+    name: 'Box Logo Camp Cap',
+    brand: 'Supreme',
+    category: 'accessories',
+    subCategory: 'hat',
+    zIndex: 50,
+    price: 48.00,
+    currency: 'USD',
+    imageUrl: '/accessories/supreme_hat.png',
+    textureUrl: '/accessories/supreme_hat.png',
+    isLuxury: false,
+    sizes: ['Adjustable'],
+    colors: ['Red', 'Black', 'Camo'],
+    description: 'Cotton canvas camp cap with woven box logo',
+  },
+  {
+    id: 'tiffany-necklace-001',
+    name: 'T Smile Pendant',
+    brand: 'Tiffany',
+    category: 'accessories',
+    subCategory: 'jewelry',
+    zIndex: 35,
+    price: 1200.00,
+    currency: 'USD',
+    imageUrl: '/accessories/tiffany_necklace.png',
+    textureUrl: '/accessories/tiffany_necklace.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Gold', 'Silver'],
+    description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
   },
 ];
 

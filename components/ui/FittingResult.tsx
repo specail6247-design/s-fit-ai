@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 
 interface FittingResultProps {
@@ -19,10 +20,13 @@ export const FittingResult: React.FC<FittingResultProps> = ({
     <div className="relative w-full max-w-md mx-auto overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-color)] bg-[var(--color-secondary)]">
       {/* AR Overlay UI */}
       <div className="relative aspect-[3/4]">
-        <img
+        <Image
           src={resultImage}
           alt="Virtual Try-On Result"
-          className="w-full h-full object-cover"
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 480px"
+          unoptimized
         />
 
         {/* Scanning Line Animation */}
