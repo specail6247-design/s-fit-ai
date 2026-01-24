@@ -1,5 +1,13 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
+
+// Dynamically import the heavy 3D component
+const LuxuryImageDistortion = dynamic(() => import('@/components/masterpiece/LuxuryImageDistortion'), {
+    ssr: false,
+});
 
 interface ProductCardProps {
   name: string;
@@ -18,22 +26,32 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onTryOn,
   className = '',
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <motion.div
       className={`group relative w-full overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-surface)] border border-[var(--border-color)] ${className}`}
       whileHover={{ y: -5 }}
       transition={{ duration: 0.3 }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image Container */}
       <div className="relative aspect-[3/4] overflow-hidden bg-[var(--color-background)]">
         <motion.img
           src={imageUrl}
           alt={name}
-          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+          className={`h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 luxury-grade-image ${isHovered ? 'opacity-0' : 'opacity-100'}`}
         />
 
+        {isHovered && (
+             <div className="absolute inset-0 z-10 animate-fade-in-up">
+                 <LuxuryImageDistortion imageUrl={imageUrl} />
+             </div>
+        )}
+
         {/* Overlay Actions */}
-        <div className="absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-center justify-center z-20">
           <motion.button
             onClick={onTryOn}
             className="rounded-full bg-[var(--color-surface)] px-6 py-2 text-sm font-semibold text-[var(--color-secondary)] hover:bg-[var(--color-primary)] transition-colors shadow-lg"

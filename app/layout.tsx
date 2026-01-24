@@ -1,10 +1,24 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Cinzel, Space_Grotesk, Geist, Geist_Mono } from "next/font/google";
 import { validateEnv } from "@/lib/env";
 import "./globals.css";
+import SmoothScroll from "@/components/ui/SmoothScroll";
+import LuxuryCursor from "@/components/ui/LuxuryCursor";
 
 // Validate environment variables on startup
 validateEnv();
+
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
+  subsets: ["latin"],
+  display: "swap",
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,9 +58,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-void-black text-pure-white`}
+        className={`${cinzel.variable} ${spaceGrotesk.variable} ${geistSans.variable} ${geistMono.variable} antialiased bg-void-black text-pure-white`}
         suppressHydrationWarning
       >
+        <SmoothScroll />
+        <LuxuryCursor />
         {/* Grain Overlay for Premium Feel */}
         <div className="grain-overlay" aria-hidden="true" />
         {children}
