@@ -1,11 +1,12 @@
 // S_FIT AI - Mock Data
 // 15 items: 5 Mass Market (ZARA), 5 Luxury (Gucci), 5 Basic (Uniqlo)
 // Updated with real product images
+import { luxuryProducts } from './luxuryProducts';
 
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Hermes';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -92,10 +93,18 @@ export const brands: Brand[] = [
     isLuxury: true,
     tier: 'luxury',
   },
+  {
+    id: 'hermes',
+    name: 'Hermes',
+    logo: 'https://placehold.co/100x100?text=HERMES',
+    isLuxury: true,
+    tier: 'luxury',
+  },
 ];
 
 // Mock Clothing Items with Real Product Images
 export const mockClothingItems: ClothingItem[] = [
+  ...(luxuryProducts as unknown as ClothingItem[]),
   // ZARA - Mass Market (5 items)
   {
     id: 'zara-001',
