@@ -5,7 +5,7 @@ import path from 'path';
 export default defineConfig({
   plugins: [react()],
   test: {
-    environment: 'jsdom',
+    environment: 'happy-dom',
     globals: true,
     setupFiles: './test/setup.ts',
     include: ['__tests__/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
@@ -23,6 +23,12 @@ export default defineConfig({
         '**/*.config.*',
         '.next/',
       ],
+    },
+    // Fix for ESM/CJS conflict in jsdom dependencies
+    server: {
+      deps: {
+        inline: [/html-encoding-sniffer/, /@exodus\/bytes/],
+      },
     },
   },
 });

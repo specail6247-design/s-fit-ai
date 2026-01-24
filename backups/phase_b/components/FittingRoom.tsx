@@ -308,17 +308,15 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 function Mannequin({ 
   height = 170, opacity = 1.0 
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
+  const meshRef = useRef<THREE.Group>(null);
   const scale = height / 170;
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
   
   return (
-    <group scale={[scale, scale, scale]}>
-      {/* Generic RPM Avatar Buffer */}
-      <AvatarLoader 
-        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-        animationUrl={animationUrl}
-        scale={1.0}
-      />
+    <group ref={meshRef} scale={[scale, scale, scale]}>
+      {/* Fallback Mannequin Geometry */}
+      <mesh position={[0, 1.6, 0]}><sphereGeometry args={[0.12, 32, 32]} /><meshStandardMaterial color="#e0b8a0" roughness={0.6} transparent={opacity < 1.0} opacity={opacity} /></mesh>
+      <mesh position={[0, 1.45, 0]}><cylinderGeometry args={[0.05, 0.06, 0.12, 16]} /><meshStandardMaterial color="#e0b8a0" roughness={0.6} transparent={opacity < 1.0} opacity={opacity} /></mesh>
+      <mesh position={[0, 1.32, 0]} scale={[1, 1, 1]}><boxGeometry args={[0.48, 0.08, 0.2]} /><meshStandardMaterial color="#e0b8a0" roughness={0.6} transparent={opacity < 1.0} opacity={opacity} /></mesh>
     </group>
   );
 }
@@ -504,7 +502,6 @@ function Scene({
   const scale = height / 170;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
   let mannequinPosition: [number, number, number] = [0, -0.9, 0];
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
 
   const heatmapData = useMemo(() => {
     if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !selectedItem) return null;
@@ -535,7 +532,7 @@ function Scene({
               ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
               : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
             }
-            animationUrl={animationUrl}
+            animationUrl="/animations/idle.glb"
             scale={1.0}
           />
         ) : (
