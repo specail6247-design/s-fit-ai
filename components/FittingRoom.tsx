@@ -32,6 +32,8 @@ import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
+import VaultModal from '@/components/ui/VaultModal';
+import AmbientSound from '@/components/ui/AmbientSound';
 
 // --- PHYSICS ENGINE (Ammo.js) ---
 
@@ -309,13 +311,13 @@ function Mannequin({
   height = 170, opacity = 1.0 
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  const animationUrl = "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb";
   
   return (
     <group scale={[scale, scale, scale]}>
       {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
-        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+        url="https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb"
         animationUrl={animationUrl}
         scale={1.0}
       />
@@ -504,7 +506,7 @@ function Scene({
   const scale = height / 170;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
   let mannequinPosition: [number, number, number] = [0, -0.9, 0];
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  const animationUrl = "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb";
 
   const heatmapData = useMemo(() => {
     if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !selectedItem) return null;
@@ -532,8 +534,8 @@ function Scene({
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
             url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+              ? "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb"
+              : "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb"
             }
             animationUrl={animationUrl}
             scale={1.0}
@@ -575,24 +577,48 @@ interface ItemCardProps {
   onSelect: () => void;
   isRecommended?: boolean;
   fitScore: number;
+  isVaulted: boolean;
+  onToggleVault: (e: React.MouseEvent) => void;
 }
 
 function ItemCard({
-  item, isSelected, onSelect, isRecommended, fitScore
+  item, isSelected, onSelect, isRecommended, fitScore, isVaulted, onToggleVault
 }: ItemCardProps) {
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
+  const isLocked = item.lockedUntil ? new Date(item.lockedUntil) > new Date() : false;
+
+  // Simple countdown logic could go here, but for now just show "LOCKED"
+  const lockedTime = item.lockedUntil ? new Date(item.lockedUntil).toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' }) : '';
+
   return (
     <motion.button
-      onClick={onSelect}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      onClick={isLocked ? undefined : onSelect}
+      className={`relative flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'} ${isLocked ? 'opacity-70 cursor-not-allowed grayscale' : ''}`}
+      whileHover={!isLocked ? { scale: 1.05 } : undefined}
+      whileTap={!isLocked ? { scale: 0.95 } : undefined}
     >
       <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
         <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
         {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
+
+        {isLocked && (
+            <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10">
+                <span className="text-lg">🔒</span>
+                <span className="text-[0.5rem] font-bold text-soft-gray mt-1">DROP AT</span>
+                <span className="text-[0.5rem] font-bold text-cyber-lime">{lockedTime}</span>
+            </div>
+        )}
       </div>
+
+      {/* Vault Button */}
+      <div
+        onClick={onToggleVault}
+        className={`absolute top-2 right-2 z-20 w-5 h-5 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 transition-colors ${isVaulted ? 'text-red-500' : 'text-soft-gray'}`}
+      >
+        <span className="text-[0.6rem]">{isVaulted ? '❤️' : '🤍'}</span>
+      </div>
+
       <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
       <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
       <p className="text-[0.55rem] text-cyber-lime">Fit {fitScore}%</p>
@@ -830,15 +856,18 @@ function AITryOnModal({
 export function FittingRoom() {
   const {
     userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    vaultItems, addToVault, removeFromVault
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
+  const [showVaultModal, setShowVaultModal] = useState(false);
   const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
   const [aiTryOnLoading, setAITryOnLoading] = useState(false);
   const [userPhotoPreview, setUserPhotoPreview] = useState<string | null>(null);
   const [isMasterpieceMode, setIsMasterpieceMode] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [isMacroView, setIsMacroView] = useState(false);
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [webglFailed, setWebglFailed] = useState(false);
@@ -989,10 +1018,14 @@ export function FittingRoom() {
           </Suspense>
         )}
         
+        <AmbientSound active={isMasterpieceMode} muted={isMuted} />
         {/* Controls Overlay */}
         <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
             <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
+            </button>
+            <button onClick={() => setIsMuted(!isMuted)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${!isMuted ? 'bg-white/10 text-white border-white/20' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
+                {isMuted ? '🔇 Unmute' : '🔊 Audio'}
             </button>
             <button onClick={() => setIsMacroView(!isMacroView)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMacroView ? 'bg-white text-black border-white' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 🔍 Macro View
@@ -1011,6 +1044,10 @@ export function FittingRoom() {
         )}
 
         <div className="absolute top-4 left-4 flex gap-2 z-20">
+            <button onClick={() => setShowVaultModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors relative">
+                <span>💎</span>
+                {vaultItems.length > 0 && <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-[8px] flex items-center justify-center font-bold">{vaultItems.length}</span>}
+            </button>
             <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
                 <span>📤</span>
             </button>
@@ -1054,30 +1091,40 @@ export function FittingRoom() {
         {/* AI Consultant Advice Overlay */}
         <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none">
             <AnimatePresence>
-                {currentItem && poseAnalysis?.proportions && recommendedFit && (
+                {currentItem && (
                     <motion.div 
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                         className="bg-black/60 backdrop-blur-xl border border-white/10 p-3 rounded-2xl shadow-2xl pointer-events-auto max-w-sm"
                     >
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-cyber-lime/20 flex items-center justify-center text-cyber-lime text-xs font-bold ring-1 ring-cyber-lime/30">
-                                {recommendedFit.recommendedSize}
+                        {poseAnalysis?.proportions && recommendedFit && (
+                            <>
+                                <div className="flex items-center gap-3 mb-2">
+                                    <div className="w-8 h-8 rounded-full bg-cyber-lime/20 flex items-center justify-center text-cyber-lime text-xs font-bold ring-1 ring-cyber-lime/30">
+                                        {recommendedFit.recommendedSize}
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] uppercase tracking-widest text-soft-gray font-bold">AI Recommended Fit</p>
+                                        <p className="text-xs font-bold text-white">Masterpiece Fit Consultant</p>
+                                    </div>
+                                </div>
+                                <ul className="space-y-1 mb-2">
+                                    {recommendedFit.fitNotes.map((note, i) => (
+                                        <li key={i} className="text-[9px] text-soft-gray flex items-start gap-1.5 leading-relaxed">
+                                            <span className="text-cyber-lime mt-1 flex-shrink-0">●</span>
+                                            {note}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </>
+                        )}
+                        {currentItem.stylingTip && (
+                            <div className={`${poseAnalysis?.proportions ? 'pt-2 border-t border-white/10' : ''}`}>
+                                <p className="text-[9px] font-bold text-cyber-lime uppercase tracking-wider mb-1">AI Stylist Note</p>
+                                <p className="text-[9px] text-soft-gray italic">"{currentItem.stylingTip}"</p>
                             </div>
-                            <div>
-                                <p className="text-[10px] uppercase tracking-widest text-soft-gray font-bold">AI Recommended Fit</p>
-                                <p className="text-xs font-bold text-white">Masterpiece Fit Consultant</p>
-                            </div>
-                        </div>
-                        <ul className="space-y-1">
-                            {recommendedFit.fitNotes.map((note, i) => (
-                                <li key={i} className="text-[9px] text-soft-gray flex items-start gap-1.5 leading-relaxed">
-                                    <span className="text-cyber-lime mt-1 flex-shrink-0">●</span>
-                                    {note}
-                                </li>
-                            ))}
-                        </ul>
+                        )}
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -1097,6 +1144,12 @@ export function FittingRoom() {
                     isSelected={currentItem?.id === item.id} 
                     onSelect={() => setSelectedItem(item)}
                     fitScore={fitScore + (item.isLuxury ? 5 : 0)}
+                    isVaulted={vaultItems.some(v => v.id === item.id)}
+                    onToggleVault={(e) => {
+                        e.stopPropagation();
+                        if (vaultItems.some(v => v.id === item.id)) removeFromVault(item.id);
+                        else addToVault(item);
+                    }}
                 />
             ))}
         </div>
@@ -1133,6 +1186,13 @@ export function FittingRoom() {
         brandName={currentItem?.brand} 
         fitScore={fitScore}
         recommendedSize={recommendedFit?.recommendedSize}
+      />
+      <VaultModal
+        isOpen={showVaultModal}
+        onClose={() => setShowVaultModal(false)}
+        items={vaultItems}
+        onSelect={setSelectedItem}
+        onRemove={removeFromVault}
       />
       <CompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} picks={topPicks} onSelect={setSelectedItem} />
       <AITryOnModal
