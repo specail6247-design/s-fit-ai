@@ -275,26 +275,8 @@ export function ARFittingMode({ onBack }: ARFittingModeProps) {
       ctx.drawImage(videoRef.current, 0, 0, width, height);
       ctx.restore();
 
-      // 2. Draw AR Overlay (Also mirrored, so we need to draw it as is because the canvas itself is mirrored via CSS, but check internal logic)
-      // Actually, my draw logic (detectPose) already handles mirroring math logic inside the coordinates?
-      // Wait, in detectPose: `const lsX = (1 - leftShoulder.x) * width;` <- This handles the mirror logic for coordinates.
-      // But the canvas element itself in JSX has `transform scale-x-[-1]`. 
-      // This means the canvas VISUAL is flipped. 
-      // If I draw the canvas contents directly to the snapshot, they might be backwards text?
-      // 'Wearing: ...' text is drawn. If I draw the canvas as-is, text will be flipped if the canvas was flipped by CSS.
-      // But `ctx.drawImage(canvasRef.current)` takes the raw pixels. The raw pixels are NOT flipped by CSS. 
-      // So if I drew "Wearing" normally on the canvas, it looks backwards in the CSS-mirrored canvas. 
-      // Let's check `detectPose`... 
-      // `ctx.fillText` draws normal text. CSS `scale-x-[-1]` flips it visually. So user sees "Backwards Text" on screen?!
-      // Ah, I missed that! The text "Wearing:..." will be mirrored on screen if I put it on the mirrored canvas.
-      // I should fix that text rendering first or confusing snapshot logic.
-      // For now, let's just flip the overlay canvas when drawing to snapshot to match what the user SEES (which is the mirror of the raw canvas).
-      
-      ctx.save();
-      ctx.translate(width, 0);
-      ctx.scale(-1, 1);
+      // 2. Draw AR Overlay (Already aligned to mirrored view)
       ctx.drawImage(canvasRef.current, 0, 0);
-      ctx.restore();
       
       // 3. Add Watermark
       ctx.font = 'bold 24px Arial';
@@ -328,7 +310,7 @@ export function ARFittingMode({ onBack }: ARFittingModeProps) {
           ref={canvasRef}
           width={1280}
           height={720}
-          className="absolute inset-0 w-full h-full pointer-events-none transform scale-x-[-1]"
+          className="absolute inset-0 w-full h-full pointer-events-none"
         />
 
         {/* Snapshot Flash Animation or Effect could go here */}
