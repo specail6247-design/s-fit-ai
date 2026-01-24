@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LegalModal } from './ui/LegalModal';
+import { SupportModal } from './ui/SupportModal';
+import { DataSafetyBadge } from './ui/DataSafetyBadge';
+import { generateStoryImage } from '@/lib/storyGenerator';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +20,24 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  const [showLegal, setShowLegal] = useState(false);
+  const [legalTab, setLegalTab] = useState<'privacy' | 'terms'>('privacy');
+  const [showSupport, setShowSupport] = useState(false);
+
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+    try {
+        const storyUrl = await generateStoryImage(resultImage);
+        const a = document.createElement('a');
+        a.href = storyUrl;
+        a.download = 's_fit_story.png';
+        a.click();
+    } catch (e) {
+        console.error('Failed to generate story:', e);
+        alert('Failed to generate story image.');
+    }
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -73,6 +95,8 @@ export default function RealLifeFitting() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
+      <LegalModal isOpen={showLegal} onClose={() => setShowLegal(false)} initialTab={legalTab} />
+      <SupportModal isOpen={showSupport} onClose={() => setShowSupport(false)} />
       
       {/* LEFT PANEL: CONTROLS */}
       <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
@@ -104,6 +128,7 @@ export default function RealLifeFitting() {
                 </div>
               </label>
             </div>
+            <DataSafetyBadge />
           </div>
 
           {/* Garment Input */}
@@ -158,6 +183,16 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-6 pt-6 border-t border-white/10 flex justify-between text-[10px] text-gray-500 font-medium">
+             <div className="flex gap-4">
+                <button onClick={() => { setLegalTab('privacy'); setShowLegal(true); }} className="hover:text-[#007AFF] transition-colors">Privacy</button>
+                <button onClick={() => { setLegalTab('terms'); setShowLegal(true); }} className="hover:text-[#007AFF] transition-colors">Terms</button>
+             </div>
+             <button onClick={() => setShowSupport(true)} className="hover:text-[#007AFF] transition-colors flex items-center gap-1">
+               <span>Report Issue</span>
+             </button>
+          </div>
+
         </div>
       </div>
 
@@ -205,6 +240,12 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                  onClick={handleShareToStory}
+                  className="absolute bottom-4 right-4 bg-gradient-to-r from-[#833AB4] to-[#F77737] text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 hover:scale-105 transition-transform shadow-lg"
+              >
+                  <span className="material-symbols-outlined text-[14px]">ios_share</span> Story
+              </button>
             </div>
           </motion.div>
         )}
