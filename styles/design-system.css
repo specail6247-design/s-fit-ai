@@ -12,6 +12,7 @@
   /* Typography */
   --font-display: "Geist", -apple-system, sans-serif;
   --font-body: "Geist Mono", monospace;
+  --font-serif: var(--font-cinzel), serif;
 
   /* Spacing */
   --spacing-xs: 0.25rem;
