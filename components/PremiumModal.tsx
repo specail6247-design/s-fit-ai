@@ -4,6 +4,7 @@
 // Shown when user exceeds daily free limit
 
 import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
 import { useStore, DAILY_LIMIT } from '@/store/useStore';
 
 const backdropVariants = {
@@ -43,10 +44,32 @@ export function PremiumModal() {
     setShowPremiumModal(false);
   };
 
-  const handleSubscribe = () => {
-    // TODO: Implement actual payment flow
-    alert('Payment integration coming soon! 🚀');
-    setShowPremiumModal(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubscribe = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/checkout_sessions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else if (data.error) {
+        console.error('Stripe error:', data.error);
+        alert(`Payment setup error: ${data.error}`);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('An unexpected error occurred. Please try again.');
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -127,12 +150,21 @@ export function PremiumModal() {
               <div className="space-y-3">
                 <button
                   onClick={handleSubscribe}
-                  className="btn-primary w-full text-center"
+                  disabled={isLoading}
+                  className="btn-primary w-full text-center flex items-center justify-center gap-2"
                 >
-                  Start Premium
+                  {isLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-void-black border-t-transparent rounded-full animate-spin" />
+                      <span>Processing...</span>
+                    </>
+                  ) : (
+                    'Start Premium'
+                  )}
                 </button>
                 <button
                   onClick={handleClose}
+                  disabled={isLoading}
                   className="btn-secondary w-full text-center"
                 >
                   Maybe Later
