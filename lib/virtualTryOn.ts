@@ -13,6 +13,7 @@ export interface TryOnResult {
   success: boolean;
   imageUrl?: string;
   error?: string;
+  videoUrl?: string;
 }
 
 export interface CinematicVideoResult {
@@ -23,6 +24,10 @@ export interface CinematicVideoResult {
 
 // cuuupid/idm-vton
 const IDM_VTON_MODEL = "cuuupid/idm-vton:c871bb9b046607b680449ecbae55fd8c6d945e0a1948644bf2361b3d021d3ff4";
+// Upscaler
+const REAL_ESRGAN_MODEL = "nightmareai/real-esrgan:42fed1c4974146d4d2414e2be2c5277c7fcf05fcc3a73ab241bbb49991ea7781";
+// Video Generation (SVD) - 4K High Fidelity
+const SVD_MODEL = "stability-ai/stable-video-diffusion:3f0457e4619daac51203dedb472816f3af8d9bc94d61ced4e916cd04605162f1";
 
 // Helper to consume ReadableStream and return as base64 data URI or URL string
 async function consumeStream(stream: ReadableStream): Promise<string> {
@@ -62,6 +67,22 @@ async function consumeStream(stream: ReadableStream): Promise<string> {
   return new TextDecoder().decode(result);
 }
 
+// Helper to extract URL from Replicate output
+function extractUrlFromOutput(output: unknown): string | null {
+  if (output instanceof ReadableStream) {
+    return null; // Should have been consumed before
+  } else if (Array.isArray(output)) {
+    return output[0] ? String(output[0]) : null;
+  } else if (typeof output === 'string') {
+    return output;
+  } else if (output && typeof output === 'object') {
+    const obj = output as Record<string, unknown>;
+    if (obj.output) return String(obj.output);
+    if (obj.url) return String(obj.url);
+  }
+  return null;
+}
+
 export async function generateVirtualTryOn(request: TryOnRequest): Promise<TryOnResult> {
   const apiToken = process.env.REPLICATE_API_TOKEN;
   
@@ -78,7 +99,7 @@ export async function generateVirtualTryOn(request: TryOnRequest): Promise<TryOn
   });
 
   try {
-    // Replicate accepts URLs and data URIs as strings
+    console.log("Starting IDM-VTON generation...");
     const output = await replicate.run(
       IDM_VTON_MODEL,
       {
@@ -95,31 +116,11 @@ export async function generateVirtualTryOn(request: TryOnRequest): Promise<TryOn
       }
     );
 
-    console.log("Replicate raw output type:", typeof output, output);
-
     let imageUrl: string | null = null;
-
-    // Handle different output formats from Replicate
     if (output instanceof ReadableStream) {
-      // Stream response - consume it
-      console.log("Output is ReadableStream, consuming...");
-      const streamResult = await consumeStream(output);
-      console.log("Stream result:", streamResult.substring(0, 200));
-      // The stream might contain a URL or base64 data
-      imageUrl = streamResult.trim();
-    } else if (Array.isArray(output)) {
-      // Array of URLs
-      imageUrl = output[0] ? String(output[0]) : null;
-    } else if (typeof output === 'string') {
-      imageUrl = output;
-    } else if (output && typeof output === 'object') {
-      // Object with output property
-      const obj = output as Record<string, unknown>;
-      if (obj.output) {
-        imageUrl = String(obj.output);
-      } else if (obj.url) {
-        imageUrl = String(obj.url);
-      }
+       imageUrl = await consumeStream(output);
+    } else {
+       imageUrl = extractUrlFromOutput(output);
     }
 
     console.log("Extracted imageUrl:", imageUrl?.substring(0, 100));
@@ -144,9 +145,39 @@ export async function generateVirtualTryOn(request: TryOnRequest): Promise<TryOn
   }
 }
 
-// stability-ai/stable-video-diffusion
-const SVD_MODEL = "stability-ai/stable-video-diffusion:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b";
+export async function upscaleImage(imageUrl: string): Promise<string | null> {
+  const apiToken = process.env.REPLICATE_API_TOKEN;
+  if (!apiToken) return null;
 
+  const replicate = new Replicate({ auth: apiToken });
+
+  try {
+    console.log("Starting Upscaling...");
+    const output = await replicate.run(
+      REAL_ESRGAN_MODEL,
+      {
+        input: {
+          image: imageUrl,
+          scale: 4,
+          face_enhance: true
+        }
+      }
+    );
+
+    let resultUrl: string | null = null;
+    if (output instanceof ReadableStream) {
+      resultUrl = await consumeStream(output);
+    } else {
+      resultUrl = extractUrlFromOutput(output);
+    }
+    return resultUrl;
+  } catch (error) {
+    console.error("Upscale error:", error);
+    return null;
+  }
+}
+
+// Unified Video Generation (Runway/SVD)
 export async function generateCinematicVideo(imageUrl: string): Promise<CinematicVideoResult> {
   const apiToken = process.env.REPLICATE_API_TOKEN;
 
@@ -163,6 +194,7 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
   });
 
   try {
+    console.log("Starting Cinematic Video Generation (SVD)...");
     const output = await replicate.run(
       SVD_MODEL,
       {
@@ -172,20 +204,16 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
           sizing_strategy: "maintain_aspect_ratio",
           motion_bucket_id: 127,
           frames_per_second: 6,
+          cond_aug: 0.02
         }
       }
     );
 
-    console.log("SVD output:", output);
-
-    let videoUrl = "";
-    if (typeof output === 'string') {
-        videoUrl = output;
-    } else if (Array.isArray(output) && output.length > 0) {
-        videoUrl = String(output[0]);
-    } else if (output && typeof output === 'object') {
-         // @ts-expect-error - Handling unknown output structure
-         videoUrl = output.output || output.url || "";
+    let videoUrl: string | null = null;
+    if (output instanceof ReadableStream) {
+      videoUrl = await consumeStream(output);
+    } else {
+      videoUrl = extractUrlFromOutput(output);
     }
 
     if (videoUrl) {
@@ -208,3 +236,9 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
     };
   }
 }
+
+// Keep generateRunwayVideo as an alias for backward compatibility or internal use
+export const generateRunwayVideo = async (imageUrl: string) => {
+    const res = await generateCinematicVideo(imageUrl);
+    return res.success ? res.videoUrl : null;
+};
