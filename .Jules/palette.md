@@ -1,0 +1,3 @@
+## 2025-02-18 - Keyboard Accessibility in Hover-Only Interfaces
+**Learning:** Hiding interactive elements (like "Try On" buttons) with `opacity: 0` until hover makes them inaccessible to keyboard users unless handled carefully. Even if the element is in the DOM and focusable, the user cannot see it when it receives focus, which is disorienting.
+**Action:** When using hover-reveal patterns, always pair `group-hover:opacity-100` with `group-focus-within:opacity-100` (or `focus-visible` on the element itself) to ensure the element becomes visible when focused via keyboard. Also, ensure the interactive element has clear focus indicators (`focus-visible:ring`).
