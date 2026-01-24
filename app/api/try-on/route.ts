@@ -8,12 +8,20 @@ export const runtime = 'nodejs';
 export const maxDuration = 120;
 
 // Helper: Convert local file to base64 data URI
-function localFileToDataUri(localPath: string): string | null {
+export function localFileToDataUri(localPath: string): string | null {
   try {
-    // Remove leading slash and resolve to public directory
-    const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
-    const absolutePath = path.join(process.cwd(), 'public', relativePath);
+    const publicDir = path.join(process.cwd(), 'public');
+    // Remove all leading slashes to ensure it's treated as relative
+    const relativePath = localPath.replace(/^\/+/, '');
+    // Resolve absolute path safely
+    const absolutePath = path.resolve(publicDir, relativePath);
     
+    // Security check: Ensure path is still within public directory
+    if (!absolutePath.startsWith(publicDir)) {
+      console.error('Security Warning: Path traversal attempt detected:', localPath);
+      return null;
+    }
+
     console.log('Reading local file:', absolutePath);
     
     if (!fs.existsSync(absolutePath)) {
