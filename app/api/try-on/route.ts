@@ -8,7 +8,7 @@ export const runtime = 'nodejs';
 export const maxDuration = 120;
 
 // Helper: Convert local file to base64 data URI
-function localFileToDataUri(localPath: string): string | null {
+async function localFileToDataUri(localPath: string): Promise<string | null> {
   try {
     // Remove leading slash and resolve to public directory
     const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
@@ -16,28 +16,33 @@ function localFileToDataUri(localPath: string): string | null {
     
     console.log('Reading local file:', absolutePath);
     
-    if (!fs.existsSync(absolutePath)) {
-      console.error('File not found:', absolutePath);
+    try {
+      const fileBuffer = await fs.promises.readFile(absolutePath);
+      const base64 = fileBuffer.toString('base64');
+
+      // Determine MIME type from extension
+      const ext = path.extname(localPath).toLowerCase();
+      const mimeTypes: Record<string, string> = {
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.webp': 'image/webp',
+        '.gif': 'image/gif'
+      };
+      const mimeType = mimeTypes[ext] || 'image/png';
+
+      return `data:${mimeType};base64,${base64}`;
+    } catch (error) {
+      const nodeError = error as { code?: string };
+      if (nodeError.code === 'ENOENT') {
+        console.error('File not found:', absolutePath);
+      } else {
+        console.error('Error reading local file:', error);
+      }
       return null;
     }
-    
-    const fileBuffer = fs.readFileSync(absolutePath);
-    const base64 = fileBuffer.toString('base64');
-    
-    // Determine MIME type from extension
-    const ext = path.extname(localPath).toLowerCase();
-    const mimeTypes: Record<string, string> = {
-      '.png': 'image/png',
-      '.jpg': 'image/jpeg',
-      '.jpeg': 'image/jpeg',
-      '.webp': 'image/webp',
-      '.gif': 'image/gif'
-    };
-    const mimeType = mimeTypes[ext] || 'image/png';
-    
-    return `data:${mimeType};base64,${base64}`;
   } catch (error) {
-    console.error('Error reading local file:', error);
+    console.error('Error in localFileToDataUri:', error);
     return null;
   }
 }
@@ -67,7 +72,7 @@ export async function POST(request: NextRequest) {
         garmentImageInput = garmentImageUrl;
       } else if (garmentImageUrl.startsWith('/')) {
         // Local file in public directory - convert to base64 data URI
-        const dataUri = localFileToDataUri(garmentImageUrl);
+        const dataUri = await localFileToDataUri(garmentImageUrl);
         if (!dataUri) {
           return NextResponse.json(
             { error: `Failed to read local image: ${garmentImageUrl}` },
