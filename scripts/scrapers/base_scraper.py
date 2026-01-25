@@ -10,6 +10,7 @@ from typing import List, Dict, Optional, Any
 try:
     from playwright.async_api import async_playwright, Page, Browser, BrowserContext
     from fake_useragent import UserAgent
+    from playwright_stealth import Stealth
 except ImportError:
     print("Dependencies missing. Run: pip install -r scripts/scrapers/requirements.txt")
     exit(1)
@@ -54,8 +55,6 @@ class BaseScraper(ABC):
 
             except Exception as e:
                 print(f"   ❌ Scraping error: {e}")
-                # Fallback to mock data in case of failure if needed,
-                # but for now we just return what we have or empty list.
 
             finally:
                 await browser.close()
@@ -63,12 +62,16 @@ class BaseScraper(ABC):
         return self.products
 
     async def _create_context(self, browser: Browser) -> BrowserContext:
-        """Create browser context with randomized user agent"""
+        """Create browser context with randomized user agent and stealth"""
         user_agent = self.ua.random
-        return await browser.new_context(
+        context = await browser.new_context(
             viewport=VIEWPORT,
             user_agent=user_agent
         )
+        # Apply stealth
+        stealth = Stealth()
+        await stealth.apply_stealth_async(context)
+        return context
 
     async def _navigate(self, page: Page, url: str):
         """Navigate to URL with retry logic"""
@@ -97,6 +100,34 @@ class BaseScraper(ABC):
         """Sleep for random interval"""
         delay = random.uniform(REQUEST_DELAY_MIN, REQUEST_DELAY_MAX)
         await asyncio.sleep(delay)
+
+    async def get_material_text(self, page: Page) -> str:
+        """Attempts to find and extract material composition text."""
+        # Common keywords for material sections
+        keywords = ["Materials", "Material", "Composition", "Fabric", "Care", "Details", "설명", "소재"]
+
+        # Look for clickable elements (accordions/tabs) with keywords and expand them
+        for keyword in keywords:
+            try:
+                # Find elements containing keyword
+                elements = await page.get_by_text(keyword, exact=False).all()
+                for el in elements:
+                    if await el.is_visible():
+                        # Try clicking to expand
+                        try:
+                            await el.click(timeout=500)
+                            await asyncio.sleep(0.5)
+                        except:
+                            pass
+            except:
+                pass
+
+        # Return full body text for regex parsing
+        try:
+            body_text = await page.inner_text("body")
+            return body_text
+        except:
+            return ""
 
     @abstractmethod
     def get_category_url(self, category: str) -> Optional[str]:

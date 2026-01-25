@@ -1,7 +1,231 @@
 {
-  "syncedAt": "2026-01-23T17:07:43.262605",
-  "count": 16,
+  "syncedAt": "2026-01-25T17:53:23.707478",
+  "count": 14,
   "products": [
+    {
+      "id": "zara-women-tops-1",
+      "name": "Oversized Shirt",
+      "brand": "ZARA",
+      "category": "tops",
+      "price": 29.9,
+      "currency": "USD",
+      "imageUrl": "https://placehold.co/600x800?text=ZARA+tops+1",
+      "productUrl": "https://www.zara.com/mock-1",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "colors": [
+        "Black",
+        "White",
+        "Navy"
+      ],
+      "composition": {
+        "cotton": 100
+      },
+      "physics": {
+        "name": "Cotton",
+        "roughness": 0.8,
+        "metalness": 0,
+        "thickness": 1,
+        "color": "#ffffff",
+        "stretchFactor": 0.3,
+        "drapingFactor": 0.4,
+        "stiffness": 0.5
+      },
+      "isLuxury": false,
+      "scrapedAt": "2026-01-25T17:53:09.257132"
+    },
+    {
+      "id": "zara-women-dresses-1",
+      "name": "Pleated Midi Dress",
+      "brand": "ZARA",
+      "category": "dresses",
+      "price": 29.9,
+      "currency": "USD",
+      "imageUrl": "https://placehold.co/600x800?text=ZARA+dresses+1",
+      "productUrl": "https://www.zara.com/mock-1",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "colors": [
+        "Black",
+        "White",
+        "Navy"
+      ],
+      "composition": {
+        "cotton": 100
+      },
+      "physics": {
+        "name": "Cotton",
+        "roughness": 0.8,
+        "metalness": 0,
+        "thickness": 1,
+        "color": "#ffffff",
+        "stretchFactor": 0.3,
+        "drapingFactor": 0.4,
+        "stiffness": 0.5
+      },
+      "isLuxury": false,
+      "scrapedAt": "2026-01-25T17:53:10.258683"
+    },
+    {
+      "id": "hm-women-tops-1",
+      "name": "Oversized Cotton Shirt",
+      "brand": "HM",
+      "category": "tops",
+      "price": 24.99,
+      "currency": "USD",
+      "imageUrl": "https://placehold.co/600x800?text=HM+tops+1",
+      "productUrl": "https://www2.hm.com/mock-1",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "colors": [
+        "Black",
+        "Beige",
+        "Blue"
+      ],
+      "composition": {
+        "cotton": 100
+      },
+      "physics": {
+        "name": "Cotton",
+        "roughness": 0.8,
+        "metalness": 0,
+        "thickness": 1,
+        "color": "#ffffff",
+        "stretchFactor": 0.3,
+        "drapingFactor": 0.4,
+        "stiffness": 0.5
+      },
+      "isLuxury": false,
+      "scrapedAt": "2026-01-25T17:53:11.336102"
+    },
+    {
+      "id": "hm-women-dresses-1",
+      "name": "Ribbed Knit Dress",
+      "brand": "HM",
+      "category": "dresses",
+      "price": 24.99,
+      "currency": "USD",
+      "imageUrl": "https://placehold.co/600x800?text=HM+dresses+1",
+      "productUrl": "https://www2.hm.com/mock-1",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "colors": [
+        "Black",
+        "Beige",
+        "Blue"
+      ],
+      "composition": {
+        "cotton": 100
+      },
+      "physics": {
+        "name": "Cotton",
+        "roughness": 0.8,
+        "metalness": 0,
+        "thickness": 1,
+        "color": "#ffffff",
+        "stretchFactor": 0.3,
+        "drapingFactor": 0.4,
+        "stiffness": 0.5
+      },
+      "isLuxury": false,
+      "scrapedAt": "2026-01-25T17:53:12.337585"
+    },
+    {
+      "id": "uniqlo-women-tops-1",
+      "name": "AIRism Cotton T-Shirt",
+      "brand": "Uniqlo",
+      "category": "tops",
+      "price": 19.9,
+      "currency": "USD",
+      "imageUrl": "https://placehold.co/600x800?text=UNIQLO+tops+1",
+      "productUrl": "https://www.uniqlo.com/mock-1",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "colors": [
+        "Black",
+        "White",
+        "Beige"
+      ],
+      "composition": {
+        "cotton": 50,
+        "polyester": 50
+      },
+      "physics": {
+        "name": "Cotton",
+        "roughness": 0.8,
+        "metalness": 0,
+        "thickness": 1,
+        "color": "#ffffff",
+        "stretchFactor": 0.3,
+        "drapingFactor": 0.4,
+        "stiffness": 0.5
+      },
+      "isLuxury": false,
+      "scrapedAt": "2026-01-25T17:53:13.402686"
+    },
+    {
+      "id": "uniqlo-women-dresses-1",
+      "name": "AIRism Cotton T-Shirt",
+      "brand": "Uniqlo",
+      "category": "dresses",
+      "price": 19.9,
+      "currency": "USD",
+      "imageUrl": "https://placehold.co/600x800?text=UNIQLO+dresses+1",
+      "productUrl": "https://www.uniqlo.com/mock-1",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "colors": [
+        "Black",
+        "White",
+        "Beige"
+      ],
+      "composition": {
+        "cotton": 50,
+        "polyester": 50
+      },
+      "physics": {
+        "name": "Cotton",
+        "roughness": 0.8,
+        "metalness": 0,
+        "thickness": 1,
+        "color": "#ffffff",
+        "stretchFactor": 0.3,
+        "drapingFactor": 0.4,
+        "stiffness": 0.5
+      },
+      "isLuxury": false,
+      "scrapedAt": "2026-01-25T17:53:14.404184"
+    },
     {
       "id": "ff-women-tops-0",
       "name": "Luxury Item 0",
@@ -9,25 +233,11 @@
       "original_brand": "Gucci",
       "url": "https://farfetch.com/example",
       "image": "https://via.placeholder.com/300x400",
-      "price": 364,
+      "price": 946,
       "currency": "USD",
       "category": "women-tops",
-      "composition": "100% Cotton",
-      "texture_type": "cotton",
-      "source": "FARFETCH"
-    },
-    {
-      "id": "ff-women-tops-1",
-      "name": "Luxury Item 1",
-      "brand": "Gucci",
-      "original_brand": "Gucci",
-      "url": "https://farfetch.com/example",
-      "image": "https://via.placeholder.com/300x400",
-      "price": 1043,
-      "currency": "USD",
-      "category": "women-tops",
-      "composition": "100% Cotton",
-      "texture_type": "cotton",
+      "composition": "Polyester 100%",
+      "texture_type": "polyester",
       "source": "FARFETCH"
     },
     {
@@ -37,25 +247,11 @@
       "original_brand": "Gucci",
       "url": "https://farfetch.com/example",
       "image": "https://via.placeholder.com/300x400",
-      "price": 571,
+      "price": 542,
       "currency": "USD",
       "category": "women-dresses",
-      "composition": "100% Cotton",
-      "texture_type": "cotton",
-      "source": "FARFETCH"
-    },
-    {
-      "id": "ff-women-dresses-1",
-      "name": "Luxury Item 1",
-      "brand": "Gucci",
-      "original_brand": "Gucci",
-      "url": "https://farfetch.com/example",
-      "image": "https://via.placeholder.com/300x400",
-      "price": 1193,
-      "currency": "USD",
-      "category": "women-dresses",
-      "composition": "Wool 90%, Cashmere 10%",
-      "texture_type": "wool",
+      "composition": "Silk 100%",
+      "texture_type": "silk",
       "source": "FARFETCH"
     },
     {
@@ -65,25 +261,11 @@
       "original_brand": "Prada",
       "url": "https://ssense.com/example",
       "image": "https://via.placeholder.com/300x400",
-      "price": 1907,
+      "price": 1213,
       "currency": "USD",
       "category": "women-tops",
       "composition": "Nylon 50%, Polyester 50%",
-      "texture_type": "synthetic",
-      "source": "SSENSE"
-    },
-    {
-      "id": "ss-women-tops-1",
-      "name": "Designer Piece 1",
-      "brand": "Prada",
-      "original_brand": "Prada",
-      "url": "https://ssense.com/example",
-      "image": "https://via.placeholder.com/300x400",
-      "price": 713,
-      "currency": "USD",
-      "category": "women-tops",
-      "composition": "100% Leather",
-      "texture_type": "leather",
+      "texture_type": "polyester",
       "source": "SSENSE"
     },
     {
@@ -93,25 +275,11 @@
       "original_brand": "Prada",
       "url": "https://ssense.com/example",
       "image": "https://via.placeholder.com/300x400",
-      "price": 963,
+      "price": 2522,
       "currency": "USD",
       "category": "women-dresses",
-      "composition": "100% Linen",
-      "texture_type": "cotton",
-      "source": "SSENSE"
-    },
-    {
-      "id": "ss-women-dresses-1",
-      "name": "Designer Piece 1",
-      "brand": "Prada",
-      "original_brand": "Prada",
-      "url": "https://ssense.com/example",
-      "image": "https://via.placeholder.com/300x400",
-      "price": 905,
-      "currency": "USD",
-      "category": "women-dresses",
-      "composition": "100% Linen",
-      "texture_type": "cotton",
+      "composition": "100% Leather",
+      "texture_type": "leather",
       "source": "SSENSE"
     },
     {
@@ -121,25 +289,11 @@
       "original_brand": "Thisisneverthat",
       "url": "https://musinsa.com/example",
       "image": "https://via.placeholder.com/300x400",
-      "price": 144,
-      "currency": "USD",
-      "category": "women-tops",
-      "composition": "Nylon 100%",
-      "texture_type": "synthetic",
-      "source": "MUSINSA"
-    },
-    {
-      "id": "mus-women-tops-1",
-      "name": "K-Fashion Item 1",
-      "brand": "Thisisneverthat",
-      "original_brand": "Thisisneverthat",
-      "url": "https://musinsa.com/example",
-      "image": "https://via.placeholder.com/300x400",
-      "price": 56,
+      "price": 89,
       "currency": "USD",
       "category": "women-tops",
       "composition": "Wool 50%, Polyester 50%",
-      "texture_type": "wool",
+      "texture_type": "knit",
       "source": "MUSINSA"
     },
     {
@@ -149,21 +303,7 @@
       "original_brand": "Thisisneverthat",
       "url": "https://musinsa.com/example",
       "image": "https://via.placeholder.com/300x400",
-      "price": 37,
-      "currency": "USD",
-      "category": "women-dresses",
-      "composition": "Cotton 100%",
-      "texture_type": "cotton",
-      "source": "MUSINSA"
-    },
-    {
-      "id": "mus-women-dresses-1",
-      "name": "K-Fashion Item 1",
-      "brand": "Thisisneverthat",
-      "original_brand": "Thisisneverthat",
-      "url": "https://musinsa.com/example",
-      "image": "https://via.placeholder.com/300x400",
-      "price": 60,
+      "price": 39,
       "currency": "USD",
       "category": "women-dresses",
       "composition": "Cotton 100%",
@@ -177,25 +317,11 @@
       "original_brand": "Andersson Bell",
       "url": "https://wconcept.co.kr/example",
       "image": "https://via.placeholder.com/300x400",
-      "price": 108,
+      "price": 208,
       "currency": "USD",
       "category": "women-tops",
       "composition": "Cotton 100%",
       "texture_type": "cotton",
-      "source": "WCONCEPT"
-    },
-    {
-      "id": "wc-women-tops-1",
-      "name": "Concept Item 1",
-      "brand": "Andersson Bell",
-      "original_brand": "Andersson Bell",
-      "url": "https://wconcept.co.kr/example",
-      "image": "https://via.placeholder.com/300x400",
-      "price": 354,
-      "currency": "USD",
-      "category": "women-tops",
-      "composition": "Cashmere 10%, Wool 90%",
-      "texture_type": "wool",
       "source": "WCONCEPT"
     },
     {
@@ -205,25 +331,11 @@
       "original_brand": "Andersson Bell",
       "url": "https://wconcept.co.kr/example",
       "image": "https://via.placeholder.com/300x400",
-      "price": 321,
+      "price": 93,
       "currency": "USD",
       "category": "women-dresses",
-      "composition": "Polyester 100%",
-      "texture_type": "synthetic",
-      "source": "WCONCEPT"
-    },
-    {
-      "id": "wc-women-dresses-1",
-      "name": "Concept Item 1",
-      "brand": "Andersson Bell",
-      "original_brand": "Andersson Bell",
-      "url": "https://wconcept.co.kr/example",
-      "image": "https://via.placeholder.com/300x400",
-      "price": 175,
-      "currency": "USD",
-      "category": "women-dresses",
-      "composition": "Cotton 100%",
-      "texture_type": "cotton",
+      "composition": "Cashmere 10%, Wool 90%",
+      "texture_type": "knit",
       "source": "WCONCEPT"
     }
   ]
