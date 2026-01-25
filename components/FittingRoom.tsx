@@ -32,6 +32,8 @@ import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
+import { SquadProvider, useSquad } from './squad/SquadContext';
+import { SquadUI } from './squad/SquadUI';
 
 // --- PHYSICS ENGINE (Ammo.js) ---
 
@@ -309,13 +311,13 @@ function Mannequin({
   height = 170, opacity = 1.0 
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  const animationUrl = "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb";
   
   return (
     <group scale={[scale, scale, scale]}>
       {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
-        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+        url="https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb"
         animationUrl={animationUrl}
         scale={1.0}
       />
@@ -504,7 +506,7 @@ function Scene({
   const scale = height / 170;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
   let mannequinPosition: [number, number, number] = [0, -0.9, 0];
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  const animationUrl = "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb";
 
   const heatmapData = useMemo(() => {
     if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !selectedItem) return null;
@@ -532,8 +534,8 @@ function Scene({
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
             url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+              ? "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb"
+              : "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb"
             }
             animationUrl={animationUrl}
             scale={1.0}
@@ -827,10 +829,18 @@ function AITryOnModal({
 
 // --- MAIN FITTING ROOM ---
 
-export function FittingRoom() {
+function FittingRoomContent() {
   const {
-    userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    userStats, selectedBrand, selectedItem, setSelectedItem: originalSetSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
   } = useStore();
+  const { broadcastFittingUpdate, isConnected } = useSquad();
+
+  const setSelectedItem = useCallback((item: ClothingItem | null) => {
+      originalSetSelectedItem(item);
+      if (isConnected && item) {
+          broadcastFittingUpdate(item.id, item.brand);
+      }
+  }, [originalSetSelectedItem, isConnected, broadcastFittingUpdate]);
   
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
@@ -932,7 +942,9 @@ export function FittingRoom() {
   }, [poseAnalysis, currentItem, resolvedHeight]);
 
   return (
-    <div className="w-full h-full flex flex-col bg-void-black text-pure-white">
+    <>
+      <SquadUI />
+      <div className="w-full h-full flex flex-col bg-void-black text-pure-white">
       <div className="flex-1 relative min-h-[350px]">
         {webglFailed ? (
           /* 2D Fallback View */
@@ -1149,5 +1161,14 @@ export function FittingRoom() {
         onGenerateTryOn={handleGenerateAITryOn}
       />
     </div>
+    </>
+  );
+}
+
+export function FittingRoom() {
+  return (
+    <SquadProvider>
+      <FittingRoomContent />
+    </SquadProvider>
   );
 }

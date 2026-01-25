@@ -12,7 +12,23 @@ This information is used to shape Next.js' roadmap and prioritize features.
 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
 https://nextjs.org/telemetry
 
-✓ Ready in 1780ms
-○ Compiling /cinematic-demo ...
+✓ Ready in 1644ms
+○ Compiling /squad ...
 ⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
- GET /cinematic-demo 200 in 12.4s (compile: 12.0s, render: 401ms)
+⚠️ Invalid or missing Supabase URL. Using mock connection for development.
+ GET /squad 200 in 33.9s (compile: 32.9s, render: 1012ms)
+ GET /squad 200 in 106ms (compile: 10ms, render: 96ms)
+ GET /squad 200 in 58ms (compile: 6ms, render: 52ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+⚠️ Invalid or missing Supabase URL. Using mock connection for development.
+ GET /squad 200 in 816ms (compile: 124ms, render: 692ms)
+ GET /squad 200 in 111ms (compile: 11ms, render: 100ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+⚠️ Invalid or missing Supabase URL. Using mock connection for development.
+ GET /squad 200 in 996ms (compile: 130ms, render: 866ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+⚠️ Invalid or missing Supabase URL. Using mock connection for development.
+ GET /squad 200 in 721ms (compile: 114ms, render: 607ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+⚠️ Invalid or missing Supabase URL. Using mock connection for development.
+ GET /squad 200 in 875ms (compile: 133ms, render: 742ms)
