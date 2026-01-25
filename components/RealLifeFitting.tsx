@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LegalModal } from './ui/LegalModal';
+import { SupportModal } from './ui/SupportModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,11 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  // Modal State
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const [legalTab, setLegalTab] = useState<'privacy' | 'terms'>('privacy');
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -158,6 +165,14 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-6 flex justify-center gap-4 text-[10px] text-gray-500 uppercase tracking-widest">
+            <button onClick={() => { setLegalTab('privacy'); setIsLegalModalOpen(true); }} className="hover:text-[#007AFF] transition-colors">Privacy</button>
+            <span>•</span>
+            <button onClick={() => { setLegalTab('terms'); setIsLegalModalOpen(true); }} className="hover:text-[#007AFF] transition-colors">Terms</button>
+            <span>•</span>
+            <button onClick={() => setIsSupportModalOpen(true)} className="hover:text-[#007AFF] transition-colors">Report Issue</button>
+          </div>
+
         </div>
       </div>
 
@@ -209,6 +224,16 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      <LegalModal
+        isOpen={isLegalModalOpen}
+        onClose={() => setIsLegalModalOpen(false)}
+        initialTab={legalTab}
+      />
+      <SupportModal
+        isOpen={isSupportModalOpen}
+        onClose={() => setIsSupportModalOpen(false)}
+      />
     </div>
   );
 }

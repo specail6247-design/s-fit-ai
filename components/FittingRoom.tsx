@@ -32,6 +32,7 @@ import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
+import { generateStoryImage } from '@/lib/storyGenerator';
 
 // --- PHYSICS ENGINE (Ammo.js) ---
 
@@ -607,17 +608,41 @@ interface ShareModalProps {
   brandName?: string;
   fitScore: number;
   recommendedSize?: string;
+  item?: ClothingItem; // Passed for story generation
 }
 
-function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize }: ShareModalProps) {
+function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize, item }: ShareModalProps) {
   const [hasPublished, setHasPublished] = useState(false);
+  const [isGeneratingStory, setIsGeneratingStory] = useState(false);
+
   if (!isOpen) return null;
 
   const safeItemName = itemName ?? 'this fit';
   const safeBrandName = brandName ?? 'S_FIT AI';
   const shareText = `I just tried on ${safeItemName} from ${safeBrandName} using S_FIT AI! Fit score ${fitScore}% ${recommendedSize ? `(Size ${recommendedSize})` : ''} #SFIT #VirtualTryOn #Fashion`;
 
-  const handleShare = (platform: string) => {
+  const handleShare = async (platform: string) => {
+    if (platform === 'instagram-story' && item) {
+      setIsGeneratingStory(true);
+      try {
+        // Use the item's image as the result image for now (since we don't have the AR result in this context easily unless passed)
+        // Wait, FittingRoom passes item.imageUrl. Ideally we pass the try-on result if available.
+        // For now, we'll use item.imageUrl as a placeholder or improvement later.
+        const storyImage = await generateStoryImage(item, item.imageUrl, fitScore, recommendedSize);
+        const link = document.createElement('a');
+        link.download = `sfit-story-${item.id}.png`;
+        link.href = storyImage;
+        link.click();
+        alert('Story image saved! 📸 Upload it to Instagram Stories.');
+      } catch (e) {
+        console.error(e);
+        alert('Failed to generate story.');
+      } finally {
+        setIsGeneratingStory(false);
+      }
+      return;
+    }
+
     const encodedText = encodeURIComponent(shareText);
     const url = encodeURIComponent('https://s-fit.ai');
     let shareUrl = '';
@@ -641,6 +666,9 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
           <button onClick={() => handleShare('facebook')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#1877F2] text-xs"><span>📘</span> Facebook</button>
           <button onClick={() => handleShare('instagram')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-[#833AB4] to-[#F77737] text-xs"><span>📷</span> Instagram</button>
           <button onClick={() => handleShare('kakao')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#FEE500] text-black text-xs"><span>💬</span> KakaoStory</button>
+          <button onClick={() => handleShare('instagram-story')} disabled={isGeneratingStory} className="col-span-2 flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-xs font-bold shadow-lg">
+            {isGeneratingStory ? <span className="animate-spin">⏳</span> : <span>📱</span>} Share to Story (Vertical)
+          </button>
         </div>
         <div className="pt-4 border-t border-border-color">
           {hasPublished ? (
@@ -764,6 +792,15 @@ function AITryOnModal({
                             <button onClick={() => fileInputRef.current?.click()} className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-[9px] px-3 py-1 rounded-full group-hover:opacity-100 transition-opacity">Change Photo</button>
                         </div>
                     )}
+
+                    {/* Data Safety Badge */}
+                    <div className="flex items-center justify-center gap-2 p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                      <span className="text-blue-400 text-lg">🛡️</span>
+                      <p className="text-[10px] text-blue-200 leading-tight">
+                        <strong>Data Safety:</strong> Photos are processed securely & not shared.
+                        <br />Automatically deleted after session.
+                      </p>
+                    </div>
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -1133,6 +1170,7 @@ export function FittingRoom() {
         brandName={currentItem?.brand} 
         fitScore={fitScore}
         recommendedSize={recommendedFit?.recommendedSize}
+        item={currentItem || undefined}
       />
       <CompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} picks={topPicks} onSelect={setSelectedItem} />
       <AITryOnModal
