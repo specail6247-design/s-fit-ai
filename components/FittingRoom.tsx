@@ -116,8 +116,8 @@ const initPhysics = async () => {
 const PhysicsContext = React.createContext<AmmoWorld | null>(null);
 
 const PHYSICS_PRESETS: Record<string, { stiffness: number; mass: number; damping: number }> = {
-  'silk': { stiffness: 0.1, mass: 0.5, damping: 0.01 },
-  'denim': { stiffness: 0.8, mass: 1.2, damping: 0.05 },
+  'silk': { stiffness: 0.1, mass: 0.5, damping: 0.1 },
+  'denim': { stiffness: 0.9, mass: 1.2, damping: 0.01 },
   'leather': { stiffness: 0.9, mass: 2.0, damping: 0.1 },
   'default': { stiffness: 0.5, mass: 1.0, damping: 0.02 }
 };
@@ -240,10 +240,11 @@ function SoftBodyPlane({
     if (dist >= 2.0 && isMicroMode) setMicroMode(false);
   });
 
-  const handleClick = () => {
+  const handleTug = () => {
      const ammo = Ammo;
      if (!bodyRef.current || !ammo) return;
-     const force = new ammo.btVector3(0, 0, 10 * mass);
+     // Tug effect: Pull towards camera with elastic force
+     const force = new ammo.btVector3(0, 0, 20 * mass);
      const nodes = bodyRef.current.get_m_nodes();
      if(nodes.size() > 0) {
         nodes.at(Math.floor(nodes.size()/2)).addForce(force);
@@ -256,9 +257,14 @@ function SoftBodyPlane({
   }
 
   return (
-    <mesh ref={meshRef} position={[0,0,0]} renderOrder={renderOrder} onClick={handleClick} castShadow receiveShadow>
+    <mesh ref={meshRef} position={[0,0,0]} renderOrder={renderOrder} onClick={handleTug} castShadow receiveShadow>
        <planeGeometry args={args} />
-       {children ? children : <meshStandardMaterial {...finalMaterialProps} />}
+       {children ? React.Children.map(children, child =>
+         React.isValidElement(child)
+           // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           ? React.cloneElement(child, { isMicroMode } as any)
+           : child
+       ) : <meshStandardMaterial {...finalMaterialProps} />}
     </mesh>
   );
 }
@@ -306,17 +312,17 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  // Using a standard Ready Player Me avatar which includes basic idle animations
+  const avatarUrl = "https://models.readyplayer.me/6421516e68072c1c3c4372e3.glb";
   
   return (
     <group scale={[scale, scale, scale]}>
-      {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
-        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-        animationUrl={animationUrl}
+        url={avatarUrl}
+        animationUrl={avatarUrl} // Use internal animations
         scale={1.0}
       />
     </group>
@@ -504,7 +510,7 @@ function Scene({
   const scale = height / 170;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
   let mannequinPosition: [number, number, number] = [0, -0.9, 0];
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  const avatarUrl = "https://models.readyplayer.me/6421516e68072c1c3c4372e3.glb";
 
   const heatmapData = useMemo(() => {
     if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !selectedItem) return null;
@@ -531,11 +537,8 @@ function Scene({
       <group position={mannequinPosition} scale={[scale, scale, scale]}>
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
-            url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-            }
-            animationUrl={animationUrl}
+            url={avatarUrl}
+            animationUrl={avatarUrl}
             scale={1.0}
           />
         ) : (

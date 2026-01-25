@@ -8,13 +8,15 @@ interface FabricMaterialProps {
   fabricType: FabricType;
   opacity?: number;
   transparent?: boolean;
+  isMicroMode?: boolean;
 }
 
 export function FabricMaterial({
   textureUrl,
   fabricType = 'cotton',
   opacity = 1,
-  transparent = true
+  transparent = true,
+  isMicroMode = false
 }: FabricMaterialProps) {
   const baseTexture = useTexture(textureUrl);
   const texture = useMemo(() => {
@@ -29,6 +31,10 @@ export function FabricMaterial({
 
   const config = FABRIC_PRESETS[fabricType];
 
+  // Dynamic detail adjustment for macro view
+  const normalScale = isMicroMode ? config.normalScale * 3.0 : config.normalScale;
+  const displacementScale = isMicroMode ? config.displacementScale * 1.5 : config.displacementScale;
+
   return (
     <meshPhysicalMaterial
       map={texture}
@@ -40,13 +46,13 @@ export function FabricMaterial({
       // We use the texture itself as a height map proxy.
       // Ideally this would be a real depth map.
       displacementMap={texture}
-      displacementScale={config.displacementScale}
-      displacementBias={-config.displacementScale / 2}
+      displacementScale={displacementScale}
+      displacementBias={-displacementScale / 2}
 
       // Micro-surface details
       // Using the texture as a normal map adds surface detail corresponding to the visual pattern.
       normalMap={texture}
-      normalScale={new THREE.Vector2(config.normalScale, config.normalScale)}
+      normalScale={new THREE.Vector2(normalScale, normalScale)}
 
       // Advanced Fabric features
       sheen={config.sheen || 0}
