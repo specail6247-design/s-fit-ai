@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ModeSelector } from './ModeSelector';
+import { SupportHub } from './ui/SupportHub';
 
 export function LandingPage() {
   return (
@@ -66,6 +67,9 @@ export function LandingPage() {
           <p>© 2026 Antigravity. All rights reserved.</p>
         </div>
       </footer>
+
+      {/* Support Hub (Floating Trigger) */}
+      <SupportHub />
     </div>
   );
 }
