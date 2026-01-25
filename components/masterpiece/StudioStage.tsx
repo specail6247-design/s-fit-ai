@@ -1,19 +1,20 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { SpotLight, Environment, AccumulativeShadows, RandomizedLight } from '@react-three/drei';
-import { FabricType } from './types';
+import { FabricType, EnvironmentType } from './types';
 import * as THREE from 'three';
 
 interface StudioStageProps {
   fabricType: FabricType;
   intensity?: number;
+  environment?: EnvironmentType;
 }
 
-export function StudioStage({ fabricType = 'cotton', intensity = 1 }: StudioStageProps) {
+export function StudioStage({ fabricType = 'cotton', intensity = 1, environment = 'office' }: StudioStageProps) {
   const rimLightRef = useRef<THREE.SpotLight>(null);
   const keyLightRef = useRef<THREE.SpotLight>(null);
 
-  // Dynamic Lighting Configuration based on Fabric
+  // Dynamic Lighting Configuration based on Fabric and Environment
   const config = useMemo(() => {
     const base = {
       key: 2.0,
@@ -24,41 +25,73 @@ export function StudioStage({ fabricType = 'cotton', intensity = 1 }: StudioStag
       rimColor: '#ffffff'
     };
 
+    let fabricConfig = { ...base };
+
     switch (fabricType) {
       case 'silk':
-        return {
+        fabricConfig = {
           ...base,
-          key: 3.5, // Strong specular highlights
+          key: 3.5,
           rim: 2.0,
-          env: 1.0, // High reflections
-          keyColor: '#fffaf0' // Slightly warm
+          env: 1.0,
+          keyColor: '#fffaf0'
         };
+        break;
       case 'leather':
-        return {
+        fabricConfig = {
           ...base,
           key: 3.0,
-          rim: 3.0, // Accentuate the silhouette
+          rim: 3.0,
           env: 0.8
         };
+        break;
       case 'wool':
-        return {
+        fabricConfig = {
           ...base,
-          key: 1.5, // Softer key
-          rim: 4.0, // VERY strong rim to catch "fuzz" (subsurface fake)
-          fill: 1.2, // Fill shadows
+          key: 1.5,
+          rim: 4.0,
+          fill: 1.2,
           rimColor: '#fffdd0'
         };
+        break;
       case 'denim':
-        return {
+        fabricConfig = {
           ...base,
           key: 2.5,
           rim: 1.0,
           env: 0.5
         };
-      default:
-        return base;
+        break;
     }
-  }, [fabricType]);
+
+    // Apply Environment Modifiers
+    if (environment === 'romantic') {
+       fabricConfig.key *= 0.6;
+       fabricConfig.fill *= 0.4;
+       fabricConfig.env *= 0.5;
+       fabricConfig.keyColor = '#ffaa88'; // Warm candlelight
+    } else if (environment === 'club') {
+       fabricConfig.keyColor = '#aa00ff'; // Purple/Neon key
+       fabricConfig.rimColor = '#00ffff'; // Cyan rim
+       fabricConfig.fill = 0.2; // High contrast
+       fabricConfig.env *= 0.8;
+    } else if (environment === 'rainy') {
+       fabricConfig.keyColor = '#dbeeff'; // Cold blueish
+       fabricConfig.fill *= 0.7;
+       fabricConfig.env *= 0.6;
+    }
+
+    return fabricConfig;
+  }, [fabricType, environment]);
+
+  const envPreset = useMemo(() => {
+      switch(environment) {
+          case 'romantic': return 'sunset';
+          case 'club': return 'night';
+          case 'rainy': return 'park';
+          case 'office': default: return 'city';
+      }
+  }, [environment]);
 
   // Gentle animation for the lights to create "life" in reflections
   useFrame((state) => {
@@ -75,7 +108,7 @@ export function StudioStage({ fabricType = 'cotton', intensity = 1 }: StudioStag
     <group>
       <ambientLight intensity={0.3 * intensity} />
 
-      <Environment preset="studio" blur={0.8} background={false} />
+      <Environment preset={envPreset} blur={0.8} background={false} />
 
       {/* KEY LIGHT - Main source */}
       <SpotLight

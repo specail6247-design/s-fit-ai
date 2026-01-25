@@ -1,5 +1,5 @@
 import { useTexture } from '@react-three/drei';
-import { FabricType, FABRIC_PRESETS } from './types';
+import { FabricType, FABRIC_PRESETS, EnvironmentType } from './types';
 import * as THREE from 'three';
 import { useMemo } from 'react';
 
@@ -8,13 +8,15 @@ interface FabricMaterialProps {
   fabricType: FabricType;
   opacity?: number;
   transparent?: boolean;
+  environment?: EnvironmentType;
 }
 
 export function FabricMaterial({
   textureUrl,
   fabricType = 'cotton',
   opacity = 1,
-  transparent = true
+  transparent = true,
+  environment
 }: FabricMaterialProps) {
   const baseTexture = useTexture(textureUrl);
   const texture = useMemo(() => {
@@ -27,7 +29,18 @@ export function FabricMaterial({
     return cloned;
   }, [baseTexture]);
 
-  const config = FABRIC_PRESETS[fabricType];
+  const config = useMemo(() => {
+    const base = FABRIC_PRESETS[fabricType];
+    if (environment === 'rainy') {
+      return {
+        ...base,
+        roughness: Math.max(0.1, base.roughness * 0.4), // Wet surfaces are smoother/glossier
+        clearcoat: Math.max(0.8, (base.clearcoat || 0) + 0.6), // Water layer
+        clearcoatRoughness: 0.1
+      };
+    }
+    return base;
+  }, [fabricType, environment]);
 
   return (
     <meshPhysicalMaterial

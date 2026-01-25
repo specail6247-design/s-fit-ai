@@ -85,3 +85,12 @@ export const FABRIC_PRESETS: Record<FabricType, FabricMaterialConfig> = {
     clearcoatRoughness: 0.1
   }
 };
+
+export type EnvironmentType = 'office' | 'romantic' | 'club' | 'rainy';
+
+export interface EnvironmentConfig {
+  preset: 'city' | 'sunset' | 'night' | 'park' | 'studio' | 'apartment' | 'forest' | 'lobby' | 'warehouse' | 'dawn';
+  lighting?: Partial<LightingConfig>;
+  windFactor: number;
+  wetness: boolean;
+}

@@ -29,7 +29,7 @@ import { AvatarLoader } from './AvatarLoader';
 // Masterpiece Components
 import { FabricMaterial } from './masterpiece/FabricMaterial';
 import { StudioStage } from './masterpiece/StudioStage';
-import { FabricType } from './masterpiece/types';
+import { FabricType, EnvironmentType } from './masterpiece/types';
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
 
@@ -39,6 +39,7 @@ type AmmoVector3 = {
   x: () => number;
   y: () => number;
   z: () => number;
+  destroy?: () => void;
 };
 
 type AmmoWorldInfo = {
@@ -60,6 +61,7 @@ type AmmoSoftBody = {
   get_m_materials: () => { at: (index: number) => { set_m_kLST: (stiffness: number) => void } };
   setTotalMass: (mass: number, fromFaces: boolean) => void;
   get_m_nodes: () => AmmoNodeArray;
+  addForce: (force: AmmoVector3) => void;
 };
 
 type AmmoWorld = {
@@ -99,6 +101,7 @@ type AmmoModule = {
   ) => AmmoWorld;
   btVector3: new (x: number, y: number, z: number) => AmmoVector3;
   btSoftBodyHelpers: AmmoSoftBodyHelpers;
+  destroy: (obj: object) => void;
 };
 
 type AmmoLoader = () => Promise<AmmoModule>;
@@ -160,6 +163,7 @@ interface SoftBodyPlaneProps {
   damping?: number;
   renderOrder?: number;
   children?: React.ReactNode;
+  windForce?: [number, number, number];
 }
 
 function SoftBodyPlane({
@@ -170,7 +174,8 @@ function SoftBodyPlane({
   mass = 1.0,
   damping = 0.02,
   renderOrder,
-  children
+  children,
+  windForce
 }: SoftBodyPlaneProps) {
   const world = React.useContext(PhysicsContext);
   const meshRef = useRef<THREE.Mesh>(null);
@@ -214,7 +219,7 @@ function SoftBodyPlane({
     };
   }, [world, position, args, stiffness, mass, damping]);
 
-  useFrame(() => {
+  useFrame((state) => {
     const ammo = Ammo;
     if (!bodyRef.current || !meshRef.current || !ammo || !meshRef.current.geometry.attributes.position) return;
 
@@ -224,12 +229,24 @@ function SoftBodyPlane({
     const nodes = sb.get_m_nodes();
     const nodeCount = nodes.size();
 
+    let ammoWindVec: AmmoVector3 | null = null;
+    if (windForce && (windForce[0] !== 0 || windForce[1] !== 0 || windForce[2] !== 0)) {
+       const time = state.clock.elapsedTime;
+       const gust = Math.sin(time * 2.5) * 0.5 + 1.0;
+       ammoWindVec = new ammo.btVector3(windForce[0] * gust, windForce[1] * gust, windForce[2] * gust);
+       sb.addForce(ammoWindVec);
+    }
+
     for (let i = 0; i < nodeCount; i++) {
       const node = nodes.at(i);
       const nodePos = node.get_m_x();
       positions[i * 3] = nodePos.x();
       positions[i * 3 + 1] = nodePos.y();
       positions[i * 3 + 2] = nodePos.z();
+    }
+
+    if (ammoWindVec) {
+       ammo.destroy(ammoWindVec);
     }
 
     geometry.attributes.position.needsUpdate = true;
@@ -309,13 +326,14 @@ function Mannequin({
   height = 170, opacity = 1.0 
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  // Fallback to Box
+  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Box/glTF-Binary/Box.glb";
   
   return (
     <group scale={[scale, scale, scale]}>
-      {/* Generic RPM Avatar Buffer */}
+      {/* Generic RPM Avatar Buffer - Fallback to Box if 404 */}
       <AvatarLoader 
-        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+        url="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Box/glTF-Binary/Box.glb"
         animationUrl={animationUrl}
         scale={1.0}
       />
@@ -329,9 +347,10 @@ interface ClothingProps {
   shapeScale?: { shoulders: number; waist: number; hips: number };
   fabricType?: FabricType;
   useMasterpiece?: boolean;
+  environment?: EnvironmentType;
 }
 
-function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', environment }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -339,19 +358,26 @@ function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist:
   const physics = PHYSICS_PRESETS[fabricType] || PHYSICS_PRESETS['default'];
   const zIndex = layeringEngine.getItemZIndex(item);
 
+  const windForce: [number, number, number] = useMemo(() => {
+     if (environment === 'rainy') return [2, 0, 5];
+     if (environment === 'club') return [0.5, 0, 0];
+     return [0, 0, 0];
+  }, [environment]);
+
   return (
     <SoftBodyPlane
       position={[0, 0.95, 0.1 + (zIndex - 25) * 0.01]}
       args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]}
       renderOrder={zIndex}
+      windForce={windForce}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} environment={environment} />
     </SoftBodyPlane>
   );
 }
 
-function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', environment }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -359,19 +385,25 @@ function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, wa
   const physics = PHYSICS_PRESETS[fabricType] || PHYSICS_PRESETS['denim'];
   const zIndex = layeringEngine.getItemZIndex(item);
 
+  const windForce: [number, number, number] = useMemo(() => {
+    if (environment === 'rainy') return [1, 0, 3];
+    return [0, 0, 0];
+  }, [environment]);
+
   return (
     <SoftBodyPlane
       position={[0, 0.35, 0.1 + (zIndex - 20) * 0.01]}
       args={[baseWidth * widthScale * shapeScale.hips, (baseWidth * widthScale * shapeScale.hips) / aspect, 32, 32]}
       renderOrder={zIndex}
+      windForce={windForce}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} environment={environment} />
     </SoftBodyPlane>
   );
 }
 
-function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', environment }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -379,19 +411,26 @@ function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, wais
   const physics = PHYSICS_PRESETS[fabricType] || PHYSICS_PRESETS['silk'];
   const zIndex = layeringEngine.getItemZIndex(item);
 
+  const windForce: [number, number, number] = useMemo(() => {
+    if (environment === 'rainy') return [2, 0, 4];
+    if (environment === 'romantic') return [0.2, 0, 0];
+    return [0, 0, 0];
+  }, [environment]);
+
   return (
     <SoftBodyPlane
       position={[0, 0.65, 0.1 + (zIndex - 27) * 0.01]}
       args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]}
       renderOrder={zIndex}
+      windForce={windForce}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} environment={environment} />
     </SoftBodyPlane>
   );
 }
 
-function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', environment }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -399,14 +438,20 @@ function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, 
   const physics = PHYSICS_PRESETS[fabricType] || PHYSICS_PRESETS['leather'];
   const zIndex = layeringEngine.getItemZIndex(item);
 
+  const windForce: [number, number, number] = useMemo(() => {
+    if (environment === 'rainy') return [2.5, 0, 5];
+    return [0, 0, 0];
+  }, [environment]);
+
   return (
     <SoftBodyPlane
       position={[0, 0.95, 0.15 + (zIndex - 30) * 0.01]}
       args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]}
       renderOrder={zIndex}
+      windForce={windForce}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} environment={environment} />
     </SoftBodyPlane>
   );
 }
@@ -433,22 +478,24 @@ function ClothingOverlay({
   widthScale,
   shapeScale,
   clothingAnalysis,
+  environment
 }: {
   item: ClothingItem | null;
   widthScale: number;
   shapeScale: { shoulders: number; waist: number; hips: number };
   clothingAnalysis?: ClothingStyleAnalysis | null; 
   useMasterpiece: boolean;
+  environment: EnvironmentType;
 }) {
   if (!item) return null;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
 
   return (
     <Suspense fallback={null}>
-      {item.category === 'tops' && <TopClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'bottoms' && <BottomsClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'dresses' && <DressClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'outerwear' && <OuterwearClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
+      {item.category === 'tops' && <TopClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} environment={environment} />}
+      {item.category === 'bottoms' && <BottomsClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} environment={environment} />}
+      {item.category === 'dresses' && <DressClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} environment={environment} />}
+      {item.category === 'outerwear' && <OuterwearClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} environment={environment} />}
       {item.category === 'accessories' && <AccessoryClothing item={item} widthScale={widthScale} shapeScale={shapeScale} />}
     </Suspense>
   );
@@ -489,13 +536,15 @@ function Scene({
   selectedItem,
   isMasterpieceMode,
   isMacroView,
-  showHeatmap
+  showHeatmap,
+  environment
 }: {
   userStats: UserStats | null;
   selectedItem: ClothingItem | null;
   isMasterpieceMode: boolean;
   isMacroView: boolean;
   showHeatmap: boolean;
+  environment: EnvironmentType;
 }) {
   const { poseAnalysis, clothingAnalysis, selfieData, selectedMode, selectedBrand } = useStore();
   const landmarks = poseAnalysis?.landmarks;
@@ -504,7 +553,8 @@ function Scene({
   const scale = height / 170;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
   let mannequinPosition: [number, number, number] = [0, -0.9, 0];
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  // Using Box as fallback for animation to prevent 404 crash
+  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Box/glTF-Binary/Box.glb";
 
   const heatmapData = useMemo(() => {
     if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !selectedItem) return null;
@@ -520,7 +570,7 @@ function Scene({
   return (
     <>
       <MacroController active={isMacroView} />
-      {isMasterpieceMode ? <StudioStage fabricType={fabricType} /> : (
+      {isMasterpieceMode ? <StudioStage fabricType={fabricType} environment={environment} /> : (
         <>
           <ambientLight intensity={0.8} />
           <SpotLight position={[5, 10, 7.5]} intensity={200} castShadow />
@@ -531,10 +581,7 @@ function Scene({
       <group position={mannequinPosition} scale={[scale, scale, scale]}>
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
-            url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-            }
+            url="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Box/glTF-Binary/Box.glb"
             animationUrl={animationUrl}
             scale={1.0}
           />
@@ -561,6 +608,7 @@ function Scene({
           shapeScale={{ shoulders: 1, waist: 1, hips: 1 }}
           clothingAnalysis={clothingAnalysis}
           useMasterpiece={isMasterpieceMode}
+          environment={environment}
         />
       </group>
     </>
@@ -841,6 +889,7 @@ export function FittingRoom() {
   const [isMasterpieceMode, setIsMasterpieceMode] = useState(true);
   const [isMacroView, setIsMacroView] = useState(false);
   const [showHeatmap, setShowHeatmap] = useState(false);
+  const [currentEnvironment, setCurrentEnvironment] = useState<EnvironmentType>('office');
   const [webglFailed, setWebglFailed] = useState(false);
   const [autoCycleEnabled, setAutoCycleEnabled] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -982,6 +1031,7 @@ export function FittingRoom() {
                   userStats={userStats} selectedItem={currentItem} 
                   isMasterpieceMode={isMasterpieceMode} isMacroView={isMacroView} 
                   showHeatmap={showHeatmap}
+                  environment={currentEnvironment}
                 />
               </PhysicsProvider>
               <OrbitControls enabled={!isMacroView && selectedMode !== 'digital-twin'} />
@@ -991,6 +1041,27 @@ export function FittingRoom() {
         
         {/* Controls Overlay */}
         <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
+            {/* Environment Vibe Selector */}
+            {isMasterpieceMode && (
+              <div className="bg-black/60 backdrop-blur-sm rounded-xl p-2 flex flex-col gap-1.5 mb-2 border border-white/10">
+                <div className="flex items-center gap-1.5 justify-center mb-0.5">
+                   <span className="text-xs">🌤</span>
+                   <span className="text-[8px] uppercase tracking-[0.2em] text-soft-gray font-bold">Vibe Check</span>
+                </div>
+                <div className="grid grid-cols-2 gap-1.5">
+                {(['office', 'romantic', 'club', 'rainy'] as const).map(env => (
+                    <button
+                      key={env}
+                      onClick={() => setCurrentEnvironment(env)}
+                      className={`px-2 py-1.5 rounded-lg text-[8px] uppercase font-bold transition-all border ${currentEnvironment === env ? 'bg-cyber-lime text-black border-cyber-lime shadow-[0_0_8px_rgba(204,255,0,0.4)]' : 'bg-white/5 text-gray-400 border-transparent hover:border-white/20 hover:text-white'}`}
+                    >
+                      {env}
+                    </button>
+                ))}
+                </div>
+              </div>
+            )}
+
             <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
             </button>
