@@ -3,7 +3,7 @@ import { generateCinematicVideo } from '@/lib/virtualTryOn';
 
 export async function POST(req: NextRequest) {
   try {
-    const { imageUrl } = await req.json();
+    const { imageUrl, motionType } = await req.json();
 
     if (!imageUrl) {
       return NextResponse.json(
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await generateCinematicVideo(imageUrl);
+    const result = await generateCinematicVideo(imageUrl, motionType);
 
     if (result.success) {
       return NextResponse.json(result);

@@ -25,6 +25,8 @@ export interface CinematicVideoResult {
   error?: string;
 }
 
+export type MotionType = 'runway_walk' | '360_turn';
+
 // cuuupid/idm-vton
 const IDM_VTON_MODEL = "cuuupid/idm-vton:c871bb9b046607b680449ecbae55fd8c6d945e0a1948644bf2361b3d021d3ff4";
 // Upscaler
@@ -197,7 +199,7 @@ export async function upscaleImage(imageUrl: string): Promise<string | null> {
 }
 
 // Unified Video Generation (Runway/SVD)
-export async function generateCinematicVideo(imageUrl: string): Promise<CinematicVideoResult> {
+export async function generateCinematicVideo(imageUrl: string, motionType: MotionType = 'runway_walk'): Promise<CinematicVideoResult> {
   const apiToken = process.env.REPLICATE_API_TOKEN;
 
   if (!apiToken) {
@@ -213,7 +215,16 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
   });
 
   try {
-    console.log("Starting Cinematic Video Generation (SVD)...");
+    console.log(`Starting Cinematic Video Generation (SVD) with motion: ${motionType}...`);
+
+    // Tuning SVD parameters to simulate different motions since SVD doesn't support text prompts.
+    // 'runway_walk' -> Higher motion bucket (more movement)
+    // '360_turn' -> Lower motion bucket (more stable rotation effect hopefully, or just less chaotic noise)
+    // Note: True 360 turn requires a 3D model or multi-view generation. SVD will attempt to animate the subject.
+
+    const motionBucketId = motionType === 'runway_walk' ? 180 : 110;
+    const condAug = motionType === 'runway_walk' ? 0.02 : 0.05; // Slightly more noise aug for turn to encourage variance
+
     const output = await replicate.run(
       SVD_MODEL,
       {
@@ -221,9 +232,9 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
           input_image: imageUrl,
           video_length: "25_frames_with_svd_xt",
           sizing_strategy: "maintain_aspect_ratio",
-          motion_bucket_id: 127,
+          motion_bucket_id: motionBucketId,
           frames_per_second: 6,
-          cond_aug: 0.02
+          cond_aug: condAug
         }
       }
     );
@@ -257,7 +268,7 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
 }
 
 // Keep generateRunwayVideo as an alias for backward compatibility or internal use
-export const generateRunwayVideo = async (imageUrl: string) => {
-    const res = await generateCinematicVideo(imageUrl);
+export const generateRunwayVideo = async (imageUrl: string, motionType: MotionType = 'runway_walk') => {
+    const res = await generateCinematicVideo(imageUrl, motionType);
     return res.success ? res.videoUrl : null;
 };

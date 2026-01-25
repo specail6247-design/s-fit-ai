@@ -30,6 +30,7 @@ import { AvatarLoader } from './AvatarLoader';
 import { FabricMaterial } from './masterpiece/FabricMaterial';
 import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
+// Cinematic Mode Viewer
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
 
@@ -309,13 +310,13 @@ function Mannequin({
   height = 170, opacity = 1.0 
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  const animationUrl = "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb";
   
   return (
     <group scale={[scale, scale, scale]}>
-      {/* Generic RPM Avatar Buffer */}
+      {/* Generic RPM Avatar Buffer - Fallback to Xbot to avoid 404 */}
       <AvatarLoader 
-        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+        url="https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb"
         animationUrl={animationUrl}
         scale={1.0}
       />
@@ -504,7 +505,7 @@ function Scene({
   const scale = height / 170;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
   let mannequinPosition: [number, number, number] = [0, -0.9, 0];
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  const animationUrl = "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb";
 
   const heatmapData = useMemo(() => {
     if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !selectedItem) return null;
@@ -532,8 +533,8 @@ function Scene({
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
             url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+              ? "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb"
+              : "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb"
             }
             animationUrl={animationUrl}
             scale={1.0}
@@ -713,6 +714,7 @@ interface AITryOnModalProps {
   result: string | null;
   error?: string | null;
   onGenerateTryOn: () => void;
+  onVideoSuccess: (url: string) => void;
 }
 
 function AITryOnModal({
@@ -724,10 +726,12 @@ function AITryOnModal({
   isLoading,
   result,
   error,
-  onGenerateTryOn
+  onGenerateTryOn,
+  onVideoSuccess
 }: AITryOnModalProps) {
     const [isVideoLoading, setIsVideoLoading] = useState(false);
     const [videoUrl, setVideoUrl] = useState<string | null>(null);
+    const [motionType, setMotionType] = useState<'runway_walk' | '360_turn'>('runway_walk');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     if (!isOpen) return null;
@@ -793,16 +797,35 @@ function AITryOnModal({
                                 </div>
                             )}
                             {result && !videoUrl && (
-                                <button onClick={async () => {
-                                    setIsVideoLoading(true);
-                                    try {
-                                        const res = await fetch('/api/cinematic-try-on', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({imageUrl: result}) });
-                                        const data = await res.json();
-                                        if(data.success) setVideoUrl(data.videoUrl);
-                                    } finally { setIsVideoLoading(false); }
-                                }} disabled={isVideoLoading} className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-xs">
-                                    {isVideoLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : '🎬 Generate Cinematic Motion'}
-                                </button>
+                                <div className="space-y-3">
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={() => setMotionType('runway_walk')}
+                                      className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg border ${motionType === 'runway_walk' ? 'bg-purple-600 border-purple-600 text-white' : 'bg-white/5 border-white/10 text-soft-gray hover:bg-white/10'}`}
+                                    >
+                                      Runway Walk
+                                    </button>
+                                    <button
+                                      onClick={() => setMotionType('360_turn')}
+                                      className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg border ${motionType === '360_turn' ? 'bg-purple-600 border-purple-600 text-white' : 'bg-white/5 border-white/10 text-soft-gray hover:bg-white/10'}`}
+                                    >
+                                      360° Turn
+                                    </button>
+                                  </div>
+                                  <button onClick={async () => {
+                                      setIsVideoLoading(true);
+                                      try {
+                                          const res = await fetch('/api/cinematic-try-on', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({imageUrl: result, motionType}) });
+                                          const data = await res.json();
+                                          if(data.success) {
+                                            setVideoUrl(data.videoUrl);
+                                            onVideoSuccess(data.videoUrl);
+                                          }
+                                      } finally { setIsVideoLoading(false); }
+                                  }} disabled={isVideoLoading} className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-xs">
+                                      {isVideoLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : `🎬 Generate ${motionType === 'runway_walk' ? 'Walk' : 'Turn'} Video`}
+                                  </button>
+                                </div>
                             )}
                         </div>
                     )}
@@ -830,6 +853,7 @@ function AITryOnModal({
 export function FittingRoom() {
   const {
     userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    cinematicVideoUrl, cinematicMode, setCinematicMode, setCinematicVideoUrl
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
@@ -934,7 +958,11 @@ export function FittingRoom() {
   return (
     <div className="w-full h-full flex flex-col bg-void-black text-pure-white">
       <div className="flex-1 relative min-h-[350px]">
-        {webglFailed ? (
+        {cinematicMode && cinematicVideoUrl ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-black">
+             <CinematicViewer videoUrl={cinematicVideoUrl} className="w-full h-full max-h-full aspect-[9/16]" />
+          </div>
+        ) : webglFailed ? (
           /* 2D Fallback View */
           <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-[#0a0a0a] to-[#1a1a1a]">
             <div className="relative w-64 h-96">
@@ -994,6 +1022,11 @@ export function FittingRoom() {
             <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
             </button>
+            {cinematicVideoUrl && (
+              <button onClick={() => setCinematicMode(!cinematicMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${cinematicMode ? 'bg-purple-600 text-white border-purple-600 shadow-[0_0_15px_rgba(147,51,234,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                  🎬 Cinematic Mode
+              </button>
+            )}
             <button onClick={() => setIsMacroView(!isMacroView)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMacroView ? 'bg-white text-black border-white' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 🔍 Macro View
             </button>
@@ -1147,6 +1180,7 @@ export function FittingRoom() {
         isLoading={aiTryOnLoading}
         result={aiTryOnResult}
         onGenerateTryOn={handleGenerateAITryOn}
+        onVideoSuccess={(url) => setCinematicVideoUrl(url)}
       />
     </div>
   );

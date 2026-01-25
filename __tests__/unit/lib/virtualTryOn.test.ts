@@ -105,4 +105,21 @@ describe('Cinematic Video Generation', () => {
     expect(result.success).toBe(false);
     expect(result.error).toBe('API Error');
   });
+
+  it('should adjust parameters for 360_turn motion', async () => {
+    mockReplicateRun.mockResolvedValue('https://replicate.com/video.mp4');
+
+    const result = await generateCinematicVideo('https://replicate.com/image.jpg', '360_turn');
+
+    expect(result.success).toBe(true);
+    expect(mockReplicateRun).toHaveBeenCalledWith(
+        expect.stringContaining('stable-video-diffusion'),
+        expect.objectContaining({
+            input: expect.objectContaining({
+                motion_bucket_id: 110,
+                cond_aug: 0.05
+            })
+        })
+    );
+  });
 });

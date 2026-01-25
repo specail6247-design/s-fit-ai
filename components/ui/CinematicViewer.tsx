@@ -10,6 +10,7 @@ interface CinematicViewerProps {
 }
 
 export default function CinematicViewer({ videoUrl, posterUrl, className = '' }: CinematicViewerProps) {
+  // Viewer for Cinematic Mode video generation
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
