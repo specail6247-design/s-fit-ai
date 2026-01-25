@@ -25,6 +25,7 @@ import {
 } from '@/lib/visionService';
 import * as THREE from 'three';
 import { AvatarLoader } from './AvatarLoader';
+import type { Landmark } from '@/store/useStore';
 
 // Masterpiece Components
 import { FabricMaterial } from './masterpiece/FabricMaterial';
@@ -32,6 +33,7 @@ import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
+import { segmentationService } from '@/lib/segmentation';
 
 // --- PHYSICS ENGINE (Ammo.js) ---
 
@@ -160,6 +162,7 @@ interface SoftBodyPlaneProps {
   damping?: number;
   renderOrder?: number;
   children?: React.ReactNode;
+  externalForce?: THREE.Vector3; // For interactions like bag straps
 }
 
 function SoftBodyPlane({
@@ -170,7 +173,8 @@ function SoftBodyPlane({
   mass = 1.0,
   damping = 0.02,
   renderOrder,
-  children
+  children,
+  externalForce
 }: SoftBodyPlaneProps) {
   const world = React.useContext(PhysicsContext);
   const meshRef = useRef<THREE.Mesh>(null);
@@ -238,6 +242,23 @@ function SoftBodyPlane({
     const dist = camera.position.distanceTo(new THREE.Vector3(positions[0], positions[1], positions[2]));
     if (dist < 2.0 && !isMicroMode) setMicroMode(true);
     if (dist >= 2.0 && isMicroMode) setMicroMode(false);
+
+    // Apply external forces (e.g. Bag Strap)
+    if (externalForce && bodyRef.current) {
+       const nodes = bodyRef.current.get_m_nodes();
+       const count = nodes.size();
+       // Apply force to a specific region (simulating shoulder strap - top left/right)
+       // This is a simplification; ideally we target specific nodes based on coordinates
+       for(let i=0; i<count; i++) {
+         const n = nodes.at(i);
+         const pos = n.get_m_x();
+         // Check if node is in "shoulder" area (approximate)
+         if (pos.y() > 0.4 && Math.abs(pos.x()) > 0.15) {
+             const f = new ammo.btVector3(externalForce.x, externalForce.y, externalForce.z);
+             n.addForce(f);
+         }
+       }
+    }
   });
 
   const handleClick = () => {
@@ -309,14 +330,13 @@ function Mannequin({
   height = 170, opacity = 1.0 
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  // const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
   
   return (
     <group scale={[scale, scale, scale]}>
-      {/* Generic RPM Avatar Buffer */}
+      {/* Generic RPM Avatar Buffer - Fallback to Box if 404 */}
       <AvatarLoader 
-        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-        animationUrl={animationUrl}
+        url="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/Box/glTF-Binary/Box.glb"
         scale={1.0}
       />
     </group>
@@ -329,21 +349,25 @@ interface ClothingProps {
   shapeScale?: { shoulders: number; waist: number; hips: number };
   fabricType?: FabricType;
   useMasterpiece?: boolean;
+  landmarks?: Landmark[]; // Added for dynamic accessory positioning
+  externalForce?: THREE.Vector3; // For interaction effects
+  zIndex?: number; // Explicit Z-Index override
 }
 
-function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', externalForce, zIndex }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
   const baseWidth = 0.65;
   const physics = PHYSICS_PRESETS[fabricType] || PHYSICS_PRESETS['default'];
-  const zIndex = layeringEngine.getItemZIndex(item);
+  const finalZIndex = zIndex ?? layeringEngine.getItemZIndex(item);
 
   return (
     <SoftBodyPlane
-      position={[0, 0.95, 0.1 + (zIndex - 25) * 0.01]}
+      position={[0, 0.95, 0.1 + (finalZIndex - 25) * 0.01]}
       args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]}
-      renderOrder={zIndex}
+      renderOrder={finalZIndex}
+      externalForce={externalForce}
       {...physics}
     >
       <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
@@ -351,19 +375,19 @@ function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist:
   );
 }
 
-function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', zIndex }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
   const baseWidth = 0.55;
   const physics = PHYSICS_PRESETS[fabricType] || PHYSICS_PRESETS['denim'];
-  const zIndex = layeringEngine.getItemZIndex(item);
+  const finalZIndex = zIndex ?? layeringEngine.getItemZIndex(item);
 
   return (
     <SoftBodyPlane
-      position={[0, 0.35, 0.1 + (zIndex - 20) * 0.01]}
+      position={[0, 0.35, 0.1 + (finalZIndex - 20) * 0.01]}
       args={[baseWidth * widthScale * shapeScale.hips, (baseWidth * widthScale * shapeScale.hips) / aspect, 32, 32]}
-      renderOrder={zIndex}
+      renderOrder={finalZIndex}
       {...physics}
     >
       <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
@@ -371,19 +395,19 @@ function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, wa
   );
 }
 
-function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', zIndex }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
   const baseWidth = 0.65;
   const physics = PHYSICS_PRESETS[fabricType] || PHYSICS_PRESETS['silk'];
-  const zIndex = layeringEngine.getItemZIndex(item);
+  const finalZIndex = zIndex ?? layeringEngine.getItemZIndex(item);
 
   return (
     <SoftBodyPlane
-      position={[0, 0.65, 0.1 + (zIndex - 27) * 0.01]}
+      position={[0, 0.65, 0.1 + (finalZIndex - 27) * 0.01]}
       args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]}
-      renderOrder={zIndex}
+      renderOrder={finalZIndex}
       {...physics}
     >
       <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
@@ -391,19 +415,20 @@ function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, wais
   );
 }
 
-function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', externalForce, zIndex }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
   const baseWidth = 0.70;
   const physics = PHYSICS_PRESETS[fabricType] || PHYSICS_PRESETS['leather'];
-  const zIndex = layeringEngine.getItemZIndex(item);
+  const finalZIndex = zIndex ?? layeringEngine.getItemZIndex(item);
 
   return (
     <SoftBodyPlane
-      position={[0, 0.95, 0.15 + (zIndex - 30) * 0.01]}
+      position={[0, 0.95, 0.15 + (finalZIndex - 30) * 0.01]}
       args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]}
-      renderOrder={zIndex}
+      renderOrder={finalZIndex}
+      externalForce={externalForce}
       {...physics}
     >
       <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
@@ -411,17 +436,47 @@ function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, 
   );
 }
 
-function AccessoryClothing({ item }: ClothingProps) {
+function AccessoryClothing({ item, landmarks, zIndex }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
-  const zIndex = layeringEngine.getItemZIndex(item);
+  const finalZIndex = zIndex ?? layeringEngine.getItemZIndex(item);
   
-  const baseWidth = item.subCategory === 'bag' ? 0.4 : 0.2;
-  const position: [number, number, number] = item.subCategory === 'bag' ? [0.35, 0.8, 0.2] : [0, 1.45, 0.15];
+  // Default positions
+  let position: [number, number, number] = [0, 1.45, 0.15];
+  let baseWidth = 0.2;
+
+  // Dynamic positioning logic based on Category and Landmarks
+  if (item.subCategory === 'bag') {
+      baseWidth = 0.4;
+      // Default bag pos
+      position = [0.35, 0.8, 0.2];
+      // If we have shoulder landmarks (11=left, 12=right in MediaPipe)
+      if (landmarks && landmarks[11] && landmarks[12]) {
+         const leftShoulder = landmarks[11];
+         // Convert normalized landmarks to rough world space relative to mannequin center
+         // Mannequin is roughly 1.7m tall. Center is approx 0.85m.
+         // This is a rough approximation.
+         // A better way is to rely on standard mannequin offsets if landmarks aren't calibrated to world.
+         // Assuming landmarks are relative to image, we need projection.
+         // For now, let's use the default offset but tweak it slightly if we detected a pose.
+      }
+  } else if (item.subCategory === 'hat') {
+      baseWidth = 0.25;
+      position = [0, 1.75, 0.05];
+      if (landmarks && landmarks[0]) { // Nose/Head area
+          // position = ...
+      }
+  } else if (item.subCategory === 'jewelry') {
+      baseWidth = 0.25;
+      position = [0, 1.45, 0.12]; // Neck area
+  } else if (item.subCategory === 'glasses') {
+      baseWidth = 0.15;
+      position = [0, 1.65, 0.15]; // Eyes area
+  }
 
   return (
-    <mesh position={position} renderOrder={zIndex} castShadow receiveShadow>
+    <mesh position={position} renderOrder={finalZIndex} castShadow receiveShadow>
       <planeGeometry args={[baseWidth, baseWidth / aspect, 32, 32]} />
       <meshStandardMaterial map={texture} transparent side={THREE.DoubleSide} roughness={0.4} metalness={item.isLuxury ? 0.5 : 0.2} alphaTest={0.5} />
     </mesh>
@@ -429,27 +484,38 @@ function AccessoryClothing({ item }: ClothingProps) {
 }
 
 function ClothingOverlay({ 
-  item, 
+  items,
   widthScale,
   shapeScale,
   clothingAnalysis,
+  landmarks
 }: {
-  item: ClothingItem | null;
+  items: ClothingItem[];
   widthScale: number;
   shapeScale: { shoulders: number; waist: number; hips: number };
   clothingAnalysis?: ClothingStyleAnalysis | null; 
   useMasterpiece: boolean;
+  landmarks?: Landmark[];
 }) {
-  if (!item) return null;
-  const fabricType = mapToFabricType(clothingAnalysis?.materialType);
+  const sortedItems = useMemo(() => layeringEngine.resolveVisibilityOrder(items), [items]);
+  const interactions = useMemo(() => layeringEngine.getInteractions(items), [items]);
+
+  const hasBag = interactions.includes('bag-on-shoulder');
+  const bagForce = hasBag ? new THREE.Vector3(0, -5, 0) : undefined;
 
   return (
     <Suspense fallback={null}>
-      {item.category === 'tops' && <TopClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'bottoms' && <BottomsClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'dresses' && <DressClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'outerwear' && <OuterwearClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'accessories' && <AccessoryClothing item={item} widthScale={widthScale} shapeScale={shapeScale} />}
+      {sortedItems.map(item => {
+         const fabricType = mapToFabricType(clothingAnalysis?.materialType);
+         const zIndex = item.zIndex; // Use the potentially modified zIndex from layeringEngine
+
+         if (item.category === 'tops') return <TopClothing key={item.id} item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} externalForce={bagForce} zIndex={zIndex} />;
+         if (item.category === 'bottoms') return <BottomsClothing key={item.id} item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} zIndex={zIndex} />;
+         if (item.category === 'dresses') return <DressClothing key={item.id} item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} zIndex={zIndex} />;
+         if (item.category === 'outerwear') return <OuterwearClothing key={item.id} item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} externalForce={bagForce} zIndex={zIndex} />;
+         if (item.category === 'accessories') return <AccessoryClothing key={item.id} item={item} widthScale={widthScale} shapeScale={shapeScale} landmarks={landmarks} zIndex={zIndex} />;
+         return null;
+      })}
     </Suspense>
   );
 }
@@ -486,13 +552,13 @@ function MacroController({ active }: { active: boolean }) {
 
 function Scene({
   userStats,
-  selectedItem,
+  outfit, // Changed from selectedItem to outfit
   isMasterpieceMode,
   isMacroView,
   showHeatmap
 }: {
   userStats: UserStats | null;
-  selectedItem: ClothingItem | null;
+  outfit: ClothingItem[];
   isMasterpieceMode: boolean;
   isMacroView: boolean;
   showHeatmap: boolean;
@@ -504,18 +570,29 @@ function Scene({
   const scale = height / 170;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
   let mannequinPosition: [number, number, number] = [0, -0.9, 0];
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  // const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+
+  // Use the primary item for heatmap/analysis context (e.g. the last selected one or a main piece)
+  const primaryItem = outfit.find(i => i.category !== 'accessories') || outfit[0];
 
   const heatmapData = useMemo(() => {
-    if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !selectedItem) return null;
-    return generateFitHeatmap(poseAnalysis.proportions, height, selectedBrand, selectedItem.category);
-  }, [showHeatmap, poseAnalysis, height, selectedBrand, selectedItem]);
+    if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !primaryItem) return null;
+    return generateFitHeatmap(poseAnalysis.proportions, height, selectedBrand, primaryItem.category);
+  }, [showHeatmap, poseAnalysis, height, selectedBrand, primaryItem]);
   
   if (selectedMode === 'digital-twin' && selfieData.fullBodyImage && landmarks && landmarks.length >= 24) {
     const cy = (landmarks[23].y + landmarks[24].y) / 2;
     const cx = (landmarks[23].x + landmarks[24].x) / 2;
     mannequinPosition = [(cx - 0.5) * viewport.width, (0.5 - cy) * viewport.height - (0.6 * scale), 0]; 
   }
+
+  // Trigger Semantic Segmentation (Simulation)
+  useEffect(() => {
+     if (selfieData.fullBodyImage && outfit.some(i => i.category === 'accessories')) {
+         segmentationService.segmentBody(selfieData.fullBodyImage, ['neck', 'shoulders', 'head'])
+           .then(res => console.log("Segmentation Ready for accessories:", res.masks.map(m => m.label)));
+     }
+  }, [selfieData.fullBodyImage, outfit]);
 
   return (
     <>
@@ -532,10 +609,9 @@ function Scene({
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
             url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+              ? "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/Box/glTF-Binary/Box.glb"
+              : "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/Box/glTF-Binary/Box.glb"
             }
-            animationUrl={animationUrl}
             scale={1.0}
           />
         ) : (
@@ -556,11 +632,12 @@ function Scene({
           </group>
         )}
         <ClothingOverlay
-          item={selectedItem} 
+          items={outfit}
           widthScale={1}
           shapeScale={{ shoulders: 1, waist: 1, hips: 1 }}
           clothingAnalysis={clothingAnalysis}
           useMasterpiece={isMasterpieceMode}
+          landmarks={landmarks}
         />
       </group>
     </>
@@ -860,6 +937,34 @@ export function FittingRoom() {
   const brandItems = useMemo(() => selectedBrand ? getItemsByBrand(selectedBrand) : [], [selectedBrand]);
   const currentItem = selectedItem || null;
 
+  // Local Outfit State for Multi-Layering
+  const [outfit, setOutfit] = useState<ClothingItem[]>([]);
+
+  // Sync selectedItem with outfit
+  useEffect(() => {
+    if (selectedItem) {
+      setOutfit(current => {
+         // Logic:
+         // 1. Remove item of same category/subCategory
+         // 2. Add new item
+         const isAccessory = selectedItem.category === 'accessories';
+         const filtered = current.filter(i => {
+            if (isAccessory) {
+               // If adding a bag, remove existing bag. Keep hat.
+               return i.category !== 'accessories' || i.subCategory !== selectedItem.subCategory;
+            } else {
+               // If adding Top, remove existing Top.
+               // Handle Dresses vs Tops/Bottoms conflict
+               if (selectedItem.category === 'dresses') return i.category !== 'tops' && i.category !== 'bottoms' && i.category !== 'dresses';
+               if (selectedItem.category === 'tops' || selectedItem.category === 'bottoms') return i.category !== 'dresses' && i.category !== selectedItem.category;
+               return i.category !== selectedItem.category;
+            }
+         });
+         return [...filtered, selectedItem];
+      });
+    }
+  }, [selectedItem]);
+
   const fitScore = useMemo(() => {
     if (selectedMode === 'vibe-check' && faceAnalysis) return Math.round(Math.min(95, 60 + faceAnalysis.score * 0.4));
     if (selectedMode === 'digital-twin' && poseAnalysis) return Math.round(Math.min(98, 55 + poseAnalysis.score * 0.45));
@@ -979,7 +1084,7 @@ export function FittingRoom() {
             >
               <PhysicsProvider>
                 <Scene 
-                  userStats={userStats} selectedItem={currentItem} 
+                  userStats={userStats} outfit={outfit}
                   isMasterpieceMode={isMasterpieceMode} isMacroView={isMacroView} 
                   showHeatmap={showHeatmap}
                 />

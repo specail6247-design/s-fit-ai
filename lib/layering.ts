@@ -12,8 +12,9 @@ export const LAYER_Z_INDEX = {
   BOTTOMS: 20,
   TOPS: 25,
   DRESSES: 27, // Replaces Tops+Bottoms usually
+  JEWELRY_NECK_UNDER: 28, // New dynamic layer
   OUTERWEAR: 30,
-  JEWELRY_NECK: 35, // Default over top
+  JEWELRY_NECK: 35, // Default over top (and over outerwear if not adjusted)
   JEWELRY_WRIST: 35,
   SCARF: 40,
   HAT: 45,
@@ -30,18 +31,43 @@ export interface LayeredComposition {
   }[];
 }
 
+export type InteractionType = 'bag-on-shoulder' | 'necklace-under-jacket' | 'hat-on-hair';
+
 export class LayeringEngine {
 
   /**
    * Sorts a list of selected clothing items based on their Z-Index.
    * Ensures correct rendering order (Background -> Skin -> Clothes -> Accessories).
+   * Now context-aware.
    */
-  sortItemsForTryOn(items: ClothingItem[]): ClothingItem[] {
-    return [...items].sort((a, b) => {
+  resolveVisibilityOrder(items: ClothingItem[]): ClothingItem[] {
+    let processedItems = items.map(item => ({ ...item })); // Shallow copy to avoid mutation
+
+    const hasOuterwear = processedItems.some(i => i.category === 'outerwear');
+    const hasNecklace = processedItems.some(i => i.category === 'accessories' && i.subCategory === 'jewelry');
+
+    // Rule: Necklace: Under jacket, over t-shirt.
+    if (hasOuterwear && hasNecklace) {
+      processedItems = processedItems.map(item => {
+        if (item.category === 'accessories' && item.subCategory === 'jewelry') {
+          // Force Z-Index to be under outerwear (30) but over tops (25)
+          return { ...item, zIndex: LAYER_Z_INDEX.JEWELRY_NECK_UNDER };
+        }
+        return item;
+      });
+    }
+
+    // Sort based on the (potentially modified) Z-Index
+    return processedItems.sort((a, b) => {
       const zA = this.getItemZIndex(a);
       const zB = this.getItemZIndex(b);
       return zA - zB;
     });
+  }
+
+  // Deprecated alias for backward compatibility if needed, or just redirect
+  sortItemsForTryOn(items: ClothingItem[]): ClothingItem[] {
+    return this.resolveVisibilityOrder(items);
   }
 
   /**
@@ -75,7 +101,7 @@ export class LayeringEngine {
   }
 
   generateCompositeStrategy(items: ClothingItem[]): LayeredComposition {
-    const sorted = this.sortItemsForTryOn(items);
+    const sorted = this.resolveVisibilityOrder(items);
 
     return {
       layers: sorted.map(item => ({
@@ -84,6 +110,28 @@ export class LayeringEngine {
         maskRequired: item.category === 'accessories'
       }))
     };
+  }
+
+  /**
+   * Identifies physical interactions between layers.
+   * e.g. "Bag Strap" should deform "Outerwear".
+   */
+  getInteractions(items: ClothingItem[]): InteractionType[] {
+    const interactions: InteractionType[] = [];
+    const categories = items.map(i => i.category);
+    const subCategories = items.map(i => i.subCategory);
+
+    // Bag vs Outerwear/Top
+    if (subCategories.includes('bag') && (categories.includes('outerwear') || categories.includes('tops'))) {
+      interactions.push('bag-on-shoulder');
+    }
+
+    // Hat vs Hair (Implied always true if hat is present, but useful for physics)
+    if (subCategories.includes('hat')) {
+      interactions.push('hat-on-hair');
+    }
+
+    return interactions;
   }
 
   validateOutfit(items: ClothingItem[]): string[] {
