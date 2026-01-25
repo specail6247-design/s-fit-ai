@@ -96,6 +96,12 @@ interface StoreState {
   selectedItem: ClothingItem | null;
   setSelectedItem: (item: ClothingItem | null) => void;
 
+  // Cinematic Mode
+  cinematicVideoUrl: string | null;
+  setCinematicVideoUrl: (url: string | null) => void;
+  cinematicMode: boolean;
+  setCinematicMode: (enabled: boolean) => void;
+
   // Daily Usage (Freemium)
   dailyUsage: DailyUsage;
   incrementUsage: () => void;
@@ -186,6 +192,12 @@ export const useStore = create<StoreState>()(
       selectedItem: null,
       setSelectedItem: (item) => set({ selectedItem: item }),
 
+      // Cinematic Mode
+      cinematicVideoUrl: null,
+      setCinematicVideoUrl: (url) => set({ cinematicVideoUrl: url }),
+      cinematicMode: false,
+      setCinematicMode: (enabled) => set({ cinematicMode: enabled }),
+
       // Daily Usage
       dailyUsage: {
         count: 0,
@@ -247,6 +259,8 @@ export const useStore = create<StoreState>()(
           sizeRecommendation: null,
           selectedBrand: null,
           selectedItem: null,
+          cinematicVideoUrl: null,
+          cinematicMode: false,
         }),
     }),
     {
@@ -257,6 +271,8 @@ export const useStore = create<StoreState>()(
         userStats: state.userStats,
         selectedAIModels: state.selectedAIModels,
         trainingData: state.trainingData,
+        cinematicVideoUrl: state.cinematicVideoUrl,
+        cinematicMode: state.cinematicMode,
       }),
     }
   )
