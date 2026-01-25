@@ -157,6 +157,11 @@ export default function RealLifeFitting() {
                Luxury Line
              </a>
           </div>
+          <div className="mt-2">
+             <a href="/sneaker-drop" className="block w-full py-3 bg-cyber-lime/10 border border-cyber-lime/30 text-cyber-lime hover:bg-cyber-lime/20 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
+               👟 Sneaker Drop (AR)
+             </a>
+          </div>
 
         </div>
       </div>
