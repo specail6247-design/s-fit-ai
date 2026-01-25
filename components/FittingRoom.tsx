@@ -32,6 +32,7 @@ import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
+import LuxuryImageDistortion from './masterpiece/LuxuryImageDistortion';
 
 // --- PHYSICS ENGINE (Ammo.js) ---
 
@@ -589,9 +590,20 @@ function ItemCard({
       whileTap={{ scale: 0.95 }}
     >
       <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
-        <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
-        {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
-        {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
+        {item.imageUrl ? (
+            <Image
+                src={item.imageUrl}
+                alt={item.name}
+                fill
+                className="object-cover luxury-asset"
+                sizes="100px"
+                unoptimized
+            />
+        ) : (
+            <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+        )}
+        {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center z-10"><span className="text-[0.5rem]">✦</span></div>}
+        {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black z-10">AI Pick</div>}
       </div>
       <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
       <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
@@ -780,16 +792,9 @@ function AITryOnModal({
                             {videoUrl ? (
                               <CinematicViewer videoUrl={videoUrl} posterUrl={result || undefined} className="w-full aspect-[9/16] rounded-xl shadow-2xl" />
                             ) : result && (
-                                <div className="relative w-full aspect-[9/16] rounded-xl border-2 border-cyber-lime/20 shadow-xl overflow-hidden">
-                                  <Image
-                                    src={result}
-                                    alt="AI Try-On Result"
-                                    fill
-                                    className="object-cover"
-                                    sizes="(max-width: 768px) 100vw, 420px"
-                                    unoptimized
-                                  />
-                                  <div className="absolute top-2 right-2 bg-cyber-lime/90 text-void-black text-[10px] font-bold px-2 py-0.5 rounded">ULTRA-FIT</div>
+                                <div className="relative w-full aspect-[9/16] rounded-xl border-2 border-cyber-lime/20 shadow-xl overflow-hidden group">
+                                  <LuxuryImageDistortion imageUrl={result} className="w-full h-full" />
+                                  <div className="absolute top-2 right-2 bg-cyber-lime/90 text-void-black text-[10px] font-bold px-2 py-0.5 rounded pointer-events-none">ULTRA-FIT</div>
                                 </div>
                             )}
                             {result && !videoUrl && (
@@ -955,7 +960,7 @@ export function FittingRoom() {
                       src={currentItem.imageUrl}
                       alt={currentItem.name}
                       fill
-                      className="object-contain drop-shadow-2xl"
+                      className="object-contain drop-shadow-2xl luxury-asset"
                       sizes="(max-width: 768px) 60vw, 280px"
                       unoptimized
                     />
@@ -989,103 +994,122 @@ export function FittingRoom() {
           </Suspense>
         )}
         
-        {/* Controls Overlay */}
-        <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
-            <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
-                {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
-            </button>
-            <button onClick={() => setIsMacroView(!isMacroView)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMacroView ? 'bg-white text-black border-white' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
-                🔍 Macro View
-            </button>
-            <button onClick={() => setShowHeatmap(!showHeatmap)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
-                🔥 Fit Heatmap
-            </button>
-        </div>
+        {/* Immersive UI Overlay Layer */}
+        <AnimatePresence>
+        {!aiTryOnLoading && (
+            <motion.div
+                className="absolute inset-0 pointer-events-none"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+            >
+                {/* Controls Overlay */}
+                <div className="absolute top-4 right-4 flex flex-col gap-2 z-10 pointer-events-auto">
+                    <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                        {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
+                    </button>
+                    <button onClick={() => setIsMacroView(!isMacroView)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMacroView ? 'bg-white text-black border-white' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                        🔍 Macro View
+                    </button>
+                    <button onClick={() => setShowHeatmap(!showHeatmap)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                        🔥 Fit Heatmap
+                    </button>
+                </div>
 
-        {/* Rotation hint */}
-        {!webglFailed && (
-          <motion.div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-soft-gray/60 text-xs bg-void-black/50 px-3 py-1 rounded-full z-10"
-                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }}>
-            <span>↔️ Drag to rotate</span>
-          </motion.div>
-        )}
-
-        <div className="absolute top-4 left-4 flex gap-2 z-20">
-            <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
-                <span>📤</span>
-            </button>
-            <motion.button onClick={() => setShowAITryOnModal(true)} 
-                           className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
-                           whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <span>✨</span> AI 피팅 <span className="text-[0.6rem] bg-white/20 px-1.5 py-0.5 rounded-full">NEW</span>
-            </motion.button>
-        </div>
-
-        {topPicks.length > 0 && (
-          <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-20">
-            {isMiniBarCollapsed ? (
-              <div className="glass-card px-3 py-2 flex items-center justify-between gap-3">
-                <span className="text-[0.55rem] uppercase tracking-[0.2em] text-soft-gray">AI Picks</span>
-                <button onClick={() => setMiniBarCollapsed(false)} className="text-[0.55rem] text-soft-gray hover:text-white transition-colors">Show</button>
-              </div>
-            ) : (
-              <div className="glass-card px-3 py-2 flex items-center gap-2 relative overflow-hidden">
-                 <span className="text-[0.55rem] uppercase tracking-[0.2em] text-soft-gray">AI Picks</span>
-                 <div className="flex-1 flex gap-2 overflow-x-auto scrollbar-hide">
-                    {topPicks.map((entry) => (
-                      <button key={`mini-${entry.item.id}`} onClick={() => setSelectedItem(entry.item)}
-                              className={`flex items-center gap-1 rounded-full border px-2 py-0.5 text-[0.6rem] transition-colors whitespace-nowrap ${currentItem?.id === entry.item.id ? 'border-cyber-lime text-pure-white bg-cyber-lime/10' : 'border-border-color text-soft-gray'}`}>
-                        <span>{getCategoryIcon(entry.item.category)}</span>
-                        <span className="max-w-[60px] truncate">{entry.item.name}</span>
-                        <span className="text-cyber-lime">{entry.score}</span>
-                      </button>
-                    ))}
-                 </div>
-                 <button onClick={() => setAutoCycleEnabled(!autoCycleEnabled)} className={`text-[0.55rem] uppercase ${autoCycleEnabled ? 'text-cyber-lime' : 'text-soft-gray'}`}>
-                    {autoCycleEnabled ? 'Auto On' : 'Auto Off'}
-                 </button>
-                 <button onClick={() => setMiniBarCollapsed(true)} className="text-[0.55rem] text-soft-gray ml-1">✕</button>
-                 {autoCycleEnabled && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyber-lime/30"><div className="h-full bg-cyber-lime auto-cycle-bar" /></div>}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* AI Consultant Advice Overlay */}
-        <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none">
-            <AnimatePresence>
-                {currentItem && poseAnalysis?.proportions && recommendedFit && (
-                    <motion.div 
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        className="bg-black/60 backdrop-blur-xl border border-white/10 p-3 rounded-2xl shadow-2xl pointer-events-auto max-w-sm"
-                    >
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-cyber-lime/20 flex items-center justify-center text-cyber-lime text-xs font-bold ring-1 ring-cyber-lime/30">
-                                {recommendedFit.recommendedSize}
-                            </div>
-                            <div>
-                                <p className="text-[10px] uppercase tracking-widest text-soft-gray font-bold">AI Recommended Fit</p>
-                                <p className="text-xs font-bold text-white">Masterpiece Fit Consultant</p>
-                            </div>
-                        </div>
-                        <ul className="space-y-1">
-                            {recommendedFit.fitNotes.map((note, i) => (
-                                <li key={i} className="text-[9px] text-soft-gray flex items-start gap-1.5 leading-relaxed">
-                                    <span className="text-cyber-lime mt-1 flex-shrink-0">●</span>
-                                    {note}
-                                </li>
-                            ))}
-                        </ul>
-                    </motion.div>
+                {/* Rotation hint */}
+                {!webglFailed && (
+                <motion.div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-soft-gray/60 text-xs bg-void-black/50 px-3 py-1 rounded-full z-10"
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }}>
+                    <span>↔️ Drag to rotate</span>
+                </motion.div>
                 )}
-            </AnimatePresence>
-        </div>
+
+                <div className="absolute top-4 left-4 flex gap-2 z-20 pointer-events-auto">
+                    <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
+                        <span>📤</span>
+                    </button>
+                    <motion.button onClick={() => setShowAITryOnModal(true)}
+                                className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
+                                whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <span>✨</span> AI 피팅 <span className="text-[0.6rem] bg-white/20 px-1.5 py-0.5 rounded-full">NEW</span>
+                    </motion.button>
+                </div>
+
+                {topPicks.length > 0 && (
+                <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-20 pointer-events-auto">
+                    {isMiniBarCollapsed ? (
+                    <div className="glass-card px-3 py-2 flex items-center justify-between gap-3">
+                        <span className="text-[0.55rem] uppercase tracking-[0.2em] text-soft-gray">AI Picks</span>
+                        <button onClick={() => setMiniBarCollapsed(false)} className="text-[0.55rem] text-soft-gray hover:text-white transition-colors">Show</button>
+                    </div>
+                    ) : (
+                    <div className="glass-card px-3 py-2 flex items-center gap-2 relative overflow-hidden">
+                        <span className="text-[0.55rem] uppercase tracking-[0.2em] text-soft-gray">AI Picks</span>
+                        <div className="flex-1 flex gap-2 overflow-x-auto scrollbar-hide">
+                            {topPicks.map((entry) => (
+                            <button key={`mini-${entry.item.id}`} onClick={() => setSelectedItem(entry.item)}
+                                    className={`flex items-center gap-1 rounded-full border px-2 py-0.5 text-[0.6rem] transition-colors whitespace-nowrap ${currentItem?.id === entry.item.id ? 'border-cyber-lime text-pure-white bg-cyber-lime/10' : 'border-border-color text-soft-gray'}`}>
+                                <span>{getCategoryIcon(entry.item.category)}</span>
+                                <span className="max-w-[60px] truncate">{entry.item.name}</span>
+                                <span className="text-cyber-lime">{entry.score}</span>
+                            </button>
+                            ))}
+                        </div>
+                        <button onClick={() => setAutoCycleEnabled(!autoCycleEnabled)} className={`text-[0.55rem] uppercase ${autoCycleEnabled ? 'text-cyber-lime' : 'text-soft-gray'}`}>
+                            {autoCycleEnabled ? 'Auto On' : 'Auto Off'}
+                        </button>
+                        <button onClick={() => setMiniBarCollapsed(true)} className="text-[0.55rem] text-soft-gray ml-1">✕</button>
+                        {autoCycleEnabled && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyber-lime/30"><div className="h-full bg-cyber-lime auto-cycle-bar" /></div>}
+                    </div>
+                    )}
+                </div>
+                )}
+
+                {/* AI Consultant Advice Overlay */}
+                <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none">
+                    <AnimatePresence>
+                        {currentItem && poseAnalysis?.proportions && recommendedFit && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 10 }}
+                                className="bg-black/60 backdrop-blur-xl border border-white/10 p-3 rounded-2xl shadow-2xl pointer-events-auto max-w-sm"
+                            >
+                                <div className="flex items-center gap-3 mb-2">
+                                    <div className="w-8 h-8 rounded-full bg-cyber-lime/20 flex items-center justify-center text-cyber-lime text-xs font-bold ring-1 ring-cyber-lime/30">
+                                        {recommendedFit.recommendedSize}
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] uppercase tracking-widest text-soft-gray font-bold">AI Recommended Fit</p>
+                                        <p className="text-xs font-bold text-white">Masterpiece Fit Consultant</p>
+                                    </div>
+                                </div>
+                                <ul className="space-y-1">
+                                    {recommendedFit.fitNotes.map((note, i) => (
+                                        <li key={i} className="text-[9px] text-soft-gray flex items-start gap-1.5 leading-relaxed">
+                                            <span className="text-cyber-lime mt-1 flex-shrink-0">●</span>
+                                            {note}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            </motion.div>
+        )}
+        </AnimatePresence>
       </div>
 
       {/* Item Selector Footer */}
-      <div className="p-4 border-t border-border-color bg-void-black">
+      <AnimatePresence>
+      {!aiTryOnLoading && (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        className="p-4 border-t border-border-color bg-void-black"
+      >
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-[10px] uppercase tracking-widest text-soft-gray">{selectedBrand} Collection</h3>
           <button onClick={() => setShowCompareModal(true)} className="text-[10px] text-cyber-lime hover:underline">Compare Picks →</button>
@@ -1100,11 +1124,19 @@ export function FittingRoom() {
                 />
             ))}
         </div>
-      </div>
+      </motion.div>
+      )}
+      </AnimatePresence>
 
       {/* AI Stylist & Complementary Items */}
-      {currentItem && (
-        <div className="p-4 bg-charcoal/30 border-t border-border-color">
+      <AnimatePresence>
+      {!aiTryOnLoading && currentItem && (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="p-4 bg-charcoal/30 border-t border-border-color"
+        >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <span className="text-xs">🎨</span>
@@ -1123,8 +1155,9 @@ export function FittingRoom() {
               </button>
             ))}
           </div>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
 
       <ShareModal 
         isOpen={showShareModal} 
