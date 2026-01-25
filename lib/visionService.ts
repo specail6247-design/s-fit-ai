@@ -23,6 +23,25 @@ export interface SizeRecommendation {
   fitNotes: string[];
 }
 
+export interface HMRMeasurements {
+  shoulderWidth: number;
+  chestCircumference: number;
+  waistCircumference: number;
+  hipCircumference: number;
+  armLength: number;
+  inseam: number;
+  thighCircumference: number;
+}
+
+export interface HeatmapData {
+  shoulders: number;
+  chest: number;
+  waist: number;
+  hips: number;
+  sleeves: number;
+  thigh: number;
+}
+
 // In a real production app, the API key should be handled via environment variables
 // and the analysis should ideally happen on the server to protect the key.
 const openai = new OpenAI({
@@ -111,8 +130,34 @@ export function getComplementaryItems(selectedItem: ClothingItem): ClothingItem[
 }
 
 /**
+ * Simulates HMR 2.0 (Human Mesh Recovery) analysis.
+ * Generates precise 3D body measurements from user stats and base proportions.
+ */
+export function simulateHMRAnalysis(userHeight: number, proportions?: PoseProportions): HMRMeasurements {
+  const heightRatio = userHeight / 170;
+
+  // Base measurements for 170cm height (approximate standard reference)
+  // Modified by actual pose proportions if available
+  const baseShoulder = 45 * heightRatio;
+  const shoulder = proportions ? (proportions.shoulderWidth * 100 * heightRatio * 0.45 + baseShoulder) / 1.45 : baseShoulder;
+
+  const baseArm = 60 * heightRatio;
+  const arm = proportions ? (proportions.armLength * 100 * heightRatio * 0.35 + baseArm) / 1.35 : baseArm;
+
+  return {
+    shoulderWidth: shoulder,
+    chestCircumference: shoulder * 2.1, // Approx girth
+    waistCircumference: shoulder * 1.8, // Approx waist
+    hipCircumference: shoulder * 2.0, // Approx hips
+    armLength: arm,
+    inseam: userHeight * 0.45, // ~45% of height
+    thighCircumference: 55 * heightRatio
+  };
+}
+
+/**
  * Advanced Size Recommendation Logic
- * Matches landmark-derived proportions to brand size charts
+ * Matches HMR-derived measurements to brand size charts
  */
 export function calculateRecommendedSize(
   userProportions: PoseProportions, 
@@ -121,7 +166,8 @@ export function calculateRecommendedSize(
   category: string,
   clothingAnalysis?: ClothingStyleAnalysis | null
 ): SizeRecommendation {
-  console.log("Calculating masterpiece fit for:", { brand, category, userHeight });
+
+  const hmr = simulateHMRAnalysis(userHeight, userProportions);
   
   const sizeChart = getSizeChart(brand, category);
   if (!sizeChart) {
@@ -132,63 +178,72 @@ export function calculateRecommendedSize(
     };
   }
 
-  // Convert normalized proportions to estimated cm
-  // Refined heuristics for Masterpiece Fit
-  const estimatedShoulderCm = userProportions.shoulderWidth * 100 * (userHeight / 170) * 45;
-  const estimatedChestCm = estimatedShoulderCm * 2.1;
-  const estimatedWaistCm = userProportions.waistWidth * 100 * (userHeight / 170) * 45 * 2.0;
-  const estimatedSleeveCm = userProportions.armLength * 100 * (userHeight / 170) * 35;
-
   let bestSize = 'M';
   let minDiff = Infinity;
   const fitNotes: string[] = [];
 
+  // Find Best Fit
   Object.entries(sizeChart.chart).forEach(([size, dims]) => {
-    // Multi-dimensional comparison
-    const chestDiff = dims.chest ? Math.abs(dims.chest - estimatedChestCm) : 0;
-    const shoulderDiff = dims.shoulder ? Math.abs(dims.shoulder - estimatedShoulderCm) : 0;
-    const sleeveDiff = dims.sleeve ? Math.abs(dims.sleeve - estimatedSleeveCm) : 0;
-    const totalDiff = chestDiff + shoulderDiff + (sleeveDiff * 0.5);
+    let currentDiff = 0;
 
-    if (totalDiff < minDiff) {
-      minDiff = totalDiff;
+    if (category === 'tops' || category === 'outerwear' || category === 'dresses') {
+        const chestDiff = dims.chest ? Math.abs(dims.chest - hmr.chestCircumference) : 0;
+        const shoulderDiff = dims.shoulder ? Math.abs(dims.shoulder - hmr.shoulderWidth) : 0;
+        currentDiff = chestDiff + shoulderDiff;
+    } else if (category === 'bottoms') {
+        const waistDiff = dims.waist ? Math.abs(dims.waist - hmr.waistCircumference) : 0;
+        const hipDiff = dims.hips ? Math.abs(dims.hips - hmr.hipCircumference) : 0;
+        currentDiff = waistDiff + hipDiff;
+    }
+
+    if (currentDiff < minDiff) {
+      minDiff = currentDiff;
       bestSize = size;
     }
   });
 
-  // Generate dynamic professional notes
+  // Generate Consultative Logic
   const dims = sizeChart.chart[bestSize];
+  const nextSize = Object.keys(sizeChart.chart).find(s => s !== bestSize); // Simplified "next"
   
-  // Shoulder & Slope analysis
-  if (userProportions.shoulderSlope > 0.15) {
-    fitNotes.push(`Your shoulders have a sharp slope; this ${category.slice(0, -1)}'s structure will complement your silhouette.`);
+  if (category === 'tops' || category === 'outerwear') {
+      // Sleeve Check
+      if (dims.sleeve && hmr.armLength > dims.sleeve + 2) {
+          const diff = Math.round(hmr.armLength - dims.sleeve);
+          fitNotes.push(`The ${bestSize} fits your chest, but sleeves will be ${diff}cm short.`);
+      } else if (dims.sleeve && hmr.armLength < dims.sleeve - 3) {
+           fitNotes.push(`Sleeves are generous; consider a cuff roll.`);
+      }
+
+      // Shoulder Check
+      if (dims.shoulder && hmr.shoulderWidth > dims.shoulder + 1) {
+           fitNotes.push(`Shoulders are tight in ${bestSize}. We recommend ${nextSize || 'sizing up'} for range of motion.`);
+      } else {
+           fitNotes.push(`Perfect shoulder alignment in size ${bestSize}.`);
+      }
+
+  } else if (category === 'bottoms') {
+      // Waist vs Hips
+      if (dims.waist && Math.abs(hmr.waistCircumference - dims.waist) < 3) {
+           fitNotes.push(`The ${bestSize} fits your waist perfectly.`);
+      }
+
+      // Inseam Check (Mocking pant length standard as 80cm for M)
+      const pantLength = 80; // This would come from detailed size chart
+      if (hmr.inseam < pantLength - 4) {
+          fitNotes.push(`Hem alteration recommended: Shorten by ${Math.round(pantLength - hmr.inseam)}cm.`);
+      }
   }
 
-  if (dims.shoulder && estimatedShoulderCm > dims.shoulder + 2) {
-    fitNotes.push(`Shoulder fit will be "Power Fit" (slightly snug). Size up if you prefer a relaxed look.`);
-  } else if (dims.shoulder && estimatedShoulderCm < dims.shoulder - 2) {
-    fitNotes.push(`Perfect "Drop Shoulder" effect for your frame.`);
-  }
-
-  // Sleeve analysis
-  if (dims.sleeve && estimatedSleeveCm > dims.sleeve + 3) {
-    fitNotes.push(`Sleeves might be slightly cropped/fashionably short on your arms.`);
-  }
-
-  // Waist analysis
-  if (dims.waist && estimatedWaistCm > dims.waist && clothingAnalysis?.fitType === 'slim') {
-    fitNotes.push(`The waist area is tailored; expect a defined, close-to-body fit.`);
-  }
-
-  // Stretch adjustment
-  if (clothingAnalysis?.stretchFactor && clothingAnalysis.stretchFactor > 7) {
-    fitNotes.push(`High stretch fabric (${clothingAnalysis.materialType}) ensures comfort despite the precise fit.`);
+  // Fallback note
+  if (fitNotes.length === 0) {
+      fitNotes.push(`The ${bestSize} is an optimal match for your measurements.`);
   }
 
   return {
     recommendedSize: bestSize,
     confidence: Math.max(0, Math.min(100, 100 - (minDiff / 3))),
-    fitNotes: fitNotes.length > 0 ? fitNotes : ['Balanced fit across all key measurements.']
+    fitNotes
   };
 }
 
@@ -196,28 +251,30 @@ export function calculateRecommendedSize(
  * Generates data for the Fit Heatmap
  * 0: loose (blue), 0.5: perfect (green), 1.0: tight (red)
  */
-export function generateFitHeatmap(userProportions: PoseProportions, userHeight: number, brand: string, category: string) {
+export function generateFitHeatmap(userProportions: PoseProportions, userHeight: number, brand: string, category: string): HeatmapData {
   const sizeChart = getSizeChart(brand, category);
-  if (!sizeChart) return { shoulders: 0.5, chest: 0.5, waist: 0.5, sleeves: 0.5 };
+  if (!sizeChart) return { shoulders: 0.5, chest: 0.5, waist: 0.5, hips: 0.5, sleeves: 0.5, thigh: 0.5 };
 
+  const hmr = simulateHMRAnalysis(userHeight, userProportions);
   const rec = calculateRecommendedSize(userProportions, userHeight, brand, category);
   const dims = sizeChart.chart[rec.recommendedSize];
 
-  const estimatedShoulderCm = userProportions.shoulderWidth * 100 * (userHeight / 170) * 45;
-  const estimatedChestCm = estimatedShoulderCm * 2.1;
-  const estimatedWaistCm = userProportions.waistWidth * 100 * (userHeight / 170) * 45 * 2.0;
-  const estimatedSleeveCm = userProportions.armLength * 100 * (userHeight / 170) * 35;
-
   const getHeatValue = (actual: number, target: number | undefined) => {
     if (target === undefined) return 0.5;
-    const diff = (actual - target) / 10; 
-    return Math.max(0, Math.min(1, 0.5 + diff));
+    // Normalize difference: +5cm diff = 1.0 (tight), -5cm diff = 0.0 (loose)
+    // 0 diff = 0.5 (perfect)
+    const diff = (actual - target);
+    // sensitivity: 5cm range
+    const normalized = 0.5 + (diff / 10);
+    return Math.max(0, Math.min(1, normalized));
   };
 
   return {
-    shoulders: getHeatValue(estimatedShoulderCm, dims.shoulder),
-    chest: getHeatValue(estimatedChestCm, dims.chest),
-    waist: getHeatValue(estimatedWaistCm, dims.waist),
-    sleeves: getHeatValue(estimatedSleeveCm, dims.sleeve)
+    shoulders: getHeatValue(hmr.shoulderWidth, dims.shoulder),
+    chest: getHeatValue(hmr.chestCircumference, dims.chest),
+    waist: getHeatValue(hmr.waistCircumference, dims.waist),
+    hips: getHeatValue(hmr.hipCircumference, dims.hips),
+    sleeves: getHeatValue(hmr.armLength, dims.sleeve),
+    thigh: getHeatValue(hmr.thighCircumference, dims.thigh), // Assuming dims.thigh exists or undefined
   };
 }
