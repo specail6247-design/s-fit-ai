@@ -31,6 +31,7 @@ import { FabricMaterial } from './masterpiece/FabricMaterial';
 import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
 import CinematicViewer from '@/components/ui/CinematicViewer';
+import { VoiceConcierge, VoiceConciergeRef } from '@/components/ui/VoiceConcierge';
 import { layeringEngine } from '@/lib/layering';
 
 // --- PHYSICS ENGINE (Ammo.js) ---
@@ -856,6 +857,7 @@ export function FittingRoom() {
     return false;
   });
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const voiceRef = useRef<VoiceConciergeRef>(null);
   
   const brandItems = useMemo(() => selectedBrand ? getItemsByBrand(selectedBrand) : [], [selectedBrand]);
   const currentItem = selectedItem || null;
@@ -915,7 +917,10 @@ export function FittingRoom() {
         })
       });
       const data = await response.json();
-      if (data.success) setAITryOnResult(data.imageUrl);
+      if (data.success) {
+        setAITryOnResult(data.imageUrl);
+        voiceRef.current?.triggerEvent('complete_look', currentItem);
+      }
     } catch (e) { console.error(e); }
     finally { setAITryOnLoading(false); }
   }, [userPhotoPreview, currentItem]);
@@ -1148,6 +1153,7 @@ export function FittingRoom() {
         result={aiTryOnResult}
         onGenerateTryOn={handleGenerateAITryOn}
       />
+      <VoiceConcierge ref={voiceRef} />
     </div>
   );
 }
