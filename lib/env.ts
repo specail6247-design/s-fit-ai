@@ -9,6 +9,7 @@ export function validateEnv() {
   if (typeof window === 'undefined') {
     requiredEnv.push(
       { key: 'REPLICATE_API_TOKEN', value: process.env.REPLICATE_API_TOKEN },
+      { key: 'OPENAI_API_KEY', value: process.env.OPENAI_API_KEY },
     );
   }
 
