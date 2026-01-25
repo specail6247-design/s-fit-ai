@@ -6,13 +6,14 @@ export interface ClothingItem {
   id: string;
   name: string;
   brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
-  category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
+  category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories' | 'shoes';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
   price: number;
   currency: string;
   imageUrl: string;
   textureUrl: string;
+  modelUrl?: string;
   isLuxury: boolean;
   sizes: string[];
   colors: string[];
@@ -534,6 +535,37 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+  },
+  // FOOTWEAR - New Category
+  {
+    id: 'cyber-sneaker-001',
+    name: 'Cyber Runner 2077',
+    brand: 'Supreme',
+    category: 'shoes',
+    price: 299.00,
+    currency: 'USD',
+    imageUrl: '/clothing/cyber_sneaker.png',
+    textureUrl: '/clothing/cyber_sneaker.png',
+    modelUrl: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb',
+    isLuxury: false,
+    sizes: ['US 8', 'US 9', 'US 10', 'US 11'],
+    colors: ['Neon Green', 'Cyber Black'],
+    description: 'Futuristic runner with adaptive grip and neon accents',
+  },
+  {
+    id: 'gucci-sneaker-001',
+    name: 'Ace Embroidered Sneaker',
+    brand: 'Gucci',
+    category: 'shoes',
+    price: 790.00,
+    currency: 'USD',
+    imageUrl: '/clothing/gucci_sneaker.png',
+    textureUrl: '/clothing/gucci_sneaker.png',
+    modelUrl: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb', // Fallback to same model for demo
+    isLuxury: true,
+    sizes: ['IT 40', 'IT 41', 'IT 42', 'IT 43'],
+    colors: ['White'],
+    description: 'Classic low-top sneaker with bee embroidery',
   },
 ];
 
