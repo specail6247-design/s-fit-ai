@@ -8,3 +8,5 @@ numpy
 torch
 realesrgan
 supabase
+openai
+playwright-stealth

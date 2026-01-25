@@ -10,6 +10,7 @@ from typing import List, Dict, Optional, Any
 from playwright.async_api import Page
 from base_scraper import BaseScraper
 from config import BRAND_URLS
+from material_mapper import MaterialMapper
 
 class ZaraScraper(BaseScraper):
     def __init__(self, limit: int = 50, test_mode: bool = False):
@@ -20,8 +21,12 @@ class ZaraScraper(BaseScraper):
 
     async def _extract_products(self, page: Page, category: str):
         # Specific ZARA selectors
+        # Wait for grid to load
+        await page.wait_for_selector(".product-grid-product", timeout=10000)
         product_elements = await page.query_selector_all(".product-grid-product")
         
+        print(f"   Found {len(product_elements)} items in grid.")
+
         for i, element in enumerate(product_elements[:self.limit]):
             try:
                 name_el = await element.query_selector(".product-grid-product-info__name")
@@ -36,11 +41,31 @@ class ZaraScraper(BaseScraper):
                 link = await link_el.get_attribute("href") if link_el else ""
                 image_url = await img_el.get_attribute("src") if img_el else ""
 
-                # ZARA image lazy loading handling
                 if not image_url or "data:image" in image_url:
-                    # try to get from srcset or other attributes if needed,
-                    # but usually scroll handles it. fallback:
                     pass
+
+                # Deep scrape for materials
+                composition_data = {}
+                physics_data = {}
+
+                if link:
+                    full_link = link if link.startswith("http") else f"https://www.zara.com{link}"
+                    try:
+                        # Open in new page to keep grid intact
+                        new_page = await page.context.new_page()
+                        await new_page.goto(full_link, timeout=45000, wait_until="domcontentloaded")
+
+                        mat_text = await self.get_material_text(new_page)
+                        analysis = MaterialMapper.analyze_composition(mat_text)
+
+                        composition_data = analysis["composition"]
+                        physics_data = analysis["physics"]
+                        print(f"     Material: {analysis['texture_type']} ({len(composition_data)} comps)")
+
+                        await new_page.close()
+                    except Exception as e:
+                        print(f"     ⚠️ Material scrape warning: {e}")
+                        # Keep going with defaults
 
                 self.products.append({
                     "id": f"zara-{category}-{i+1}",
@@ -50,14 +75,19 @@ class ZaraScraper(BaseScraper):
                     "price": self.normalize_price(price_text, "KRW"),
                     "currency": "USD",
                     "imageUrl": image_url,
-                    "productUrl": f"https://www.zara.com{link}" if link and not link.startswith("http") else link,
+                    "productUrl": full_link,
                     "sizes": ["XS", "S", "M", "L", "XL"],
                     "colors": [],
+                    "composition": composition_data,
+                    "physics": physics_data,
                     "isLuxury": False,
                     "scrapedAt": datetime.now().isoformat(),
                 })
 
                 print(f"   ✅ {i+1}. {name[:30]}...")
+
+                # Small delay to be polite
+                await asyncio.sleep(1)
 
             except Exception as e:
                 print(f"   ❌ Error scraping product {i+1}: {e}")
@@ -77,6 +107,9 @@ class ZaraScraper(BaseScraper):
 
         for i in range(limit):
             idx = i % len(names)
+            mat_text = "100% Cotton"
+            analysis = MaterialMapper.analyze_composition(mat_text)
+
             products.append({
                 "id": f"zara-{category}-{i+1}",
                 "name": f"{names[idx]}",
@@ -88,6 +121,8 @@ class ZaraScraper(BaseScraper):
                 "productUrl": f"https://www.zara.com/mock-{i+1}",
                 "sizes": ["XS", "S", "M", "L", "XL"],
                 "colors": ["Black", "White", "Navy"],
+                "composition": analysis["composition"],
+                "physics": analysis["physics"],
                 "isLuxury": False,
                 "scrapedAt": datetime.now().isoformat(),
             })
@@ -96,7 +131,7 @@ class ZaraScraper(BaseScraper):
 async def main():
     parser = argparse.ArgumentParser(description="ZARA Scraper")
     parser.add_argument("--category", default="women-tops")
-    parser.add_argument("--limit", type=int, default=50)
+    parser.add_argument("--limit", type=int, default=5)
     parser.add_argument("--test", action="store_true")
     args = parser.parse_args()
     
