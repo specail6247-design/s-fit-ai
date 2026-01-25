@@ -159,7 +159,7 @@ interface SoftBodyPlaneProps {
   mass?: number;
   damping?: number;
   renderOrder?: number;
-  children?: React.ReactNode;
+  children?: React.ReactNode | ((props: { isMicroMode: boolean }) => React.ReactNode);
 }
 
 function SoftBodyPlane({
@@ -255,10 +255,12 @@ function SoftBodyPlane({
       finalMaterialProps.normalScale = new THREE.Vector2(3, 3);
   }
 
+  const renderedChildren = typeof children === 'function' ? children({ isMicroMode }) : children;
+
   return (
     <mesh ref={meshRef} position={[0,0,0]} renderOrder={renderOrder} onClick={handleClick} castShadow receiveShadow>
        <planeGeometry args={args} />
-       {children ? children : <meshStandardMaterial {...finalMaterialProps} />}
+       {renderedChildren ? renderedChildren : <meshStandardMaterial {...finalMaterialProps} />}
     </mesh>
   );
 }
@@ -306,16 +308,17 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  // Use Box as fallback since RobotExpressive is 404
+  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Box/glTF-Binary/Box.glb";
   
   return (
     <group scale={[scale, scale, scale]}>
       {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
-        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+        url="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Box/glTF-Binary/Box.glb"
         animationUrl={animationUrl}
         scale={1.0}
       />
@@ -346,7 +349,9 @@ function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist:
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      {({ isMicroMode }) => (
+        <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} microMode={isMicroMode} />
+      )}
     </SoftBodyPlane>
   );
 }
@@ -366,7 +371,9 @@ function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, wa
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      {({ isMicroMode }) => (
+        <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} microMode={isMicroMode} />
+      )}
     </SoftBodyPlane>
   );
 }
@@ -386,7 +393,9 @@ function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, wais
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      {({ isMicroMode }) => (
+        <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} microMode={isMicroMode} />
+      )}
     </SoftBodyPlane>
   );
 }
@@ -406,7 +415,9 @@ function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, 
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      {({ isMicroMode }) => (
+        <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} microMode={isMicroMode} />
+      )}
     </SoftBodyPlane>
   );
 }
@@ -504,7 +515,7 @@ function Scene({
   const scale = height / 170;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
   let mannequinPosition: [number, number, number] = [0, -0.9, 0];
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Box/glTF-Binary/Box.glb";
 
   const heatmapData = useMemo(() => {
     if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !selectedItem) return null;
@@ -532,8 +543,8 @@ function Scene({
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
             url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+              ? "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Box/glTF-Binary/Box.glb"
+              : "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Box/glTF-Binary/Box.glb"
             }
             animationUrl={animationUrl}
             scale={1.0}
@@ -778,7 +789,12 @@ function AITryOnModal({
                                 {result && <button onClick={() => { const a = document.createElement('a'); a.href = result; a.download = 'sfit-result.png'; a.click(); }} className="text-[9px] text-cyber-lime hover:underline">Download Image</button>}
                             </div>
                             {videoUrl ? (
-                              <CinematicViewer videoUrl={videoUrl} posterUrl={result || undefined} className="w-full aspect-[9/16] rounded-xl shadow-2xl" />
+                              <>
+                                <CinematicViewer videoUrl={videoUrl} posterUrl={result || undefined} className="w-full aspect-[9/16] rounded-xl shadow-2xl" />
+                                <button onClick={() => { const a = document.createElement('a'); a.href = videoUrl; a.download = 'sfit-cinematic.mp4'; a.click(); }} className="w-full py-3 mt-2 bg-void-black/50 border border-cyber-lime/50 text-cyber-lime font-bold rounded-xl hover:bg-cyber-lime/10 transition-all flex items-center justify-center gap-2 text-xs">
+                                    <span>📽️</span> Export Cinematic 4K Clip
+                                </button>
+                              </>
                             ) : result && (
                                 <div className="relative w-full aspect-[9/16] rounded-xl border-2 border-cyber-lime/20 shadow-xl overflow-hidden">
                                   <Image
