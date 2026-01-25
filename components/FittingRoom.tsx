@@ -21,7 +21,8 @@ import type { PoseProportions } from '@/lib/mediapipe';
 import { 
   calculateRecommendedSize, 
   generateFitHeatmap,
-  ClothingStyleAnalysis 
+  ClothingStyleAnalysis,
+  HeatmapData
 } from '@/lib/visionService';
 import * as THREE from 'three';
 import { AvatarLoader } from './AvatarLoader';
@@ -484,6 +485,78 @@ function MacroController({ active }: { active: boolean }) {
   return null;
 }
 
+function FitHeatmapOverlay({ heatmapData }: { heatmapData: HeatmapData }) {
+  if (!heatmapData) return null;
+
+  // Interpolate color properly
+  const getInterpolatedColor = (val: number) => {
+     // val 0 -> 0.6 (blue)
+     // val 0.5 -> 0.3 (green)
+     // val 1 -> 0.0 (red)
+     let hue = 0.3;
+     if (val <= 0.5) {
+        // 0 -> 0.6, 0.5 -> 0.3
+        hue = 0.6 - (val / 0.5) * 0.3;
+     } else {
+        // 0.5 -> 0.3, 1.0 -> 0.0
+        hue = 0.3 - ((val - 0.5) / 0.5) * 0.3;
+     }
+     return new THREE.Color().setHSL(hue, 1, 0.5);
+  };
+
+  return (
+    <group position={[0, 0, 0.05]}>
+      {/* Shoulders */}
+      <mesh position={[-0.2, 1.45, 0.05]}>
+         <sphereGeometry args={[0.08, 16, 16]} />
+         <meshBasicMaterial color={getInterpolatedColor(heatmapData.shoulders)} transparent opacity={0.6} />
+      </mesh>
+       <mesh position={[0.2, 1.45, 0.05]}>
+         <sphereGeometry args={[0.08, 16, 16]} />
+         <meshBasicMaterial color={getInterpolatedColor(heatmapData.shoulders)} transparent opacity={0.6} />
+      </mesh>
+
+      {/* Chest */}
+      <mesh position={[0, 1.3, 0.1]}>
+        <planeGeometry args={[0.3, 0.2]} />
+        <meshBasicMaterial color={getInterpolatedColor(heatmapData.chest)} transparent opacity={0.5} side={THREE.DoubleSide} />
+      </mesh>
+
+      {/* Waist */}
+      <mesh position={[0, 1.05, 0.08]}>
+        <planeGeometry args={[0.28, 0.15]} />
+        <meshBasicMaterial color={getInterpolatedColor(heatmapData.waist)} transparent opacity={0.5} side={THREE.DoubleSide} />
+      </mesh>
+
+      {/* Hips */}
+      <mesh position={[0, 0.85, 0.08]}>
+        <planeGeometry args={[0.32, 0.2]} />
+        <meshBasicMaterial color={getInterpolatedColor(heatmapData.hips)} transparent opacity={0.5} side={THREE.DoubleSide} />
+      </mesh>
+
+      {/* Sleeves (Wrists) */}
+       <mesh position={[-0.5, 1.0, 0.05]}>
+         <sphereGeometry args={[0.06, 16, 16]} />
+         <meshBasicMaterial color={getInterpolatedColor(heatmapData.sleeves)} transparent opacity={0.6} />
+      </mesh>
+       <mesh position={[0.5, 1.0, 0.05]}>
+         <sphereGeometry args={[0.06, 16, 16]} />
+         <meshBasicMaterial color={getInterpolatedColor(heatmapData.sleeves)} transparent opacity={0.6} />
+      </mesh>
+
+      {/* Thighs */}
+       <mesh position={[-0.15, 0.6, 0.05]}>
+         <sphereGeometry args={[0.09, 16, 16]} />
+         <meshBasicMaterial color={getInterpolatedColor(heatmapData.thigh)} transparent opacity={0.5} />
+      </mesh>
+       <mesh position={[0.15, 0.6, 0.05]}>
+         <sphereGeometry args={[0.09, 16, 16]} />
+         <meshBasicMaterial color={getInterpolatedColor(heatmapData.thigh)} transparent opacity={0.5} />
+      </mesh>
+    </group>
+  );
+}
+
 function Scene({
   userStats,
   selectedItem,
@@ -543,18 +616,8 @@ function Scene({
         )}
         
         {/* Fit Heatmap Visual Overlay */}
-        {showHeatmap && heatmapData && (
-          <group position={[0, 0, 0.05]}>
-            <mesh position={[0, 1.1, 0.01]}>
-              <planeGeometry args={[0.5, 0.6]} />
-              <meshBasicMaterial color={new THREE.Color().setHSL((1 - heatmapData.chest) * 0.4, 1, 0.5)} transparent opacity={0.4} />
-            </mesh>
-            <mesh position={[0, 0.9, 0.01]}>
-              <planeGeometry args={[0.4, 0.2]} />
-              <meshBasicMaterial color={new THREE.Color().setHSL((1 - heatmapData.waist) * 0.4, 1, 0.5)} transparent opacity={0.4} />
-            </mesh>
-          </group>
-        )}
+        {showHeatmap && heatmapData && <FitHeatmapOverlay heatmapData={heatmapData} />}
+
         <ClothingOverlay
           item={selectedItem} 
           widthScale={1}
@@ -1061,13 +1124,16 @@ export function FittingRoom() {
                         exit={{ opacity: 0, y: 10 }}
                         className="bg-black/60 backdrop-blur-xl border border-white/10 p-3 rounded-2xl shadow-2xl pointer-events-auto max-w-sm"
                     >
-                        <div className="flex items-center gap-3 mb-2">
+                        <div className="flex items-center gap-3 mb-2 relative">
                             <div className="w-8 h-8 rounded-full bg-cyber-lime/20 flex items-center justify-center text-cyber-lime text-xs font-bold ring-1 ring-cyber-lime/30">
                                 {recommendedFit.recommendedSize}
                             </div>
                             <div>
                                 <p className="text-[10px] uppercase tracking-widest text-soft-gray font-bold">AI Recommended Fit</p>
                                 <p className="text-xs font-bold text-white">Masterpiece Fit Consultant</p>
+                            </div>
+                            <div className="absolute right-0 top-0 bg-cyber-lime/10 text-cyber-lime px-1.5 py-0.5 rounded text-[8px] font-bold border border-cyber-lime/20 animate-pulse">
+                                HMR 2.0 SCANNED
                             </div>
                         </div>
                         <ul className="space-y-1">
