@@ -416,14 +416,63 @@ function AccessoryClothing({ item }: ClothingProps) {
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
   const zIndex = layeringEngine.getItemZIndex(item);
+  const meshRef = useRef<THREE.Mesh>(null);
   
-  const baseWidth = item.subCategory === 'bag' ? 0.4 : 0.2;
-  const position: [number, number, number] = item.subCategory === 'bag' ? [0.35, 0.8, 0.2] : [0, 1.45, 0.15];
+  // Default physics/transform values
+  let baseWidth = 0.2;
+  let position: [number, number, number] = [0, 1.45, 0.15];
+  const rotation: [number, number, number] = [0, 0, 0];
+  let isDynamic = false;
+
+  switch (item.subCategory) {
+      case 'bag':
+          baseWidth = 0.4;
+          position = [0.35, 0.8, 0.2];
+          break;
+      case 'hat':
+          baseWidth = 0.35;
+          position = [0, 1.75, 0.05]; // Top of head
+          break;
+      case 'glasses':
+          baseWidth = 0.18;
+          position = [0, 1.62, 0.12]; // Eyes
+          break;
+      case 'scarf':
+          baseWidth = 0.35;
+          position = [0, 1.45, 0.15]; // Neck
+          isDynamic = true;
+          break;
+      case 'jewelry': // Necklaces
+          baseWidth = 0.25;
+          position = [0, 1.48, 0.12]; // Neck
+          isDynamic = true;
+          break;
+      default:
+          // Fallback
+          baseWidth = 0.2;
+          position = [0, 1.45, 0.15];
+  }
+
+  useFrame((state) => {
+      if (isDynamic && meshRef.current) {
+          // Subtle sway for material interaction
+          const t = state.clock.getElapsedTime();
+          meshRef.current.rotation.z = Math.sin(t * 1.5) * 0.02; // Gentle side sway
+          meshRef.current.position.y = position[1] + Math.sin(t * 2.0) * 0.005; // Breathing motion
+      }
+  });
 
   return (
-    <mesh position={position} renderOrder={zIndex} castShadow receiveShadow>
+    <mesh ref={meshRef} position={position} rotation={rotation} renderOrder={zIndex} castShadow receiveShadow>
       <planeGeometry args={[baseWidth, baseWidth / aspect, 32, 32]} />
-      <meshStandardMaterial map={texture} transparent side={THREE.DoubleSide} roughness={0.4} metalness={item.isLuxury ? 0.5 : 0.2} alphaTest={0.5} />
+      <meshStandardMaterial
+        map={texture}
+        transparent
+        side={THREE.DoubleSide}
+        roughness={item.isLuxury ? 0.2 : 0.4}
+        metalness={item.isLuxury ? 0.6 : 0.2}
+        alphaTest={0.5}
+      />
     </mesh>
   );
 }
@@ -836,6 +885,7 @@ export function FittingRoom() {
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
   const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
+  const [aiTryOnError, setAITryOnError] = useState<string | null>(null);
   const [aiTryOnLoading, setAITryOnLoading] = useState(false);
   const [userPhotoPreview, setUserPhotoPreview] = useState<string | null>(null);
   const [isMasterpieceMode, setIsMasterpieceMode] = useState(true);
@@ -904,6 +954,7 @@ export function FittingRoom() {
   const handleGenerateAITryOn = useCallback(async () => {
     if (!userPhotoPreview || !currentItem?.imageUrl) return;
     setAITryOnLoading(true);
+    setAITryOnError(null);
     try {
       const response = await fetch('/api/try-on', {
         method: 'POST',
@@ -915,8 +966,15 @@ export function FittingRoom() {
         })
       });
       const data = await response.json();
-      if (data.success) setAITryOnResult(data.imageUrl);
-    } catch (e) { console.error(e); }
+      if (data.success) {
+        setAITryOnResult(data.imageUrl);
+      } else {
+        setAITryOnError(data.error || 'Failed to generate fit. Please try again.');
+      }
+    } catch (e) {
+      console.error(e);
+      setAITryOnError('Network error. Please check your connection.');
+    }
     finally { setAITryOnLoading(false); }
   }, [userPhotoPreview, currentItem]);
 
@@ -1137,7 +1195,7 @@ export function FittingRoom() {
       <CompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} picks={topPicks} onSelect={setSelectedItem} />
       <AITryOnModal
         isOpen={showAITryOnModal}
-        onClose={() => { setShowAITryOnModal(false); setAITryOnResult(null); }}
+        onClose={() => { setShowAITryOnModal(false); setAITryOnResult(null); setAITryOnError(null); }}
         selectedItem={currentItem}
         userPhotoPreview={userPhotoPreview}
         onPhotoSelect={(file) => {
@@ -1146,6 +1204,7 @@ export function FittingRoom() {
         }}
         isLoading={aiTryOnLoading}
         result={aiTryOnResult}
+        error={aiTryOnError}
         onGenerateTryOn={handleGenerateAITryOn}
       />
     </div>
