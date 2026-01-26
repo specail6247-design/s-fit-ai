@@ -830,6 +830,7 @@ function AITryOnModal({
 export function FittingRoom() {
   const {
     userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    isAnalyzing, isFitting, setIsFitting
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
@@ -904,6 +905,7 @@ export function FittingRoom() {
   const handleGenerateAITryOn = useCallback(async () => {
     if (!userPhotoPreview || !currentItem?.imageUrl) return;
     setAITryOnLoading(true);
+    setIsFitting(true);
     try {
       const response = await fetch('/api/try-on', {
         method: 'POST',
@@ -917,10 +919,14 @@ export function FittingRoom() {
       const data = await response.json();
       if (data.success) setAITryOnResult(data.imageUrl);
     } catch (e) { console.error(e); }
-    finally { setAITryOnLoading(false); }
-  }, [userPhotoPreview, currentItem]);
+    finally {
+      setAITryOnLoading(false);
+      setIsFitting(false);
+    }
+  }, [userPhotoPreview, currentItem, setIsFitting]);
 
   const resolvedHeight = userStats?.height ?? 170;
+  const uiOpacityClass = `transition-opacity duration-1000 ${isAnalyzing || isFitting ? 'opacity-0 pointer-events-none' : 'opacity-100'}`;
   const recommendedFit = useMemo(() => {
     if (!poseAnalysis?.proportions || !currentItem) return null;
     return calculateRecommendedSize(
@@ -990,7 +996,7 @@ export function FittingRoom() {
         )}
         
         {/* Controls Overlay */}
-        <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
+        <div className={`absolute top-4 right-4 flex flex-col gap-2 z-10 ${uiOpacityClass}`}>
             <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
             </button>
@@ -1004,13 +1010,13 @@ export function FittingRoom() {
 
         {/* Rotation hint */}
         {!webglFailed && (
-          <motion.div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-soft-gray/60 text-xs bg-void-black/50 px-3 py-1 rounded-full z-10"
+          <motion.div className={`absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-soft-gray/60 text-xs bg-void-black/50 px-3 py-1 rounded-full z-10 ${uiOpacityClass}`}
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }}>
             <span>↔️ Drag to rotate</span>
           </motion.div>
         )}
 
-        <div className="absolute top-4 left-4 flex gap-2 z-20">
+        <div className={`absolute top-4 left-4 flex gap-2 z-20 ${uiOpacityClass}`}>
             <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
                 <span>📤</span>
             </button>
@@ -1022,7 +1028,7 @@ export function FittingRoom() {
         </div>
 
         {topPicks.length > 0 && (
-          <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-20">
+          <div className={`absolute top-16 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-20 ${uiOpacityClass}`}>
             {isMiniBarCollapsed ? (
               <div className="glass-card px-3 py-2 flex items-center justify-between gap-3">
                 <span className="text-[0.55rem] uppercase tracking-[0.2em] text-soft-gray">AI Picks</span>
@@ -1052,7 +1058,7 @@ export function FittingRoom() {
         )}
 
         {/* AI Consultant Advice Overlay */}
-        <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none">
+        <div className={`absolute bottom-4 left-4 right-4 z-10 pointer-events-none ${uiOpacityClass}`}>
             <AnimatePresence>
                 {currentItem && poseAnalysis?.proportions && recommendedFit && (
                     <motion.div 
@@ -1084,70 +1090,74 @@ export function FittingRoom() {
         </div>
       </div>
 
-      {/* Item Selector Footer */}
-      <div className="p-4 border-t border-border-color bg-void-black">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-[10px] uppercase tracking-widest text-soft-gray">{selectedBrand} Collection</h3>
-          <button onClick={() => setShowCompareModal(true)} className="text-[10px] text-cyber-lime hover:underline">Compare Picks →</button>
+      <div className={uiOpacityClass}>
+        {/* Item Selector Footer */}
+        <div className="p-4 border-t border-border-color bg-void-black">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-[10px] uppercase tracking-widest text-soft-gray">{selectedBrand} Collection</h3>
+            <button onClick={() => setShowCompareModal(true)} className="text-[10px] text-cyber-lime hover:underline">Compare Picks →</button>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+              {brandItems.map((item) => (
+                  <ItemCard
+                      key={item.id} item={item}
+                      isSelected={currentItem?.id === item.id}
+                      onSelect={() => setSelectedItem(item)}
+                      fitScore={fitScore + (item.isLuxury ? 5 : 0)}
+                  />
+              ))}
+          </div>
         </div>
-        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            {brandItems.map((item) => (
-                <ItemCard 
-                    key={item.id} item={item} 
-                    isSelected={currentItem?.id === item.id} 
-                    onSelect={() => setSelectedItem(item)}
-                    fitScore={fitScore + (item.isLuxury ? 5 : 0)}
-                />
-            ))}
-        </div>
+
+        {/* AI Stylist & Complementary Items */}
+        {currentItem && (
+          <div className="p-4 bg-charcoal/30 border-t border-border-color">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-xs">🎨</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-cyber-lime">AI Stylist&apos;s Choice</span>
+              </div>
+              <span className="text-[8px] text-soft-gray italic">Complete the Look</span>
+            </div>
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              {/* These would normally come from lib/visionService.getComplementaryItems */}
+              {brandItems.filter(i => i.id !== currentItem.id).slice(0, 3).map((compItem) => (
+                <button key={`comp-${compItem.id}`} onClick={() => setSelectedItem(compItem)}
+                          className="flex-shrink-0 w-20 p-2 rounded-lg border border-white/5 bg-void-black/40 hover:border-cyber-lime/30 transition-all text-left">
+                  <div className="aspect-square bg-charcoal/30 rounded flex items-center justify-center mb-1 text-base">{getCategoryIcon(compItem.category)}</div>
+                  <p className="text-[8px] text-pure-white truncate font-medium">{compItem.name}</p>
+                  <p className="text-[7px] text-soft-gray">${compItem.price}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* AI Stylist & Complementary Items */}
-      {currentItem && (
-        <div className="p-4 bg-charcoal/30 border-t border-border-color">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <span className="text-xs">🎨</span>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-cyber-lime">AI Stylist&apos;s Choice</span>
-            </div>
-            <span className="text-[8px] text-soft-gray italic">Complete the Look</span>
-          </div>
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-            {/* These would normally come from lib/visionService.getComplementaryItems */}
-            {brandItems.filter(i => i.id !== currentItem.id).slice(0, 3).map((compItem) => (
-              <button key={`comp-${compItem.id}`} onClick={() => setSelectedItem(compItem)}
-                        className="flex-shrink-0 w-20 p-2 rounded-lg border border-white/5 bg-void-black/40 hover:border-cyber-lime/30 transition-all text-left">
-                <div className="aspect-square bg-charcoal/30 rounded flex items-center justify-center mb-1 text-base">{getCategoryIcon(compItem.category)}</div>
-                <p className="text-[8px] text-pure-white truncate font-medium">{compItem.name}</p>
-                <p className="text-[7px] text-soft-gray">${compItem.price}</p>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <ShareModal 
-        isOpen={showShareModal} 
-        onClose={() => setShowShareModal(false)} 
-        itemName={currentItem?.name} 
-        brandName={currentItem?.brand} 
-        fitScore={fitScore}
-        recommendedSize={recommendedFit?.recommendedSize}
-      />
-      <CompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} picks={topPicks} onSelect={setSelectedItem} />
-      <AITryOnModal
-        isOpen={showAITryOnModal}
-        onClose={() => { setShowAITryOnModal(false); setAITryOnResult(null); }}
-        selectedItem={currentItem}
-        userPhotoPreview={userPhotoPreview}
-        onPhotoSelect={(file) => {
-          if (!file) return;
-          setUserPhotoPreview(URL.createObjectURL(file));
-        }}
-        isLoading={aiTryOnLoading}
-        result={aiTryOnResult}
-        onGenerateTryOn={handleGenerateAITryOn}
-      />
+      <div className={uiOpacityClass}>
+        <ShareModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          itemName={currentItem?.name}
+          brandName={currentItem?.brand}
+          fitScore={fitScore}
+          recommendedSize={recommendedFit?.recommendedSize}
+        />
+        <CompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} picks={topPicks} onSelect={setSelectedItem} />
+        <AITryOnModal
+          isOpen={showAITryOnModal}
+          onClose={() => { setShowAITryOnModal(false); setAITryOnResult(null); }}
+          selectedItem={currentItem}
+          userPhotoPreview={userPhotoPreview}
+          onPhotoSelect={(file) => {
+            if (!file) return;
+            setUserPhotoPreview(URL.createObjectURL(file));
+          }}
+          isLoading={aiTryOnLoading}
+          result={aiTryOnResult}
+          onGenerateTryOn={handleGenerateAITryOn}
+        />
+      </div>
     </div>
   );
 }
