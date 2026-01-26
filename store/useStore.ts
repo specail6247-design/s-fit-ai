@@ -96,6 +96,12 @@ interface StoreState {
   selectedItem: ClothingItem | null;
   setSelectedItem: (item: ClothingItem | null) => void;
 
+  // The Vault (Saved Items)
+  vaultItemIds: string[];
+  addToVault: (itemId: string) => void;
+  removeFromVault: (itemId: string) => void;
+  isItemInVault: (itemId: string) => boolean;
+
   // Daily Usage (Freemium)
   dailyUsage: DailyUsage;
   incrementUsage: () => void;
@@ -186,6 +192,16 @@ export const useStore = create<StoreState>()(
       selectedItem: null,
       setSelectedItem: (item) => set({ selectedItem: item }),
 
+      // The Vault
+      vaultItemIds: [],
+      addToVault: (itemId) => set((state) => ({
+        vaultItemIds: state.vaultItemIds.includes(itemId) ? state.vaultItemIds : [...state.vaultItemIds, itemId]
+      })),
+      removeFromVault: (itemId) => set((state) => ({
+        vaultItemIds: state.vaultItemIds.filter((id) => id !== itemId)
+      })),
+      isItemInVault: (itemId) => get().vaultItemIds.includes(itemId),
+
       // Daily Usage
       dailyUsage: {
         count: 0,
@@ -257,6 +273,7 @@ export const useStore = create<StoreState>()(
         userStats: state.userStats,
         selectedAIModels: state.selectedAIModels,
         trainingData: state.trainingData,
+        vaultItemIds: state.vaultItemIds,
       }),
     }
   )

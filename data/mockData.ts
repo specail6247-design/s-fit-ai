@@ -17,6 +17,8 @@ export interface ClothingItem {
   sizes: string[];
   colors: string[];
   description: string;
+  stylingTip?: string;
+  lockedUntil?: string; // ISO date string
 }
 
 export interface Brand {
@@ -110,6 +112,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy', 'Beige'],
     description: 'Relaxed fit blazer with structured shoulders',
+    stylingTip: 'Pair with a fitted white tee and vintage denim for a high-low look.',
   },
   {
     id: 'zara-002',
@@ -182,6 +185,8 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 44', 'IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Beige/Ebony'],
     description: 'Iconic GG pattern wool blazer with silk lining',
+    stylingTip: 'Combine with matching trousers for a power suit moment, or drape over shoulders for casual elegance.',
+    lockedUntil: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // Locked for 2 hours
   },
   {
     id: 'gucci-002',
@@ -502,6 +507,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Black', 'Beige'],
     description: 'Iconic quilted leather handbag with chain strap',
+    stylingTip: 'The ultimate statement piece. Keep the rest of your outfit minimal to let this shine.',
   },
   {
     id: 'supreme-hat-001',
