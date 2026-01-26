@@ -5,7 +5,7 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Hermes';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -89,6 +89,13 @@ export const brands: Brand[] = [
     id: 'tiffany',
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'hermes',
+    name: 'Hermes',
+    logo: 'https://placehold.co/100x100?text=HERMES',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -534,6 +541,54 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+  },
+
+  // HERMES - Ultra Luxury (3 items)
+  {
+    id: 'hermes-scarf-001',
+    name: 'Hermes Silk Scarf',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'scarf',
+    zIndex: 40,
+    price: 550.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x400?text=Hermes+Scarf',
+    textureUrl: 'https://placehold.co/400x400?text=Hermes+Scarf',
+    isLuxury: true,
+    sizes: ['90x90 cm'],
+    colors: ['Orange', 'Blue'],
+    description: 'Signature silk twill scarf with hand-rolled edges',
+  },
+  {
+    id: 'hermes-bag-001',
+    name: 'Birkin 25',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'bag',
+    zIndex: 50,
+    price: 12500.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x400?text=Hermes+Birkin',
+    textureUrl: 'https://placehold.co/400x400?text=Hermes+Birkin',
+    isLuxury: true,
+    sizes: ['25 cm'],
+    colors: ['Gold', 'Black', 'Etoupe'],
+    description: 'Heritage leather handbag with gold-plated hardware',
+  },
+  {
+    id: 'hermes-coat-001',
+    name: 'Double-Face Cashmere Coat',
+    brand: 'Hermes',
+    category: 'outerwear',
+    price: 4800.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x400?text=Hermes+Coat',
+    textureUrl: 'https://placehold.co/400x400?text=Hermes+Coat',
+    isLuxury: true,
+    sizes: ['FR 34', 'FR 36', 'FR 38', 'FR 40'],
+    colors: ['Beige', 'Navy'],
+    description: 'Hand-sewn double-face cashmere coat with belted waist',
   },
 ];
 
