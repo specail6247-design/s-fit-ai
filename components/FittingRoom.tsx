@@ -31,6 +31,7 @@ import { FabricMaterial } from './masterpiece/FabricMaterial';
 import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
 import CinematicViewer from '@/components/ui/CinematicViewer';
+import { ShareModal } from '@/components/ui/ShareModal';
 import { layeringEngine } from '@/lib/layering';
 
 // --- PHYSICS ENGINE (Ammo.js) ---
@@ -600,60 +601,6 @@ function ItemCard({
   );
 }
 
-interface ShareModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  itemName?: string;
-  brandName?: string;
-  fitScore: number;
-  recommendedSize?: string;
-}
-
-function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize }: ShareModalProps) {
-  const [hasPublished, setHasPublished] = useState(false);
-  if (!isOpen) return null;
-
-  const safeItemName = itemName ?? 'this fit';
-  const safeBrandName = brandName ?? 'S_FIT AI';
-  const shareText = `I just tried on ${safeItemName} from ${safeBrandName} using S_FIT AI! Fit score ${fitScore}% ${recommendedSize ? `(Size ${recommendedSize})` : ''} #SFIT #VirtualTryOn #Fashion`;
-
-  const handleShare = (platform: string) => {
-    const encodedText = encodeURIComponent(shareText);
-    const url = encodeURIComponent('https://s-fit.ai');
-    let shareUrl = '';
-    if (platform === 'twitter') shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${url}`;
-    else if (platform === 'facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${encodedText}`;
-    else if (platform === 'instagram') { navigator.clipboard.writeText(shareText); alert('Text copied for Instagram! 📱'); return; }
-    else if (platform === 'kakao') shareUrl = `https://story.kakao.com/share?url=${url}&text=${encodedText}`;
-    
-    if (shareUrl) window.open(shareUrl, '_blank', 'width=600,height=400');
-    onClose();
-  };
-
-  return (
-    <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <div className="absolute inset-0 bg-void-black/80 backdrop-blur-sm" onClick={onClose} />
-      <motion.div className="relative glass-card p-6 max-w-sm w-full" initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}>
-        <h3 className="text-lg font-bold text-center mb-4">Share Your Fit! 📸</h3>
-        <p className="text-soft-gray text-xs mb-6 text-center">{shareText}</p>
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          <button onClick={() => handleShare('twitter')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#1DA1F2] text-xs"><span>𝕏</span> Twitter</button>
-          <button onClick={() => handleShare('facebook')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#1877F2] text-xs"><span>📘</span> Facebook</button>
-          <button onClick={() => handleShare('instagram')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-[#833AB4] to-[#F77737] text-xs"><span>📷</span> Instagram</button>
-          <button onClick={() => handleShare('kakao')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#FEE500] text-black text-xs"><span>💬</span> KakaoStory</button>
-        </div>
-        <div className="pt-4 border-t border-border-color">
-          {hasPublished ? (
-            <div className="bg-cyber-lime/10 border border-cyber-lime/30 rounded-lg p-2 text-center text-[10px] text-cyber-lime font-bold">✨ Published to Community Runway!</div>
-          ) : (
-            <button onClick={() => { setHasPublished(true); setTimeout(() => setHasPublished(false), 3000); }} className="btn-primary w-full py-2 text-xs">✨ Publish to Community</button>
-          )}
-        </div>
-        <button onClick={onClose} className="w-full mt-4 py-2 text-soft-gray hover:text-white transition-colors text-xs">Close</button>
-      </motion.div>
-    </motion.div>
-  );
-}
 
 interface FitPick {
   item: ClothingItem;
