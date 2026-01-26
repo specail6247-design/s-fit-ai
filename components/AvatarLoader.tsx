@@ -51,4 +51,4 @@ export function AvatarLoader({
 }
 
 // Preload handy RPM models
-useGLTF.preload('https://models.readyplayer.me/64f0263b8655b32115ba9269.glb'); // Example
+useGLTF.preload('https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb'); // Example

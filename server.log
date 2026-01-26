@@ -1,5 +1,5 @@
 
-> s-fit-ai@0.1.0 dev
+> s-fit-ai@0.1.0 dev /app
 > next dev --webpack
 
 ▲ Next.js 16.1.4 (webpack)
@@ -12,7 +12,27 @@ This information is used to shape Next.js' roadmap and prioritize features.
 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
 https://nextjs.org/telemetry
 
-✓ Ready in 1780ms
-○ Compiling /cinematic-demo ...
+✓ Ready in 1820ms
+○ Compiling /test-fitting ...
 ⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
- GET /cinematic-demo 200 in 12.4s (compile: 12.0s, render: 401ms)
+ GET /test-fitting 200 in 26.6s (compile: 25.7s, render: 900ms)
+ GET /test-fitting 200 in 86ms (compile: 12ms, render: 73ms)
+ GET /test-fitting 200 in 68ms (compile: 6ms, render: 62ms)
+ GET /test-fitting 200 in 106ms (compile: 11ms, render: 95ms)
+ GET /test-fitting 200 in 66ms (compile: 6ms, render: 60ms)
+ GET /test-fitting 200 in 59ms (compile: 7ms, render: 52ms)
+ GET /test-fitting 200 in 62ms (compile: 5ms, render: 57ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /test-fitting 200 in 813ms (compile: 129ms, render: 683ms)
+ GET /test-fitting 200 in 63ms (compile: 9ms, render: 54ms)
+ GET /test-fitting 200 in 77ms (compile: 6ms, render: 71ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /test-fitting 200 in 698ms (compile: 120ms, render: 578ms)
+ GET /test-fitting 200 in 66ms (compile: 6ms, render: 60ms)
+ GET /test-fitting 200 in 68ms (compile: 5ms, render: 64ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /test-fitting 200 in 424ms (compile: 70ms, render: 354ms)
+ GET /test-fitting 200 in 37ms (compile: 7ms, render: 30ms)
+ GET /test-fitting 200 in 57ms (compile: 5ms, render: 52ms)
+ GET /test-fitting 200 in 49ms (compile: 7ms, render: 41ms)
+ GET /test-fitting 200 in 40ms (compile: 7ms, render: 33ms)

@@ -32,6 +32,8 @@ import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
+import VaultDrawer from '@/components/ui/VaultDrawer';
+import AmbientSound from '@/components/ui/AmbientSound';
 
 // --- PHYSICS ENGINE (Ammo.js) ---
 
@@ -306,19 +308,16 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
   
   return (
     <group scale={[scale, scale, scale]}>
-      {/* Generic RPM Avatar Buffer */}
-      <AvatarLoader 
-        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-        animationUrl={animationUrl}
-        scale={1.0}
-      />
+      <mesh position={[0, 0.9, 0]} castShadow receiveShadow>
+        <capsuleGeometry args={[0.3, 1.2, 4, 8]} />
+        <meshStandardMaterial color="#808080" roughness={0.5} />
+      </mesh>
     </group>
   );
 }
@@ -530,14 +529,10 @@ function Scene({
       {selectedMode === 'digital-twin' && selfieData.fullBodyImage && <BackgroundImage imageUrl={selfieData.fullBodyImage} />}
       <group position={mannequinPosition} scale={[scale, scale, scale]}>
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
-          <AvatarLoader 
-            url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-            }
-            animationUrl={animationUrl}
-            scale={1.0}
-          />
+           <mesh position={[0, 0.9, 0]} castShadow receiveShadow>
+             <capsuleGeometry args={[0.3, 1.2, 4, 8]} />
+             <meshStandardMaterial color="#808080" roughness={0.5} />
+           </mesh>
         ) : (
           <Mannequin height={height} opacity={1.0} />
         )}
@@ -581,13 +576,56 @@ function ItemCard({
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
+
+  // Exclusive Access / Countdown Logic
+  const [timeLeft, setTimeLeft] = useState<string | null>(null);
+  const isLocked = item.lockedUntil && new Date(item.lockedUntil) > new Date();
+
+  useEffect(() => {
+    if (!item.lockedUntil) return;
+
+    const updateTimer = () => {
+      const diff = new Date(item.lockedUntil!).getTime() - new Date().getTime();
+      if (diff <= 0) {
+        setTimeLeft(null);
+        return;
+      }
+      const h = Math.floor(diff / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((diff % (1000 * 60)) / 1000);
+      setTimeLeft(`${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`);
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [item.lockedUntil]);
+
+  const handleSelect = () => {
+    if (isLocked && timeLeft) return;
+    onSelect();
+  };
+
   return (
     <motion.button
-      onClick={onSelect}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      onClick={handleSelect}
+      disabled={!!(isLocked && timeLeft)}
+      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start relative overflow-hidden ${
+        isSelected ? 'border-cyber-lime bg-charcoal' :
+        (isLocked && timeLeft) ? 'border-border-color bg-void-black/50 opacity-70 cursor-not-allowed' :
+        'border-border-color bg-void-black hover:border-soft-gray/50'
+      }`}
+      whileHover={!(isLocked && timeLeft) ? { scale: 1.05 } : {}}
+      whileTap={!(isLocked && timeLeft) ? { scale: 0.95 } : {}}
     >
+      {/* Locked Overlay */}
+      {isLocked && timeLeft && (
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 backdrop-blur-[1px]">
+             <span className="text-xl">🔒</span>
+             <span className="text-[0.55rem] font-mono text-soft-gray mt-1">{timeLeft}</span>
+          </div>
+      )}
+
       <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
         <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
         {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
@@ -830,11 +868,13 @@ function AITryOnModal({
 export function FittingRoom() {
   const {
     userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    vaultItemIds, addToVault, removeFromVault, isItemInVault
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
+  const [showVault, setShowVault] = useState(false);
   const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
   const [aiTryOnLoading, setAITryOnLoading] = useState(false);
   const [userPhotoPreview, setUserPhotoPreview] = useState<string | null>(null);
@@ -990,16 +1030,19 @@ export function FittingRoom() {
         )}
         
         {/* Controls Overlay */}
-        <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
-            <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
-                {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
-            </button>
-            <button onClick={() => setIsMacroView(!isMacroView)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMacroView ? 'bg-white text-black border-white' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
-                🔍 Macro View
-            </button>
-            <button onClick={() => setShowHeatmap(!showHeatmap)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
-                🔥 Fit Heatmap
-            </button>
+        <div className="absolute top-4 right-4 flex flex-col items-end gap-2 z-10">
+            <AmbientSound />
+            <div className="flex flex-col gap-2 items-end">
+                <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                    {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
+                </button>
+                <button onClick={() => setIsMacroView(!isMacroView)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMacroView ? 'bg-white text-black border-white' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                    🔍 Macro View
+                </button>
+                <button onClick={() => setShowHeatmap(!showHeatmap)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                    🔥 Fit Heatmap
+                </button>
+            </div>
         </div>
 
         {/* Rotation hint */}
@@ -1010,10 +1053,27 @@ export function FittingRoom() {
           </motion.div>
         )}
 
-        <div className="absolute top-4 left-4 flex gap-2 z-20">
-            <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
-                <span>📤</span>
-            </button>
+        <div className="absolute top-4 left-4 flex flex-col gap-2 z-20">
+            <div className="flex gap-2">
+                <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors" title="Share Look">
+                    <span>📤</span>
+                </button>
+                <button onClick={() => setShowVault(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors relative" title="Open Vault">
+                    <span>🧥</span>
+                    {vaultItemIds.length > 0 && (
+                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-cyber-lime text-black text-[8px] font-bold flex items-center justify-center rounded-full">{vaultItemIds.length}</span>
+                    )}
+                </button>
+                {currentItem && (
+                    <button
+                        onClick={() => isItemInVault(currentItem.id) ? removeFromVault(currentItem.id) : addToVault(currentItem.id)}
+                        className={`bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border transition-colors ${isItemInVault(currentItem.id) ? 'border-red-500/50 text-red-500' : 'border-white/10 text-white hover:text-red-400'}`}
+                        title={isItemInVault(currentItem.id) ? "Remove from Vault" : "Save to Vault"}
+                    >
+                        <span>{isItemInVault(currentItem.id) ? '❤️' : '🤍'}</span>
+                    </button>
+                )}
+            </div>
             <motion.button onClick={() => setShowAITryOnModal(true)} 
                            className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
                            whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -1050,6 +1110,29 @@ export function FittingRoom() {
             )}
           </div>
         )}
+
+        {/* AI Stylist Note Overlay (Styling Tip) */}
+        <div className="absolute top-[30%] left-4 z-10 pointer-events-none">
+             <AnimatePresence>
+                {currentItem && currentItem.stylingTip && (
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ delay: 0.5 }}
+                        className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-xl shadow-2xl pointer-events-auto max-w-[200px]"
+                    >
+                         <div className="flex items-center gap-2 mb-2">
+                            <span className="text-lg">👩‍🎨</span>
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-cyber-lime">Stylist Note</span>
+                         </div>
+                         <p className="text-[10px] text-white italic leading-relaxed">
+                            &quot;{currentItem.stylingTip}&quot;
+                         </p>
+                    </motion.div>
+                )}
+             </AnimatePresence>
+        </div>
 
         {/* AI Consultant Advice Overlay */}
         <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none">
@@ -1135,6 +1218,7 @@ export function FittingRoom() {
         recommendedSize={recommendedFit?.recommendedSize}
       />
       <CompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} picks={topPicks} onSelect={setSelectedItem} />
+      <VaultDrawer isOpen={showVault} onClose={() => setShowVault(false)} />
       <AITryOnModal
         isOpen={showAITryOnModal}
         onClose={() => { setShowAITryOnModal(false); setAITryOnResult(null); }}
