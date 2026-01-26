@@ -1,16 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { calculateRecommendedSize, getComplementaryItems, ClothingStyleAnalysis } from '@/lib/visionService';
 import type { PoseProportions } from '@/lib/mediapipe';
 import { ClothingItem, getAllItems } from '@/data/mockData';
-
-// Mock OpenAI
-vi.mock('openai', () => {
-  return {
-    default: class {
-      apiKey = 'mock-key';
-    }
-  };
-});
 
 describe('Vision Service', () => {
   describe('calculateRecommendedSize', () => {

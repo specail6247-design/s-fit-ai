@@ -1,5 +1,3 @@
-import OpenAI from 'openai';
-
 // This service handles the 'Deep' analysis of clothing and body photos
 // to provide professional-grade fitting results.
 
@@ -23,24 +21,17 @@ export interface SizeRecommendation {
   fitNotes: string[];
 }
 
-// In a real production app, the API key should be handled via environment variables
-// and the analysis should ideally happen on the server to protect the key.
-const openai = new OpenAI({
-  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY || 'your-key-here',
-  dangerouslyAllowBrowser: true, // For client-side demo purposes only
-});
+// In a real production app, the analysis should happen on the server (e.g. Server Actions)
+// to protect the API key. Never expose API keys in client-side code.
 
 /**
  * Deep Analysis using GPT-4o Vision
  */
 export async function analyzeClothingStyle(imageUrl: string): Promise<ClothingStyleAnalysis> {
-  // Use openai instance in the future for real API calls
   console.log("Starting Deep Vision Analysis for image:", imageUrl.substring(0, 50) + "...");
   
-  // Use openai instance to avoid unused warning
-  if (!openai.apiKey) {
-    console.warn("OpenAI API key missing, using mock analysis.");
-  }
+  // Placeholder for future server-side implementation
+  // TODO: Move this logic to a server action to securely use OpenAI API
 
   return new Promise((resolve) => {
     setTimeout(() => {
