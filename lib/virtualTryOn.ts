@@ -15,6 +15,9 @@ export interface TryOnRequest {
 export interface TryOnResult {
   success: boolean;
   imageUrl?: string;
+  textureUrl?: string;
+  normalMapUrl?: string;
+  displacementMapUrl?: string;
   error?: string;
   videoUrl?: string;
 }
@@ -261,3 +264,34 @@ export const generateRunwayVideo = async (imageUrl: string) => {
     const res = await generateCinematicVideo(imageUrl);
     return res.success ? res.videoUrl : null;
 };
+
+// Python Orchestrator Integration
+export async function processTextureWithPython(imageUrl: string): Promise<{ success: boolean; texture?: string; normalMap?: string; displacementMap?: string; error?: string }> {
+  try {
+    const pythonServiceUrl = process.env.PYTHON_SERVICE_URL || 'http://127.0.0.1:8000';
+    const res = await fetch(`${pythonServiceUrl}/process-texture`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageUrl }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Python service returned ${res.status}`);
+    }
+
+    const data = await res.json();
+    if (data.success) {
+      return {
+        success: true,
+        texture: data.texture,
+        normalMap: data.normalMap,
+        displacementMap: data.displacementMap
+      };
+    } else {
+      return { success: false, error: data.error };
+    }
+  } catch (error) {
+    console.error('Python orchestration error (is the service running?):', error);
+    return { success: false, error: 'Service unreachable' };
+  }
+}

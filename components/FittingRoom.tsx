@@ -346,7 +346,12 @@ function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist:
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial
+        textureUrl={item.textureUrl || item.imageUrl}
+        normalMapUrl={item.normalMapUrl}
+        displacementMapUrl={item.displacementMapUrl}
+        fabricType={fabricType}
+      />
     </SoftBodyPlane>
   );
 }
@@ -366,7 +371,12 @@ function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, wa
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial
+        textureUrl={item.textureUrl || item.imageUrl}
+        normalMapUrl={item.normalMapUrl}
+        displacementMapUrl={item.displacementMapUrl}
+        fabricType={fabricType}
+      />
     </SoftBodyPlane>
   );
 }
@@ -386,7 +396,12 @@ function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, wais
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial
+        textureUrl={item.textureUrl || item.imageUrl}
+        normalMapUrl={item.normalMapUrl}
+        displacementMapUrl={item.displacementMapUrl}
+        fabricType={fabricType}
+      />
     </SoftBodyPlane>
   );
 }
@@ -406,7 +421,12 @@ function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, 
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial
+        textureUrl={item.textureUrl || item.imageUrl}
+        normalMapUrl={item.normalMapUrl}
+        displacementMapUrl={item.displacementMapUrl}
+        fabricType={fabricType}
+      />
     </SoftBodyPlane>
   );
 }
@@ -417,13 +437,50 @@ function AccessoryClothing({ item }: ClothingProps) {
   const aspect = img ? img.width / img.height : 1;
   const zIndex = layeringEngine.getItemZIndex(item);
   
-  const baseWidth = item.subCategory === 'bag' ? 0.4 : 0.2;
-  const position: [number, number, number] = item.subCategory === 'bag' ? [0.35, 0.8, 0.2] : [0, 1.45, 0.15];
+  let baseWidth = 0.3;
+  let position: [number, number, number] = [0, 1.0, 0.2];
+  let metalness = item.isLuxury ? 0.5 : 0.2;
+  let roughness = 0.4;
+
+  switch (item.subCategory) {
+    case 'bag':
+      baseWidth = 0.4;
+      position = [0.35, 0.8, 0.2];
+      roughness = 0.6; // Leather-ish
+      break;
+    case 'hat':
+      baseWidth = 0.35;
+      position = [0, 1.78, 0.05];
+      break;
+    case 'glasses':
+      baseWidth = 0.25;
+      position = [0, 1.65, 0.12];
+      metalness = 0.9;
+      roughness = 0.1;
+      break;
+    case 'jewelry':
+    case 'scarf':
+      baseWidth = 0.25;
+      position = [0, 1.45, 0.15]; // Neck area
+      metalness = item.subCategory === 'jewelry' ? 1.0 : 0.2;
+      roughness = item.subCategory === 'jewelry' ? 0.1 : 0.8;
+      break;
+    default:
+      baseWidth = 0.3;
+      position = [0, 1.0, 0.2];
+  }
 
   return (
     <mesh position={position} renderOrder={zIndex} castShadow receiveShadow>
       <planeGeometry args={[baseWidth, baseWidth / aspect, 32, 32]} />
-      <meshStandardMaterial map={texture} transparent side={THREE.DoubleSide} roughness={0.4} metalness={item.isLuxury ? 0.5 : 0.2} alphaTest={0.5} />
+      <meshStandardMaterial
+        map={texture}
+        transparent
+        side={THREE.DoubleSide}
+        roughness={roughness}
+        metalness={metalness}
+        alphaTest={0.5}
+      />
     </mesh>
   );
 }
@@ -703,6 +760,13 @@ function CompareModal({ isOpen, onClose, picks, onSelect }: CompareModalProps) {
 
 // --- AI TRY-ON MODAL (WITH CINEMATIC VIEWER) ---
 
+interface AITryOnResult {
+  imageUrl: string;
+  textureUrl?: string;
+  normalMapUrl?: string;
+  displacementMapUrl?: string;
+}
+
 interface AITryOnModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -710,7 +774,7 @@ interface AITryOnModalProps {
   userPhotoPreview: string | null;
   onPhotoSelect: (file: File | null) => void;
   isLoading: boolean;
-  result: string | null;
+  result: AITryOnResult | null;
   error?: string | null;
   onGenerateTryOn: () => void;
 }
@@ -775,14 +839,14 @@ function AITryOnModal({
                     {(result || videoUrl) && (
                         <div className="space-y-4">
                             <div className="flex items-center justify-between"><div className="flex items-center gap-2"><span className="text-cyber-lime">⚡️</span><span className="text-xs font-bold uppercase tracking-wider">Analysis Result</span></div>
-                                {result && <button onClick={() => { const a = document.createElement('a'); a.href = result; a.download = 'sfit-result.png'; a.click(); }} className="text-[9px] text-cyber-lime hover:underline">Download Image</button>}
+                                {result && <button onClick={() => { const a = document.createElement('a'); a.href = result.imageUrl; a.download = 'sfit-result.png'; a.click(); }} className="text-[9px] text-cyber-lime hover:underline">Download Image</button>}
                             </div>
                             {videoUrl ? (
-                              <CinematicViewer videoUrl={videoUrl} posterUrl={result || undefined} className="w-full aspect-[9/16] rounded-xl shadow-2xl" />
+                              <CinematicViewer videoUrl={videoUrl} posterUrl={result?.imageUrl || undefined} className="w-full aspect-[9/16] rounded-xl shadow-2xl" />
                             ) : result && (
                                 <div className="relative w-full aspect-[9/16] rounded-xl border-2 border-cyber-lime/20 shadow-xl overflow-hidden">
                                   <Image
-                                    src={result}
+                                    src={result.imageUrl}
                                     alt="AI Try-On Result"
                                     fill
                                     className="object-cover"
@@ -790,13 +854,15 @@ function AITryOnModal({
                                     unoptimized
                                   />
                                   <div className="absolute top-2 right-2 bg-cyber-lime/90 text-void-black text-[10px] font-bold px-2 py-0.5 rounded">ULTRA-FIT</div>
+                                  {result.textureUrl && <div className="absolute top-2 left-2 bg-purple-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1"><span>🔍</span> HYPER-ZOOM READY</div>}
                                 </div>
                             )}
                             {result && !videoUrl && (
                                 <button onClick={async () => {
                                     setIsVideoLoading(true);
                                     try {
-                                        const res = await fetch('/api/cinematic-try-on', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({imageUrl: result}) });
+                                        const bestQualityImage = result.textureUrl || result.imageUrl;
+                                        const res = await fetch('/api/cinematic-try-on', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({imageUrl: bestQualityImage}) });
                                         const data = await res.json();
                                         if(data.success) setVideoUrl(data.videoUrl);
                                     } finally { setIsVideoLoading(false); }
@@ -835,7 +901,7 @@ export function FittingRoom() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
-  const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
+  const [aiTryOnResult, setAITryOnResult] = useState<AITryOnResult | null>(null);
   const [aiTryOnLoading, setAITryOnLoading] = useState(false);
   const [userPhotoPreview, setUserPhotoPreview] = useState<string | null>(null);
   const [isMasterpieceMode, setIsMasterpieceMode] = useState(true);
@@ -915,7 +981,14 @@ export function FittingRoom() {
         })
       });
       const data = await response.json();
-      if (data.success) setAITryOnResult(data.imageUrl);
+      if (data.success) {
+        setAITryOnResult({
+          imageUrl: data.imageUrl,
+          textureUrl: data.textureUrl,
+          normalMapUrl: data.normalMapUrl,
+          displacementMapUrl: data.displacementMapUrl
+        });
+      }
     } catch (e) { console.error(e); }
     finally { setAITryOnLoading(false); }
   }, [userPhotoPreview, currentItem]);

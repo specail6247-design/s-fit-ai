@@ -5,7 +5,7 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Gentle Monster' | 'Ader Error';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -13,6 +13,8 @@ export interface ClothingItem {
   currency: string;
   imageUrl: string;
   textureUrl: string;
+  normalMapUrl?: string;
+  displacementMapUrl?: string;
   isLuxury: boolean;
   sizes: string[];
   colors: string[];
@@ -91,6 +93,20 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=TIFFANY',
     isLuxury: true,
     tier: 'luxury',
+  },
+  {
+    id: 'gentle-monster',
+    name: 'Gentle Monster',
+    logo: 'https://placehold.co/100x100?text=GM',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'ader-error',
+    name: 'Ader Error',
+    logo: 'https://placehold.co/100x100?text=ADER',
+    isLuxury: false,
+    tier: 'basic', // K-Fashion Leader
   },
 ];
 
@@ -534,6 +550,37 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+  },
+  // K-FASHION LEADERS
+  {
+    id: 'gm-glasses-001',
+    name: 'Lilit 01',
+    brand: 'Gentle Monster',
+    category: 'accessories',
+    subCategory: 'glasses',
+    zIndex: 60,
+    price: 280.00,
+    currency: 'USD',
+    imageUrl: '/accessories/gm_glasses.png',
+    textureUrl: '/accessories/gm_glasses.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Black'],
+    description: 'Square black acetate frame with soft curves',
+  },
+  {
+    id: 'ader-hoodie-001',
+    name: 'Twin Heart Hoodie',
+    brand: 'Ader Error',
+    category: 'tops',
+    price: 320.00,
+    currency: 'USD',
+    imageUrl: '/clothing/ader_hoodie.png',
+    textureUrl: '/clothing/ader_hoodie.png',
+    isLuxury: false,
+    sizes: ['A1', 'A2', 'A3'],
+    colors: ['Blue'],
+    description: 'Signature oversized hoodie with raw edges',
   },
 ];
 
