@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import LegalModal from '@/components/LegalModal';
+import SupportModal from '@/components/SupportModal';
+import ShareModal from '@/components/ui/ShareModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +19,11 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  // Modal States
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -158,6 +166,22 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Data Safety Badge & Footer Links */}
+          <div className="mt-8 pt-6 border-t border-white/10 relative z-10">
+              <div className="flex items-center gap-3 mb-4 opacity-80 bg-white/5 p-3 rounded-lg border border-white/5">
+                  <span className="text-xl">🛡️</span>
+                  <div>
+                      <p className="text-[10px] font-bold text-white uppercase tracking-wider">Data Safety Verified</p>
+                      <p className="text-[9px] text-gray-400">Photos processed securely & not shared.</p>
+                  </div>
+              </div>
+              <div className="flex gap-4 text-[10px] text-gray-500 uppercase tracking-widest font-bold justify-center">
+                  <button onClick={() => setIsLegalModalOpen(true)} className="hover:text-white transition-colors">Legal & Privacy</button>
+                  <span className="text-white/20">|</span>
+                  <button onClick={() => setIsSupportModalOpen(true)} className="hover:text-white transition-colors">Support Hub</button>
+              </div>
+          </div>
+
         </div>
       </div>
 
@@ -196,11 +220,18 @@ export default function RealLifeFitting() {
           >
             <div className="relative group">
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              <button
+                onClick={() => setIsShareModalOpen(true)}
+                className="absolute top-4 right-14 bg-black/60 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-[#007AFF] transition-colors z-30 border border-white/10"
+                title="Share to Story"
+              >
+                📤
+              </button>
               <button 
                 onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                className="absolute top-4 right-4 bg-black/60 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-[#007AFF] transition-colors z-30 border border-white/10"
               >
-                ✕ Close
+                ✕
               </button>
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
@@ -209,6 +240,12 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      {/* Modals */}
+      <LegalModal isOpen={isLegalModalOpen} onClose={() => setIsLegalModalOpen(false)} />
+      <SupportModal isOpen={isSupportModalOpen} onClose={() => setIsSupportModalOpen(false)} />
+      <ShareModal isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)} resultImage={resultImage} />
+
     </div>
   );
 }
