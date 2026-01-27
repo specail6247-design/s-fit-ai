@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateVirtualTryOn } from '@/lib/virtualTryOn';
+import { generateVirtualTryOn, processTextureWithPython } from '@/lib/virtualTryOn';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -94,10 +94,17 @@ export async function POST(request: NextRequest) {
       category: category || 'upper_body'
     });
 
-    if (result.success) {
+    if (result.success && result.imageUrl) {
+      // Orchestrate Python Texture Processing
+      // Attempt to generate Hyper-Zoom maps
+      const textureResult = await processTextureWithPython(result.imageUrl);
+
       return NextResponse.json({
         success: true,
-        imageUrl: result.imageUrl
+        imageUrl: result.imageUrl,
+        textureUrl: textureResult.success ? textureResult.texture : undefined,
+        normalMapUrl: textureResult.success ? textureResult.normalMap : undefined,
+        displacementMapUrl: textureResult.success ? textureResult.displacementMap : undefined
       });
     } else {
       return NextResponse.json(
