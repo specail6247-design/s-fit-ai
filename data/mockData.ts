@@ -5,7 +5,7 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Hermes';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -89,6 +89,13 @@ export const brands: Brand[] = [
     id: 'tiffany',
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'hermes',
+    name: 'HERMES',
+    logo: 'https://placehold.co/100x100?text=HERMES',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -534,6 +541,56 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+  },
+
+  // HERMES - Ultra Luxury (3 items)
+  {
+    id: 'hermes-001',
+    name: 'Birkin 30 Bag',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'bag',
+    zIndex: 55,
+    price: 28500.00,
+    currency: 'USD',
+    imageUrl: '/accessories/chanel_bag.png', // Using placeholder
+    textureUrl: '/accessories/chanel_bag.png',
+    isLuxury: true,
+    sizes: ['30cm'],
+    colors: ['Gold', 'Black', 'Etoupe'],
+    description: 'The iconic Birkin bag in Togo calfskin with gold-plated hardware',
+  },
+  {
+    id: 'hermes-002',
+    name: 'Silk Twill Scarf 90',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'scarf',
+    zIndex: 45,
+    price: 550.00,
+    currency: 'USD',
+    imageUrl: '/clothing/gucci_blouse.png', // Using placeholder
+    textureUrl: '/clothing/gucci_blouse.png',
+    isLuxury: true,
+    sizes: ['90x90cm'],
+    colors: ['Orange', 'Blue', 'Red'],
+    description: 'Essential silk twill scarf with hand-rolled edges',
+  },
+  {
+    id: 'hermes-003',
+    name: 'Oran Sandal',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'bag', // Mapped to bag/accessory for now
+    zIndex: 20,
+    price: 760.00,
+    currency: 'USD',
+    imageUrl: '/accessories/chanel_bag.png', // Using placeholder
+    textureUrl: '/accessories/chanel_bag.png',
+    isLuxury: true,
+    sizes: ['36', '37', '38', '39', '40'],
+    colors: ['Gold', 'White', 'Black'],
+    description: 'Iconic leather sandal with H cut-out',
   },
 ];
 
