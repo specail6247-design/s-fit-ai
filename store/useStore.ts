@@ -110,6 +110,12 @@ interface StoreState {
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
 
+  // Global UI State
+  showLoginModal: boolean;
+  setShowLoginModal: (show: boolean) => void;
+  showSupportDrawer: boolean;
+  setShowSupportDrawer: (show: boolean) => void;
+
   // Reset
   resetSession: () => void;
 }
@@ -234,6 +240,12 @@ export const useStore = create<StoreState>()(
       // UI State
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
+
+      // Global UI State
+      showLoginModal: false,
+      setShowLoginModal: (show) => set({ showLoginModal: show }),
+      showSupportDrawer: false,
+      setShowSupportDrawer: (show) => set({ showSupportDrawer: show }),
 
       // Reset Session
       resetSession: () =>
