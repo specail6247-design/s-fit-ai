@@ -5,7 +5,7 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Hermes';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -89,6 +89,13 @@ export const brands: Brand[] = [
     id: 'tiffany',
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'hermes',
+    name: 'Hermes',
+    logo: 'https://placehold.co/100x100?text=HERMES',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -534,6 +541,86 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+  },
+
+  // HERMES - Ultra Luxury (5 items)
+  {
+    id: 'hermes-bag-001',
+    name: 'Birkin 25',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'bag',
+    zIndex: 50,
+    price: 25000.00,
+    currency: 'USD',
+    imageUrl: '/accessories/hermes_birkin.png',
+    textureUrl: '/accessories/hermes_birkin.png',
+    isLuxury: true,
+    sizes: ['25cm'],
+    colors: ['Black', 'Gold', 'Etoupe'],
+    description: 'The iconic Birkin bag in Togo calfskin with gold-plated hardware',
+  },
+  {
+    id: 'hermes-scarf-001',
+    name: 'Silk Twill Scarf 90',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'scarf',
+    zIndex: 40,
+    price: 495.00,
+    currency: 'USD',
+    imageUrl: '/accessories/hermes_scarf.png',
+    textureUrl: '/accessories/hermes_scarf.png',
+    isLuxury: true,
+    sizes: ['90x90cm'],
+    colors: ['Orange', 'Blue', 'Pink'],
+    description: 'Hand-rolled silk scarf featuring the "Grand Apparat" design',
+  },
+  {
+    id: 'hermes-coat-001',
+    name: 'Cashmere Wrap Coat',
+    brand: 'Hermes',
+    category: 'outerwear',
+    price: 5200.00,
+    currency: 'USD',
+    imageUrl: '/clothing/hermes_coat.png',
+    textureUrl: '/clothing/hermes_coat.png',
+    isLuxury: true,
+    sizes: ['FR 34', 'FR 36', 'FR 38', 'FR 40'],
+    colors: ['Camel', 'Black'],
+    description: 'Double-face cashmere coat with leather piping',
+  },
+  {
+    id: 'hermes-dress-001',
+    name: 'Silk Shirt Dress',
+    brand: 'Hermes',
+    category: 'dresses',
+    price: 3400.00,
+    currency: 'USD',
+    imageUrl: '/clothing/hermes_dress.png',
+    textureUrl: '/clothing/hermes_dress.png',
+    isLuxury: true,
+    sizes: ['FR 34', 'FR 36', 'FR 38', 'FR 40'],
+    colors: ['Print', 'Navy'],
+    description: 'Printed silk twill shirt dress with belt',
+  },
+  {
+    id: 'hermes-accessory-002',
+    name: 'Oran Sandal',
+    brand: 'Hermes',
+    category: 'accessories',
+    // Mapping footwear to accessories for now as fitting room handles it best there or separate mode
+    // but user wants them in the "pool".
+    subCategory: 'glasses', // Using glasses as a proxy for "small accessory" or just general item if subCategory isn't strictly checked for footwear in main view
+    zIndex: 10,
+    price: 700.00,
+    currency: 'USD',
+    imageUrl: '/accessories/hermes_oran.png',
+    textureUrl: '/accessories/hermes_oran.png',
+    isLuxury: true,
+    sizes: ['36', '37', '38', '39', '40'],
+    colors: ['Gold', 'Black', 'White'],
+    description: 'Iconic leather sandal with "H" cut-out',
   },
 ];
 
