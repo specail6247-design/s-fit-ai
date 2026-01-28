@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LegalModal } from '@/components/LegalModal';
+import { SupportModal } from '@/components/SupportModal';
+import { generateStoryImage } from '@/lib/shareUtils';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +19,11 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  // Modal States
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -104,6 +112,11 @@ export default function RealLifeFitting() {
                 </div>
               </label>
             </div>
+            {/* Data Safety Badge */}
+            <div className="flex items-center gap-2 mt-2 px-1 opacity-60">
+              <span className="text-[#007AFF] text-xs">🛡️</span>
+              <span className="text-[10px] text-gray-400">Photos are processed securely and not shared.</span>
+            </div>
           </div>
 
           {/* Garment Input */}
@@ -158,6 +171,12 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Footer Links */}
+          <div className="mt-8 pt-8 border-t border-white/10 flex justify-between text-[10px] text-gray-500">
+            <button onClick={() => setShowPrivacy(true)} className="hover:text-white transition-colors">Privacy Policy</button>
+            <button onClick={() => setShowTerms(true)} className="hover:text-white transition-colors">Terms of Service</button>
+            <button onClick={() => setShowSupport(true)} className="hover:text-[#007AFF] transition-colors">Report Issue</button>
+          </div>
         </div>
       </div>
 
@@ -205,10 +224,52 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+              <button
+                onClick={async () => {
+                  if (resultImage) {
+                     const storyImage = await generateStoryImage(resultImage);
+                     const link = document.createElement('a');
+                     link.download = 's_fit_story.png';
+                     link.href = storyImage;
+                     link.click();
+                  }
+                }}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      {/* Modals */}
+      <LegalModal
+        isOpen={showPrivacy}
+        onClose={() => setShowPrivacy(false)}
+        title="Privacy Policy"
+        content={
+          <div className="space-y-4">
+            <p><strong>1. Data Collection:</strong> We only collect images you upload for the purpose of virtual fitting. We do not store biometric data permanently.</p>
+            <p><strong>2. Usage:</strong> Your photos are processed by our secure AI engine and deleted from processing servers immediately after generation.</p>
+            <p><strong>3. Sharing:</strong> We do not share your personal photos with third parties.</p>
+          </div>
+        }
+      />
+      <LegalModal
+        isOpen={showTerms}
+        onClose={() => setShowTerms(false)}
+        title="Terms of Service"
+        content={
+           <div className="space-y-4">
+            <p><strong>1. Service:</strong> S_FIT NEO provides virtual fitting visualization. Results are simulated.</p>
+            <p><strong>2. User Conduct:</strong> Do not upload illegal or offensive content.</p>
+            <p><strong>3. Liability:</strong> We are not responsible for purchase decisions made based on virtual fitting.</p>
+          </div>
+        }
+      />
+      <SupportModal isOpen={showSupport} onClose={() => setShowSupport(false)} />
     </div>
   );
 }
