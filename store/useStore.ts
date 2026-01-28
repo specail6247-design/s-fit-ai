@@ -110,6 +110,13 @@ interface StoreState {
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
 
+  // Phase 7: The Extra Mile
+  savedItems: ClothingItem[];
+  saveItem: (item: ClothingItem) => void;
+  unsaveItem: (itemId: string) => void;
+  isAudioMuted: boolean;
+  toggleAudio: () => void;
+
   // Reset
   resetSession: () => void;
 }
@@ -235,6 +242,13 @@ export const useStore = create<StoreState>()(
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
 
+      // Phase 7
+      savedItems: [],
+      saveItem: (item) => set((state) => ({ savedItems: [...state.savedItems, item] })),
+      unsaveItem: (itemId) => set((state) => ({ savedItems: state.savedItems.filter((i) => i.id !== itemId) })),
+      isAudioMuted: false,
+      toggleAudio: () => set((state) => ({ isAudioMuted: !state.isAudioMuted })),
+
       // Reset Session
       resetSession: () =>
         set({
@@ -257,6 +271,8 @@ export const useStore = create<StoreState>()(
         userStats: state.userStats,
         selectedAIModels: state.selectedAIModels,
         trainingData: state.trainingData,
+        savedItems: state.savedItems,
+        isAudioMuted: state.isAudioMuted,
       }),
     }
   )

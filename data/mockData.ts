@@ -17,6 +17,8 @@ export interface ClothingItem {
   sizes: string[];
   colors: string[];
   description: string;
+  stylingTip?: string;
+  lockedUntil?: string;
 }
 
 export interface Brand {
@@ -110,6 +112,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy', 'Beige'],
     description: 'Relaxed fit blazer with structured shoulders',
+    stylingTip: 'Pair with high-waisted trousers for a modern power suit look.',
   },
   {
     id: 'zara-002',
@@ -124,6 +127,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'White', 'Camel'],
     description: 'Elegant wide leg trousers with pleats',
+    stylingTip: 'Balance the volume with a fitted crop top.',
   },
   {
     id: 'zara-003',
@@ -152,6 +156,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Champagne', 'Black', 'Burgundy'],
     description: 'Elegant satin dress with cowl neck',
+    stylingTip: 'Add strappy heels and a clutch for an instant evening vibe.',
   },
   {
     id: 'zara-005',
@@ -182,6 +187,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 44', 'IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Beige/Ebony'],
     description: 'Iconic GG pattern wool blazer with silk lining',
+    stylingTip: 'Layer over a silk camisole to soften the structured shoulders.',
   },
   {
     id: 'gucci-002',
@@ -224,6 +230,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 38', 'IT 40', 'IT 42', 'IT 44'],
     colors: ['Pink Flora'],
     description: 'Flowing silk georgette dress with iconic Flora print',
+    stylingTip: 'Keep accessories minimal to let the print stand out.',
   },
   {
     id: 'gucci-005',
@@ -268,6 +275,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
     colors: ['White', 'Black', 'Gray', 'Navy', 'Olive'],
     description: 'Premium Supima cotton basic tee',
+    stylingTip: 'Tuck into denim for an effortless, classic silhouette.',
   },
   {
     id: 'uniqlo-003',
@@ -382,6 +390,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Floral', 'Red'],
     description: 'Elegant wrap dress with tie waist',
+    stylingTip: 'Add statement earrings to elevate this from day to night.',
   },
 
   // COS - Premium Mass Market (2 items)
@@ -518,6 +527,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['Adjustable'],
     colors: ['Red', 'Black', 'Camo'],
     description: 'Cotton canvas camp cap with woven box logo',
+    lockedUntil: new Date(Date.now() + 7200000).toISOString(), // Locked for 2 hours
   },
   {
     id: 'tiffany-necklace-001',
