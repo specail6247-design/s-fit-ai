@@ -32,6 +32,7 @@ import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
+import LuxuryImageDistortion from './masterpiece/LuxuryImageDistortion';
 
 // --- PHYSICS ENGINE (Ammo.js) ---
 
@@ -588,8 +589,16 @@ function ItemCard({
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
-      <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
-        <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+      <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden bg-void-black">
+        {item.imageUrl ? (
+          <div className="absolute inset-0 editorial-filter">
+             <LuxuryImageDistortion imageUrl={item.imageUrl} className="w-full h-full" />
+          </div>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: primaryColor }}>
+            <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+          </div>
+        )}
         {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
       </div>
@@ -830,6 +839,7 @@ function AITryOnModal({
 export function FittingRoom() {
   const {
     userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    isAnalyzing, isFitting, setIsAnalyzing, setIsFitting
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
@@ -904,6 +914,7 @@ export function FittingRoom() {
   const handleGenerateAITryOn = useCallback(async () => {
     if (!userPhotoPreview || !currentItem?.imageUrl) return;
     setAITryOnLoading(true);
+    setIsAnalyzing(true);
     try {
       const response = await fetch('/api/try-on', {
         method: 'POST',
@@ -915,10 +926,16 @@ export function FittingRoom() {
         })
       });
       const data = await response.json();
-      if (data.success) setAITryOnResult(data.imageUrl);
+      if (data.success) {
+        setAITryOnResult(data.imageUrl);
+        setIsFitting(true);
+      }
     } catch (e) { console.error(e); }
-    finally { setAITryOnLoading(false); }
-  }, [userPhotoPreview, currentItem]);
+    finally {
+      setAITryOnLoading(false);
+      setIsAnalyzing(false);
+    }
+  }, [userPhotoPreview, currentItem, setIsAnalyzing, setIsFitting]);
 
   const resolvedHeight = userStats?.height ?? 170;
   const recommendedFit = useMemo(() => {
@@ -989,70 +1006,76 @@ export function FittingRoom() {
           </Suspense>
         )}
         
-        {/* Controls Overlay */}
-        <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
-            <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
-                {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
-            </button>
-            <button onClick={() => setIsMacroView(!isMacroView)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMacroView ? 'bg-white text-black border-white' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
-                🔍 Macro View
-            </button>
-            <button onClick={() => setShowHeatmap(!showHeatmap)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
-                🔥 Fit Heatmap
-            </button>
-        </div>
+        <motion.div
+            className="absolute inset-0 z-10 pointer-events-none"
+            animate={{ opacity: (isAnalyzing || isFitting) ? 0 : 1, pointerEvents: (isAnalyzing || isFitting) ? 'none' : 'auto' }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        >
+            <div className="pointer-events-auto w-full h-full relative">
+                {/* Controls Overlay */}
+                <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
+                    <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                        {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
+                    </button>
+                    <button onClick={() => setIsMacroView(!isMacroView)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMacroView ? 'bg-white text-black border-white' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                        🔍 Macro View
+                    </button>
+                    <button onClick={() => setShowHeatmap(!showHeatmap)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                        🔥 Fit Heatmap
+                    </button>
+                </div>
 
-        {/* Rotation hint */}
-        {!webglFailed && (
-          <motion.div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-soft-gray/60 text-xs bg-void-black/50 px-3 py-1 rounded-full z-10"
-                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }}>
-            <span>↔️ Drag to rotate</span>
-          </motion.div>
-        )}
+                {/* Rotation hint */}
+                {!webglFailed && (
+                <motion.div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-soft-gray/60 text-xs bg-void-black/50 px-3 py-1 rounded-full z-10"
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }}>
+                    <span>↔️ Drag to rotate</span>
+                </motion.div>
+                )}
 
-        <div className="absolute top-4 left-4 flex gap-2 z-20">
-            <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
-                <span>📤</span>
-            </button>
-            <motion.button onClick={() => setShowAITryOnModal(true)} 
-                           className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
-                           whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <span>✨</span> AI 피팅 <span className="text-[0.6rem] bg-white/20 px-1.5 py-0.5 rounded-full">NEW</span>
-            </motion.button>
-        </div>
+                <div className="absolute top-4 left-4 flex gap-2 z-20">
+                    <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
+                        <span>📤</span>
+                    </button>
+                    <motion.button onClick={() => setShowAITryOnModal(true)}
+                                className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
+                                whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <span>✨</span> AI 피팅 <span className="text-[0.6rem] bg-white/20 px-1.5 py-0.5 rounded-full">NEW</span>
+                    </motion.button>
+                </div>
 
-        {topPicks.length > 0 && (
-          <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-20">
-            {isMiniBarCollapsed ? (
-              <div className="glass-card px-3 py-2 flex items-center justify-between gap-3">
-                <span className="text-[0.55rem] uppercase tracking-[0.2em] text-soft-gray">AI Picks</span>
-                <button onClick={() => setMiniBarCollapsed(false)} className="text-[0.55rem] text-soft-gray hover:text-white transition-colors">Show</button>
-              </div>
-            ) : (
-              <div className="glass-card px-3 py-2 flex items-center gap-2 relative overflow-hidden">
-                 <span className="text-[0.55rem] uppercase tracking-[0.2em] text-soft-gray">AI Picks</span>
-                 <div className="flex-1 flex gap-2 overflow-x-auto scrollbar-hide">
-                    {topPicks.map((entry) => (
-                      <button key={`mini-${entry.item.id}`} onClick={() => setSelectedItem(entry.item)}
-                              className={`flex items-center gap-1 rounded-full border px-2 py-0.5 text-[0.6rem] transition-colors whitespace-nowrap ${currentItem?.id === entry.item.id ? 'border-cyber-lime text-pure-white bg-cyber-lime/10' : 'border-border-color text-soft-gray'}`}>
-                        <span>{getCategoryIcon(entry.item.category)}</span>
-                        <span className="max-w-[60px] truncate">{entry.item.name}</span>
-                        <span className="text-cyber-lime">{entry.score}</span>
-                      </button>
-                    ))}
-                 </div>
-                 <button onClick={() => setAutoCycleEnabled(!autoCycleEnabled)} className={`text-[0.55rem] uppercase ${autoCycleEnabled ? 'text-cyber-lime' : 'text-soft-gray'}`}>
-                    {autoCycleEnabled ? 'Auto On' : 'Auto Off'}
-                 </button>
-                 <button onClick={() => setMiniBarCollapsed(true)} className="text-[0.55rem] text-soft-gray ml-1">✕</button>
-                 {autoCycleEnabled && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyber-lime/30"><div className="h-full bg-cyber-lime auto-cycle-bar" /></div>}
-              </div>
-            )}
-          </div>
-        )}
+                {topPicks.length > 0 && (
+                <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-20">
+                    {isMiniBarCollapsed ? (
+                    <div className="glass-card px-3 py-2 flex items-center justify-between gap-3">
+                        <span className="text-[0.55rem] uppercase tracking-[0.2em] text-soft-gray">AI Picks</span>
+                        <button onClick={() => setMiniBarCollapsed(false)} className="text-[0.55rem] text-soft-gray hover:text-white transition-colors">Show</button>
+                    </div>
+                    ) : (
+                    <div className="glass-card px-3 py-2 flex items-center gap-2 relative overflow-hidden">
+                        <span className="text-[0.55rem] uppercase tracking-[0.2em] text-soft-gray">AI Picks</span>
+                        <div className="flex-1 flex gap-2 overflow-x-auto scrollbar-hide">
+                            {topPicks.map((entry) => (
+                            <button key={`mini-${entry.item.id}`} onClick={() => setSelectedItem(entry.item)}
+                                    className={`flex items-center gap-1 rounded-full border px-2 py-0.5 text-[0.6rem] transition-colors whitespace-nowrap ${currentItem?.id === entry.item.id ? 'border-cyber-lime text-pure-white bg-cyber-lime/10' : 'border-border-color text-soft-gray'}`}>
+                                <span>{getCategoryIcon(entry.item.category)}</span>
+                                <span className="max-w-[60px] truncate">{entry.item.name}</span>
+                                <span className="text-cyber-lime">{entry.score}</span>
+                            </button>
+                            ))}
+                        </div>
+                        <button onClick={() => setAutoCycleEnabled(!autoCycleEnabled)} className={`text-[0.55rem] uppercase ${autoCycleEnabled ? 'text-cyber-lime' : 'text-soft-gray'}`}>
+                            {autoCycleEnabled ? 'Auto On' : 'Auto Off'}
+                        </button>
+                        <button onClick={() => setMiniBarCollapsed(true)} className="text-[0.55rem] text-soft-gray ml-1">✕</button>
+                        {autoCycleEnabled && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyber-lime/30"><div className="h-full bg-cyber-lime auto-cycle-bar" /></div>}
+                    </div>
+                    )}
+                </div>
+                )}
 
-        {/* AI Consultant Advice Overlay */}
-        <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none">
+                {/* AI Consultant Advice Overlay */}
+                <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none">
             <AnimatePresence>
                 {currentItem && poseAnalysis?.proportions && recommendedFit && (
                     <motion.div 
@@ -1082,8 +1105,14 @@ export function FittingRoom() {
                 )}
             </AnimatePresence>
         </div>
+            </div>
+        </motion.div>
       </div>
 
+      <motion.div
+        animate={{ opacity: (isAnalyzing || isFitting) ? 0 : 1, pointerEvents: (isAnalyzing || isFitting) ? 'none' : 'auto' }}
+        transition={{ duration: 0.5 }}
+      >
       {/* Item Selector Footer */}
       <div className="p-4 border-t border-border-color bg-void-black">
         <div className="flex items-center justify-between mb-3">
@@ -1125,6 +1154,7 @@ export function FittingRoom() {
           </div>
         </div>
       )}
+      </motion.div>
 
       <ShareModal 
         isOpen={showShareModal} 
@@ -1137,7 +1167,7 @@ export function FittingRoom() {
       <CompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} picks={topPicks} onSelect={setSelectedItem} />
       <AITryOnModal
         isOpen={showAITryOnModal}
-        onClose={() => { setShowAITryOnModal(false); setAITryOnResult(null); }}
+        onClose={() => { setShowAITryOnModal(false); setAITryOnResult(null); setIsFitting(false); }}
         selectedItem={currentItem}
         userPhotoPreview={userPhotoPreview}
         onPhotoSelect={(file) => {
