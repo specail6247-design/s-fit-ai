@@ -306,7 +306,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170, opacity: _opacity = 1.0
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
@@ -315,7 +315,7 @@ function Mannequin({
     <group scale={[scale, scale, scale]}>
       {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
-        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+        url="https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
         animationUrl={animationUrl}
         scale={1.0}
       />
@@ -329,9 +329,10 @@ interface ClothingProps {
   shapeScale?: { shoulders: number; waist: number; hips: number };
   fabricType?: FabricType;
   useMasterpiece?: boolean;
+  isMacro?: boolean;
 }
 
-function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacro }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -346,12 +347,12 @@ function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist:
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacro={isMacro} />
     </SoftBodyPlane>
   );
 }
 
-function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacro }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -366,12 +367,12 @@ function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, wa
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacro={isMacro} />
     </SoftBodyPlane>
   );
 }
 
-function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacro }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -386,12 +387,12 @@ function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, wais
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacro={isMacro} />
     </SoftBodyPlane>
   );
 }
 
-function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacro }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -406,24 +407,58 @@ function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, 
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacro={isMacro} />
     </SoftBodyPlane>
   );
 }
 
-function AccessoryClothing({ item }: ClothingProps) {
+function AccessoryClothing({ item, isMacro }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
   const zIndex = layeringEngine.getItemZIndex(item);
   
-  const baseWidth = item.subCategory === 'bag' ? 0.4 : 0.2;
-  const position: [number, number, number] = item.subCategory === 'bag' ? [0.35, 0.8, 0.2] : [0, 1.45, 0.15];
+  // Enhanced Accessory Logic
+  if (item.subCategory === 'scarf') {
+     // Scarf uses physics for draping
+     const physics = PHYSICS_PRESETS['silk'];
+     return (
+       <SoftBodyPlane
+         position={[0, 1.35, 0.12]}
+         args={[0.3, 0.3 / aspect, 24, 24]}
+         renderOrder={zIndex}
+         {...physics}
+       >
+         <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType="silk" isMacro={isMacro} />
+       </SoftBodyPlane>
+     );
+  }
+
+  // Bag and others
+  const baseWidth = item.subCategory === 'bag' ? 0.45 : 0.2;
+  const position: [number, number, number] = item.subCategory === 'bag'
+    ? [0.4, 0.7, 0.15] // Held in hand/arm area
+    : item.subCategory === 'glasses' ? [0, 1.55, 0.2]
+    : item.subCategory === 'hat' ? [0, 1.65, 0.05]
+    : [0, 1.40, 0.15]; // Default necklace
+
+  const isFabric = item.subCategory === 'bag' || item.subCategory === 'hat';
 
   return (
     <mesh position={position} renderOrder={zIndex} castShadow receiveShadow>
       <planeGeometry args={[baseWidth, baseWidth / aspect, 32, 32]} />
-      <meshStandardMaterial map={texture} transparent side={THREE.DoubleSide} roughness={0.4} metalness={item.isLuxury ? 0.5 : 0.2} alphaTest={0.5} />
+      {isFabric ? (
+          <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType="leather" isMacro={isMacro} />
+      ) : (
+          <meshStandardMaterial
+            map={texture}
+            transparent
+            side={THREE.DoubleSide}
+            roughness={item.subCategory === 'jewelry' ? 0.1 : 0.4}
+            metalness={item.isLuxury || item.subCategory === 'jewelry' ? 0.8 : 0.2}
+            alphaTest={0.5}
+          />
+      )}
     </mesh>
   );
 }
@@ -433,23 +468,25 @@ function ClothingOverlay({
   widthScale,
   shapeScale,
   clothingAnalysis,
+  isMacro
 }: {
   item: ClothingItem | null;
   widthScale: number;
   shapeScale: { shoulders: number; waist: number; hips: number };
   clothingAnalysis?: ClothingStyleAnalysis | null; 
   useMasterpiece: boolean;
+  isMacro: boolean;
 }) {
   if (!item) return null;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
 
   return (
     <Suspense fallback={null}>
-      {item.category === 'tops' && <TopClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'bottoms' && <BottomsClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'dresses' && <DressClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'outerwear' && <OuterwearClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'accessories' && <AccessoryClothing item={item} widthScale={widthScale} shapeScale={shapeScale} />}
+      {item.category === 'tops' && <TopClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacro={isMacro} />}
+      {item.category === 'bottoms' && <BottomsClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacro={isMacro} />}
+      {item.category === 'dresses' && <DressClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacro={isMacro} />}
+      {item.category === 'outerwear' && <OuterwearClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacro={isMacro} />}
+      {item.category === 'accessories' && <AccessoryClothing item={item} widthScale={widthScale} shapeScale={shapeScale} isMacro={isMacro} />}
     </Suspense>
   );
 }
@@ -532,8 +569,8 @@ function Scene({
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
             url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+              ? "https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
+              : "https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
             }
             animationUrl={animationUrl}
             scale={1.0}
@@ -561,6 +598,7 @@ function Scene({
           shapeScale={{ shoulders: 1, waist: 1, hips: 1 }}
           clothingAnalysis={clothingAnalysis}
           useMasterpiece={isMasterpieceMode}
+          isMacro={isMacroView}
         />
       </group>
     </>
@@ -607,9 +645,10 @@ interface ShareModalProps {
   brandName?: string;
   fitScore: number;
   recommendedSize?: string;
+  videoUrl?: string | null;
 }
 
-function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize }: ShareModalProps) {
+function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize, videoUrl }: ShareModalProps) {
   const [hasPublished, setHasPublished] = useState(false);
   if (!isOpen) return null;
 
@@ -633,8 +672,15 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
   return (
     <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="absolute inset-0 bg-void-black/80 backdrop-blur-sm" onClick={onClose} />
-      <motion.div className="relative glass-card p-6 max-w-sm w-full" initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}>
-        <h3 className="text-lg font-bold text-center mb-4">Share Your Fit! 📸</h3>
+      <motion.div className="relative glass-card p-6 max-w-sm w-full max-h-[90vh] overflow-y-auto" initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}>
+        <h3 className="text-lg font-bold text-center mb-4">{videoUrl ? 'Share Cinematic Masterpiece 🎬' : 'Share Your Fit! 📸'}</h3>
+
+        {videoUrl && (
+          <div className="mb-4 rounded-xl overflow-hidden border border-border-color">
+             <CinematicViewer videoUrl={videoUrl} className="w-full aspect-[9/16]" />
+          </div>
+        )}
+
         <p className="text-soft-gray text-xs mb-6 text-center">{shareText}</p>
         <div className="grid grid-cols-2 gap-3 mb-4">
           <button onClick={() => handleShare('twitter')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#1DA1F2] text-xs"><span>𝕏</span> Twitter</button>
@@ -642,7 +688,12 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
           <button onClick={() => handleShare('instagram')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-[#833AB4] to-[#F77737] text-xs"><span>📷</span> Instagram</button>
           <button onClick={() => handleShare('kakao')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#FEE500] text-black text-xs"><span>💬</span> KakaoStory</button>
         </div>
-        <div className="pt-4 border-t border-border-color">
+        <div className="pt-4 border-t border-border-color space-y-3">
+          {videoUrl && (
+             <a href={videoUrl} download="sfit-masterpiece.mp4" className="block w-full py-2 text-center rounded-lg bg-white/10 hover:bg-white/20 text-xs font-bold border border-white/10 transition-all">
+                📥 Download 4K Clip
+             </a>
+          )}
           {hasPublished ? (
             <div className="bg-cyber-lime/10 border border-cyber-lime/30 rounded-lg p-2 text-center text-[10px] text-cyber-lime font-bold">✨ Published to Community Runway!</div>
           ) : (
@@ -713,6 +764,7 @@ interface AITryOnModalProps {
   result: string | null;
   error?: string | null;
   onGenerateTryOn: () => void;
+  onShareVideo?: (url: string) => void;
 }
 
 function AITryOnModal({
@@ -724,7 +776,8 @@ function AITryOnModal({
   isLoading,
   result,
   error,
-  onGenerateTryOn
+  onGenerateTryOn,
+  onShareVideo
 }: AITryOnModalProps) {
     const [isVideoLoading, setIsVideoLoading] = useState(false);
     const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -778,7 +831,12 @@ function AITryOnModal({
                                 {result && <button onClick={() => { const a = document.createElement('a'); a.href = result; a.download = 'sfit-result.png'; a.click(); }} className="text-[9px] text-cyber-lime hover:underline">Download Image</button>}
                             </div>
                             {videoUrl ? (
-                              <CinematicViewer videoUrl={videoUrl} posterUrl={result || undefined} className="w-full aspect-[9/16] rounded-xl shadow-2xl" />
+                              <div className="space-y-4">
+                                <CinematicViewer videoUrl={videoUrl} posterUrl={result || undefined} className="w-full aspect-[9/16] rounded-xl shadow-2xl" />
+                                <button onClick={() => onShareVideo?.(videoUrl)} className="w-full py-3 bg-cyber-lime text-void-black font-bold rounded-xl shadow-lg hover:brightness-110 transition-all flex items-center justify-center gap-2 text-xs">
+                                  <span>🚀</span> Share Masterpiece
+                                </button>
+                              </div>
                             ) : result && (
                                 <div className="relative w-full aspect-[9/16] rounded-xl border-2 border-cyber-lime/20 shadow-xl overflow-hidden">
                                   <Image
@@ -833,6 +891,7 @@ export function FittingRoom() {
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
+  const [shareVideoUrl, setShareVideoUrl] = useState<string | null>(null); // State for video share
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
   const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
@@ -1128,11 +1187,12 @@ export function FittingRoom() {
 
       <ShareModal 
         isOpen={showShareModal} 
-        onClose={() => setShowShareModal(false)} 
+        onClose={() => { setShowShareModal(false); setShareVideoUrl(null); }}
         itemName={currentItem?.name} 
         brandName={currentItem?.brand} 
         fitScore={fitScore}
         recommendedSize={recommendedFit?.recommendedSize}
+        videoUrl={shareVideoUrl}
       />
       <CompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} picks={topPicks} onSelect={setSelectedItem} />
       <AITryOnModal
@@ -1147,6 +1207,11 @@ export function FittingRoom() {
         isLoading={aiTryOnLoading}
         result={aiTryOnResult}
         onGenerateTryOn={handleGenerateAITryOn}
+        onShareVideo={(url) => {
+          setShareVideoUrl(url);
+          setShowAITryOnModal(false);
+          setShowShareModal(true);
+        }}
       />
     </div>
   );

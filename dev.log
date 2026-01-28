@@ -1,0 +1,15 @@
+
+> s-fit-ai@0.1.0 dev /app
+> next dev --webpack
+
+▲ Next.js 16.1.4 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+
+✓ Starting...
+✓ Ready in 1875ms
+○ Compiling /jules-test ...
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /jules-test 200 in 26.8s (compile: 25.9s, render: 968ms)
+ GET /jules-test 200 in 115ms (compile: 13ms, render: 102ms)
+ GET /jules-test 200 in 67ms (compile: 6ms, render: 61ms)
