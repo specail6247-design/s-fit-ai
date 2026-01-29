@@ -309,14 +309,12 @@ function Mannequin({
   height = 170, opacity = 1.0 
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
   
   return (
     <group scale={[scale, scale, scale]}>
       {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
-        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-        animationUrl={animationUrl}
+        url="https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
         scale={1.0}
       />
     </group>
@@ -504,7 +502,6 @@ function Scene({
   const scale = height / 170;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
   let mannequinPosition: [number, number, number] = [0, -0.9, 0];
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
 
   const heatmapData = useMemo(() => {
     if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !selectedItem) return null;
@@ -532,10 +529,9 @@ function Scene({
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
             url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+              ? "https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
+              : "https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
             }
-            animationUrl={animationUrl}
             scale={1.0}
           />
         ) : (
@@ -581,17 +577,30 @@ function ItemCard({
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
+  const [imgError, setImgError] = useState(false);
+
   return (
     <motion.button
       onClick={onSelect}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
+      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal luxury-shimmer' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
       <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
-        <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
-        {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
-        {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
+        {!imgError && item.imageUrl ? (
+          <Image
+            src={item.imageUrl}
+            alt={item.name}
+            fill
+            className="object-cover"
+            onError={() => setImgError(true)}
+            unoptimized
+          />
+        ) : (
+          <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+        )}
+        {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center z-10"><span className="text-[0.5rem]">✦</span></div>}
+        {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black z-10">AI Pick</div>}
       </div>
       <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
       <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
