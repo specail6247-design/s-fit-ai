@@ -30,6 +30,7 @@ import { AvatarLoader } from './AvatarLoader';
 import { FabricMaterial } from './masterpiece/FabricMaterial';
 import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
+import LuxuryImageDistortion from '@/components/masterpiece/LuxuryImageDistortion';
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
 
@@ -306,7 +307,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
@@ -315,7 +316,7 @@ function Mannequin({
     <group scale={[scale, scale, scale]}>
       {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
-        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+        url="https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
         animationUrl={animationUrl}
         scale={1.0}
       />
@@ -532,8 +533,8 @@ function Scene({
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
             url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+              ? "https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
+              : "https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
             }
             animationUrl={animationUrl}
             scale={1.0}
@@ -581,15 +582,36 @@ function ItemCard({
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
+  const { setIsFitting } = useStore();
+
+  const handleSelect = () => {
+    setIsFitting(true);
+    onSelect();
+    setTimeout(() => setIsFitting(false), 800); // Cinematic delay
+  };
+
   return (
     <motion.button
-      onClick={onSelect}
+      onClick={handleSelect}
       className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
     >
       <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
-        <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+        {item.imageUrl ? (
+          <Image
+             src={item.imageUrl}
+             alt={item.name}
+             fill
+             className="object-cover editorial-filter hover:scale-110 transition-transform duration-700"
+             sizes="100px"
+          />
+        ) : (
+          <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+        )}
         {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
       </div>
@@ -830,6 +852,7 @@ function AITryOnModal({
 export function FittingRoom() {
   const {
     userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    isAnalyzing, isFitting, setIsAnalyzing
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
@@ -904,6 +927,7 @@ export function FittingRoom() {
   const handleGenerateAITryOn = useCallback(async () => {
     if (!userPhotoPreview || !currentItem?.imageUrl) return;
     setAITryOnLoading(true);
+    setIsAnalyzing(true);
     try {
       const response = await fetch('/api/try-on', {
         method: 'POST',
@@ -917,8 +941,11 @@ export function FittingRoom() {
       const data = await response.json();
       if (data.success) setAITryOnResult(data.imageUrl);
     } catch (e) { console.error(e); }
-    finally { setAITryOnLoading(false); }
-  }, [userPhotoPreview, currentItem]);
+    finally {
+      setAITryOnLoading(false);
+      setIsAnalyzing(false);
+    }
+  }, [userPhotoPreview, currentItem, setIsAnalyzing]);
 
   const resolvedHeight = userStats?.height ?? 170;
   const recommendedFit = useMemo(() => {
@@ -951,14 +978,18 @@ export function FittingRoom() {
                   style={{ marginTop: currentItem.category === 'bottoms' ? '30%' : (currentItem.category === 'dresses' ? '0%' : '-20%') }}
                 >
                   <div className="relative w-[70%] h-[50%]">
-                    <Image
-                      src={currentItem.imageUrl}
-                      alt={currentItem.name}
-                      fill
-                      className="object-contain drop-shadow-2xl"
-                      sizes="(max-width: 768px) 60vw, 280px"
-                      unoptimized
-                    />
+                    {currentItem.imageUrl ? (
+                        <LuxuryImageDistortion imageUrl={currentItem.imageUrl} className="w-full h-full object-contain drop-shadow-2xl" />
+                    ) : (
+                        <Image
+                        src={currentItem.imageUrl || '/placeholder.png'}
+                        alt={currentItem.name}
+                        fill
+                        className="object-contain drop-shadow-2xl"
+                        sizes="(max-width: 768px) 60vw, 280px"
+                        unoptimized
+                        />
+                    )}
                   </div>
                 </div>
               )}
@@ -990,6 +1021,7 @@ export function FittingRoom() {
         )}
         
         {/* Controls Overlay */}
+        <motion.div animate={{ opacity: (isAnalyzing || isFitting) ? 0 : 1 }} transition={{ duration: 0.5 }}>
         <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
             <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
@@ -1082,12 +1114,14 @@ export function FittingRoom() {
                 )}
             </AnimatePresence>
         </div>
+        </motion.div>
       </div>
 
       {/* Item Selector Footer */}
+      <motion.div animate={{ opacity: (isAnalyzing || isFitting) ? 0 : 1 }} transition={{ duration: 0.5 }}>
       <div className="p-4 border-t border-border-color bg-void-black">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-[10px] uppercase tracking-widest text-soft-gray">{selectedBrand} Collection</h3>
+          <h3 className="text-[10px] uppercase tracking-widest text-soft-gray font-display">{selectedBrand} Collection</h3>
           <button onClick={() => setShowCompareModal(true)} className="text-[10px] text-cyber-lime hover:underline">Compare Picks →</button>
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
@@ -1102,29 +1136,45 @@ export function FittingRoom() {
         </div>
       </div>
 
+      </motion.div>
+
       {/* AI Stylist & Complementary Items */}
+      <motion.div animate={{ opacity: (isAnalyzing || isFitting) ? 0 : 1 }} transition={{ duration: 0.5 }}>
       {currentItem && (
-        <div className="p-4 bg-charcoal/30 border-t border-border-color">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+          }}
+          className="p-4 bg-charcoal/30 border-t border-border-color"
+        >
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
+            <motion.div variants={{ hidden: { y: 10, opacity: 0 }, visible: { y: 0, opacity: 1 } }} className="flex items-center gap-2">
               <span className="text-xs">🎨</span>
               <span className="text-[10px] font-bold uppercase tracking-wider text-cyber-lime">AI Stylist&apos;s Choice</span>
-            </div>
-            <span className="text-[8px] text-soft-gray italic">Complete the Look</span>
+            </motion.div>
+            <motion.span variants={{ hidden: { y: 10, opacity: 0 }, visible: { y: 0, opacity: 1 } }} className="text-[8px] text-soft-gray italic">Complete the Look</motion.span>
           </div>
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {/* These would normally come from lib/visionService.getComplementaryItems */}
             {brandItems.filter(i => i.id !== currentItem.id).slice(0, 3).map((compItem) => (
-              <button key={`comp-${compItem.id}`} onClick={() => setSelectedItem(compItem)}
+              <motion.button
+                        key={`comp-${compItem.id}`}
+                        onClick={() => setSelectedItem(compItem)}
+                        variants={{ hidden: { x: 20, opacity: 0 }, visible: { x: 0, opacity: 1 } }}
                         className="flex-shrink-0 w-20 p-2 rounded-lg border border-white/5 bg-void-black/40 hover:border-cyber-lime/30 transition-all text-left">
                 <div className="aspect-square bg-charcoal/30 rounded flex items-center justify-center mb-1 text-base">{getCategoryIcon(compItem.category)}</div>
                 <p className="text-[8px] text-pure-white truncate font-medium">{compItem.name}</p>
                 <p className="text-[7px] text-soft-gray">${compItem.price}</p>
-              </button>
+              </motion.button>
             ))}
           </div>
-        </div>
+        </motion.div>
       )}
+      </motion.div>
 
       <ShareModal 
         isOpen={showShareModal} 
