@@ -306,7 +306,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
@@ -329,9 +329,10 @@ interface ClothingProps {
   shapeScale?: { shoulders: number; waist: number; hips: number };
   fabricType?: FabricType;
   useMasterpiece?: boolean;
+  isMacro?: boolean;
 }
 
-function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacro = false }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -346,12 +347,12 @@ function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist:
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacro={isMacro} />
     </SoftBodyPlane>
   );
 }
 
-function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacro = false }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -366,12 +367,12 @@ function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, wa
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacro={isMacro} />
     </SoftBodyPlane>
   );
 }
 
-function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacro = false }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -386,12 +387,12 @@ function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, wais
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacro={isMacro} />
     </SoftBodyPlane>
   );
 }
 
-function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacro = false }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -406,24 +407,56 @@ function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, 
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacro={isMacro} />
     </SoftBodyPlane>
   );
 }
 
-function AccessoryClothing({ item }: ClothingProps) {
+function AccessoryClothing({ item, isMacro = false }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
   const zIndex = layeringEngine.getItemZIndex(item);
   
-  const baseWidth = item.subCategory === 'bag' ? 0.4 : 0.2;
-  const position: [number, number, number] = item.subCategory === 'bag' ? [0.35, 0.8, 0.2] : [0, 1.45, 0.15];
+  let baseWidth = 0.2;
+  let position: [number, number, number] = [0, 0, 0];
+
+  switch(item.subCategory) {
+      case 'bag':
+          baseWidth = 0.4;
+          position = [0.35, 0.8, 0.2];
+          break;
+      case 'hat':
+          baseWidth = 0.2;
+          position = [0, 1.45, 0.15];
+          break;
+      case 'ring':
+          baseWidth = 0.05;
+          position = [0.45, 0.75, 0.2];
+          break;
+      case 'scarf':
+          baseWidth = 0.3;
+          position = [0, 1.25, 0.1];
+          break;
+      default:
+          baseWidth = 0.2;
+          position = [0, 1.45, 0.15];
+  }
+
+  // Enhanced material for macro view
+  const materialProps = isMacro ? {
+      normalScale: new THREE.Vector2(2, 2),
+      roughness: 0.3,
+      metalness: item.isLuxury ? 0.7 : 0.3
+  } : {
+      roughness: 0.4,
+      metalness: item.isLuxury ? 0.5 : 0.2
+  };
 
   return (
     <mesh position={position} renderOrder={zIndex} castShadow receiveShadow>
       <planeGeometry args={[baseWidth, baseWidth / aspect, 32, 32]} />
-      <meshStandardMaterial map={texture} transparent side={THREE.DoubleSide} roughness={0.4} metalness={item.isLuxury ? 0.5 : 0.2} alphaTest={0.5} />
+      <meshStandardMaterial map={texture} transparent side={THREE.DoubleSide} alphaTest={0.5} {...materialProps} />
     </mesh>
   );
 }
@@ -433,23 +466,25 @@ function ClothingOverlay({
   widthScale,
   shapeScale,
   clothingAnalysis,
+  isMacro = false
 }: {
   item: ClothingItem | null;
   widthScale: number;
   shapeScale: { shoulders: number; waist: number; hips: number };
   clothingAnalysis?: ClothingStyleAnalysis | null; 
   useMasterpiece: boolean;
+  isMacro?: boolean;
 }) {
   if (!item) return null;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
 
   return (
     <Suspense fallback={null}>
-      {item.category === 'tops' && <TopClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'bottoms' && <BottomsClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'dresses' && <DressClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'outerwear' && <OuterwearClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'accessories' && <AccessoryClothing item={item} widthScale={widthScale} shapeScale={shapeScale} />}
+      {item.category === 'tops' && <TopClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacro={isMacro} />}
+      {item.category === 'bottoms' && <BottomsClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacro={isMacro} />}
+      {item.category === 'dresses' && <DressClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacro={isMacro} />}
+      {item.category === 'outerwear' && <OuterwearClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacro={isMacro} />}
+      {item.category === 'accessories' && <AccessoryClothing item={item} widthScale={widthScale} shapeScale={shapeScale} isMacro={isMacro} />}
     </Suspense>
   );
 }
@@ -561,6 +596,7 @@ function Scene({
           shapeScale={{ shoulders: 1, waist: 1, hips: 1 }}
           clothingAnalysis={clothingAnalysis}
           useMasterpiece={isMasterpieceMode}
+          isMacro={isMacroView}
         />
       </group>
     </>

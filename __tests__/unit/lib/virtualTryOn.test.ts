@@ -81,17 +81,32 @@ describe('Cinematic Video Generation', () => {
   });
 
   it('should generate cinematic video successfully', async () => {
-    mockReplicateRun.mockResolvedValue('https://replicate.com/video.mp4');
+    // First call (Upscale) returns upscaled image
+    mockReplicateRun.mockResolvedValueOnce('https://replicate.com/upscaled.jpg');
+    // Second call (SVD) returns video
+    mockReplicateRun.mockResolvedValueOnce('https://replicate.com/video.mp4');
 
     const result = await generateCinematicVideo('https://replicate.com/image.jpg');
 
     expect(result.success).toBe(true);
     expect(result.videoUrl).toBe('https://replicate.com/video.mp4');
-    expect(mockReplicateRun).toHaveBeenCalledWith(
+
+    // Verify Upscale Call
+    expect(mockReplicateRun).toHaveBeenNthCalledWith(1,
+        expect.stringContaining('real-esrgan'),
+        expect.objectContaining({
+            input: expect.objectContaining({
+                image: 'https://replicate.com/image.jpg'
+            })
+        })
+    );
+
+    // Verify SVD Call (using upscaled image)
+    expect(mockReplicateRun).toHaveBeenNthCalledWith(2,
         expect.stringContaining('stable-video-diffusion'),
         expect.objectContaining({
             input: expect.objectContaining({
-                input_image: 'https://replicate.com/image.jpg'
+                input_image: 'https://replicate.com/upscaled.jpg'
             })
         })
     );

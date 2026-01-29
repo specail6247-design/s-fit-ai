@@ -15,6 +15,7 @@ export const LAYER_Z_INDEX = {
   OUTERWEAR: 30,
   JEWELRY_NECK: 35, // Default over top
   JEWELRY_WRIST: 35,
+  RINGS: 36,
   SCARF: 40,
   HAT: 45,
   BAG: 50, // Bag body usually outermost
@@ -68,6 +69,7 @@ export class LayeringEngine {
       case 'hat': return LAYER_Z_INDEX.HAT;
       case 'bag': return LAYER_Z_INDEX.BAG;
       case 'jewelry': return LAYER_Z_INDEX.JEWELRY_NECK;
+      case 'ring': return LAYER_Z_INDEX.RINGS;
       case 'scarf': return LAYER_Z_INDEX.SCARF;
       case 'glasses': return LAYER_Z_INDEX.GLASSES;
       default: return 50;

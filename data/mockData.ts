@@ -5,9 +5,9 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Hermes' | 'Gentle Monster' | 'Cartier';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
-  subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
+  subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses' | 'ring';
   zIndex?: number;
   price: number;
   currency: string;
@@ -89,6 +89,27 @@ export const brands: Brand[] = [
     id: 'tiffany',
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'hermes',
+    name: 'Hermes',
+    logo: 'https://placehold.co/100x100?text=HERMES',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'gentlemonste',
+    name: 'Gentle Monster',
+    logo: 'https://placehold.co/100x100?text=GM',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'cartier',
+    name: 'Cartier',
+    logo: 'https://placehold.co/100x100?text=CARTIER',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -534,6 +555,70 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+  },
+  {
+    id: 'hermes-bag-001',
+    name: 'Birkin 30',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'bag',
+    zIndex: 50,
+    price: 24000.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x400/orange/white?text=Birkin',
+    textureUrl: 'https://placehold.co/400x400/orange/white?text=Birkin',
+    isLuxury: true,
+    sizes: ['30cm'],
+    colors: ['Orange', 'Black', 'Gold'],
+    description: 'The ultimate symbol of luxury, crafted from Togo calfskin.',
+  },
+  {
+    id: 'hermes-scarf-001',
+    name: 'Silk Twill Scarf 90',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'scarf',
+    zIndex: 40,
+    price: 550.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x400/FFA500/white?text=Scarf',
+    textureUrl: 'https://placehold.co/400x400/FFA500/white?text=Scarf',
+    isLuxury: true,
+    sizes: ['90x90cm'],
+    colors: ['Multicolor'],
+    description: 'Iconic silk scarf with hand-rolled edges.',
+  },
+  {
+    id: 'gm-glasses-001',
+    name: 'Lilit 01',
+    brand: 'Gentle Monster',
+    category: 'accessories',
+    subCategory: 'glasses',
+    zIndex: 55,
+    price: 280.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x400/black/white?text=GM+Glasses',
+    textureUrl: 'https://placehold.co/400x400/black/white?text=GM+Glasses',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Black'],
+    description: 'Square acetate frame with soft curves and signature metal details.',
+  },
+  {
+    id: 'cartier-ring-001',
+    name: 'Trinity Ring',
+    brand: 'Cartier',
+    category: 'accessories',
+    subCategory: 'ring',
+    zIndex: 36,
+    price: 1960.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x400/gold/white?text=Ring',
+    textureUrl: 'https://placehold.co/400x400/gold/white?text=Ring',
+    isLuxury: true,
+    sizes: ['52', '54', '56'],
+    colors: ['Gold/Rose/White'],
+    description: 'Three interlaced bands of pink, yellow, and white gold.',
   },
 ];
 
