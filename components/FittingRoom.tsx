@@ -23,7 +23,6 @@ import {
   generateFitHeatmap,
   ClothingStyleAnalysis 
 } from '@/lib/visionService';
-import { generateStoryImage } from '@/lib/shareUtils';
 import * as THREE from 'three';
 import { AvatarLoader } from './AvatarLoader';
 
@@ -307,7 +306,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170
+  height = 170, opacity = 1.0
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
@@ -794,34 +793,16 @@ function AITryOnModal({
                                 </div>
                             )}
                             {result && !videoUrl && (
-                                <div className="grid grid-cols-2 gap-2">
-                                    <button onClick={async () => {
-                                        setIsVideoLoading(true);
-                                        try {
-                                            const res = await fetch('/api/cinematic-try-on', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({imageUrl: result}) });
-                                            const data = await res.json();
-                                            if(data.success) setVideoUrl(data.videoUrl);
-                                        } finally { setIsVideoLoading(false); }
-                                    }} disabled={isVideoLoading} className="py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-xs">
-                                        {isVideoLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : '🎬 Cinematic Motion'}
-                                    </button>
-
-                                    <button onClick={async () => {
-                                        if(!result) return;
-                                        try {
-                                          const storyImage = await generateStoryImage(result);
-                                          const a = document.createElement('a');
-                                          a.href = storyImage;
-                                          a.download = 'sfit-story.png';
-                                          a.click();
-                                        } catch (e) {
-                                          console.error(e);
-                                          alert('Failed to generate story image');
-                                        }
-                                    }} className="py-4 bg-gradient-to-r from-pink-500 to-orange-500 text-white font-bold rounded-xl shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center gap-2 text-xs">
-                                        <span>📸</span> Share to Story
-                                    </button>
-                                </div>
+                                <button onClick={async () => {
+                                    setIsVideoLoading(true);
+                                    try {
+                                        const res = await fetch('/api/cinematic-try-on', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({imageUrl: result}) });
+                                        const data = await res.json();
+                                        if(data.success) setVideoUrl(data.videoUrl);
+                                    } finally { setIsVideoLoading(false); }
+                                }} disabled={isVideoLoading} className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-xs">
+                                    {isVideoLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : '🎬 Generate Cinematic Motion'}
+                                </button>
                             )}
                         </div>
                     )}
