@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
@@ -96,8 +97,8 @@ export default function RealLifeFitting() {
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group focus-within:ring-2 focus-within:ring-[#007AFF] focus-within:ring-offset-2 focus-within:ring-offset-black">
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="sr-only" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} alt="Uploaded user photo" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                <div className="relative w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {userImage ? <Image src={userImage} alt="Uploaded user photo" fill className="object-cover" unoptimized /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,8 +114,8 @@ export default function RealLifeFitting() {
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group focus-within:ring-2 focus-within:ring-[#007AFF] focus-within:ring-offset-2 focus-within:ring-offset-black">
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="sr-only" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} alt="Selected garment" className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                <div className="relative w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {garmentImage ? <Image src={garmentImage} alt="Selected garment" fill className="object-cover" unoptimized /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
