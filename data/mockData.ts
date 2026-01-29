@@ -5,7 +5,7 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Hermes';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -89,13 +89,6 @@ export const brands: Brand[] = [
     id: 'tiffany',
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
-    isLuxury: true,
-    tier: 'luxury',
-  },
-  {
-    id: 'hermes',
-    name: 'HERMÈS',
-    logo: 'https://placehold.co/100x100?text=HERMES',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -541,88 +534,6 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
-  },
-
-  // HERMES - Luxury (5 items)
-  {
-    id: 'hermes-001',
-    name: 'Birkin 25 Togo',
-    brand: 'Hermes',
-    category: 'accessories',
-    subCategory: 'bag',
-    zIndex: 50,
-    price: 28500.00,
-    currency: 'USD',
-    imageUrl: '/accessories/hermes_birkin.png',
-    textureUrl: '/accessories/hermes_birkin.png',
-    isLuxury: true,
-    sizes: ['25cm'],
-    colors: ['Gold', 'Black', 'Etoupe'],
-    description: 'The iconic Birkin bag in Togo calfskin with gold-plated hardware',
-  },
-  {
-    id: 'hermes-002',
-    name: 'Oran Sandal',
-    brand: 'Hermes',
-    category: 'accessories',
-    subCategory: 'jewelry', // Using jewelry for now as shoes category is missing
-    zIndex: 20,
-    price: 760.00,
-    currency: 'USD',
-    imageUrl: '/clothing/hermes_oran.png',
-    textureUrl: '/clothing/hermes_oran.png',
-    isLuxury: true,
-    sizes: ['36', '37', '38', '39', '40'],
-    colors: ['Gold', 'Black', 'White'],
-    description: 'Iconic leather sandal with "H" cut-out',
-  },
-  {
-    id: 'hermes-003',
-    name: 'Silk Twill Scarf 90',
-    brand: 'Hermes',
-    category: 'accessories',
-    subCategory: 'scarf',
-    zIndex: 40,
-    price: 550.00,
-    currency: 'USD',
-    imageUrl: '/accessories/hermes_scarf.png',
-    textureUrl: '/accessories/hermes_scarf.png',
-    isLuxury: true,
-    sizes: ['90x90cm'],
-    colors: ['Orange', 'Blue', 'Pink'],
-    description: 'Hand-rolled 100% silk twill scarf with signature print',
-  },
-  {
-    id: 'hermes-004',
-    name: 'Kelly Belt',
-    brand: 'Hermes',
-    category: 'accessories',
-    subCategory: 'jewelry', // Using jewelry as fallback
-    zIndex: 30,
-    price: 990.00,
-    currency: 'USD',
-    imageUrl: '/accessories/hermes_belt.png',
-    textureUrl: '/accessories/hermes_belt.png',
-    isLuxury: true,
-    sizes: ['One Size'],
-    colors: ['Black', 'Gold', 'Etoupe'],
-    description: 'Epsom calfskin belt with rose gold plated Kelly buckle',
-  },
-  {
-    id: 'hermes-005',
-    name: 'Clic H Bracelet',
-    brand: 'Hermes',
-    category: 'accessories',
-    subCategory: 'jewelry',
-    zIndex: 35,
-    price: 740.00,
-    currency: 'USD',
-    imageUrl: '/accessories/hermes_bracelet.png',
-    textureUrl: '/accessories/hermes_bracelet.png',
-    isLuxury: true,
-    sizes: ['PM', 'GM'],
-    colors: ['Black', 'White', 'Marron Glacé'],
-    description: 'Enamel bracelet with gold plated hardware',
   },
 ];
 
