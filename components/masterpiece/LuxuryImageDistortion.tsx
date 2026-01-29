@@ -77,7 +77,7 @@ function DistortionPlane({ imageUrl }: { imageUrl: string }) {
 
   useFrame((state) => {
     if (meshRef.current) {
-       // @ts-ignore
+       // @ts-expect-error - Uniforms are added dynamically to the shader material
        meshRef.current.material.uniforms.uTime.value = state.clock.getElapsedTime() * 0.5;
     }
   });
