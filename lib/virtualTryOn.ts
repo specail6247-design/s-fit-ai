@@ -214,11 +214,24 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
 
   try {
     console.log("Starting Cinematic Video Generation (SVD)...");
+
+    // Step 1: Upscale Image (Texture Sharpness)
+    let processedImageUrl = imageUrl;
+    const upscaledUrl = await upscaleImage(imageUrl);
+
+    if (upscaledUrl) {
+      console.log("Upscaling successful. Using high-fidelity image for video generation.");
+      processedImageUrl = upscaledUrl;
+    } else {
+      console.warn("Upscaling failed or returned null. Proceeding with original image.");
+    }
+
+    // Step 2: Generate Video (Motion Synthesis)
     const output = await replicate.run(
       SVD_MODEL,
       {
         input: {
-          input_image: imageUrl,
+          input_image: processedImageUrl,
           video_length: "25_frames_with_svd_xt",
           sizing_strategy: "maintain_aspect_ratio",
           motion_bucket_id: 127,
