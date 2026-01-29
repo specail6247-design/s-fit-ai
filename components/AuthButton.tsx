@@ -166,10 +166,10 @@ export function AuthButton() {
               </div>
 
               <div className="grid grid-cols-4 gap-2">
-                {['google', 'kakao', 'apple', 'discord'].map((provider) => (
+                {(['google', 'kakao', 'apple', 'discord'] as const).map((provider) => (
                     <button
                         key={provider}
-                        onClick={() => handleSocialLogin(provider as any)}
+                        onClick={() => handleSocialLogin(provider)}
                         className="aspect-square flex items-center justify-center bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
                         title={provider}
                     >

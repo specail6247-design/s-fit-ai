@@ -25,8 +25,12 @@ export const Drawer: React.FC<DrawerProps> = ({
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    return () => setMounted(false);
+    // Delay setting mounted to avoid synchronous state update warning
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => {
+      clearTimeout(timer);
+      setMounted(false);
+    };
   }, []);
 
   if (!mounted) return null;
