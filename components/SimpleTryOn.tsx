@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 const SFitAIProject = () => {
   const [userImage, setUserImage] = useState<string | null>(null);
@@ -64,7 +65,7 @@ const SFitAIProject = () => {
             <h3>User Photo</h3>
             <div style={styles.uploadBox}>
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} />
-              {userImage && <img src={userImage} style={styles.preview} alt="User" />}
+              {userImage && <Image src={userImage} style={styles.preview} alt="User" width={400} height={200} unoptimized />}
             </div>
           </div>
 
@@ -72,7 +73,7 @@ const SFitAIProject = () => {
             <h3>Garment</h3>
             <div style={styles.uploadBox}>
               <input type="file" onChange={(e) => handleFileUpload(e, setClothingImage)} />
-              {clothingImage && <img src={clothingImage} style={styles.preview} alt="Cloth" />}
+              {clothingImage && <Image src={clothingImage} style={styles.preview} alt="Cloth" width={400} height={200} unoptimized />}
             </div>
           </div>
         </div>
@@ -90,7 +91,7 @@ const SFitAIProject = () => {
         {finalResult && (
           <div style={styles.resultContainer}>
             <h2 style={styles.resultTitle}>Fitting Result</h2>
-            <img src={finalResult} style={styles.finalImg} alt="Result" />
+            <Image src={finalResult} style={styles.finalImg} alt="Result" width={600} height={800} unoptimized />
           </div>
         )}
       </main>
