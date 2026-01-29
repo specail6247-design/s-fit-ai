@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { generateStoryImage } from '@/lib/shareUtils';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -158,6 +159,15 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Data Safety Badge */}
+          <div className="mt-6 flex items-center gap-3 p-3 rounded-lg bg-green-900/20 border border-green-500/30">
+            <div className="text-green-500 text-xl">🛡️</div>
+            <div>
+              <p className="text-[10px] font-bold text-green-400 uppercase tracking-wide">Data Safety Guaranteed</p>
+              <p className="text-[9px] text-gray-400">Photos are processed securely and not shared.</p>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -205,6 +215,22 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+              <button
+                onClick={async () => {
+                   if(!resultImage) return;
+                   try {
+                     const storyImage = await generateStoryImage(resultImage);
+                     const a = document.createElement('a');
+                     a.href = storyImage;
+                     a.download = 'sfit-story.png';
+                     a.click();
+                   } catch(e) { console.error(e); alert('Error generating image'); }
+                }}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-pink-500 to-orange-500 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-xl flex items-center gap-2 hover:scale-105 transition-transform"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
