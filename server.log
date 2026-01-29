@@ -12,7 +12,17 @@ This information is used to shape Next.js' roadmap and prioritize features.
 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
 https://nextjs.org/telemetry
 
-✓ Ready in 1780ms
-○ Compiling /cinematic-demo ...
+✓ Ready in 2.6s
+○ Compiling / ...
 ⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
- GET /cinematic-demo 200 in 12.4s (compile: 12.0s, render: 401ms)
+ GET / 200 in 25.4s (compile: 25.0s, render: 427ms)
+○ Compiling /luxury/fitting ...
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET / 200 in 56ms (compile: 22ms, render: 34ms)
+ GET /luxury/fitting 200 in 3.9s (compile: 3.6s, render: 332ms)
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET / 200 in 325ms (compile: 26ms, render: 298ms)
+ GET /luxury/fitting 200 in 106ms (compile: 6ms, render: 100ms)
+ GET /luxury/fitting 200 in 72ms (compile: 6ms, render: 66ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /luxury/fitting 200 in 1377ms (compile: 569ms, render: 808ms)
