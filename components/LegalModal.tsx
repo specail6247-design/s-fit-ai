@@ -118,17 +118,17 @@ export function LegalModal({ isOpen, onClose, initialTab = 'privacy' }: LegalMod
 
                 <section>
                   <h4 className="font-bold text-white mb-2">2. Use License</h4>
-                  <p>Permission is granted to temporarily download one copy of the materials (information or software) on S_FIT AI's website for personal, non-commercial transitory viewing only.</p>
+                  <p>Permission is granted to temporarily download one copy of the materials (information or software) on S_FIT AI&apos;s website for personal, non-commercial transitory viewing only.</p>
                 </section>
 
                 <section>
                   <h4 className="font-bold text-white mb-2">3. User Content</h4>
-                  <p>Our Service allows you to upload, link, store, share and otherwise make available certain information, text, graphics, videos, or other material ("Content"). You are responsible for the Content that you post to the Service, including its legality, reliability, and appropriateness.</p>
+                  <p>Our Service allows you to upload, link, store, share and otherwise make available certain information, text, graphics, videos, or other material (&quot;Content&quot;). You are responsible for the Content that you post to the Service, including its legality, reliability, and appropriateness.</p>
                 </section>
 
                 <section>
                   <h4 className="font-bold text-white mb-2">4. Disclaimer</h4>
-                  <p>The materials on S_FIT AI's website are provided on an 'as is' basis. S_FIT AI makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.</p>
+                  <p>The materials on S_FIT AI&apos;s website are provided on an &apos;as is&apos; basis. S_FIT AI makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.</p>
                 </section>
               </div>
             )}
