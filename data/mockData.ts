@@ -5,7 +5,7 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Hermes';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -89,6 +89,13 @@ export const brands: Brand[] = [
     id: 'tiffany',
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'hermes',
+    name: 'Hermes',
+    logo: 'https://placehold.co/100x100?text=HERMES',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -534,6 +541,84 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+  },
+
+  // HERMES - Luxury (5 items)
+  {
+    id: 'hermes-bag-001',
+    name: 'Birkin 30 Bag',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'bag',
+    zIndex: 50,
+    price: 25000.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x600/orange/white?text=Hermes+Birkin',
+    textureUrl: 'https://placehold.co/400x600/orange/white?text=Hermes+Birkin',
+    isLuxury: true,
+    sizes: ['30cm'],
+    colors: ['Gold', 'Black', 'Etoupe'],
+    description: 'The iconic Birkin bag in Togo leather with gold hardware',
+  },
+  {
+    id: 'hermes-shoes-001',
+    name: 'Oran Sandals',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'bag', // Using bag as placeholder for shoes/sandals
+    zIndex: 30,
+    price: 760.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x600/orange/white?text=Hermes+Oran',
+    textureUrl: 'https://placehold.co/400x600/orange/white?text=Hermes+Oran',
+    isLuxury: true,
+    sizes: ['37', '38', '39'],
+    colors: ['Gold', 'Black', 'White'],
+    description: 'Iconic leather sandals with H cut-out',
+  },
+  {
+    id: 'hermes-scarf-001',
+    name: 'Silk Scarf 90',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'scarf',
+    zIndex: 40,
+    price: 550.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x600/orange/white?text=Hermes+Scarf',
+    textureUrl: 'https://placehold.co/400x600/orange/white?text=Hermes+Scarf',
+    isLuxury: true,
+    sizes: ['90x90cm'],
+    colors: ['Multicolor'],
+    description: 'Hand-rolled silk twill scarf',
+  },
+  {
+    id: 'hermes-coat-001',
+    name: 'Double-Face Cashmere Coat',
+    brand: 'Hermes',
+    category: 'outerwear',
+    price: 6800.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x600/orange/white?text=Hermes+Coat',
+    textureUrl: 'https://placehold.co/400x600/orange/white?text=Hermes+Coat',
+    isLuxury: true,
+    sizes: ['34', '36', '38', '40'],
+    colors: ['Beige', 'Black'],
+    description: 'Elegant double-face cashmere coat with leather details',
+  },
+  {
+    id: 'hermes-dress-001',
+    name: 'Silk Twill Dress',
+    brand: 'Hermes',
+    category: 'dresses',
+    price: 3200.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x600/orange/white?text=Hermes+Dress',
+    textureUrl: 'https://placehold.co/400x600/orange/white?text=Hermes+Dress',
+    isLuxury: true,
+    sizes: ['34', '36', '38', '40'],
+    colors: ['Blue', 'Red'],
+    description: 'Printed silk twill dress with belt',
   },
 ];
 
