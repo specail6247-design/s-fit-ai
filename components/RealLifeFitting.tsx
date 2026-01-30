@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { useStore } from '@/store/useStore';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -13,9 +11,9 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
-  const { isAnalyzing, setIsAnalyzing } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
 
@@ -31,7 +29,7 @@ export default function RealLifeFitting() {
   const handleTryOn = async () => {
     if (!userImage || !garmentImage) return alert("Please upload both User Photo and Garment.");
     
-    setIsAnalyzing(true);
+    setIsProcessing(true);
     setProgress(0);
 
     // Simulate progress bar
@@ -69,7 +67,7 @@ export default function RealLifeFitting() {
       console.log("Using demo mode fallback");
       setResultImage("https://pub-83c5db439b40468498f97946200806f7.r2.dev/mock-result-sfit.png"); // Fallback
     } finally {
-      setIsAnalyzing(false);
+      setIsProcessing(false);
     }
   };
 
@@ -77,20 +75,12 @@ export default function RealLifeFitting() {
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
       {/* LEFT PANEL: CONTROLS */}
-      <motion.div
-        className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative"
-        animate={{
-          opacity: isAnalyzing ? 0 : 1,
-          x: isAnalyzing ? -50 : 0,
-          pointerEvents: isAnalyzing ? 'none' : 'auto'
-        }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      >
+      <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
         <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-display font-black tracking-tighter italic">
+          <h1 className="text-4xl font-black tracking-tighter italic">
             S_FIT <span className="text-[#007AFF]">NEO</span>
           </h1>
           <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
@@ -105,8 +95,8 @@ export default function RealLifeFitting() {
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10 relative">
-                  {userImage ? <Image src={userImage} alt="User photo" fill className="object-cover" unoptimized /> : <span className="text-2xl">👤</span>}
+                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -122,8 +112,8 @@ export default function RealLifeFitting() {
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10 relative">
-                  {garmentImage ? <Image src={garmentImage} alt="Garment photo" fill className="object-cover" unoptimized /> : <span className="text-2xl">👕</span>}
+                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -136,7 +126,7 @@ export default function RealLifeFitting() {
 
         {/* Action Button */}
         <div className="mt-8 relative z-10">
-          {isAnalyzing ? (
+          {isProcessing ? (
             <div className="space-y-2">
               <div className="flex justify-between text-xs text-[#007AFF] font-mono">
                 <span>PROCESSING DATA...</span>
@@ -169,7 +159,7 @@ export default function RealLifeFitting() {
           </div>
 
         </div>
-      </motion.div>
+      </div>
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
@@ -198,17 +188,14 @@ export default function RealLifeFitting() {
         </div>
 
         {/* Result Overlay (If success) */}
-        {resultImage && !isAnalyzing && (
+        {resultImage && !isProcessing && (
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
-              {/* Note: Standard img used here for dynamic result sizing as aspect ratio is unknown, or wrap in div with relative */}
-              <div className="relative h-[70vh] w-auto">
-                 <Image src={resultImage} alt="Virtual Try-On Result" height={800} width={600} className="h-full w-auto rounded-xl object-contain shadow-2xl" unoptimized />
-              </div>
+              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"

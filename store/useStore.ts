@@ -109,10 +109,6 @@ interface StoreState {
   // UI State
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
-  isAnalyzing: boolean;
-  setIsAnalyzing: (status: boolean) => void;
-  isFitting: boolean;
-  setIsFitting: (status: boolean) => void;
 
   // Reset
   resetSession: () => void;
@@ -238,10 +234,6 @@ export const useStore = create<StoreState>()(
       // UI State
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
-      isAnalyzing: false,
-      setIsAnalyzing: (status) => set({ isAnalyzing: status }),
-      isFitting: false,
-      setIsFitting: (status) => set({ isFitting: status }),
 
       // Reset Session
       resetSession: () =>

@@ -29,7 +29,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <motion.img
           src={imageUrl}
           alt={name}
-          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 editorial-filter"
+          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
         />
 
         {/* Overlay Actions */}
