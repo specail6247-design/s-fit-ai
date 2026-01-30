@@ -23,7 +23,9 @@ test.describe('Home Page', () => {
 
     // Check continue button
     const continueBtn = page.getByRole('button', { name: /Continue/i });
-    await expect(continueBtn).toBeVisible();
+    // There are 3 modes, so we expect 3 continue buttons
+    await expect(continueBtn).toHaveCount(3);
+    await expect(continueBtn.first()).toBeVisible();
   });
 
   test('should match visual snapshot', async ({ page }) => {

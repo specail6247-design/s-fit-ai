@@ -1,7 +1,7 @@
 'use client';
 
-import RealLifeFitting from '@/components/RealLifeFitting';
+import { LandingPage } from '@/components/LandingPage';
 
 export default function Home() {
-  return <RealLifeFitting />;
+  return <LandingPage />;
 }
