@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -11,9 +12,9 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const { isAnalyzing, setIsAnalyzing } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
 
@@ -29,7 +30,7 @@ export default function RealLifeFitting() {
   const handleTryOn = async () => {
     if (!userImage || !garmentImage) return alert("Please upload both User Photo and Garment.");
     
-    setIsProcessing(true);
+    setIsAnalyzing(true);
     setProgress(0);
 
     // Simulate progress bar
@@ -67,7 +68,7 @@ export default function RealLifeFitting() {
       console.log("Using demo mode fallback");
       setResultImage("https://pub-83c5db439b40468498f97946200806f7.r2.dev/mock-result-sfit.png"); // Fallback
     } finally {
-      setIsProcessing(false);
+      setIsAnalyzing(false);
     }
   };
 
@@ -75,12 +76,20 @@ export default function RealLifeFitting() {
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
       {/* LEFT PANEL: CONTROLS */}
-      <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
+      <motion.div
+        className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative"
+        animate={{
+          opacity: isAnalyzing ? 0 : 1,
+          x: isAnalyzing ? -50 : 0,
+          pointerEvents: isAnalyzing ? 'none' : 'auto'
+        }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      >
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
         <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
+          <h1 className="text-4xl font-display font-black tracking-tighter italic">
             S_FIT <span className="text-[#007AFF]">NEO</span>
           </h1>
           <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
@@ -126,7 +135,7 @@ export default function RealLifeFitting() {
 
         {/* Action Button */}
         <div className="mt-8 relative z-10">
-          {isProcessing ? (
+          {isAnalyzing ? (
             <div className="space-y-2">
               <div className="flex justify-between text-xs text-[#007AFF] font-mono">
                 <span>PROCESSING DATA...</span>
@@ -159,7 +168,7 @@ export default function RealLifeFitting() {
           </div>
 
         </div>
-      </div>
+      </motion.div>
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
@@ -188,7 +197,7 @@ export default function RealLifeFitting() {
         </div>
 
         {/* Result Overlay (If success) */}
-        {resultImage && !isProcessing && (
+        {resultImage && !isAnalyzing && (
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
