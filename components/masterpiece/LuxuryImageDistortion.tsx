@@ -79,16 +79,21 @@ const ImagePlane: React.FC<ImagePlaneProps> = ({ imageUrl }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const texture = useTexture(imageUrl);
 
-  // Configure texture encoding for consistency
-  texture.colorSpace = THREE.SRGBColorSpace;
+  // Clone texture to avoid immutability violation of the cached texture from useTexture
+  const clonedTexture = useMemo(() => {
+    const clone = texture.clone();
+    clone.colorSpace = THREE.SRGBColorSpace;
+    clone.needsUpdate = true;
+    return clone;
+  }, [texture]);
 
   const uniforms = useMemo(
     () => ({
-      uTexture: { value: texture },
+      uTexture: { value: clonedTexture },
       uTime: { value: 0 },
       uHover: { value: 0 },
     }),
-    [texture]
+    [clonedTexture]
   );
 
   useFrame((state) => {
