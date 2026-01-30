@@ -1,0 +1,51 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - banner [ref=e5]:
+        - heading "S_FIT NEO" [level=1] [ref=e6]
+        - paragraph [ref=e7]: Professional Virtual Fitting
+      - generic [ref=e8]:
+        - generic [ref=e9]:
+          - text: 01. Identification
+          - generic [ref=e11] [cursor=pointer]:
+            - img [ref=e13]
+            - generic [ref=e14]:
+              - generic [ref=e15]: Upload User Photo
+              - generic [ref=e16]: Supports JPG, PNG (Max 5MB)
+        - generic [ref=e17]:
+          - text: 02. Target Garment
+          - generic [ref=e19] [cursor=pointer]:
+            - img [ref=e21]
+            - generic [ref=e22]:
+              - generic [ref=e23]: Select Garment
+              - generic [ref=e24]: Front view preferred
+      - generic [ref=e25]:
+        - button "⚡️ TRY IT ON" [ref=e26]:
+          - generic [ref=e27]: ⚡️
+          - text: TRY IT ON
+        - generic [ref=e28]:
+          - link "SPA Line" [ref=e29]:
+            - /url: /spa
+          - link "Luxury Line" [ref=e30]:
+            - /url: /luxury
+    - generic [ref=e32]:
+      - generic:
+        - img "Result"
+        - button "✕ Close" [ref=e33]
+        - generic [ref=e34]: AI GENERATED_
+  - generic [ref=e39] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e40]:
+      - img [ref=e41]
+    - generic [ref=e46]:
+      - button "Open issues overlay" [ref=e47]:
+        - generic [ref=e48]:
+          - generic [ref=e49]: "0"
+          - generic [ref=e50]: "1"
+        - generic [ref=e51]: Issue
+      - button "Collapse issues badge" [ref=e52]:
+        - img [ref=e53]
+  - alert [ref=e55]
+```

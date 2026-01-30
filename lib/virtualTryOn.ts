@@ -3,6 +3,7 @@
 
 import Replicate from "replicate";
 import type { SegmentationResult } from './segmentation';
+import { generateRunwayVideo as generateRunwayGen3 } from './runway';
 
 export interface TryOnRequest {
   userPhoto: string;      // URL or data URI
@@ -196,8 +197,50 @@ export async function upscaleImage(imageUrl: string): Promise<string | null> {
   }
 }
 
+// Client-side helper to call Python Service
+export async function processTextureWithPython(imageUrl: string): Promise<string | null> {
+  try {
+    // Determine if we are on server or client.
+    // This function might be called from an API route (server) or component (client).
+    // If on server, we can't use relative URL '/api/...'.
+    // But since this is likely called from the client component (AITryOnModal), relative is fine.
+    // If called from API route, we should use the python service url directly.
+
+    // However, keeping it simple: this helper is for the Client Component to enhance the result.
+    if (typeof window === 'undefined') {
+       // Server side usage - not implemented yet for this helper
+       return null;
+    }
+
+    const res = await fetch('/api/enhance-texture', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageUrl })
+    });
+
+    const data = await res.json();
+    if (data.success && data.image_base64) {
+      return data.image_base64;
+    }
+    return null;
+  } catch (e) {
+    console.error("Texture processing error:", e);
+    return null;
+  }
+}
+
 // Unified Video Generation (Runway/SVD)
 export async function generateCinematicVideo(imageUrl: string): Promise<CinematicVideoResult> {
+  // 1. Try Runway Gen-3 API First
+  console.log("Attempting Runway Gen-3 generation...");
+  const runwayUrl = await generateRunwayGen3(imageUrl);
+  if (runwayUrl) {
+    console.log("Generated video with Runway Gen-3");
+    return { success: true, videoUrl: runwayUrl };
+  }
+
+  // 2. Fallback to SVD (Replicate)
+  console.log("Runway unavailable/failed. Falling back to SVD...");
   const apiToken = process.env.REPLICATE_API_TOKEN;
 
   if (!apiToken) {

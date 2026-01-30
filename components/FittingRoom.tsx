@@ -801,7 +801,7 @@ function AITryOnModal({
                                         if(data.success) setVideoUrl(data.videoUrl);
                                     } finally { setIsVideoLoading(false); }
                                 }} disabled={isVideoLoading} className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-xs">
-                                    {isVideoLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : '🎬 Generate Cinematic Motion'}
+                                    {isVideoLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : '🎬 Generate 4K Cinematic Video (Runway Gen-3)'}
                                 </button>
                             )}
                         </div>
@@ -915,7 +915,18 @@ export function FittingRoom() {
         })
       });
       const data = await response.json();
-      if (data.success) setAITryOnResult(data.imageUrl);
+      if (data.success) {
+        let finalImage = data.imageUrl;
+        try {
+           const { processTextureWithPython } = await import('@/lib/virtualTryOn');
+           const enhanced = await processTextureWithPython(finalImage);
+           if (enhanced) {
+              console.log("Masterpiece Texture Engine: Enhancement Successful");
+              finalImage = enhanced;
+           }
+        } catch (err) { console.warn("Texture enhancement skipped:", err); }
+        setAITryOnResult(finalImage);
+      }
     } catch (e) { console.error(e); }
     finally { setAITryOnLoading(false); }
   }, [userPhotoPreview, currentItem]);
