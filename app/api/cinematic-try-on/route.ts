@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateCinematicVideo } from '@/lib/virtualTryOn';
+import { generateRunwayVideo } from '@/lib/runway';
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,7 +12,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await generateCinematicVideo(imageUrl);
+    // Orchestration: Tries Runway Gen-3 first, falls back to SVD
+    const result = await generateRunwayVideo(imageUrl);
 
     if (result.success) {
       return NextResponse.json(result);
