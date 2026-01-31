@@ -107,8 +107,12 @@ let Ammo: AmmoModule | null = null;
 const initPhysics = async () => {
   if (Ammo) return Ammo;
   const ammoImport = await import('ammo.js');
-  const loadAmmo = ammoImport.default as AmmoLoader | undefined;
-  if (!loadAmmo) return null;
+  // Robust import for different bundler environments
+  const loadAmmo = (typeof ammoImport.default === 'function' ? ammoImport.default : ammoImport) as unknown as AmmoLoader;
+  if (typeof loadAmmo !== 'function') {
+      console.warn("Ammo.js loader not found", ammoImport);
+      return null;
+  }
   Ammo = await loadAmmo();
   return Ammo;
 };
@@ -276,13 +280,6 @@ function LoadingSpinner() {
   );
 }
 
-const colorMap: Record<string, string> = {
-  'Black': '#1a1a1a', 'White': '#f5f5f5', 'Navy': '#1a2744', 'Beige': '#d4c4a8', 
-  'Camel': '#c19a6b', 'Gray': '#6b6b6b', 'Cream': '#fffdd0', 'Brown': '#5c4033', 
-  'Red': '#b22222', 'Blue': '#2563eb', 'Pink': '#ec4899', 'Green': '#16a34a',
-  'Gold': '#ffd700', 'Silver': '#c0c0c0'
-};
-
 function mapToFabricType(analysisType?: string): FabricType {
   const type = analysisType?.toLowerCase() || 'cotton';
   if (type.includes('silk')) return 'silk';
@@ -309,13 +306,13 @@ function Mannequin({
   height = 170, opacity = 1.0 
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  const animationUrl = "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/models/gltf/RobotExpressive/RobotExpressive.glb";
   
   return (
     <group scale={[scale, scale, scale]}>
       {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
-        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+        url="https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
         animationUrl={animationUrl}
         scale={1.0}
       />
@@ -504,7 +501,7 @@ function Scene({
   const scale = height / 170;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
   let mannequinPosition: [number, number, number] = [0, -0.9, 0];
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  const animationUrl = "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/models/gltf/RobotExpressive/RobotExpressive.glb";
 
   const heatmapData = useMemo(() => {
     if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !selectedItem) return null;
@@ -532,8 +529,8 @@ function Scene({
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
             url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+              ? "https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
+              : "https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
             }
             animationUrl={animationUrl}
             scale={1.0}
@@ -580,22 +577,35 @@ interface ItemCardProps {
 function ItemCard({
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
-  const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
+  const [imageError, setImageError] = useState(false);
+
   return (
     <motion.button
       onClick={onSelect}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
+      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start relative overflow-hidden ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
-      <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
-        <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+      {isSelected && <div className="absolute inset-0 luxury-shimmer pointer-events-none z-0" />}
+      <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden bg-white/5 z-10">
+        {!imageError ? (
+          <Image
+            src={item.imageUrl}
+            alt={item.name}
+            fill
+            className="object-contain p-1"
+            onError={() => setImageError(true)}
+            unoptimized
+          />
+        ) : (
+          <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+        )}
         {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
       </div>
-      <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
-      <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
-      <p className="text-[0.55rem] text-cyber-lime">Fit {fitScore}%</p>
+      <p className="text-[0.6rem] text-pure-white truncate relative z-10">{item.name}</p>
+      <p className="text-[0.55rem] text-soft-gray relative z-10">${item.price}</p>
+      <p className="text-[0.55rem] text-cyber-lime relative z-10">Fit {fitScore}%</p>
     </motion.button>
   );
 }

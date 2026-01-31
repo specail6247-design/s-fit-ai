@@ -5,7 +5,7 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Hermes';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -89,6 +89,13 @@ export const brands: Brand[] = [
     id: 'tiffany',
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'hermes',
+    name: 'Hermes',
+    logo: 'https://placehold.co/100x100?text=HERMES',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -484,6 +491,84 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Gray', 'Navy'],
     description: 'Comfortable athletic joggers',
+  },
+
+  // HERMES - Luxury
+  {
+    id: 'hermes-001',
+    name: 'Birkin 25 Bag',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'bag',
+    zIndex: 50,
+    price: 25000.00,
+    currency: 'USD',
+    imageUrl: '/clothing/hermes_birkin.png',
+    textureUrl: '/clothing/hermes_birkin.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Gold', 'Black', 'Etoupe'],
+    description: 'The iconic Birkin bag in Togo calfskin.',
+  },
+  {
+    id: 'hermes-002',
+    name: 'Silk Twill Scarf 90',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'scarf',
+    zIndex: 40,
+    price: 480.00,
+    currency: 'USD',
+    imageUrl: '/clothing/hermes_scarf.png',
+    textureUrl: '/clothing/hermes_scarf.png',
+    isLuxury: true,
+    sizes: ['90x90cm'],
+    colors: ['Orange', 'Blue', 'Pink'],
+    description: 'Essential Hermes accessory in 100% silk twill.',
+  },
+  {
+    id: 'hermes-003',
+    name: 'Cashmere Wrap Coat',
+    brand: 'Hermes',
+    category: 'outerwear',
+    price: 8500.00,
+    currency: 'USD',
+    imageUrl: '/clothing/hermes_coat.png',
+    textureUrl: '/clothing/hermes_coat.png',
+    isLuxury: true,
+    sizes: ['FR 34', 'FR 36', 'FR 38', 'FR 40', 'FR 42'],
+    colors: ['Camel', 'Black'],
+    description: 'Double-face cashmere coat with leather details.',
+  },
+  {
+    id: 'hermes-004',
+    name: 'Silk Shirt Dress',
+    brand: 'Hermes',
+    category: 'dresses',
+    price: 6200.00,
+    currency: 'USD',
+    imageUrl: '/clothing/hermes_dress.png',
+    textureUrl: '/clothing/hermes_dress.png',
+    isLuxury: true,
+    sizes: ['FR 34', 'FR 36', 'FR 38', 'FR 40'],
+    colors: ['Navy', 'Cream'],
+    description: 'Printed silk twill dress with belt.',
+  },
+  {
+    id: 'hermes-005',
+    name: 'Clic H Bracelet',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'jewelry',
+    zIndex: 30,
+    price: 700.00,
+    currency: 'USD',
+    imageUrl: '/clothing/hermes_bracelet.png',
+    textureUrl: '/clothing/hermes_bracelet.png',
+    isLuxury: true,
+    sizes: ['PM', 'GM'],
+    colors: ['Gold/Black', 'Silver/White', 'Rose Gold/Pink'],
+    description: 'Enamel bracelet with gold-plated hardware.',
   },
 
   // ACCESSORIES - New Category
