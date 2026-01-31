@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import LegalModal from '@/components/LegalModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,7 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -95,8 +98,8 @@ export default function RealLifeFitting() {
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                <div className="relative w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {userImage ? <Image src={userImage} alt="User" fill className="object-cover" unoptimized /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -112,8 +115,8 @@ export default function RealLifeFitting() {
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                <div className="relative w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {garmentImage ? <Image src={garmentImage} alt="Garment" fill className="object-cover" unoptimized /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -158,8 +161,25 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Trust Badge */}
+          <div className="mt-6 flex items-center gap-3 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+            <span className="text-xl">🛡️</span>
+            <div>
+              <p className="text-[10px] font-bold text-green-400 uppercase tracking-wide">Data Safety Verified</p>
+              <p className="text-[9px] text-gray-400">Photos are processed securely and not shared.</p>
+            </div>
+          </div>
+
+          {/* Footer Links */}
+          <div className="mt-auto pt-6 border-t border-white/10 flex justify-center">
+              <button onClick={() => setIsLegalModalOpen(true)} className="text-[10px] text-gray-500 hover:text-white transition-colors underline">
+                  Privacy & Terms
+              </button>
+          </div>
         </div>
       </div>
+
+      <LegalModal isOpen={isLegalModalOpen} onClose={() => setIsLegalModalOpen(false)} />
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
@@ -195,7 +215,15 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              <Image
+                src={resultImage}
+                alt="Result"
+                width={0}
+                height={0}
+                sizes="100vw"
+                className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl"
+                unoptimized
+              />
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
