@@ -316,7 +316,7 @@ function Mannequin({
       {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
         url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb"
-        animationUrl={animationUrl}
+        // animationUrl={animationUrl}
         scale={1.0}
       />
     </group>
