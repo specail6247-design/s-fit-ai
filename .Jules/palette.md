@@ -1,3 +1,0 @@
-## 2024-05-23 - 3D UI Verification Patterns
-**Learning:** verification of UI overlays on 3D/WebGL components (like React Three Fiber) is prone to "silent" failures where the UI elements don't render because the underlying 3D asset (GLB) failed to load or the canvas didn't initialize. Inconsistent asset URLs across components caused a network hang that blocked the UI.
-**Action:** Always verify the 3D scene initialization (e.g., wait for `<canvas>`) before asserting on UI overlays in E2E tests. Ensure GLB assets are consistent and accessible to prevent loading state deadlocks. Increase timeouts for WebGL contexts in headless CI.
