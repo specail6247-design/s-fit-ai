@@ -309,7 +309,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   
@@ -447,14 +447,13 @@ function ClothingOverlay({
   widthScale,
   shapeScale,
   clothingAnalysis,
-  useMasterpiece,
   isMacro
 }: {
   item: ClothingItem | null;
   widthScale: number;
   shapeScale: { shoulders: number; waist: number; hips: number };
   clothingAnalysis?: ClothingStyleAnalysis | null; 
-  useMasterpiece: boolean;
+  useMasterpiece?: boolean;
   isMacro: boolean;
 }) {
   if (!item) return null;
