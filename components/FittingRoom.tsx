@@ -277,13 +277,6 @@ function LoadingSpinner() {
   );
 }
 
-const colorMap: Record<string, string> = {
-  'Black': '#1a1a1a', 'White': '#f5f5f5', 'Navy': '#1a2744', 'Beige': '#d4c4a8', 
-  'Camel': '#c19a6b', 'Gray': '#6b6b6b', 'Cream': '#fffdd0', 'Brown': '#5c4033', 
-  'Red': '#b22222', 'Blue': '#2563eb', 'Pink': '#ec4899', 'Green': '#16a34a',
-  'Gold': '#ffd700', 'Silver': '#c0c0c0'
-};
-
 function mapToFabricType(analysisType?: string): FabricType {
   const type = analysisType?.toLowerCase() || 'cotton';
   if (type.includes('silk')) return 'silk';
@@ -307,7 +300,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   // Disabling external animation URL to prevent 404 crashes
@@ -539,7 +532,7 @@ function Scene({
             scale={1.0}
           />
         ) : (
-          <Mannequin height={height} opacity={1.0} />
+          <Mannequin height={height} />
         )}
         
         {/* Fit Heatmap Visual Overlay */}
@@ -580,7 +573,7 @@ interface ItemCardProps {
 function ItemCard({
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
-  const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
+  // Removed unused primaryColor
   return (
     <motion.button
       onClick={onSelect}
@@ -837,7 +830,7 @@ function AITryOnModal({
 export function FittingRoom() {
   const {
     userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
-    isAnalyzing, setIsAnalyzing, isFitting, setIsFitting
+    isAnalyzing, setIsAnalyzing, isFitting
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);

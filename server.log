@@ -17,3 +17,6 @@
 ⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
  GET / 200 in 828ms (compile: 619ms, render: 209ms)
  GET /luxury/fitting 200 in 438ms (compile: 21ms, render: 417ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET / 200 in 2.6s (compile: 2.1s, render: 404ms)
+ GET /luxury/fitting 200 in 811ms (compile: 27ms, render: 783ms)
