@@ -306,7 +306,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
@@ -315,7 +315,7 @@ function Mannequin({
     <group scale={[scale, scale, scale]}>
       {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
-        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb"
         animationUrl={animationUrl}
         scale={1.0}
       />
@@ -532,8 +532,8 @@ function Scene({
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
             url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb"
+              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb"
             }
             animationUrl={animationUrl}
             scale={1.0}
