@@ -96,6 +96,15 @@ interface StoreState {
   selectedItem: ClothingItem | null;
   setSelectedItem: (item: ClothingItem | null) => void;
 
+  // The Vault (Digital Wardrobe)
+  savedLooks: ClothingItem[];
+  saveLook: (item: ClothingItem) => void;
+  removeLook: (itemId: string) => void;
+
+  // Sensory Ambience
+  isImmersiveMode: boolean;
+  toggleImmersiveMode: () => void;
+
   // Daily Usage (Freemium)
   dailyUsage: DailyUsage;
   incrementUsage: () => void;
@@ -186,6 +195,22 @@ export const useStore = create<StoreState>()(
       selectedItem: null,
       setSelectedItem: (item) => set({ selectedItem: item }),
 
+      // The Vault (Digital Wardrobe)
+      savedLooks: [],
+      saveLook: (item) =>
+        set((state) => {
+          if (state.savedLooks.some((saved) => saved.id === item.id)) return state;
+          return { savedLooks: [...state.savedLooks, item] };
+        }),
+      removeLook: (itemId) =>
+        set((state) => ({
+          savedLooks: state.savedLooks.filter((item) => item.id !== itemId),
+        })),
+
+      // Sensory Ambience
+      isImmersiveMode: false,
+      toggleImmersiveMode: () => set((state) => ({ isImmersiveMode: !state.isImmersiveMode })),
+
       // Daily Usage
       dailyUsage: {
         count: 0,
@@ -257,6 +282,7 @@ export const useStore = create<StoreState>()(
         userStats: state.userStats,
         selectedAIModels: state.selectedAIModels,
         trainingData: state.trainingData,
+        savedLooks: state.savedLooks, // Persist saved looks
       }),
     }
   )
