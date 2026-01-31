@@ -8,13 +8,15 @@ interface FabricMaterialProps {
   fabricType: FabricType;
   opacity?: number;
   transparent?: boolean;
+  isMacro?: boolean;
 }
 
 export function FabricMaterial({
   textureUrl,
   fabricType = 'cotton',
   opacity = 1,
-  transparent = true
+  transparent = true,
+  isMacro = false
 }: FabricMaterialProps) {
   const baseTexture = useTexture(textureUrl);
   const texture = useMemo(() => {
@@ -29,6 +31,11 @@ export function FabricMaterial({
 
   const config = FABRIC_PRESETS[fabricType];
 
+  // Hyper-Zoom Logic: Boost texture depth and detail when zoomed in
+  const activeNormalScale = isMacro ? config.normalScale * 3.0 : config.normalScale;
+  const activeDisplacementScale = isMacro ? config.displacementScale * 1.5 : config.displacementScale;
+  const activeSheen = isMacro && fabricType === 'silk' ? (config.sheen || 0) * 1.5 : (config.sheen || 0);
+
   return (
     <meshPhysicalMaterial
       map={texture}
@@ -38,18 +45,17 @@ export function FabricMaterial({
 
       // 2.5D Displacement
       // We use the texture itself as a height map proxy.
-      // Ideally this would be a real depth map.
       displacementMap={texture}
-      displacementScale={config.displacementScale}
-      displacementBias={-config.displacementScale / 2}
+      displacementScale={activeDisplacementScale}
+      displacementBias={-activeDisplacementScale / 2}
 
       // Micro-surface details
       // Using the texture as a normal map adds surface detail corresponding to the visual pattern.
       normalMap={texture}
-      normalScale={new THREE.Vector2(config.normalScale, config.normalScale)}
+      normalScale={new THREE.Vector2(activeNormalScale, activeNormalScale)}
 
       // Advanced Fabric features
-      sheen={config.sheen || 0}
+      sheen={activeSheen}
       sheenColor={new THREE.Color(0xffffff)}
       sheenRoughness={0.5}
 

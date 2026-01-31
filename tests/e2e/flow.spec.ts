@@ -5,46 +5,25 @@ test.describe('User Flow', () => {
     await page.goto('/');
   });
 
-  test('should complete Easy Fit flow', async ({ page }) => {
-    // 1. Select Easy Fit Mode
-    // Force click to ensure it hits even if covered or slightly off-screen in mobile
-    await page.getByText('EASY FIT').click({ force: true });
+  test('should navigate to Luxury Line and enter fitting room', async ({ page }) => {
+    // 1. Select Luxury Line from Home
+    await page.getByText('Luxury Line').click({ force: true });
 
-    // Verify selection (border color change or checkmark)
-    const continueToModeBtn = page.getByRole('button', { name: /Continue →/i });
-    await expect(continueToModeBtn).toBeEnabled();
-    await continueToModeBtn.click();
+    // 2. Verify navigation to Luxury Detail Page
+    await expect(page).toHaveURL(/\/luxury$/);
 
-    // 2. Input Stats
-    // Wait for "Easy Fit" header
-    await expect(page.getByRole('heading', { name: 'Easy Fit' })).toBeVisible();
+    // Check for "Try on Mannequin" button on the detail page
+    const tryOnBtn = page.getByRole('link', { name: /Try on Mannequin/i });
+    await expect(tryOnBtn).toBeVisible();
 
-    // Just click "Continue to Fitting Room" as defaults are valid.
-    await page.getByRole('button', { name: /Continue to Fitting Room/i }).click();
+    // 3. Click to enter Fitting Room
+    await tryOnBtn.click({ force: true });
 
-    // 3. Brand Selection
-    // Wait for "Select Brand" header
-    await expect(page.getByText('Select Brand')).toBeVisible();
+    // 4. Verify navigation to Fitting Room
+    await expect(page).toHaveURL(/\/luxury\/fitting$/);
 
-    // Easy Fit defaults to Uniqlo auto-selected.
-    // Check if Uniqlo button has class indicating selection (border-pure-white) or just check if "Enter Fitting Room" is enabled.
-    const enterFittingRoomBtn = page.getByRole('button', { name: /Enter Fitting Room/i });
-    await expect(enterFittingRoomBtn).toBeEnabled();
-
-    // We can also switch brand manually.
-    // Note: buttons in BrandSelector might have text "ZARA" and role "button"
-    await page.getByRole('button', { name: 'ZARA' }).click();
-
-    await enterFittingRoomBtn.click();
-
-    // 4. Fitting Room
-    // Should see "Fitting Room" component.
-    // Home.tsx: "Back to brands" button visible.
-    await expect(page.getByRole('button', { name: /Back to brands/i })).toBeVisible();
-
-    // Should see 3D canvas (maybe check for canvas element)
-    // Note: WebGL might not be available in all headless environments
-    // We check if the container exists at least.
-    await expect(page.locator('.glass-card').first()).toBeVisible();
+    // FittingRoom.tsx has "Masterpiece ON" button
+    // Use regex to match "Masterpiece ON" regardless of emoji
+    await expect(page.getByRole('button', { name: /Masterpiece ON/i })).toBeVisible({ timeout: 20000 });
   });
 });

@@ -175,8 +175,6 @@ function SoftBodyPlane({
   const world = React.useContext(PhysicsContext);
   const meshRef = useRef<THREE.Mesh>(null);
   const bodyRef = useRef<AmmoSoftBody | null>(null);
-  const camera = useThree((state) => state.camera);
-  const [isMicroMode, setMicroMode] = useState(false);
 
   useEffect(() => {
     const ammo = Ammo;
@@ -234,10 +232,6 @@ function SoftBodyPlane({
 
     geometry.attributes.position.needsUpdate = true;
     geometry.computeVertexNormals();
-
-    const dist = camera.position.distanceTo(new THREE.Vector3(positions[0], positions[1], positions[2]));
-    if (dist < 2.0 && !isMicroMode) setMicroMode(true);
-    if (dist >= 2.0 && isMicroMode) setMicroMode(false);
   });
 
   const handleClick = () => {
@@ -250,17 +244,26 @@ function SoftBodyPlane({
      }
   };
 
-  const finalMaterialProps = { ...(materialProps ?? {}) };
-  if (isMicroMode) {
-      finalMaterialProps.normalScale = new THREE.Vector2(3, 3);
-  }
-
   return (
     <mesh ref={meshRef} position={[0,0,0]} renderOrder={renderOrder} onClick={handleClick} castShadow receiveShadow>
        <planeGeometry args={args} />
-       {children ? children : <meshStandardMaterial {...finalMaterialProps} />}
+       {children ? children : <meshStandardMaterial {...(materialProps ?? {})} />}
     </mesh>
   );
+}
+
+function useAutoZoom(position: [number, number, number], threshold: number = 1.8) {
+  const { camera } = useThree();
+  const [isClose, setIsClose] = useState(false);
+  const vec = useMemo(() => new THREE.Vector3(...position), [position]);
+
+  useFrame(() => {
+     const dist = camera.position.distanceTo(vec);
+     if (dist < threshold && !isClose) setIsClose(true);
+     if (dist >= threshold && isClose) setIsClose(false);
+  });
+
+  return isClose;
 }
 
 // --- UI COMPONENTS ---
@@ -306,17 +309,15 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
   
   return (
     <group scale={[scale, scale, scale]}>
       {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
-        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-        animationUrl={animationUrl}
+        url="https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
         scale={1.0}
       />
     </group>
@@ -329,9 +330,10 @@ interface ClothingProps {
   shapeScale?: { shoulders: number; waist: number; hips: number };
   fabricType?: FabricType;
   useMasterpiece?: boolean;
+  isMacro?: boolean;
 }
 
-function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacro }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -339,19 +341,22 @@ function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist:
   const physics = PHYSICS_PRESETS[fabricType] || PHYSICS_PRESETS['default'];
   const zIndex = layeringEngine.getItemZIndex(item);
 
+  const position: [number, number, number] = [0, 0.95, 0.1 + (zIndex - 25) * 0.01];
+  const isZoomed = useAutoZoom(position);
+
   return (
     <SoftBodyPlane
-      position={[0, 0.95, 0.1 + (zIndex - 25) * 0.01]}
+      position={position}
       args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]}
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacro={isMacro || isZoomed} />
     </SoftBodyPlane>
   );
 }
 
-function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacro }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -359,19 +364,22 @@ function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, wa
   const physics = PHYSICS_PRESETS[fabricType] || PHYSICS_PRESETS['denim'];
   const zIndex = layeringEngine.getItemZIndex(item);
 
+  const position: [number, number, number] = [0, 0.35, 0.1 + (zIndex - 20) * 0.01];
+  const isZoomed = useAutoZoom(position);
+
   return (
     <SoftBodyPlane
-      position={[0, 0.35, 0.1 + (zIndex - 20) * 0.01]}
+      position={position}
       args={[baseWidth * widthScale * shapeScale.hips, (baseWidth * widthScale * shapeScale.hips) / aspect, 32, 32]}
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacro={isMacro || isZoomed} />
     </SoftBodyPlane>
   );
 }
 
-function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacro }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -379,19 +387,22 @@ function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, wais
   const physics = PHYSICS_PRESETS[fabricType] || PHYSICS_PRESETS['silk'];
   const zIndex = layeringEngine.getItemZIndex(item);
 
+  const position: [number, number, number] = [0, 0.65, 0.1 + (zIndex - 27) * 0.01];
+  const isZoomed = useAutoZoom(position);
+
   return (
     <SoftBodyPlane
-      position={[0, 0.65, 0.1 + (zIndex - 27) * 0.01]}
+      position={position}
       args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]}
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacro={isMacro || isZoomed} />
     </SoftBodyPlane>
   );
 }
 
-function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacro }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -399,14 +410,17 @@ function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, 
   const physics = PHYSICS_PRESETS[fabricType] || PHYSICS_PRESETS['leather'];
   const zIndex = layeringEngine.getItemZIndex(item);
 
+  const position: [number, number, number] = [0, 0.95, 0.15 + (zIndex - 30) * 0.01];
+  const isZoomed = useAutoZoom(position);
+
   return (
     <SoftBodyPlane
-      position={[0, 0.95, 0.15 + (zIndex - 30) * 0.01]}
+      position={position}
       args={[baseWidth * widthScale * shapeScale.shoulders, (baseWidth * widthScale * shapeScale.shoulders) / aspect, 32, 32]}
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacro={isMacro || isZoomed} />
     </SoftBodyPlane>
   );
 }
@@ -433,22 +447,24 @@ function ClothingOverlay({
   widthScale,
   shapeScale,
   clothingAnalysis,
+  isMacro
 }: {
   item: ClothingItem | null;
   widthScale: number;
   shapeScale: { shoulders: number; waist: number; hips: number };
   clothingAnalysis?: ClothingStyleAnalysis | null; 
-  useMasterpiece: boolean;
+  useMasterpiece?: boolean;
+  isMacro: boolean;
 }) {
   if (!item) return null;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
 
   return (
     <Suspense fallback={null}>
-      {item.category === 'tops' && <TopClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'bottoms' && <BottomsClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'dresses' && <DressClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'outerwear' && <OuterwearClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
+      {item.category === 'tops' && <TopClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacro={isMacro} />}
+      {item.category === 'bottoms' && <BottomsClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacro={isMacro} />}
+      {item.category === 'dresses' && <DressClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacro={isMacro} />}
+      {item.category === 'outerwear' && <OuterwearClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacro={isMacro} />}
       {item.category === 'accessories' && <AccessoryClothing item={item} widthScale={widthScale} shapeScale={shapeScale} />}
     </Suspense>
   );
@@ -504,7 +520,6 @@ function Scene({
   const scale = height / 170;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
   let mannequinPosition: [number, number, number] = [0, -0.9, 0];
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
 
   const heatmapData = useMemo(() => {
     if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !selectedItem) return null;
@@ -532,10 +547,9 @@ function Scene({
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
             url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+              ? "https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
+              : "https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
             }
-            animationUrl={animationUrl}
             scale={1.0}
           />
         ) : (
@@ -561,6 +575,7 @@ function Scene({
           shapeScale={{ shoulders: 1, waist: 1, hips: 1 }}
           clothingAnalysis={clothingAnalysis}
           useMasterpiece={isMasterpieceMode}
+          isMacro={isMacroView}
         />
       </group>
     </>
@@ -712,7 +727,9 @@ interface AITryOnModalProps {
   isLoading: boolean;
   result: string | null;
   error?: string | null;
-  onGenerateTryOn: () => void;
+  onGenerateTryOn: (options: { generateVideo: boolean }) => void;
+  videoResult?: string | null;
+  videoLoading?: boolean;
 }
 
 function AITryOnModal({
@@ -724,11 +741,20 @@ function AITryOnModal({
   isLoading,
   result,
   error,
-  onGenerateTryOn
+  onGenerateTryOn,
+  videoResult,
+  videoLoading
 }: AITryOnModalProps) {
     const [isVideoLoading, setIsVideoLoading] = useState(false);
     const [videoUrl, setVideoUrl] = useState<string | null>(null);
+    const [autoGenerateVideo, setAutoGenerateVideo] = useState(true);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Sync external video props if provided (optional)
+    useEffect(() => {
+       if (videoResult) setVideoUrl(videoResult);
+       if (videoLoading !== undefined) setIsVideoLoading(videoLoading);
+    }, [videoResult, videoLoading]);
 
     if (!isOpen) return null;
 
@@ -815,9 +841,31 @@ function AITryOnModal({
                     )}
 
                     {!result && (
-                        <button onClick={onGenerateTryOn} disabled={isLoading || !userPhotoPreview || !selectedItem} className="btn-primary w-full py-4 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 text-xs">
-                            {isLoading ? <><div className="w-4 h-4 border-2 border-void-black/30 border-t-void-black rounded-full animate-spin" /><span>Rendering...</span></> : <><span className="text-base">👕</span><span>Generate AI Masterpiece Fit</span></>}
-                        </button>
+                        <div className="space-y-3">
+                           <label className="flex items-center gap-2 p-3 rounded-lg bg-charcoal/40 border border-white/5 cursor-pointer hover:bg-charcoal/60 transition-colors">
+                              <input
+                                type="checkbox"
+                                checked={autoGenerateVideo}
+                                onChange={(e) => setAutoGenerateVideo(e.target.checked)}
+                                className="w-4 h-4 rounded border-gray-600 bg-black/50 text-cyber-lime focus:ring-cyber-lime"
+                              />
+                              <div>
+                                 <div className="text-xs font-bold text-white flex items-center gap-2">
+                                    🎬 Auto-Generate Cinematic Video
+                                    <span className="text-[9px] bg-cyber-lime/20 text-cyber-lime px-1.5 py-0.5 rounded">BETA</span>
+                                 </div>
+                                 <p className="text-[9px] text-soft-gray">Create a 5s motion clip via Runway/SVD immediately after fitting.</p>
+                              </div>
+                           </label>
+
+                           <button onClick={() => onGenerateTryOn({ generateVideo: autoGenerateVideo })} disabled={isLoading || !userPhotoPreview || !selectedItem} className="btn-primary w-full py-4 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 text-xs">
+                                {isLoading ? (
+                                    <><div className="w-4 h-4 border-2 border-void-black/30 border-t-void-black rounded-full animate-spin" /><span>Processing Masterpiece Pipeline...</span></>
+                                ) : (
+                                    <><span className="text-base">👕</span><span>Generate AI Masterpiece Fit</span></>
+                                )}
+                           </button>
+                        </div>
                     )}
                 </div>
             </div>
@@ -901,9 +949,29 @@ export function FittingRoom() {
     return () => window.clearInterval(interval);
   }, [autoCycleEnabled, topPicks, setSelectedItem]);
 
-  const handleGenerateAITryOn = useCallback(async () => {
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [videoLoading, setVideoLoading] = useState(false);
+
+  const generateVideo = async (imageUrl: string) => {
+      setVideoLoading(true);
+      try {
+          const res = await fetch('/api/cinematic-try-on', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({imageUrl})
+          });
+          const data = await res.json();
+          if(data.success) setVideoUrl(data.videoUrl);
+      } catch(e) { console.error("Video generation failed", e); }
+      finally { setVideoLoading(false); }
+  };
+
+  const handleGenerateAITryOn = useCallback(async (options: { generateVideo: boolean } = { generateVideo: false }) => {
     if (!userPhotoPreview || !currentItem?.imageUrl) return;
     setAITryOnLoading(true);
+    setAITryOnResult(null);
+    setVideoUrl(null);
+
     try {
       const response = await fetch('/api/try-on', {
         method: 'POST',
@@ -915,7 +983,13 @@ export function FittingRoom() {
         })
       });
       const data = await response.json();
-      if (data.success) setAITryOnResult(data.imageUrl);
+      if (data.success) {
+         setAITryOnResult(data.imageUrl);
+         // Pipeline Chaining
+         if (options.generateVideo) {
+            await generateVideo(data.imageUrl);
+         }
+      }
     } catch (e) { console.error(e); }
     finally { setAITryOnLoading(false); }
   }, [userPhotoPreview, currentItem]);
@@ -1147,6 +1221,8 @@ export function FittingRoom() {
         isLoading={aiTryOnLoading}
         result={aiTryOnResult}
         onGenerateTryOn={handleGenerateAITryOn}
+        videoResult={videoUrl}
+        videoLoading={videoLoading}
       />
     </div>
   );
