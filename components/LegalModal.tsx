@@ -33,6 +33,8 @@ export default function LegalModal({ isOpen, onClose }: LegalModalProps) {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5">
