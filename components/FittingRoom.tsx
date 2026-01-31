@@ -267,7 +267,7 @@ function SoftBodyPlane({
 
 function LoadingSpinner() {
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-void-black">
+    <div className="absolute inset-0 flex items-center justify-center bg-void-black" role="status" aria-label="Loading Fitting Room">
       <div className="text-center">
         <div className="w-12 h-12 border-2 border-soft-gray border-t-cyber-lime rounded-full animate-spin mb-4" />
         <p className="text-soft-gray text-sm">Loading Fitting Room...</p>
@@ -306,17 +306,15 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
   
   return (
     <group scale={[scale, scale, scale]}>
       {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
-        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-        animationUrl={animationUrl}
+        url="https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
         scale={1.0}
       />
     </group>
@@ -504,7 +502,6 @@ function Scene({
   const scale = height / 170;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
   let mannequinPosition: [number, number, number] = [0, -0.9, 0];
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
 
   const heatmapData = useMemo(() => {
     if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !selectedItem) return null;
@@ -532,10 +529,9 @@ function Scene({
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
             url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+              ? "https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
+              : "https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
             }
-            animationUrl={animationUrl}
             scale={1.0}
           />
         ) : (
@@ -677,7 +673,7 @@ function CompareModal({ isOpen, onClose, picks, onSelect }: CompareModalProps) {
       <motion.div className="relative glass-card p-6 max-w-md w-full max-h-[80vh] overflow-y-auto" initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}>
         <div className="flex justify-between items-center mb-6">
           <div><h3 className="text-lg font-bold">Compare AI Picks</h3><p className="text-[10px] text-soft-gray">Ranked by your unique body signals</p></div>
-          <button onClick={onClose} className="text-soft-gray hover:text-white">✕</button>
+          <button onClick={onClose} className="text-soft-gray hover:text-white" aria-label="Close modal">✕</button>
         </div>
         <div className="space-y-4">
           {picks.map((pick, idx) => (
@@ -740,7 +736,7 @@ function AITryOnModal({
                         <h3 className="text-xl font-bold text-pure-white flex items-center gap-2"><span className="animate-pulse">✨</span> Masterpiece Try-On</h3>
                         <p className="text-xs text-soft-gray mt-1">Hollywood-grade virtual fitting engine</p>
                     </div>
-                    <button onClick={onClose} className="text-soft-gray hover:text-white text-2xl">✕</button>
+                    <button onClick={onClose} className="text-soft-gray hover:text-white text-2xl" aria-label="Close modal">✕</button>
                 </div>
 
                 <div className="space-y-6">
@@ -991,13 +987,31 @@ export function FittingRoom() {
         
         {/* Controls Overlay */}
         <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
-            <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+            <button
+                onClick={() => setIsMasterpieceMode(!isMasterpieceMode)}
+                className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}
+                aria-pressed={isMasterpieceMode}
+                aria-label="Toggle Masterpiece Mode"
+                title={isMasterpieceMode ? "Disable Masterpiece Mode" : "Enable Masterpiece Mode"}
+            >
                 {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
             </button>
-            <button onClick={() => setIsMacroView(!isMacroView)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMacroView ? 'bg-white text-black border-white' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+            <button
+                onClick={() => setIsMacroView(!isMacroView)}
+                className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMacroView ? 'bg-white text-black border-white' : 'bg-black/50 text-gray-400 border-gray-600'}`}
+                aria-pressed={isMacroView}
+                aria-label="Toggle Macro View"
+                title="Toggle Macro View"
+            >
                 🔍 Macro View
             </button>
-            <button onClick={() => setShowHeatmap(!showHeatmap)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+            <button
+                onClick={() => setShowHeatmap(!showHeatmap)}
+                className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}
+                aria-pressed={showHeatmap}
+                aria-label="Toggle Fit Heatmap"
+                title="Toggle Fit Heatmap"
+            >
                 🔥 Fit Heatmap
             </button>
         </div>
@@ -1011,7 +1025,12 @@ export function FittingRoom() {
         )}
 
         <div className="absolute top-4 left-4 flex gap-2 z-20">
-            <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
+            <button
+                onClick={() => setShowShareModal(true)}
+                className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors"
+                aria-label="Share this look"
+                title="Share"
+            >
                 <span>📤</span>
             </button>
             <motion.button onClick={() => setShowAITryOnModal(true)} 
@@ -1026,7 +1045,12 @@ export function FittingRoom() {
             {isMiniBarCollapsed ? (
               <div className="glass-card px-3 py-2 flex items-center justify-between gap-3">
                 <span className="text-[0.55rem] uppercase tracking-[0.2em] text-soft-gray">AI Picks</span>
-                <button onClick={() => setMiniBarCollapsed(false)} className="text-[0.55rem] text-soft-gray hover:text-white transition-colors">Show</button>
+                <button
+                    onClick={() => setMiniBarCollapsed(false)}
+                    className="text-[0.55rem] text-soft-gray hover:text-white transition-colors"
+                    aria-label="Show AI Picks"
+                    title="Show AI Picks"
+                >Show</button>
               </div>
             ) : (
               <div className="glass-card px-3 py-2 flex items-center gap-2 relative overflow-hidden">
@@ -1041,10 +1065,20 @@ export function FittingRoom() {
                       </button>
                     ))}
                  </div>
-                 <button onClick={() => setAutoCycleEnabled(!autoCycleEnabled)} className={`text-[0.55rem] uppercase ${autoCycleEnabled ? 'text-cyber-lime' : 'text-soft-gray'}`}>
+                 <button
+                    onClick={() => setAutoCycleEnabled(!autoCycleEnabled)}
+                    className={`text-[0.55rem] uppercase ${autoCycleEnabled ? 'text-cyber-lime' : 'text-soft-gray'}`}
+                    aria-pressed={autoCycleEnabled}
+                    title="Toggle Auto Cycle"
+                 >
                     {autoCycleEnabled ? 'Auto On' : 'Auto Off'}
                  </button>
-                 <button onClick={() => setMiniBarCollapsed(true)} className="text-[0.55rem] text-soft-gray ml-1">✕</button>
+                 <button
+                    onClick={() => setMiniBarCollapsed(true)}
+                    className="text-[0.55rem] text-soft-gray ml-1"
+                    aria-label="Hide AI Picks"
+                    title="Hide AI Picks"
+                 >✕</button>
                  {autoCycleEnabled && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyber-lime/30"><div className="h-full bg-cyber-lime auto-cycle-bar" /></div>}
               </div>
             )}

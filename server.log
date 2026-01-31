@@ -7,12 +7,32 @@
 - Network:       http://192.168.0.2:3000
 
 ✓ Starting...
-Attention: Next.js now collects completely anonymous telemetry regarding usage.
-This information is used to shape Next.js' roadmap and prioritize features.
-You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
-https://nextjs.org/telemetry
-
-✓ Ready in 1780ms
-○ Compiling /cinematic-demo ...
+✓ Ready in 2.1s
+○ Compiling / ...
 ⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
- GET /cinematic-demo 200 in 12.4s (compile: 12.0s, render: 401ms)
+ HEAD / 200 in 24.2s (compile: 23.5s, render: 674ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /luxury/fitting 200 in 2.7s (compile: 2.3s, render: 357ms)
+○ Compiling /simple-test ...
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /simple-test 200 in 9.4s (compile: 8.4s, render: 1079ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /simple-test 200 in 882ms (compile: 150ms, render: 732ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /simple-test 200 in 578ms (compile: 77ms, render: 501ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /simple-test 200 in 583ms (compile: 89ms, render: 494ms)
+ReferenceError: ProgressEvent is not defined
+    at ignore-listed frames
+⨯ unhandledRejection: ReferenceError: ProgressEvent is not defined
+    at ignore-listed frames
+⨯ unhandledRejection:  ReferenceError: ProgressEvent is not defined
+    at ignore-listed frames
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /simple-test 200 in 898ms (compile: 147ms, render: 751ms)
+ReferenceError: ProgressEvent is not defined
+    at ignore-listed frames
+⨯ unhandledRejection: ReferenceError: ProgressEvent is not defined
+    at ignore-listed frames
+⨯ unhandledRejection:  ReferenceError: ProgressEvent is not defined
+    at ignore-listed frames
