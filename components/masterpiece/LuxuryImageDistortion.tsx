@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense } from "react";
+import React, { Suspense, useMemo } from "react";
 import { Canvas } from "@react-three/fiber";
 import { MeshDistortMaterial, useTexture, Float } from "@react-three/drei";
 import * as THREE from "three";
@@ -8,15 +8,18 @@ import * as THREE from "three";
 function DistortedImage({ imageUrl }: { imageUrl: string }) {
   const texture = useTexture(imageUrl);
 
-  // Ensure texture encoding is correct for R3F
-  texture.colorSpace = THREE.SRGBColorSpace;
+  const clonedTexture = useMemo(() => {
+    const cloned = texture.clone();
+    cloned.colorSpace = THREE.SRGBColorSpace;
+    return cloned;
+  }, [texture]);
 
   return (
     <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
       <mesh>
         <planeGeometry args={[3, 4, 32, 32]} />
         <MeshDistortMaterial
-          map={texture}
+          map={clonedTexture}
           speed={1.5}
           distort={0.2} // subtle distortion
           radius={1}
