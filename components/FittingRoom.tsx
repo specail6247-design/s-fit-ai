@@ -303,7 +303,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/models/gltf/RobotExpressive/RobotExpressive.glb";

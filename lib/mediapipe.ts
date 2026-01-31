@@ -1,8 +1,11 @@
-import {
+// Refactored to use dynamic imports for @mediapipe/tasks-vision to avoid Server-Side Rendering (SSR) issues
+// The library uses browser-specific APIs (ProgressEvent, etc.) which cause build failures in Node.js environment.
+
+// Type definitions need to be imported as types or redefined
+import type {
   FaceDetector,
-  FilesetResolver,
   PoseLandmarker,
-  type Detection,
+  Detection,
 } from '@mediapipe/tasks-vision';
 
 const TASKS_VERSION = '0.10.14';
@@ -27,8 +30,8 @@ export interface PoseProportions {
   torsoHeight: number;
   legLength: number;
   armLength: number;
-  shoulderSlope: number; // Angle or relative slope
-  overallRatio: number; // aspect ratio of the body
+  shoulderSlope: number;
+  overallRatio: number;
 }
 
 export interface PoseLandmark {
@@ -46,36 +49,48 @@ export interface PoseAnalysis {
   landmarks?: PoseLandmark[];
 }
 
-type VisionFileset = Awaited<ReturnType<typeof FilesetResolver.forVisionTasks>>;
+// Variables to hold singleton instances
+let visionPackage: typeof import('@mediapipe/tasks-vision') | null = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let visionResolver: any = null;
+let faceDetector: FaceDetector | null = null;
+let poseLandmarker: PoseLandmarker | null = null;
 
-let visionPromise: Promise<VisionFileset> | null = null;
-let faceDetectorPromise: Promise<FaceDetector> | null = null;
-let poseLandmarkerPromise: Promise<PoseLandmarker> | null = null;
+// Helper to load the package dynamically
+const loadVisionPackage = async () => {
+  if (!visionPackage) {
+    visionPackage = await import('@mediapipe/tasks-vision');
+  }
+  return visionPackage;
+};
 
 const getVisionResolver = async () => {
-  if (!visionPromise) {
-    visionPromise = FilesetResolver.forVisionTasks(WASM_BASE_URL);
+  if (!visionResolver) {
+    const pkg = await loadVisionPackage();
+    visionResolver = await pkg.FilesetResolver.forVisionTasks(WASM_BASE_URL);
   }
-  return visionPromise;
+  return visionResolver;
 };
 
 const getFaceDetector = async () => {
-  if (!faceDetectorPromise) {
+  if (!faceDetector) {
+    const pkg = await loadVisionPackage();
     const vision = await getVisionResolver();
-    faceDetectorPromise = FaceDetector.createFromOptions(vision, {
+    faceDetector = await pkg.FaceDetector.createFromOptions(vision, {
       baseOptions: {
         modelAssetPath: FACE_MODEL_URL,
       },
       runningMode: 'IMAGE',
     });
   }
-  return faceDetectorPromise;
+  return faceDetector;
 };
 
 const getPoseLandmarker = async () => {
-  if (!poseLandmarkerPromise) {
+  if (!poseLandmarker) {
+    const pkg = await loadVisionPackage();
     const vision = await getVisionResolver();
-    poseLandmarkerPromise = PoseLandmarker.createFromOptions(vision, {
+    poseLandmarker = await pkg.PoseLandmarker.createFromOptions(vision, {
       baseOptions: {
         modelAssetPath: POSE_MODEL_URL,
       },
@@ -83,11 +98,12 @@ const getPoseLandmarker = async () => {
       numPoses: 1,
     });
   }
-  return poseLandmarkerPromise;
+  return poseLandmarker;
 };
 
 const loadImage = (dataUrl: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
+    if (typeof window === 'undefined') return reject(new Error('No window'));
     const image = new Image();
     image.onload = () => resolve(image);
     image.onerror = () => reject(new Error('Image load failed'));
@@ -148,7 +164,6 @@ export const analyzeFace = async (dataUrl: string): Promise<FaceAnalysis> => {
     };
   } catch (error: unknown) {
     console.error('Face Analysis Error:', error);
-    // Return a graceful fallback instead of crashing
     return {
       faceCount: 0,
       confidence: 0,
@@ -167,6 +182,8 @@ export const analyzePose = async (dataUrl: string): Promise<PoseAnalysis> => {
   try {
     const image = await loadImage(dataUrl);
     const landmarker = await getPoseLandmarker();
+    if (!landmarker) throw new Error('Pose Landmarker not initialized');
+
     const result = landmarker.detect(image);
     const landmarks = result.landmarks?.[0] ?? [];
     const landmarkCount = landmarks.length;
@@ -205,7 +222,6 @@ export const analyzePose = async (dataUrl: string): Promise<PoseAnalysis> => {
         const overallRatio = ((shoulderWidth + hipWidth) / 2) / overallHeight;
 
         // New Detailed Proportions
-        // Waist estimation (roughly midpoint between shoulders and hips)
         const leftWaistPos = { x: (leftShoulder.x + leftHip.x) / 2, y: (leftShoulder.y + leftHip.y) / 2 };
         const rightWaistPos = { x: (rightShoulder.x + rightHip.x) / 2, y: (rightShoulder.y + rightHip.y) / 2 };
         const waistWidth = getDistance(leftWaistPos, rightWaistPos);
@@ -215,7 +231,6 @@ export const analyzePose = async (dataUrl: string): Promise<PoseAnalysis> => {
         const rightArmLen = getDistance(rightShoulder, landmarks[14] || rightShoulder) + getDistance(landmarks[14] || rightShoulder, landmarks[16] || rightShoulder);
         const armLength = (leftArmLen + rightArmLen) / 2;
 
-        // Shoulder slope (y difference normalized by width)
         const shoulderSlope = Math.abs(leftShoulder.y - rightShoulder.y) / shoulderWidth;
 
         proportions = {
@@ -236,11 +251,10 @@ export const analyzePose = async (dataUrl: string): Promise<PoseAnalysis> => {
       score,
       note,
       proportions,
-      landmarks: landmarks.map(l => ({ x: l.x, y: l.y, z: l.z, visibility: l.visibility })),
+      landmarks: landmarks.map((l) => ({ x: l.x, y: l.y, z: l.z, visibility: l.visibility })),
     };
   } catch (error: unknown) {
     console.error('Pose Analysis Error:', error);
-    // Return a graceful fallback instead of crashing
     return {
       landmarkCount: 0,
       score: 0,
@@ -255,6 +269,8 @@ export const detectVideoPose = async (video: HTMLVideoElement, timestamp: number
   if (typeof window === 'undefined') return [];
   try {
     const landmarker = await getPoseLandmarker();
+    if (!landmarker) return [];
+
     const result = landmarker.detectForVideo(video, timestamp);
     return result.landmarks?.[0] ?? [];
   } catch (error) {
