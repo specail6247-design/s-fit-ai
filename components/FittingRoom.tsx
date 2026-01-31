@@ -23,6 +23,7 @@ import {
   generateFitHeatmap,
   ClothingStyleAnalysis 
 } from '@/lib/visionService';
+import { generateStoryImage } from '@/lib/shareUtils';
 import * as THREE from 'three';
 import { AvatarLoader } from './AvatarLoader';
 
@@ -607,10 +608,13 @@ interface ShareModalProps {
   brandName?: string;
   fitScore: number;
   recommendedSize?: string;
+  resultImageUrl?: string | null;
 }
 
-function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize }: ShareModalProps) {
+function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize, resultImageUrl }: ShareModalProps) {
   const [hasPublished, setHasPublished] = useState(false);
+  const [isGeneratingStory, setIsGeneratingStory] = useState(false);
+
   if (!isOpen) return null;
 
   const safeItemName = itemName ?? 'this fit';
@@ -630,6 +634,24 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
     onClose();
   };
 
+  const handleStoryGenerate = async () => {
+    if (!resultImageUrl) return alert('No image available to generate story.');
+    setIsGeneratingStory(true);
+    try {
+      const dataUrl = await generateStoryImage(resultImageUrl, safeBrandName, 'Luxury');
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = `sfit-story-${Date.now()}.png`;
+      a.click();
+      alert('Story Image Saved! 📸\nUpload it to Instagram Stories.');
+    } catch (e) {
+      console.error(e);
+      alert('Failed to generate story. Using fallback sharing.');
+    } finally {
+      setIsGeneratingStory(false);
+    }
+  };
+
   return (
     <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="absolute inset-0 bg-void-black/80 backdrop-blur-sm" onClick={onClose} />
@@ -642,6 +664,19 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
           <button onClick={() => handleShare('instagram')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-[#833AB4] to-[#F77737] text-xs"><span>📷</span> Instagram</button>
           <button onClick={() => handleShare('kakao')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#FEE500] text-black text-xs"><span>💬</span> KakaoStory</button>
         </div>
+
+        {resultImageUrl && (
+          <button
+            onClick={handleStoryGenerate}
+            disabled={isGeneratingStory}
+            className="w-full mb-4 py-3 bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl font-bold text-xs flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform"
+          >
+             {isGeneratingStory ? <span className="animate-pulse">Generating...</span> : (
+               <><span>✨</span> Create Story Image</>
+             )}
+          </button>
+        )}
+
         <div className="pt-4 border-t border-border-color">
           {hasPublished ? (
             <div className="bg-cyber-lime/10 border border-cyber-lime/30 rounded-lg p-2 text-center text-[10px] text-cyber-lime font-bold">✨ Published to Community Runway!</div>
@@ -1133,6 +1168,7 @@ export function FittingRoom() {
         brandName={currentItem?.brand} 
         fitScore={fitScore}
         recommendedSize={recommendedFit?.recommendedSize}
+        resultImageUrl={aiTryOnResult || currentItem?.imageUrl}
       />
       <CompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} picks={topPicks} onSelect={setSelectedItem} />
       <AITryOnModal

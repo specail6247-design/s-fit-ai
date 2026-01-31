@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import LegalModal from '@/components/LegalModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +17,7 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -158,8 +160,25 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Trust Badge */}
+          <div className="mt-6 flex items-center gap-3 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+            <span className="text-xl">🛡️</span>
+            <div>
+              <p className="text-[10px] font-bold text-green-400 uppercase tracking-wide">Data Safety Verified</p>
+              <p className="text-[9px] text-gray-400">Photos are processed securely and not shared.</p>
+            </div>
+          </div>
+
+          {/* Footer Links */}
+          <div className="mt-auto pt-6 border-t border-white/10 flex justify-center">
+              <button onClick={() => setIsLegalModalOpen(true)} className="text-[10px] text-gray-500 hover:text-white transition-colors underline">
+                  Privacy & Terms
+              </button>
+          </div>
         </div>
       </div>
+
+      <LegalModal isOpen={isLegalModalOpen} onClose={() => setIsLegalModalOpen(false)} />
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
