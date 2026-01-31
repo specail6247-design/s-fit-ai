@@ -1,116 +1,142 @@
 'use client';
 
-import React, { useRef, useMemo, Suspense } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useTexture } from '@react-three/drei';
+import React, { useRef, Suspense } from 'react';
+import { Canvas, useFrame, useThree, extend } from '@react-three/fiber';
+import { useTexture, shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
-// Vertex Shader
-const vertexShader = `
-  varying vec2 vUv;
-  void main() {
-    vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`;
+// --- SHADER DEFINITION ---
+// A custom shader material that implements Simplex noise for fluid distortion.
+// We also apply the requested editorial filter: saturate(0.9) contrast(1.1)
 
-// Fragment Shader with Simplex Noise
-const fragmentShader = `
-  uniform sampler2D uTexture;
-  uniform float uTime;
-  uniform float uHover;
-  varying vec2 vUv;
+const FluidDistortionMaterial = shaderMaterial(
+  {
+    uTime: 0,
+    uTexture: new THREE.Texture(),
+    uHover: 0,
+    uResolution: new THREE.Vector2(1, 1),
+    uMouse: new THREE.Vector2(0, 0),
+  },
+  // Vertex Shader
+  `
+    varying vec2 vUv;
+    varying float vWave;
+    uniform float uTime;
+    uniform float uHover;
+    uniform vec2 uMouse;
 
-  // Simplex 2D noise
-  vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+    void main() {
+      vUv = uv;
 
-  float snoise(vec2 v){
-    const vec4 C = vec4(0.211324865405187, 0.366025403784439,
-             -0.577350269189626, 0.024390243902439);
-    vec2 i  = floor(v + dot(v, C.yy) );
-    vec2 x0 = v -   i + dot(i, C.xx);
-    vec2 i1;
-    i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-    vec4 x12 = x0.xyxy + C.xxzz;
-    x12.xy -= i1;
-    i = mod(i, 289.0);
-    vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
-    + i.x + vec3(0.0, i1.x, 1.0 ));
-    vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
-    m = m*m ;
-    m = m*m ;
-    vec3 x = 2.0 * fract(p * C.www) - 1.0;
-    vec3 h = abs(x) - 0.5;
-    vec3 ox = floor(x + 0.5);
-    vec3 a0 = x - ox;
-    m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
-    vec3 g;
-    g.x  = a0.x  * x0.x  + h.x  * x0.y;
-    g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-    return 130.0 * dot(m, g);
-  }
+      // Calculate distance from mouse for interaction
+      float dist = distance(uv, uMouse);
+      float proximity = 1.0 - smoothstep(0.0, 0.5, dist);
 
-  void main() {
-    vec2 uv = vUv;
+      // Simple wave effect based on time and interaction
+      vec3 pos = position;
+      float wave = sin(pos.x * 5.0 + uTime) * 0.1 * uHover * proximity;
+      pos.z += wave;
+      vWave = wave;
 
-    // Create liquid effect
-    float noise = snoise(uv * 3.0 + uTime * 0.5);
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+    }
+  `,
+  // Fragment Shader
+  `
+    uniform sampler2D uTexture;
+    uniform float uTime;
+    uniform float uHover;
+    varying vec2 vUv;
+    varying float vWave;
 
-    // Distortion strength based on hover
-    // We displace uv.x and uv.y based on noise
-    float strength = uHover * 0.02; // Subtle effect
+    // Simplex noise function (simplified)
+    vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
 
-    uv.x += noise * strength;
-    uv.y += noise * strength;
+    float snoise(vec2 v){
+      const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+               -0.577350269189626, 0.024390243902439);
+      vec2 i  = floor(v + dot(v, C.yy) );
+      vec2 x0 = v -   i + dot(i, C.xx);
+      vec2 i1;
+      i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+      vec4 x12 = x0.xyxy + C.xxzz;
+      x12.xy -= i1;
+      i = mod(i, 289.0);
+      vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
+      + i.x + vec3(0.0, i1.x, 1.0 ));
+      vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+      m = m*m ;
+      m = m*m ;
+      vec3 x = 2.0 * fract(p * C.www) - 1.0;
+      vec3 h = abs(x) - 0.5;
+      vec3 ox = floor(x + 0.5);
+      vec3 a0 = x - ox;
+      m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+      vec3 g;
+      g.x  = a0.x  * x0.x  + h.x  * x0.y;
+      g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+      return 130.0 * dot(m, g);
+    }
 
-    vec4 color = texture2D(uTexture, uv);
+    void main() {
+      vec2 uv = vUv;
 
-    // Editorial filter in shader
-    // Saturation
-    float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
-    vec3 saturated = mix(vec3(gray), color.rgb, 0.9); // Saturate 0.9
+      // Liquid distortion effect
+      float noise = snoise(uv * 3.0 + uTime * 0.5);
+      vec2 distortion = vec2(noise * 0.05 * uHover, noise * 0.05 * uHover);
 
-    // Contrast
-    vec3 contrasted = (saturated - 0.5) * 1.1 + 0.5; // Contrast 1.1
+      vec4 color = texture2D(uTexture, uv + distortion);
 
-    gl_FragColor = vec4(contrasted, color.a);
-  }
-`;
+      // Editorial Filter: Saturate 0.9, Contrast 1.1
+      // Saturation
+      float luminance = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
+      vec3 gray = vec3(luminance);
+      color.rgb = mix(gray, color.rgb, 0.9);
 
-interface DistortedImageProps {
-  imageUrl: string;
-}
+      // Contrast
+      color.rgb = (color.rgb - 0.5) * 1.1 + 0.5;
 
-const DistortedImage: React.FC<DistortedImageProps> = ({ imageUrl }) => {
+      // Add subtle shimmer based on wave
+      color.rgb += vWave * 0.2;
+
+      gl_FragColor = color;
+    }
+  `
+);
+
+extend({ FluidDistortionMaterial });
+
+// --- SCENE COMPONENT ---
+
+function FluidPlane({ imageUrl }: { imageUrl: string }) {
   const meshRef = useRef<THREE.Mesh>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const materialRef = useRef<any>(null);
   const texture = useTexture(imageUrl);
-  const hoverValue = useRef(0);
-  const { viewport } = useThree();
+  const { viewport, mouse } = useThree();
+  const [hovered, setHover] = React.useState(false);
 
-  // Handle texture aspect ratio to cover the plane properly
-  // Since we scale plane to viewport, uv mapping stretches.
-  // Ideally we should adjust UVs or use a specialized shader for cover,
-  // but for now simple stretch is acceptable or assuming image matches aspect.
-  // To keep it high quality, let's just rely on the distortion.
+  // Adjust plane size to image aspect ratio within viewport
+  const img = texture.image as HTMLImageElement;
+  const aspect = img ? img.width / img.height : 1;
+  // Fit within viewport (simplified logic)
+  const width = viewport.width * 0.8;
+  const height = width / aspect;
 
-  const uniforms = useMemo(
-    () => ({
-      uTexture: { value: texture },
-      uTime: { value: 0 },
-      uHover: { value: 0 },
-    }),
-    [texture]
-  );
-
-  useFrame((state) => {
-    if (meshRef.current) {
-      const material = meshRef.current.material as THREE.ShaderMaterial;
-      material.uniforms.uTime.value = state.clock.getElapsedTime();
-
-      material.uniforms.uHover.value = THREE.MathUtils.lerp(
-        material.uniforms.uHover.value,
-        hoverValue.current,
+  useFrame((state, delta) => {
+    if (materialRef.current) {
+      materialRef.current.uTime += delta;
+      // Lerp hover value for smooth transition
+      materialRef.current.uHover = THREE.MathUtils.lerp(
+        materialRef.current.uHover,
+        hovered ? 1 : 0,
         0.1
+      );
+      // Map mouse coordinates to UV space (roughly)
+      // mouse is -1 to 1. UV is 0 to 1.
+      materialRef.current.uMouse = new THREE.Vector2(
+        (mouse.x + 1) / 2,
+        (mouse.y + 1) / 2
       );
     }
   });
@@ -118,32 +144,28 @@ const DistortedImage: React.FC<DistortedImageProps> = ({ imageUrl }) => {
   return (
     <mesh
       ref={meshRef}
-      scale={[viewport.width, viewport.height, 1]}
-      onPointerOver={() => (hoverValue.current = 1)}
-      onPointerOut={() => (hoverValue.current = 0)}
+      onPointerOver={() => setHover(true)}
+      onPointerOut={() => setHover(false)}
     >
-      <planeGeometry args={[1, 1]} />
-      <shaderMaterial
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
-        uniforms={uniforms}
+      <planeGeometry args={[width, height, 32, 32]} />
+      {/* @ts-expect-error - FluidDistortionMaterial is generated at runtime */}
+      <fluidDistortionMaterial
+        ref={materialRef}
+        uTexture={texture}
         transparent
       />
     </mesh>
   );
-};
-
-interface LuxuryImageDistortionProps {
-  imageUrl: string;
-  className?: string;
 }
 
-export default function LuxuryImageDistortion({ imageUrl, className = '' }: LuxuryImageDistortionProps) {
+// --- MAIN EXPORT ---
+
+export default function LuxuryImageDistortion({ imageUrl }: { imageUrl: string }) {
   return (
-    <div className={`relative w-full h-full ${className}`}>
-      <Canvas style={{ width: '100%', height: '100%' }}>
+    <div className="w-full h-full">
+      <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
         <Suspense fallback={null}>
-          <DistortedImage imageUrl={imageUrl} />
+          <FluidPlane imageUrl={imageUrl} />
         </Suspense>
       </Canvas>
     </div>

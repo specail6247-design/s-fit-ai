@@ -1,23 +1,26 @@
 import type { Metadata } from "next";
-import { Cinzel, Space_Grotesk } from "next/font/google";
+import { Geist, Geist_Mono, Cinzel } from "next/font/google";
 import { validateEnv } from "@/lib/env";
-import SmoothScroll from "@/components/SmoothScroll";
-import CustomCursor from "@/components/ui/CustomCursor";
 import "./globals.css";
+import CustomCursor from "@/components/ui/CustomCursor";
+import SmoothScroll from "@/components/SmoothScroll";
 
 // Validate environment variables on startup
 validateEnv();
 
-const cinzel = Cinzel({
-  variable: "--font-cinzel",
+const geistSans = Geist({
+  variable: "--font-geist-sans",
   subsets: ["latin"],
-  display: "swap",
 });
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
-  display: "swap",
+});
+
+const cinzel = Cinzel({
+  variable: "--font-display",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -48,14 +51,15 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${cinzel.variable} ${spaceGrotesk.variable} antialiased bg-void-black text-pure-white`}
+        className={`${geistSans.variable} ${geistMono.variable} ${cinzel.variable} antialiased bg-void-black text-pure-white`}
         suppressHydrationWarning
       >
-        <SmoothScroll />
-        <CustomCursor />
-        {/* Grain Overlay for Premium Feel */}
-        <div className="grain-overlay" aria-hidden="true" />
-        {children}
+        <SmoothScroll>
+          <CustomCursor />
+          {/* Grain Overlay for Premium Feel */}
+          <div className="grain-overlay" aria-hidden="true" />
+          {children}
+        </SmoothScroll>
       </body>
     </html>
   );

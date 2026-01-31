@@ -30,9 +30,9 @@ import { AvatarLoader } from './AvatarLoader';
 import { FabricMaterial } from './masterpiece/FabricMaterial';
 import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
-import LuxuryImageDistortion from './masterpiece/LuxuryImageDistortion';
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
+import LuxuryImageDistortion from './masterpiece/LuxuryImageDistortion';
 
 // --- PHYSICS ENGINE (Ammo.js) ---
 

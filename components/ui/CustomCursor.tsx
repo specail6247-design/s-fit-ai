@@ -1,77 +1,49 @@
 'use client';
-
 import { useEffect, useState } from 'react';
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 export default function CustomCursor() {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
-  const [isClicking, setIsClicking] = useState(false);
-
-  // Start off-screen
-  const cursorX = useMotionValue(-100);
-  const cursorY = useMotionValue(-100);
-
-  const springConfig = { damping: 25, stiffness: 700 };
-  const cursorXSpring = useSpring(cursorX, springConfig);
-  const cursorYSpring = useSpring(cursorY, springConfig);
 
   useEffect(() => {
-    const moveCursor = (e: MouseEvent) => {
-      cursorX.set(e.clientX - 16); // Center the 32px cursor
-      cursorY.set(e.clientY - 16);
+    const updateMousePosition = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
-    const handleMouseDown = () => setIsClicking(true);
-    const handleMouseUp = () => setIsClicking(false);
-
-    const checkHover = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      // Check if the element or its parents are interactive
-      const isInteractive =
-        target.tagName === 'BUTTON' ||
-        target.tagName === 'A' ||
-        target.tagName === 'INPUT' ||
-        target.tagName === 'TEXTAREA' ||
-        target.tagName === 'SELECT' ||
-        target.closest('button') !== null ||
-        target.closest('a') !== null ||
-        target.getAttribute('role') === 'button';
-
-      setIsHovering(isInteractive);
+    const handleMouseOver = (e: MouseEvent) => {
+      if ((e.target as HTMLElement).closest('button, a, input, [role="button"]')) {
+        setIsHovering(true);
+      } else {
+        setIsHovering(false);
+      }
     };
 
-    // Use separate listeners for move and hover detection
-    window.addEventListener('mousemove', moveCursor);
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
-    window.addEventListener('mouseover', checkHover);
+    window.addEventListener('mousemove', updateMousePosition);
+    window.addEventListener('mouseover', handleMouseOver);
 
     return () => {
-      window.removeEventListener('mousemove', moveCursor);
-      window.removeEventListener('mousedown', handleMouseDown);
-      window.removeEventListener('mouseup', handleMouseUp);
-      window.removeEventListener('mouseover', checkHover);
+      window.removeEventListener('mousemove', updateMousePosition);
+      window.removeEventListener('mouseover', handleMouseOver);
     };
-  }, [cursorX, cursorY]);
-
-  // Don't render on mobile/touch devices (simple check)
-  // We'll use CSS media queries to hide it, but logic still runs.
-  // Or we can check navigator, but hydration issues.
-  // CSS `html, body { cursor: none; }` handles the hiding of default.
-  // We should hide this custom cursor on touch via CSS class on the div.
+  }, []);
 
   return (
     <motion.div
-      className="fixed top-0 left-0 w-8 h-8 border border-[var(--luxury-gold)] rounded-full pointer-events-none z-[9999] hidden sm:block"
-      style={{
-        x: cursorXSpring,
-        y: cursorYSpring,
-      }}
+      className="fixed top-0 left-0 w-4 h-4 rounded-full border border-[#ecab13] pointer-events-none z-[9999] mix-blend-difference"
       animate={{
-        scale: isClicking ? 0.8 : isHovering ? 1.5 : 1,
+        x: mousePosition.x - (isHovering ? 24 : 8),
+        y: mousePosition.y - (isHovering ? 24 : 8),
+        width: isHovering ? 48 : 16,
+        height: isHovering ? 48 : 16,
         backgroundColor: isHovering ? 'rgba(236, 171, 19, 0.1)' : 'transparent',
       }}
-      transition={{ type: 'spring', stiffness: 500, damping: 28 }}
+      transition={{
+        type: 'spring',
+        stiffness: 150,
+        damping: 15,
+        mass: 0.1
+      }}
     />
   );
 }
