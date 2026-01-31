@@ -3,7 +3,6 @@
 // S_FIT AI - 3D Fitting Room Component
 // Consolidated Version: Masterpiece Engine + Physics (Ammo.js) + Full UI Features
 // Includes: Accessory & Layering, Cinematic Video, AI Stylist, Comparison, Sharing
-// Added: The Vault, Sensory Ambience, Locked Drops, Styling Tips
 
 import React, { Suspense, useRef, useState, useCallback, useEffect, useMemo } from 'react';
 import Image from 'next/image';
@@ -33,8 +32,6 @@ import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
-import { SensoryAmbience } from './SensoryAmbience';
-import { TheVault } from './TheVault';
 
 // --- PHYSICS ENGINE (Ammo.js) ---
 
@@ -309,17 +306,17 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170
+  height = 170, opacity = 1.0
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  // const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
   
   return (
     <group scale={[scale, scale, scale]}>
       {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
-        url="https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
-        // animationUrl={animationUrl}
+        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb"
+        animationUrl={animationUrl}
         scale={1.0}
       />
     </group>
@@ -507,7 +504,7 @@ function Scene({
   const scale = height / 170;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
   let mannequinPosition: [number, number, number] = [0, -0.9, 0];
-  // const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
 
   const heatmapData = useMemo(() => {
     if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !selectedItem) return null;
@@ -535,10 +532,10 @@ function Scene({
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
             url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
-              : "https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
+              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb"
+              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb"
             }
-            // animationUrl={animationUrl}
+            animationUrl={animationUrl}
             scale={1.0}
           />
         ) : (
@@ -609,12 +606,10 @@ interface ItemCardProps {
   onSelect: () => void;
   isRecommended?: boolean;
   fitScore: number;
-  isSaved: boolean;
-  onSave: (e: React.MouseEvent) => void;
 }
 
 function ItemCard({
-  item, isSelected, onSelect, isRecommended, fitScore, isSaved, onSave
+  item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
 
@@ -623,6 +618,7 @@ function ItemCard({
 
   useEffect(() => {
       // Periodic check for unlock status
+      if (unlockTime <= 0) return;
       const timer = setInterval(() => setIsLocked(unlockTime > Date.now()), 1000);
       return () => clearInterval(timer);
   }, [unlockTime]);
@@ -630,9 +626,9 @@ function ItemCard({
   return (
     <motion.button
       onClick={isLocked ? undefined : onSelect}
-      className={`relative flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'} ${isLocked ? 'opacity-90 cursor-not-allowed' : ''}`}
-      whileHover={!isLocked ? { scale: 1.05 } : {}}
-      whileTap={!isLocked ? { scale: 0.95 } : {}}
+      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'} ${isLocked ? 'opacity-90 cursor-not-allowed' : ''}`}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
     >
       <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
         {isLocked && <LockedOverlay unlockTime={unlockTime} />}
@@ -643,17 +639,6 @@ function ItemCard({
       <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
       <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
       <p className="text-[0.55rem] text-cyber-lime">Fit {fitScore}%</p>
-
-      {!isLocked && (
-        <div
-            className="absolute top-2 right-2 z-30 w-5 h-5 flex items-center justify-center bg-black/40 rounded-full hover:bg-black/60 transition-colors"
-            onClick={(e) => { e.stopPropagation(); onSave(e); }}
-        >
-             <span className={`text-[10px] ${isSaved ? 'text-red-500' : 'text-gray-400 hover:text-white'}`}>
-                {isSaved ? '♥' : '♡'}
-             </span>
-        </div>
-      )}
     </motion.button>
   );
 }
@@ -888,14 +873,11 @@ function AITryOnModal({
 export function FittingRoom() {
   const {
     userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
-    savedLooks, saveLook, removeLook, isImmersiveMode, toggleImmersiveMode
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
-  const [showVault, setShowVault] = useState(false); // NEW
-
   const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
   const [aiTryOnLoading, setAITryOnLoading] = useState(false);
   const [userPhotoPreview, setUserPhotoPreview] = useState<string | null>(null);
@@ -993,10 +975,7 @@ export function FittingRoom() {
   }, [poseAnalysis, currentItem, resolvedHeight]);
 
   return (
-    <div className="w-full h-full flex flex-col bg-void-black text-pure-white relative">
-      <SensoryAmbience />
-      <TheVault isOpen={showVault} onClose={() => setShowVault(false)} onSelect={setSelectedItem} />
-
+    <div className="w-full h-full flex flex-col bg-void-black text-pure-white">
       <div className="flex-1 relative min-h-[350px]">
         {webglFailed ? (
           /* 2D Fallback View */
@@ -1074,24 +1053,9 @@ export function FittingRoom() {
           </motion.div>
         )}
 
-        {/* Top Left Buttons */}
         <div className="absolute top-4 left-4 flex gap-2 z-20">
             <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
                 <span>📤</span>
-            </button>
-            <button onClick={() => setShowVault(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors relative">
-                <span>🧥</span>
-                {savedLooks.length > 0 && (
-                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-[8px] flex items-center justify-center font-bold">
-                        {savedLooks.length}
-                    </span>
-                )}
-            </button>
-            <button
-                onClick={toggleImmersiveMode}
-                className={`bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border transition-colors ${isImmersiveMode ? 'border-cyber-lime text-cyber-lime' : 'border-white/10 hover:bg-charcoal/80'}`}
-            >
-                <span>{isImmersiveMode ? '🎧' : '🔇'}</span>
             </button>
             <motion.button onClick={() => setShowAITryOnModal(true)} 
                            className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
@@ -1149,7 +1113,7 @@ export function FittingRoom() {
                                 <p className="text-xs font-bold text-white">Masterpiece Fit Consultant</p>
                             </div>
                         </div>
-                        <ul className="space-y-1 mb-2">
+                        <ul className="space-y-1">
                             {recommendedFit.fitNotes.map((note, i) => (
                                 <li key={i} className="text-[9px] text-soft-gray flex items-start gap-1.5 leading-relaxed">
                                     <span className="text-cyber-lime mt-1 flex-shrink-0">●</span>
@@ -1157,15 +1121,6 @@ export function FittingRoom() {
                                 </li>
                             ))}
                         </ul>
-                        {currentItem.stylingTip && (
-                            <div className="pt-2 border-t border-white/10 mt-1">
-                                <div className="flex items-center gap-1.5 mb-1">
-                                    <span className="text-xs">💡</span>
-                                    <span className="text-[9px] font-bold text-cyber-lime uppercase">Stylist Note</span>
-                                </div>
-                                <p className="text-[9px] text-white italic">&quot;{currentItem.stylingTip}&quot;</p>
-                            </div>
-                        )}
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -1185,14 +1140,6 @@ export function FittingRoom() {
                     isSelected={currentItem?.id === item.id} 
                     onSelect={() => setSelectedItem(item)}
                     fitScore={fitScore + (item.isLuxury ? 5 : 0)}
-                    isSaved={savedLooks.some(l => l.id === item.id)}
-                    onSave={() => {
-                         if (savedLooks.some(l => l.id === item.id)) {
-                             removeLook(item.id);
-                         } else {
-                             saveLook(item);
-                         }
-                    }}
                 />
             ))}
         </div>
@@ -1209,6 +1156,7 @@ export function FittingRoom() {
             <span className="text-[8px] text-soft-gray italic">Complete the Look</span>
           </div>
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+            {/* These would normally come from lib/visionService.getComplementaryItems */}
             {brandItems.filter(i => i.id !== currentItem.id).slice(0, 3).map((compItem) => (
               <button key={`comp-${compItem.id}`} onClick={() => setSelectedItem(compItem)}
                         className="flex-shrink-0 w-20 p-2 rounded-lg border border-white/5 bg-void-black/40 hover:border-cyber-lime/30 transition-all text-left">
