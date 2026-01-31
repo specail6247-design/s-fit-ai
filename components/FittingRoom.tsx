@@ -30,6 +30,7 @@ import { AvatarLoader } from './AvatarLoader';
 import { FabricMaterial } from './masterpiece/FabricMaterial';
 import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
+import LuxuryImageDistortion from './masterpiece/LuxuryImageDistortion';
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
 
@@ -309,14 +310,14 @@ function Mannequin({
   height = 170, opacity = 1.0 
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  // Disabling external animation URL to prevent 404 crashes
+  // const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
   
   return (
     <group scale={[scale, scale, scale]}>
       {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
-        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-        animationUrl={animationUrl}
+        url="https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
         scale={1.0}
       />
     </group>
@@ -504,7 +505,7 @@ function Scene({
   const scale = height / 170;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
   let mannequinPosition: [number, number, number] = [0, -0.9, 0];
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  // const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
 
   const heatmapData = useMemo(() => {
     if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !selectedItem) return null;
@@ -532,10 +533,9 @@ function Scene({
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
             url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+              ? "https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
+              : "https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
             }
-            animationUrl={animationUrl}
             scale={1.0}
           />
         ) : (
@@ -588,10 +588,17 @@ function ItemCard({
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
-      <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
-        <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
-        {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
-        {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
+      <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden bg-white/5">
+        <Image
+            src={item.imageUrl}
+            alt={item.name}
+            fill
+            className="object-cover editorial-filter"
+            sizes="96px"
+            unoptimized
+        />
+        {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center z-10"><span className="text-[0.5rem]">✦</span></div>}
+        {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black z-10">AI Pick</div>}
       </div>
       <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
       <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
@@ -830,6 +837,7 @@ function AITryOnModal({
 export function FittingRoom() {
   const {
     userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    isAnalyzing, setIsAnalyzing, isFitting, setIsFitting
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
@@ -904,6 +912,7 @@ export function FittingRoom() {
   const handleGenerateAITryOn = useCallback(async () => {
     if (!userPhotoPreview || !currentItem?.imageUrl) return;
     setAITryOnLoading(true);
+    setIsAnalyzing(true);
     try {
       const response = await fetch('/api/try-on', {
         method: 'POST',
@@ -917,8 +926,11 @@ export function FittingRoom() {
       const data = await response.json();
       if (data.success) setAITryOnResult(data.imageUrl);
     } catch (e) { console.error(e); }
-    finally { setAITryOnLoading(false); }
-  }, [userPhotoPreview, currentItem]);
+    finally {
+        setAITryOnLoading(false);
+        setIsAnalyzing(false);
+    }
+  }, [userPhotoPreview, currentItem, setIsAnalyzing]);
 
   const resolvedHeight = userStats?.height ?? 170;
   const recommendedFit = useMemo(() => {
@@ -937,33 +949,12 @@ export function FittingRoom() {
         {webglFailed ? (
           /* 2D Fallback View */
           <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-[#0a0a0a] to-[#1a1a1a]">
-            <div className="relative w-64 h-96">
-              <div className="absolute inset-0 flex items-center justify-center opacity-30">
-                <svg viewBox="0 0 100 160" className="w-full h-full">
-                  <ellipse cx="50" cy="20" rx="12" ry="15" fill="#444" />
-                  <path d="M38 35 L30 80 L35 80 L40 55 L45 80 L55 80 L60 55 L65 80 L70 80 L62 35 Z" fill="#444" />
-                  <path d="M35 80 L30 140 L40 140 L45 100 L50 100 L55 100 L60 140 L70 140 L65 80 Z" fill="#444" />
-                </svg>
-              </div>
-              {currentItem && (
-                <div
-                  className="absolute inset-0 flex items-center justify-center"
-                  style={{ marginTop: currentItem.category === 'bottoms' ? '30%' : (currentItem.category === 'dresses' ? '0%' : '-20%') }}
-                >
-                  <div className="relative w-[70%] h-[50%]">
-                    <Image
-                      src={currentItem.imageUrl}
-                      alt={currentItem.name}
-                      fill
-                      className="object-contain drop-shadow-2xl"
-                      sizes="(max-width: 768px) 60vw, 280px"
-                      unoptimized
-                    />
-                  </div>
-                </div>
-              )}
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-40 h-4 bg-gradient-to-t from-charcoal to-transparent rounded-full opacity-50" />
-            </div>
+             <div className="relative w-full h-full max-w-md max-h-[80vh] p-8">
+                {currentItem && <LuxuryImageDistortion imageUrl={currentItem.imageUrl} />}
+                {!currentItem && (
+                    <div className="text-center text-soft-gray">Select an item to view</div>
+                )}
+             </div>
           </div>
         ) : (
           <Suspense fallback={<LoadingSpinner />}>
@@ -989,67 +980,83 @@ export function FittingRoom() {
           </Suspense>
         )}
         
-        {/* Controls Overlay */}
-        <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
-            <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
-                {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
-            </button>
-            <button onClick={() => setIsMacroView(!isMacroView)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMacroView ? 'bg-white text-black border-white' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
-                🔍 Macro View
-            </button>
-            <button onClick={() => setShowHeatmap(!showHeatmap)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
-                🔥 Fit Heatmap
-            </button>
-        </div>
-
-        {/* Rotation hint */}
-        {!webglFailed && (
-          <motion.div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-soft-gray/60 text-xs bg-void-black/50 px-3 py-1 rounded-full z-10"
-                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }}>
-            <span>↔️ Drag to rotate</span>
-          </motion.div>
-        )}
-
-        <div className="absolute top-4 left-4 flex gap-2 z-20">
-            <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
-                <span>📤</span>
-            </button>
-            <motion.button onClick={() => setShowAITryOnModal(true)} 
-                           className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
-                           whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <span>✨</span> AI 피팅 <span className="text-[0.6rem] bg-white/20 px-1.5 py-0.5 rounded-full">NEW</span>
-            </motion.button>
-        </div>
-
-        {topPicks.length > 0 && (
-          <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-20">
-            {isMiniBarCollapsed ? (
-              <div className="glass-card px-3 py-2 flex items-center justify-between gap-3">
-                <span className="text-[0.55rem] uppercase tracking-[0.2em] text-soft-gray">AI Picks</span>
-                <button onClick={() => setMiniBarCollapsed(false)} className="text-[0.55rem] text-soft-gray hover:text-white transition-colors">Show</button>
-              </div>
-            ) : (
-              <div className="glass-card px-3 py-2 flex items-center gap-2 relative overflow-hidden">
-                 <span className="text-[0.55rem] uppercase tracking-[0.2em] text-soft-gray">AI Picks</span>
-                 <div className="flex-1 flex gap-2 overflow-x-auto scrollbar-hide">
-                    {topPicks.map((entry) => (
-                      <button key={`mini-${entry.item.id}`} onClick={() => setSelectedItem(entry.item)}
-                              className={`flex items-center gap-1 rounded-full border px-2 py-0.5 text-[0.6rem] transition-colors whitespace-nowrap ${currentItem?.id === entry.item.id ? 'border-cyber-lime text-pure-white bg-cyber-lime/10' : 'border-border-color text-soft-gray'}`}>
-                        <span>{getCategoryIcon(entry.item.category)}</span>
-                        <span className="max-w-[60px] truncate">{entry.item.name}</span>
-                        <span className="text-cyber-lime">{entry.score}</span>
-                      </button>
-                    ))}
-                 </div>
-                 <button onClick={() => setAutoCycleEnabled(!autoCycleEnabled)} className={`text-[0.55rem] uppercase ${autoCycleEnabled ? 'text-cyber-lime' : 'text-soft-gray'}`}>
-                    {autoCycleEnabled ? 'Auto On' : 'Auto Off'}
-                 </button>
-                 <button onClick={() => setMiniBarCollapsed(true)} className="text-[0.55rem] text-soft-gray ml-1">✕</button>
-                 {autoCycleEnabled && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyber-lime/30"><div className="h-full bg-cyber-lime auto-cycle-bar" /></div>}
-              </div>
-            )}
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          animate={{ opacity: isAnalyzing || isFitting ? 0 : 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          {/* Controls Overlay */}
+          <div className="absolute top-4 right-4 flex flex-col gap-2 z-10 pointer-events-auto">
+              <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                  {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
+              </button>
+              <button onClick={() => setIsMacroView(!isMacroView)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMacroView ? 'bg-white text-black border-white' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                  🔍 Macro View
+              </button>
+              <button onClick={() => setShowHeatmap(!showHeatmap)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                  🔥 Fit Heatmap
+              </button>
           </div>
-        )}
+
+          {/* Product Inspector (Masterpiece Mode) */}
+          {isMasterpieceMode && currentItem && !webglFailed && (
+            <div className="absolute bottom-24 right-4 w-32 h-48 glass-card p-1 rounded-xl z-10 pointer-events-auto border-cyber-lime/30 border hidden md:block">
+                <div className="w-full h-full relative overflow-hidden rounded-lg">
+                    <LuxuryImageDistortion imageUrl={currentItem.imageUrl} />
+                    <div className="absolute bottom-1 left-1 text-[8px] font-bold bg-black/50 px-1.5 rounded text-white">Fabric Physics</div>
+                </div>
+            </div>
+          )}
+
+          {/* Rotation hint */}
+          {!webglFailed && (
+            <motion.div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-soft-gray/60 text-xs bg-void-black/50 px-3 py-1 rounded-full z-10"
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }}>
+              <span>↔️ Drag to rotate</span>
+            </motion.div>
+          )}
+
+          <div className="absolute top-4 left-4 flex gap-2 z-20 pointer-events-auto">
+              <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
+                  <span>📤</span>
+              </button>
+              <motion.button onClick={() => setShowAITryOnModal(true)}
+                             className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
+                             whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <span>✨</span> AI 피팅 <span className="text-[0.6rem] bg-white/20 px-1.5 py-0.5 rounded-full">NEW</span>
+              </motion.button>
+          </div>
+
+          {topPicks.length > 0 && (
+            <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-20 pointer-events-auto">
+              {isMiniBarCollapsed ? (
+                <div className="glass-card px-3 py-2 flex items-center justify-between gap-3">
+                  <span className="text-[0.55rem] uppercase tracking-[0.2em] text-soft-gray">AI Picks</span>
+                  <button onClick={() => setMiniBarCollapsed(false)} className="text-[0.55rem] text-soft-gray hover:text-white transition-colors">Show</button>
+                </div>
+              ) : (
+                <div className="glass-card px-3 py-2 flex items-center gap-2 relative overflow-hidden">
+                   <span className="text-[0.55rem] uppercase tracking-[0.2em] text-soft-gray">AI Picks</span>
+                   <div className="flex-1 flex gap-2 overflow-x-auto scrollbar-hide">
+                      {topPicks.map((entry) => (
+                        <button key={`mini-${entry.item.id}`} onClick={() => setSelectedItem(entry.item)}
+                                className={`flex items-center gap-1 rounded-full border px-2 py-0.5 text-[0.6rem] transition-colors whitespace-nowrap ${currentItem?.id === entry.item.id ? 'border-cyber-lime text-pure-white bg-cyber-lime/10' : 'border-border-color text-soft-gray'}`}>
+                          <span>{getCategoryIcon(entry.item.category)}</span>
+                          <span className="max-w-[60px] truncate">{entry.item.name}</span>
+                          <span className="text-cyber-lime">{entry.score}</span>
+                        </button>
+                      ))}
+                   </div>
+                   <button onClick={() => setAutoCycleEnabled(!autoCycleEnabled)} className={`text-[0.55rem] uppercase ${autoCycleEnabled ? 'text-cyber-lime' : 'text-soft-gray'}`}>
+                      {autoCycleEnabled ? 'Auto On' : 'Auto Off'}
+                   </button>
+                   <button onClick={() => setMiniBarCollapsed(true)} className="text-[0.55rem] text-soft-gray ml-1">✕</button>
+                   {autoCycleEnabled && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyber-lime/30"><div className="h-full bg-cyber-lime auto-cycle-bar" /></div>}
+                </div>
+              )}
+            </div>
+          )}
+        </motion.div>
 
         {/* AI Consultant Advice Overlay */}
         <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none">
@@ -1085,7 +1092,11 @@ export function FittingRoom() {
       </div>
 
       {/* Item Selector Footer */}
-      <div className="p-4 border-t border-border-color bg-void-black">
+      <motion.div
+        className="p-4 border-t border-border-color bg-void-black"
+        animate={{ opacity: isAnalyzing || isFitting ? 0 : 1 }}
+        transition={{ duration: 0.5 }}
+      >
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-[10px] uppercase tracking-widest text-soft-gray">{selectedBrand} Collection</h3>
           <button onClick={() => setShowCompareModal(true)} className="text-[10px] text-cyber-lime hover:underline">Compare Picks →</button>
@@ -1100,11 +1111,15 @@ export function FittingRoom() {
                 />
             ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* AI Stylist & Complementary Items */}
       {currentItem && (
-        <div className="p-4 bg-charcoal/30 border-t border-border-color">
+        <motion.div
+          className="p-4 bg-charcoal/30 border-t border-border-color"
+          animate={{ opacity: isAnalyzing || isFitting ? 0 : 1 }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <span className="text-xs">🎨</span>
@@ -1123,7 +1138,7 @@ export function FittingRoom() {
               </button>
             ))}
           </div>
-        </div>
+        </motion.div>
       )}
 
       <ShareModal 
