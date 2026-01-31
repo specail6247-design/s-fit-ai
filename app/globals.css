@@ -38,6 +38,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --font-display: var(--font-display);
   --color-void-black: var(--void-black);
   --color-pure-white: var(--pure-white);
   --color-soft-gray: var(--soft-gray);
