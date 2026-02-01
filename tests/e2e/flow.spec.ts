@@ -11,7 +11,8 @@ test.describe('User Flow', () => {
     await page.getByText('EASY FIT').click({ force: true });
 
     // Verify selection (border color change or checkmark)
-    const continueToModeBtn = page.getByRole('button', { name: /Continue →/i });
+    // Scope to the specific card
+    const continueToModeBtn = page.locator('.mode-card').filter({ hasText: 'EASY FIT' }).getByRole('button', { name: /Continue →/i });
     await expect(continueToModeBtn).toBeEnabled();
     await continueToModeBtn.click();
 
