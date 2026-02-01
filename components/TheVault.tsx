@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '@/store/useStore';
 import Image from 'next/image';
 import { getCategoryIcon } from './FittingRoom';
+import { ClothingItem } from '@/data/mockData';
 
 interface TheVaultProps {
   isOpen: boolean;
@@ -14,7 +15,7 @@ interface TheVaultProps {
 export function TheVault({ isOpen, onClose }: TheVaultProps) {
   const { savedLooks, removeLook, setSelectedItem } = useStore();
 
-  const handleSelect = (item: any) => {
+  const handleSelect = (item: ClothingItem) => {
     setSelectedItem(item);
     onClose();
   };

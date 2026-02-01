@@ -3,7 +3,17 @@
 import React, { useEffect, useState } from 'react';
 
 export function LockedOverlay({ lockedUntil }: { lockedUntil: string }) {
-  const [timeLeft, setTimeLeft] = useState('');
+  // Use lazy initializer to calculate initial state
+  const [timeLeft, setTimeLeft] = useState(() => {
+    const difference = +new Date(lockedUntil) - +new Date();
+    if (difference > 0) {
+      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((difference / 1000 / 60) % 60);
+      const seconds = Math.floor((difference / 1000) % 60);
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+    return 'UNLOCKED';
+  });
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -17,7 +27,7 @@ export function LockedOverlay({ lockedUntil }: { lockedUntil: string }) {
       return 'UNLOCKED';
     };
 
-    setTimeLeft(calculateTimeLeft());
+    // Update state periodically
     const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
     }, 1000);

@@ -12,7 +12,8 @@ export function SensoryAmbience() {
     const initAudio = () => {
         if (audioContextRef.current) return;
 
-        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        // Use type assertion to handle webkitAudioContext for Safari support
+        const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
         if (!AudioContextClass) return;
 
         const ctx = new AudioContextClass();
@@ -72,7 +73,8 @@ export function SensoryAmbience() {
     }
   }, [isMuted]);
 
-  if (!hasInteracted && !audioContextRef.current) return null;
+  // Rely on state for rendering to avoid "accessing ref during render" lint error
+  if (!hasInteracted) return null;
 
   return (
     <button
