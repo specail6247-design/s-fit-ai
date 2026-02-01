@@ -26,7 +26,8 @@
   --border-color: rgba(255, 255, 255, 0.1);
 
   /* Typography */
-  --font-display: "Geist", -apple-system, sans-serif;
+  --font-display: var(--font-cinzel), serif;
+  --font-sans: var(--font-space-grotesk), sans-serif;
   --font-mono: "Geist Mono", monospace;
 
   /* Transitions */
@@ -47,7 +48,8 @@
   --color-gold-primary: #ecab13;
   --color-surface-dark: #1a1a1a;
   --color-border-dark: #2d2d2d;
-  --font-sans: var(--font-geist-sans);
+  --font-display: var(--font-cinzel);
+  --font-sans: var(--font-space-grotesk);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -91,6 +93,18 @@ body {
 /* ============================================
    Component Styles
    ============================================ */
+
+/* Editorial Filter - Asset Curation */
+.editorial-filter {
+  filter: saturate(0.9) contrast(1.1);
+}
+
+/* Hide Cursor for Custom Implementation (Desktop only) */
+@media (min-width: 768px) {
+  body, a, button, input, select, textarea, [role="button"] {
+    cursor: none !important;
+  }
+}
 
 /* Glass Card Effect */
 .glass-card {

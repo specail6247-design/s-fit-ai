@@ -589,7 +589,18 @@ function ItemCard({
       whileTap={{ scale: 0.95 }}
     >
       <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
-        <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+        {item.imageUrl ? (
+          <Image
+            src={item.imageUrl}
+            alt={item.name}
+            fill
+            className="object-cover editorial-filter"
+            sizes="100px"
+            unoptimized
+          />
+        ) : (
+          <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+        )}
         {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
       </div>
@@ -830,8 +841,11 @@ function AITryOnModal({
 export function FittingRoom() {
   const {
     userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    isAnalyzing, isFitting
   } = useStore();
   
+  const isImmersiveState = isAnalyzing || isFitting;
+
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
@@ -990,7 +1004,10 @@ export function FittingRoom() {
         )}
         
         {/* Controls Overlay */}
-        <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
+        <motion.div
+          className="absolute top-4 right-4 flex flex-col gap-2 z-10"
+          animate={{ opacity: isImmersiveState ? 0 : 1, pointerEvents: isImmersiveState ? 'none' : 'auto' }}
+        >
             <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
             </button>
@@ -1000,17 +1017,20 @@ export function FittingRoom() {
             <button onClick={() => setShowHeatmap(!showHeatmap)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 🔥 Fit Heatmap
             </button>
-        </div>
+        </motion.div>
 
         {/* Rotation hint */}
-        {!webglFailed && (
+        {!webglFailed && !isImmersiveState && (
           <motion.div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-soft-gray/60 text-xs bg-void-black/50 px-3 py-1 rounded-full z-10"
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }}>
             <span>↔️ Drag to rotate</span>
           </motion.div>
         )}
 
-        <div className="absolute top-4 left-4 flex gap-2 z-20">
+        <motion.div
+          className="absolute top-4 left-4 flex gap-2 z-20"
+          animate={{ opacity: isImmersiveState ? 0 : 1, pointerEvents: isImmersiveState ? 'none' : 'auto' }}
+        >
             <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
                 <span>📤</span>
             </button>
@@ -1019,10 +1039,13 @@ export function FittingRoom() {
                            whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <span>✨</span> AI 피팅 <span className="text-[0.6rem] bg-white/20 px-1.5 py-0.5 rounded-full">NEW</span>
             </motion.button>
-        </div>
+        </motion.div>
 
         {topPicks.length > 0 && (
-          <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-20">
+          <motion.div
+            className="absolute top-16 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-20"
+            animate={{ opacity: isImmersiveState ? 0 : 1, pointerEvents: isImmersiveState ? 'none' : 'auto' }}
+          >
             {isMiniBarCollapsed ? (
               <div className="glass-card px-3 py-2 flex items-center justify-between gap-3">
                 <span className="text-[0.55rem] uppercase tracking-[0.2em] text-soft-gray">AI Picks</span>
@@ -1048,7 +1071,7 @@ export function FittingRoom() {
                  {autoCycleEnabled && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyber-lime/30"><div className="h-full bg-cyber-lime auto-cycle-bar" /></div>}
               </div>
             )}
-          </div>
+          </motion.div>
         )}
 
         {/* AI Consultant Advice Overlay */}
@@ -1085,7 +1108,10 @@ export function FittingRoom() {
       </div>
 
       {/* Item Selector Footer */}
-      <div className="p-4 border-t border-border-color bg-void-black">
+      <motion.div
+        className="p-4 border-t border-border-color bg-void-black"
+        animate={{ opacity: isImmersiveState ? 0 : 1, pointerEvents: isImmersiveState ? 'none' : 'auto' }}
+      >
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-[10px] uppercase tracking-widest text-soft-gray">{selectedBrand} Collection</h3>
           <button onClick={() => setShowCompareModal(true)} className="text-[10px] text-cyber-lime hover:underline">Compare Picks →</button>
@@ -1100,11 +1126,14 @@ export function FittingRoom() {
                 />
             ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* AI Stylist & Complementary Items */}
       {currentItem && (
-        <div className="p-4 bg-charcoal/30 border-t border-border-color">
+        <motion.div
+          className="p-4 bg-charcoal/30 border-t border-border-color"
+          animate={{ opacity: isImmersiveState ? 0 : 1, pointerEvents: isImmersiveState ? 'none' : 'auto' }}
+        >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <span className="text-xs">🎨</span>
@@ -1123,7 +1152,7 @@ export function FittingRoom() {
               </button>
             ))}
           </div>
-        </div>
+        </motion.div>
       )}
 
       <ShareModal 
