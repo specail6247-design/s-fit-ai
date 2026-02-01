@@ -142,7 +142,7 @@ function PhysicsProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     if (world) {
       world.stepSimulation(delta, 10);
     }

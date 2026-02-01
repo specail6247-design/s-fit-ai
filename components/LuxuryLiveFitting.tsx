@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Cinzel, Space_Grotesk } from 'next/font/google';
 import { generateStoryImage } from '@/lib/shareUtils';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const cinzel = Cinzel({ subsets: ['latin'], variable: '--font-cinzel' });
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space' });
@@ -212,7 +213,7 @@ export default function LuxuryLiveFitting() {
                         <div className={`relative h-48 rounded-lg border border-dashed border-gray-700 bg-gray-900/50 hover:bg-gray-800/50 hover:border-[#D4AF37] transition-all overflow-hidden flex items-center justify-center cursor-pointer ${userPhoto ? 'border-solid border-[#D4AF37]/50' : ''}`}>
                             <input type="file" onChange={(e) => handleFileUpload(e, setUserPhoto)} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
                             {userPhoto ? (
-                                <img src={userPhoto} alt="User Photo" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
+                                <Image src={userPhoto} alt="User Photo" fill className="object-cover opacity-60 group-hover:opacity-100 transition-opacity" unoptimized />
                             ) : (
                                 <div className="text-center p-4">
                                     <span className="material-symbols-outlined text-3xl text-gray-600 mb-2">person_add</span>
@@ -228,7 +229,7 @@ export default function LuxuryLiveFitting() {
                         <div className={`relative h-48 rounded-lg border border-dashed border-gray-700 bg-gray-900/50 hover:bg-gray-800/50 hover:border-[#D4AF37] transition-all overflow-hidden flex items-center justify-center cursor-pointer ${garmentPhoto ? 'border-solid border-[#D4AF37]/50' : ''}`}>
                             <input type="file" onChange={(e) => handleFileUpload(e, setGarmentPhoto)} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
                             {garmentPhoto ? (
-                                <img src={garmentPhoto} alt="Garment Photo" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
+                                <Image src={garmentPhoto} alt="Garment Photo" fill className="object-cover opacity-60 group-hover:opacity-100 transition-opacity" unoptimized />
                             ) : (
                                 <div className="text-center p-4">
                                     <span className="material-symbols-outlined text-3xl text-gray-600 mb-2">checkroom</span>
