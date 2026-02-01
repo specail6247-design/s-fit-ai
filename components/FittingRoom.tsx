@@ -33,6 +33,11 @@ import { FabricType } from './masterpiece/types';
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
 
+// Phase 7 Components
+import { SensoryAmbience } from './SensoryAmbience';
+import { TheVault } from './TheVault';
+import { LockedOverlay } from './LockedOverlay';
+
 // --- PHYSICS ENGINE (Ammo.js) ---
 
 type AmmoVector3 = {
@@ -306,7 +311,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
@@ -575,23 +580,45 @@ interface ItemCardProps {
   onSelect: () => void;
   isRecommended?: boolean;
   fitScore: number;
+  onSave?: (item: ClothingItem) => void;
 }
 
 function ItemCard({
-  item, isSelected, onSelect, isRecommended, fitScore
+  item, isSelected, onSelect, isRecommended, fitScore, onSave
 }: ItemCardProps) {
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
+  const isLocked = item.lockedUntil && new Date(item.lockedUntil) > new Date();
+
   return (
     <motion.button
-      onClick={onSelect}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      onClick={() => !isLocked && onSelect()}
+      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start relative group/card ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'} ${isLocked ? 'cursor-not-allowed opacity-80' : ''}`}
+      whileHover={!isLocked ? { scale: 1.05 } : {}}
+      whileTap={!isLocked ? { scale: 0.95 } : {}}
     >
       <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
+        {/* Locked Overlay */}
+        {item.lockedUntil && <LockedOverlay lockedUntil={item.lockedUntil} />}
+
         <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
-        {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
+
+        {/* Luxury Badge (only if not locked) */}
+        {item.isLuxury && !isLocked && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
+
+        {/* AI Pick Badge */}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
+
+        {/* Save to Vault Button (only if not locked) */}
+        {!isLocked && onSave && (
+            <div
+                className="absolute top-0 right-0 p-1 opacity-0 group-hover/card:opacity-100 transition-opacity"
+                onClick={(e) => { e.stopPropagation(); onSave(item); }}
+            >
+                <div className="w-5 h-5 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center hover:bg-red-500/20 hover:text-red-400 text-white transition-colors">
+                    <span className="material-symbols-outlined text-[10px]">favorite</span>
+                </div>
+            </div>
+        )}
       </div>
       <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
       <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
@@ -829,12 +856,13 @@ function AITryOnModal({
 
 export function FittingRoom() {
   const {
-    userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis, saveLook, savedLooks
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
+  const [isVaultOpen, setIsVaultOpen] = useState(false);
   const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
   const [aiTryOnLoading, setAITryOnLoading] = useState(false);
   const [userPhotoPreview, setUserPhotoPreview] = useState<string | null>(null);
@@ -932,7 +960,8 @@ export function FittingRoom() {
   }, [poseAnalysis, currentItem, resolvedHeight]);
 
   return (
-    <div className="w-full h-full flex flex-col bg-void-black text-pure-white">
+    <div className="w-full h-full flex flex-col bg-void-black text-pure-white relative overflow-hidden">
+      <SensoryAmbience />
       <div className="flex-1 relative min-h-[350px]">
         {webglFailed ? (
           /* 2D Fallback View */
@@ -1014,6 +1043,14 @@ export function FittingRoom() {
             <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
                 <span>📤</span>
             </button>
+            <button onClick={() => setIsVaultOpen(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors relative">
+                <span>👜</span>
+                {savedLooks && savedLooks.length > 0 && (
+                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-cyber-lime rounded-full text-[8px] text-black flex items-center justify-center font-bold">
+                        {savedLooks.length}
+                    </span>
+                )}
+            </button>
             <motion.button onClick={() => setShowAITryOnModal(true)} 
                            className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
                            whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -1071,6 +1108,11 @@ export function FittingRoom() {
                             </div>
                         </div>
                         <ul className="space-y-1">
+                            {currentItem.stylingTip && (
+                                <li className="text-[9px] text-white/90 italic mb-2 border-l-2 border-cyber-lime pl-2">
+                                    &ldquo;{currentItem.stylingTip}&rdquo;
+                                </li>
+                            )}
                             {recommendedFit.fitNotes.map((note, i) => (
                                 <li key={i} className="text-[9px] text-soft-gray flex items-start gap-1.5 leading-relaxed">
                                     <span className="text-cyber-lime mt-1 flex-shrink-0">●</span>
@@ -1097,6 +1139,7 @@ export function FittingRoom() {
                     isSelected={currentItem?.id === item.id} 
                     onSelect={() => setSelectedItem(item)}
                     fitScore={fitScore + (item.isLuxury ? 5 : 0)}
+                    onSave={saveLook}
                 />
             ))}
         </div>
@@ -1148,6 +1191,7 @@ export function FittingRoom() {
         result={aiTryOnResult}
         onGenerateTryOn={handleGenerateAITryOn}
       />
+      <TheVault isOpen={isVaultOpen} onClose={() => setIsVaultOpen(false)} />
     </div>
   );
 }
