@@ -22,7 +22,8 @@ test.describe('Home Page', () => {
     await expect(page.getByText('EASY FIT')).toBeVisible();
 
     // Check continue button
-    const continueBtn = page.getByRole('button', { name: /Continue/i });
+    // Check that at least one continue button exists (since there are 3 now)
+    const continueBtn = page.getByRole('button', { name: /Continue/i }).first();
     await expect(continueBtn).toBeVisible();
   });
 

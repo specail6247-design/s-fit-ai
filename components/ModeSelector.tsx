@@ -76,7 +76,7 @@ export function ModeSelector() {
           {/* CTA */}
           <div className="w-full">
             <button className="w-full py-4 border-t border-white/10 text-xs font-bold uppercase tracking-widest text-soft-gray group-hover:bg-white group-hover:text-void-black transition-all duration-300">
-              Select Mode_
+              Continue →
             </button>
           </div>
           
