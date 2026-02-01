@@ -829,7 +829,7 @@ function AITryOnModal({
 
 export function FittingRoom() {
   const {
-    userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis, setSelectedBrand,
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
@@ -1011,6 +1011,9 @@ export function FittingRoom() {
         )}
 
         <div className="absolute top-4 left-4 flex gap-2 z-20">
+            <button onClick={() => setSelectedBrand(null)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors flex items-center gap-2 px-3 text-xs font-bold text-white">
+                ← Back to brands
+            </button>
             <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
                 <span>📤</span>
             </button>
