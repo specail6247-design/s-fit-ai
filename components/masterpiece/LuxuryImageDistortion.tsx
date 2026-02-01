@@ -95,14 +95,11 @@ const ImageDistortionMaterial = shaderMaterial(
 
 extend({ ImageDistortionMaterial });
 
-// Add types
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSX {
-    interface IntrinsicElements {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      imageDistortionMaterial: any;
-    }
+// Add types for React Three Fiber
+declare module '@react-three/fiber' {
+  interface ThreeElements {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    imageDistortionMaterial: any;
   }
 }
 
