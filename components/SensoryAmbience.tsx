@@ -13,7 +13,9 @@ interface CustomWindow extends Window {
 export default function SensoryAmbience() {
   const { selectedMode } = useStore();
   const [isMuted, setIsMuted] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
+
+  // Track playback state with refs to avoid re-renders in effects
+  const isPlayingRef = useRef(false);
   const audioContextRef = useRef<AudioContext | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
   const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
@@ -44,7 +46,7 @@ export default function SensoryAmbience() {
     const shouldPlay = selectedMode && !isMuted;
 
     if (shouldPlay) {
-      if (sourceNodeRef.current) return; // Already playing
+      if (isPlayingRef.current) return; // Already playing
 
       // Create Brown Noise Buffer
       const bufferSize = 2 * audioContextRef.current.sampleRate;
@@ -66,15 +68,15 @@ export default function SensoryAmbience() {
       source.start();
 
       sourceNodeRef.current = source;
-      setIsPlaying(true);
+      isPlayingRef.current = true;
     } else {
       if (sourceNodeRef.current) {
         sourceNodeRef.current.stop();
         sourceNodeRef.current = null; // Clear reference
       }
-      setIsPlaying(false);
+      isPlayingRef.current = false;
     }
-  }, [selectedMode, isMuted]); // Removed isPlaying from dependencies
+  }, [selectedMode, isMuted]);
 
   // Adjust volume based on mute state
   useEffect(() => {
