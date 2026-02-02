@@ -9,6 +9,7 @@ interface Props {
 
 interface State {
   hasError: boolean;
+  error?: Error;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
@@ -16,8 +17,8 @@ export class ErrorBoundary extends Component<Props, State> {
     hasError: false
   };
 
-  public static getDerivedStateFromError(_: Error): State {
-    return { hasError: true };
+  public static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
@@ -29,6 +30,7 @@ export class ErrorBoundary extends Component<Props, State> {
       return this.props.fallback || (
         <div className="flex items-center justify-center h-full w-full bg-black/80 text-red-500 font-mono text-xs p-4 text-center border border-red-900 rounded-lg">
           ⚠️ 3D ENGINE RELOADING...
+          {this.state.error && <div className="hidden">{this.state.error.message}</div>}
         </div>
       );
     }

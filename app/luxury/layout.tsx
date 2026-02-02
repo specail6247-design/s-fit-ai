@@ -3,7 +3,7 @@ import React from 'react'
 
 const manrope = Manrope({
   subsets: ['latin'],
-  display: 'swap',
+  display: 'optional',
   variable: '--font-manrope',
 })
 

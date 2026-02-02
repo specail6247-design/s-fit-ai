@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 const SFitAIProject = () => {
   const [userImage, setUserImage] = useState<string | null>(null);
@@ -64,7 +65,17 @@ const SFitAIProject = () => {
             <h3>User Photo</h3>
             <div style={styles.uploadBox}>
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} />
-              {userImage && <img src={userImage} style={styles.preview} alt="User" />}
+              {userImage && (
+                <div style={{...styles.preview, position: 'relative'}}>
+                  <Image
+                    src={userImage}
+                    alt="User"
+                    fill
+                    style={{objectFit: 'cover', borderRadius: '10px'}}
+                    unoptimized
+                  />
+                </div>
+              )}
             </div>
           </div>
 
@@ -72,7 +83,17 @@ const SFitAIProject = () => {
             <h3>Garment</h3>
             <div style={styles.uploadBox}>
               <input type="file" onChange={(e) => handleFileUpload(e, setClothingImage)} />
-              {clothingImage && <img src={clothingImage} style={styles.preview} alt="Cloth" />}
+              {clothingImage && (
+                <div style={{...styles.preview, position: 'relative'}}>
+                  <Image
+                    src={clothingImage}
+                    alt="Cloth"
+                    fill
+                    style={{objectFit: 'cover', borderRadius: '10px'}}
+                    unoptimized
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -90,7 +111,15 @@ const SFitAIProject = () => {
         {finalResult && (
           <div style={styles.resultContainer}>
             <h2 style={styles.resultTitle}>Fitting Result</h2>
-            <img src={finalResult} style={styles.finalImg} alt="Result" />
+            <Image
+              src={finalResult}
+              style={{ ...styles.finalImg, width: '100%', height: 'auto' }}
+              alt="Result"
+              width={0}
+              height={0}
+              sizes="100vw"
+              unoptimized
+            />
           </div>
         )}
       </main>
@@ -108,11 +137,11 @@ const styles: Record<string, React.CSSProperties> = {
   grid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '30px' },
   card: { backgroundColor: '#1a1a1a', padding: '20px', borderRadius: '15px', border: '1px solid #333' },
   uploadBox: { marginTop: '15px', display: 'flex', flexDirection: 'column', gap: '10px' },
-  preview: { width: '100%', borderRadius: '10px', marginTop: '10px', height: '200px', objectFit: 'cover' },
+  preview: { width: '100%', borderRadius: '10px', marginTop: '10px', height: '200px' },
   button: { width: '100%', padding: '15px', borderRadius: '10px', border: 'none', color: 'white', fontSize: '1.1rem', fontWeight: '600', cursor: 'pointer', transition: '0.3s' },
   resultContainer: { marginTop: '50px', textAlign: 'center', animation: 'fadeIn 0.5s ease-in' },
   resultTitle: { marginBottom: '20px', borderBottom: '2px solid #333', paddingBottom: '10px' },
   finalImg: { maxWidth: '100%', borderRadius: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }
 };
 
-export default SFitAIProject; 
+export default SFitAIProject;

@@ -41,7 +41,11 @@ export default function SensoryAmbience() {
     // Only proceed if context and gain node are initialized
     if (!audioContextRef.current || !gainNodeRef.current) return;
 
-    if (selectedMode && !isMuted && !isPlaying) {
+    const shouldPlay = selectedMode && !isMuted;
+
+    if (shouldPlay) {
+      if (sourceNodeRef.current) return; // Already playing
+
       // Create Brown Noise Buffer
       const bufferSize = 2 * audioContextRef.current.sampleRate;
       const noiseBuffer = audioContextRef.current.createBuffer(1, bufferSize, audioContextRef.current.sampleRate);
@@ -63,14 +67,14 @@ export default function SensoryAmbience() {
 
       sourceNodeRef.current = source;
       setIsPlaying(true);
-    } else if ((!selectedMode || isMuted) && isPlaying) {
+    } else {
       if (sourceNodeRef.current) {
         sourceNodeRef.current.stop();
         sourceNodeRef.current = null; // Clear reference
       }
       setIsPlaying(false);
     }
-  }, [selectedMode, isMuted, isPlaying]);
+  }, [selectedMode, isMuted]); // Removed isPlaying from dependencies
 
   // Adjust volume based on mute state
   useEffect(() => {
