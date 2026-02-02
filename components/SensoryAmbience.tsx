@@ -2,7 +2,13 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useStore } from '@/store/useStore';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+
+// Extend Window interface for WebKit AudioContext
+interface CustomWindow extends Window {
+  webkitAudioContext?: typeof AudioContext;
+  AudioContext?: typeof AudioContext;
+}
 
 export default function SensoryAmbience() {
   const { selectedMode } = useStore();
@@ -14,12 +20,15 @@ export default function SensoryAmbience() {
 
   // Initialize Audio Context
   useEffect(() => {
-    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    const customWindow = window as unknown as CustomWindow;
+    const AudioContextClass = customWindow.AudioContext || customWindow.webkitAudioContext;
     if (AudioContextClass) {
-      audioContextRef.current = new AudioContextClass();
-      gainNodeRef.current = audioContextRef.current.createGain();
-      gainNodeRef.current.connect(audioContextRef.current.destination);
-      gainNodeRef.current.gain.value = 0.05; // Low volume for subtlety
+      const ctx = new AudioContextClass();
+      audioContextRef.current = ctx;
+      const gainNode = ctx.createGain();
+      gainNode.connect(ctx.destination);
+      gainNode.gain.value = 0.05; // Low volume for subtlety
+      gainNodeRef.current = gainNode;
     }
 
     return () => {
@@ -29,6 +38,7 @@ export default function SensoryAmbience() {
 
   // Generate and Play Brown Noise
   useEffect(() => {
+    // Only proceed if context and gain node are initialized
     if (!audioContextRef.current || !gainNodeRef.current) return;
 
     if (selectedMode && !isMuted && !isPlaying) {
@@ -45,23 +55,28 @@ export default function SensoryAmbience() {
         output[i] *= 3.5; // Compensate for gain
       }
 
-      sourceNodeRef.current = audioContextRef.current.createBufferSource();
-      sourceNodeRef.current.buffer = noiseBuffer;
-      sourceNodeRef.current.loop = true;
-      sourceNodeRef.current.connect(gainNodeRef.current);
-      sourceNodeRef.current.start();
+      const source = audioContextRef.current.createBufferSource();
+      source.buffer = noiseBuffer;
+      source.loop = true;
+      source.connect(gainNodeRef.current);
+      source.start();
+
+      sourceNodeRef.current = source;
       setIsPlaying(true);
     } else if ((!selectedMode || isMuted) && isPlaying) {
-      sourceNodeRef.current?.stop();
+      if (sourceNodeRef.current) {
+        sourceNodeRef.current.stop();
+        sourceNodeRef.current = null; // Clear reference
+      }
       setIsPlaying(false);
     }
   }, [selectedMode, isMuted, isPlaying]);
 
   // Adjust volume based on mute state
   useEffect(() => {
-    if (gainNodeRef.current) {
+    if (gainNodeRef.current && audioContextRef.current) {
       const targetVolume = isMuted || !selectedMode ? 0 : 0.05;
-      gainNodeRef.current.gain.setTargetAtTime(targetVolume, audioContextRef.current!.currentTime, 0.5);
+      gainNodeRef.current.gain.setTargetAtTime(targetVolume, audioContextRef.current.currentTime, 0.5);
     }
   }, [isMuted, selectedMode]);
 

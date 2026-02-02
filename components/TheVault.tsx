@@ -4,7 +4,6 @@ import React from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '@/store/useStore';
-import { ClothingItem } from '@/data/mockData';
 
 interface TheVaultProps {
   isOpen: boolean;

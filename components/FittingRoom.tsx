@@ -308,7 +308,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = undefined;
@@ -1130,7 +1130,7 @@ export function FittingRoom() {
                          {currentItem.stylingTip && (
                             <div className="mt-2">
                                 <p className="text-[8px] uppercase tracking-wider text-cyber-lime mb-0.5">Styling Tip</p>
-                                <p className="text-[9px] text-white italic">"{currentItem.stylingTip}"</p>
+                                <p className="text-[9px] text-white italic">&quot;{currentItem.stylingTip}&quot;</p>
                             </div>
                         )}
                     </motion.div>
