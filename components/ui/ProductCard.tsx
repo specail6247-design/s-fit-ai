@@ -20,7 +20,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   return (
     <motion.div
-      className={`group relative w-full overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-surface)] border border-[var(--border-color)] ${className}`}
+      className={`product-card group relative w-full overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-surface)] border border-[var(--border-color)] ${className}`}
       whileHover={{ y: -5 }}
       transition={{ duration: 0.3 }}
     >
