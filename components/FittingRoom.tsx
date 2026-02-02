@@ -306,16 +306,16 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  const animationUrl = undefined;
   
   return (
     <group scale={[scale, scale, scale]}>
       {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
-        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+        url="https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
         animationUrl={animationUrl}
         scale={1.0}
       />
@@ -504,7 +504,7 @@ function Scene({
   const scale = height / 170;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
   let mannequinPosition: [number, number, number] = [0, -0.9, 0];
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  const animationUrl = undefined;
 
   const heatmapData = useMemo(() => {
     if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !selectedItem) return null;
@@ -532,8 +532,8 @@ function Scene({
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
             url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+              ? "https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
+              : "https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb"
             }
             animationUrl={animationUrl}
             scale={1.0}
@@ -607,9 +607,10 @@ interface ShareModalProps {
   brandName?: string;
   fitScore: number;
   recommendedSize?: string;
+  videoUrl?: string | null;
 }
 
-function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize }: ShareModalProps) {
+function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize, videoUrl }: ShareModalProps) {
   const [hasPublished, setHasPublished] = useState(false);
   if (!isOpen) return null;
 
@@ -621,10 +622,14 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
     const encodedText = encodeURIComponent(shareText);
     const url = encodeURIComponent('https://s-fit.ai');
     let shareUrl = '';
-    if (platform === 'twitter') shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${url}`;
-    else if (platform === 'facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${encodedText}`;
-    else if (platform === 'instagram') { navigator.clipboard.writeText(shareText); alert('Text copied for Instagram! 📱'); return; }
-    else if (platform === 'kakao') shareUrl = `https://story.kakao.com/share?url=${url}&text=${encodedText}`;
+
+    // If we have a video URL, use that for sharing where possible
+    const shareUrlParam = videoUrl ? encodeURIComponent(videoUrl) : url;
+
+    if (platform === 'twitter') shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${shareUrlParam}`;
+    else if (platform === 'facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${shareUrlParam}&quote=${encodedText}`;
+    else if (platform === 'instagram') { navigator.clipboard.writeText(shareText + (videoUrl ? ` Watch here: ${videoUrl}` : '')); alert('Text & Link copied for Instagram! 📱'); return; }
+    else if (platform === 'kakao') shareUrl = `https://story.kakao.com/share?url=${shareUrlParam}&text=${encodedText}`;
     
     if (shareUrl) window.open(shareUrl, '_blank', 'width=600,height=400');
     onClose();
@@ -636,6 +641,19 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
       <motion.div className="relative glass-card p-6 max-w-sm w-full" initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}>
         <h3 className="text-lg font-bold text-center mb-4">Share Your Fit! 📸</h3>
         <p className="text-soft-gray text-xs mb-6 text-center">{shareText}</p>
+
+        {videoUrl && (
+          <div className="mb-4 p-2 bg-cyber-lime/10 border border-cyber-lime/30 rounded-lg text-center">
+            <p className="text-[10px] text-cyber-lime font-bold mb-1">🎬 Cinematic Video Ready!</p>
+            <button
+              onClick={() => { navigator.clipboard.writeText(videoUrl); alert('Video Link Copied!'); }}
+              className="text-[9px] underline text-soft-gray hover:text-white"
+            >
+              Copy Video Link
+            </button>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-3 mb-4">
           <button onClick={() => handleShare('twitter')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#1DA1F2] text-xs"><span>𝕏</span> Twitter</button>
           <button onClick={() => handleShare('facebook')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#1877F2] text-xs"><span>📘</span> Facebook</button>
@@ -713,6 +731,8 @@ interface AITryOnModalProps {
   result: string | null;
   error?: string | null;
   onGenerateTryOn: () => void;
+  onVideoGenerated: (url: string) => void;
+  onUpscaleGenerated: (url: string) => void;
 }
 
 function AITryOnModal({
@@ -724,9 +744,12 @@ function AITryOnModal({
   isLoading,
   result,
   error,
-  onGenerateTryOn
+  onGenerateTryOn,
+  onVideoGenerated,
+  onUpscaleGenerated
 }: AITryOnModalProps) {
     const [isVideoLoading, setIsVideoLoading] = useState(false);
+    const [isUpscaling, setIsUpscaling] = useState(false);
     const [videoUrl, setVideoUrl] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -780,29 +803,50 @@ function AITryOnModal({
                             {videoUrl ? (
                               <CinematicViewer videoUrl={videoUrl} posterUrl={result || undefined} className="w-full aspect-[9/16] rounded-xl shadow-2xl" />
                             ) : result && (
-                                <div className="relative w-full aspect-[9/16] rounded-xl border-2 border-cyber-lime/20 shadow-xl overflow-hidden">
+                                <div className="relative w-full aspect-[9/16] rounded-xl border-2 border-cyber-lime/20 shadow-xl overflow-hidden group">
                                   <Image
                                     src={result}
                                     alt="AI Try-On Result"
                                     fill
-                                    className="object-cover"
+                                    className="object-cover transition-transform duration-700 group-hover:scale-110"
                                     sizes="(max-width: 768px) 100vw, 420px"
                                     unoptimized
                                   />
                                   <div className="absolute top-2 right-2 bg-cyber-lime/90 text-void-black text-[10px] font-bold px-2 py-0.5 rounded">ULTRA-FIT</div>
                                 </div>
                             )}
+
+                            {/* Action Buttons */}
                             {result && !videoUrl && (
-                                <button onClick={async () => {
-                                    setIsVideoLoading(true);
-                                    try {
-                                        const res = await fetch('/api/cinematic-try-on', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({imageUrl: result}) });
-                                        const data = await res.json();
-                                        if(data.success) setVideoUrl(data.videoUrl);
-                                    } finally { setIsVideoLoading(false); }
-                                }} disabled={isVideoLoading} className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-xs">
-                                    {isVideoLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : '🎬 Generate Cinematic Motion'}
-                                </button>
+                                <div className="grid grid-cols-2 gap-3">
+                                  <button onClick={async () => {
+                                      setIsVideoLoading(true);
+                                      try {
+                                          const res = await fetch('/api/cinematic-try-on', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({imageUrl: result}) });
+                                          const data = await res.json();
+                                          if(data.success) {
+                                            setVideoUrl(data.videoUrl);
+                                            onVideoGenerated(data.videoUrl);
+                                          }
+                                      } finally { setIsVideoLoading(false); }
+                                  }} disabled={isVideoLoading || isUpscaling} className="py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-xs">
+                                      {isVideoLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : '🎬 Cinematic Motion'}
+                                  </button>
+
+                                  <button onClick={async () => {
+                                      setIsUpscaling(true);
+                                      try {
+                                          const res = await fetch('/api/upscale', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({imageUrl: result}) });
+                                          const data = await res.json();
+                                          if(data.success) {
+                                            onUpscaleGenerated(data.imageUrl); // This will update the result in parent
+                                            alert('Texture Enhanced to 4K! ✨');
+                                          }
+                                      } finally { setIsUpscaling(false); }
+                                  }} disabled={isVideoLoading || isUpscaling} className="py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold rounded-xl shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-xs">
+                                      {isUpscaling ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : '🔍 Hyper-Zoom'}
+                                  </button>
+                                </div>
                             )}
                         </div>
                     )}
@@ -836,6 +880,7 @@ export function FittingRoom() {
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
   const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
+  const [cinematicVideoUrl, setCinematicVideoUrl] = useState<string | null>(null);
   const [aiTryOnLoading, setAITryOnLoading] = useState(false);
   const [userPhotoPreview, setUserPhotoPreview] = useState<string | null>(null);
   const [isMasterpieceMode, setIsMasterpieceMode] = useState(true);
@@ -1133,11 +1178,12 @@ export function FittingRoom() {
         brandName={currentItem?.brand} 
         fitScore={fitScore}
         recommendedSize={recommendedFit?.recommendedSize}
+        videoUrl={cinematicVideoUrl}
       />
       <CompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} picks={topPicks} onSelect={setSelectedItem} />
       <AITryOnModal
         isOpen={showAITryOnModal}
-        onClose={() => { setShowAITryOnModal(false); setAITryOnResult(null); }}
+        onClose={() => { setShowAITryOnModal(false); }}
         selectedItem={currentItem}
         userPhotoPreview={userPhotoPreview}
         onPhotoSelect={(file) => {
@@ -1147,6 +1193,8 @@ export function FittingRoom() {
         isLoading={aiTryOnLoading}
         result={aiTryOnResult}
         onGenerateTryOn={handleGenerateAITryOn}
+        onVideoGenerated={(url) => setCinematicVideoUrl(url)}
+        onUpscaleGenerated={(url) => setAITryOnResult(url)}
       />
     </div>
   );

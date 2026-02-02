@@ -7,12 +7,24 @@
 - Network:       http://192.168.0.2:3000
 
 ✓ Starting...
-Attention: Next.js now collects completely anonymous telemetry regarding usage.
-This information is used to shape Next.js' roadmap and prioritize features.
-You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
-https://nextjs.org/telemetry
-
-✓ Ready in 1780ms
-○ Compiling /cinematic-demo ...
+✓ Ready in 1729ms
+○ Compiling / ...
 ⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
- GET /cinematic-demo 200 in 12.4s (compile: 12.0s, render: 401ms)
+ GET / 200 in 20.3s (compile: 18.3s, render: 1983ms)
+○ Compiling /fitting-room ...
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /fitting-room 200 in 8.5s (compile: 7.4s, render: 1078ms)
+ GET /fitting-room 200 in 70ms (compile: 8ms, render: 62ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /fitting-room 200 in 820ms (compile: 128ms, render: 692ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /fitting-room 200 in 424ms (compile: 67ms, render: 357ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /fitting-room 200 in 433ms (compile: 69ms, render: 365ms)
+ GET /fitting-room 200 in 45ms (compile: 11ms, render: 34ms)
+ GET /fitting-room 200 in 58ms (compile: 5ms, render: 53ms)
+ GET /fitting-room 200 in 36ms (compile: 8ms, render: 28ms)
+ GET /fitting-room 200 in 46ms (compile: 7ms, render: 38ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /fitting-room 200 in 423ms (compile: 69ms, render: 355ms)
+ GET /fitting-room 200 in 73ms (compile: 6ms, render: 67ms)
