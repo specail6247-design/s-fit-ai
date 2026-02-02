@@ -112,10 +112,10 @@ function ImageMesh({ imageUrl }: ImageMeshProps) {
   return (
     <mesh
       ref={meshRef}
-      onPointerOver={(_e: ThreeEvent<PointerEvent>) => {
+      onPointerOver={() => {
         targetHover.current = 1;
       }}
-      onPointerOut={(_e: ThreeEvent<PointerEvent>) => {
+      onPointerOut={() => {
         targetHover.current = 0;
       }}
       scale={[aspectRatio, 1, 1]}
