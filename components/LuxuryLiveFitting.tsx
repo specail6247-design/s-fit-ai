@@ -74,7 +74,7 @@ export default function LuxuryLiveFitting() {
   };
 
   return (
-    <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#050505] text-[#e5e5e5] ${cinzel.variable} ${spaceGrotesk.variable} font-sans`}>
+    <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#050505] text-[#e5e5e5] ${cinzel.variable} ${spaceGrotesk.variable} font-[family-name:var(--font-space)]`}>
       <CustomCursor />
 
       {/* Background Ambience / Brand Banner */}
@@ -98,8 +98,8 @@ export default function LuxuryLiveFitting() {
         <div className="w-[400px] flex-shrink-0 flex flex-col justify-between p-12 border-r border-[#ecab13]/10 bg-black/40 backdrop-blur-sm">
           {/* Header */}
           <div className="space-y-2">
-             <h1 className="text-4xl font-serif text-[#ecab13] tracking-widest">S_FIT</h1>
-             <p className="text-xs font-sans tracking-[0.3em] text-white/50 uppercase">Luxury Edition</p>
+             <h1 className="text-4xl font-[family-name:var(--font-cinzel)] text-[#ecab13] tracking-widest">S_FIT</h1>
+             <p className="text-xs font-[family-name:var(--font-space)] tracking-[0.3em] text-white/50 uppercase">Luxury Edition</p>
           </div>
 
           {/* Brand Info */}
@@ -112,10 +112,10 @@ export default function LuxuryLiveFitting() {
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.8 }}
                 >
-                    <h2 className="text-6xl font-serif text-white mb-4 leading-none">
+                    <h2 className="text-6xl font-[family-name:var(--font-cinzel)] text-white mb-4 leading-none">
                         {selectedBrand ? selectedBrand.name : "THE VAULT"}
                     </h2>
-                    <p className="font-sans text-sm text-white/60 leading-relaxed max-w-xs">
+                    <p className="font-[family-name:var(--font-space)] text-sm text-white/60 leading-relaxed max-w-xs">
                         {selectedBrand ? BRAND_DESCRIPTIONS[selectedBrand.id.toLowerCase()] || BRAND_DESCRIPTIONS['default'] : BRAND_DESCRIPTIONS['default']}
                     </p>
                 </motion.div>
@@ -130,8 +130,8 @@ export default function LuxuryLiveFitting() {
                     transition={{ delay: 0.3, duration: 0.8 }}
                     className="pt-8 border-t border-[#ecab13]/20"
                  >
-                    <p className="font-sans text-xs tracking-widest text-[#ecab13] uppercase mb-1">Estimated Value</p>
-                    <p className="font-serif text-4xl text-white">{formatPrice(activeItem.price)}</p>
+                    <p className="font-[family-name:var(--font-space)] text-xs tracking-widest text-[#ecab13] uppercase mb-1">Estimated Value</p>
+                    <p className="font-[family-name:var(--font-cinzel)] text-4xl text-white">{formatPrice(activeItem.price)}</p>
                  </motion.div>
             )}
           </div>
@@ -179,7 +179,7 @@ export default function LuxuryLiveFitting() {
                 {activeItem ? (
                     <LuxuryImageDistortion imageUrl={activeItem.imageUrl} />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center text-white/20 font-serif italic">
+                    <div className="w-full h-full flex items-center justify-center text-white/20 font-[family-name:var(--font-cinzel)] italic">
                         Select a Masterpiece
                     </div>
                 )}
@@ -197,20 +197,20 @@ export default function LuxuryLiveFitting() {
             <div className="p-8 space-y-12 pb-32">
                 {/* Brand Selector (Horizontal scroll or small list) */}
                 <div className="space-y-4">
-                     <p className="text-[10px] font-sans font-bold tracking-[0.2em] text-[#ecab13] uppercase">House Selection</p>
+                     <p className="text-[10px] font-[family-name:var(--font-space)] font-bold tracking-[0.2em] text-[#ecab13] uppercase">House Selection</p>
                      <div className="flex flex-wrap gap-4">
                         {brands.filter(b => b.isLuxury).map(brand => (
                             <button
                                 key={brand.id}
                                 onClick={() => handleBrandSelect(brand)}
-                                className={`text-sm font-serif transition-all duration-500 ${selectedBrand?.id === brand.id ? 'text-white border-b border-[#ecab13]' : 'text-white/40 hover:text-white'}`}
+                                className={`text-sm font-[family-name:var(--font-cinzel)] transition-all duration-500 ${selectedBrand?.id === brand.id ? 'text-white border-b border-[#ecab13]' : 'text-white/40 hover:text-white'}`}
                             >
                                 {brand.name}
                             </button>
                         ))}
                         <button
                             onClick={() => handleBrandSelect(null)}
-                             className={`text-sm font-serif transition-all duration-500 ${!selectedBrand ? 'text-white border-b border-[#ecab13]' : 'text-white/40 hover:text-white'}`}
+                             className={`text-sm font-[family-name:var(--font-cinzel)] transition-all duration-500 ${!selectedBrand ? 'text-white border-b border-[#ecab13]' : 'text-white/40 hover:text-white'}`}
                         >
                             All
                         </button>
@@ -219,7 +219,7 @@ export default function LuxuryLiveFitting() {
 
                 {/* Products */}
                 <div className="space-y-8">
-                     <p className="text-[10px] font-sans font-bold tracking-[0.2em] text-[#ecab13] uppercase">Collection</p>
+                     <p className="text-[10px] font-[family-name:var(--font-space)] font-bold tracking-[0.2em] text-[#ecab13] uppercase">Collection</p>
 
                      <div className="flex flex-col gap-12">
                         {displayedItems.map((item, index) => (
@@ -244,8 +244,8 @@ export default function LuxuryLiveFitting() {
                                     )}
                                 </div>
                                 <div className="space-y-1 text-center">
-                                    <p className="font-serif text-lg text-white group-hover:text-[#ecab13] transition-colors duration-300">{item.name}</p>
-                                    <p className="font-sans text-xs text-white/50">{formatPrice(item.price)}</p>
+                                    <p className="font-[family-name:var(--font-cinzel)] text-lg text-white group-hover:text-[#ecab13] transition-colors duration-300">{item.name}</p>
+                                    <p className="font-[family-name:var(--font-space)] text-xs text-white/50">{formatPrice(item.price)}</p>
                                 </div>
                             </motion.div>
                         ))}
