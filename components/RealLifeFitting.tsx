@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { motion } from 'framer-motion';
+import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore, FittingMode } from '@/store/useStore';
+import { MemberAccessModal } from './MemberAccessModal';
+import { SupportHub } from './SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -11,11 +15,21 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const {
+    selectedMode,
+    setSelectedMode,
+    setMemberAccessOpen,
+    setSupportHubOpen
+  } = useStore();
+
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  // Local state for mode selection before confirming
+  const [localSelectedMode, setLocalSelectedMode] = useState<FittingMode>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -41,14 +55,14 @@ export default function RealLifeFitting() {
     }, 500);
 
     try {
-      // API call to our backend (which calls Replicate/Fashn.ai)
+      // API call to our backend
       const res = await fetch('/api/try-on', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userPhotoUrl: userImage,
           garmentImageUrl: garmentImage,
-          category: 'tops' // Default for demo
+          category: 'tops'
         })
       });
       const data = await res.json();
@@ -64,11 +78,21 @@ export default function RealLifeFitting() {
     } catch (err) {
       clearInterval(interval);
       console.error(err);
-      console.log("Using demo mode fallback");
       setResultImage("https://pub-83c5db439b40468498f97946200806f7.r2.dev/mock-result-sfit.png"); // Fallback
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handleContinue = () => {
+    if (localSelectedMode) {
+      setSelectedMode(localSelectedMode);
+    }
+  };
+
+  const resetMode = () => {
+    setSelectedMode(null);
+    setLocalSelectedMode(null);
   };
 
   return (
@@ -79,85 +103,155 @@ export default function RealLifeFitting() {
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+        <header className="mb-10 relative z-10 flex justify-between items-start">
+          <div onClick={resetMode} className="cursor-pointer">
+            <h1 className="text-4xl font-black tracking-tighter italic">
+              S_FIT <span className="text-[#007AFF]">NEO</span>
+            </h1>
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+              Professional Virtual Fitting
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setMemberAccessOpen(true)}
+              className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-[#ecab13] transition-colors"
+              title="Member Access"
+            >
+              <span className="text-xl">🔑</span>
+            </button>
+            <button
+              onClick={() => setSupportHubOpen(true)}
+              className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors"
+              title="Support Hub"
+            >
+              <span className="text-xl">❓</span>
+            </button>
+          </div>
         </header>
 
-        <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
-          {/* User Photo Input */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
-            <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
-              <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
-              <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+        <div className="relative z-10 flex-1 overflow-y-auto">
+          <AnimatePresence mode="wait">
+            {!selectedMode ? (
+              <motion.div
+                key="mode-selection"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-6"
+              >
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-[#007AFF] uppercase">Select Experience</label>
+                  <div className="grid gap-3">
+                    {[
+                      { id: 'vibe-check', label: 'VIBE CHECK', desc: 'Instant style transfer' },
+                      { id: 'digital-twin', label: 'DIGITAL TWIN', desc: 'Precise 3D body mapping' },
+                      { id: 'easy-fit', label: 'EASY FIT', desc: 'Quick size recommendation' },
+                    ].map((mode) => (
+                      <button
+                        key={mode.id}
+                        onClick={() => setLocalSelectedMode(mode.id as FittingMode)}
+                        className={`p-4 rounded-xl border text-left transition-all ${localSelectedMode === mode.id ? 'border-[#007AFF] bg-[#007AFF]/10' : 'border-white/10 bg-black/40 hover:bg-white/5'}`}
+                      >
+                        <div className="text-sm font-bold text-white">{mode.label}</div>
+                        <div className="text-[10px] text-gray-500">{mode.desc}</div>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div>
-                  <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
-                  <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
-                </div>
-              </label>
-            </div>
-          </div>
 
-          {/* Garment Input */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-[#007AFF] uppercase">02. Target Garment</label>
-            <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
-              <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
-              <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                <div className="mt-8">
+                  <button
+                    onClick={handleContinue}
+                    disabled={!localSelectedMode}
+                    className="w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Continue &rarr;
+                  </button>
                 </div>
-                <div>
-                  <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
-                  <div className="text-[10px] text-gray-500">Front view preferred</div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="upload-flow"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                className="space-y-8"
+              >
+                {/* User Photo Input */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
+                    <button onClick={() => setSelectedMode(null)} className="text-[10px] text-gray-500 hover:text-white">Change Mode</button>
+                  </div>
+                  <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
+                    <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
+                    <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+                      <div className="relative w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                        {userImage ? <Image src={userImage} alt="User Preview" fill className="object-cover" unoptimized /> : <span className="text-2xl">👤</span>}
+                      </div>
+                      <div>
+                        <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+                        <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
+                      </div>
+                    </label>
+                  </div>
                 </div>
-              </label>
-            </div>
-          </div>
-        </div>
 
-        {/* Action Button */}
-        <div className="mt-8 relative z-10">
-          {isProcessing ? (
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs text-[#007AFF] font-mono">
-                <span>PROCESSING DATA...</span>
-                <span>{progress}%</span>
-              </div>
-              <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-                <motion.div 
-                  className="h-full bg-[#007AFF]" 
-                  initial={{ width: 0 }} 
-                  animate={{ width: `${progress}%` }} 
-                />
-              </div>
-            </div>
-          ) : (
-            <button 
-              onClick={handleTryOn}
-              className="w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
-            >
-              <span>⚡️</span> TRY IT ON
-            </button>
-          )}
-          
-          <div className="mt-4 flex gap-2">
-             <a href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
-               SPA Line
-             </a>
-             <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
-               Luxury Line
-             </a>
-          </div>
+                {/* Garment Input */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-[#007AFF] uppercase">02. Target Garment</label>
+                  <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
+                    <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
+                    <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
+                      <div className="relative w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                        {garmentImage ? <Image src={garmentImage} alt="Garment Preview" fill className="object-cover" unoptimized /> : <span className="text-2xl">👕</span>}
+                      </div>
+                      <div>
+                        <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
+                        <div className="text-[10px] text-gray-500">Front view preferred</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
 
+                {/* Action Button */}
+                <div className="mt-8">
+                  {isProcessing ? (
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs text-[#007AFF] font-mono">
+                        <span>PROCESSING DATA...</span>
+                        <span>{progress}%</span>
+                      </div>
+                      <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                        <motion.div
+                          className="h-full bg-[#007AFF]"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${progress}%` }}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={handleTryOn}
+                      className="w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
+                    >
+                      <span>⚡️</span> TRY IT ON
+                    </button>
+                  )}
+
+                  <div className="mt-4 flex gap-2">
+                     <a href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
+                       SPA Line
+                     </a>
+                     <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
+                       Luxury Line
+                     </a>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
@@ -195,7 +289,7 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              <Image src={resultImage} alt="Result" width={800} height={1200} className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" unoptimized />
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
@@ -209,6 +303,8 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+      <MemberAccessModal />
+      <SupportHub />
     </div>
   );
 }
