@@ -12,9 +12,14 @@ function localFileToDataUri(localPath: string): string | null {
   try {
     // Remove leading slash and resolve to public directory
     const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
-    const absolutePath = path.join(process.cwd(), 'public', relativePath);
-    
-    console.log('Reading local file:', absolutePath);
+    const publicDir = path.resolve(process.cwd(), 'public');
+    const absolutePath = path.resolve(publicDir, relativePath);
+
+    // Security Check: Prevent Path Traversal
+    if (!absolutePath.startsWith(publicDir)) {
+      console.error('Security Warning: Attempted path traversal:', localPath);
+      return null;
+    }
     
     if (!fs.existsSync(absolutePath)) {
       console.error('File not found:', absolutePath);
@@ -75,17 +80,11 @@ export async function POST(request: NextRequest) {
           );
         }
         garmentImageInput = dataUri;
-        console.log('Converted local file to data URI, length:', dataUri.length);
       } else if (garmentImageUrl.startsWith('http://') || garmentImageUrl.startsWith('https://')) {
         // External URL - Replicate can fetch this directly
         garmentImageInput = garmentImageUrl;
       }
     }
-
-    console.log('Calling Replicate with:');
-    console.log('- userPhoto type:', userPhotoInput.startsWith('data:') ? 'data URI' : 'URL');
-    console.log('- garmentImage type:', garmentImageInput.startsWith('data:') ? 'data URI' : 'URL');
-    console.log('- category:', category || 'upper_body');
 
     // Call Replicate API
     const result = await generateVirtualTryOn({
