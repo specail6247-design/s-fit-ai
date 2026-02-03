@@ -25,10 +25,10 @@ function DistortedPlane({ imageUrl }: { imageUrl: string }) {
   });
 
   return (
+    // eslint-disable-next-line jsx-a11y/alt-text
     <Image
       ref={ref}
       url={imageUrl}
-      alt="Luxury Item"
       transparent
       scale={hovered ? 1.05 : 1}
       zoom={hovered ? 1.1 : 1}
