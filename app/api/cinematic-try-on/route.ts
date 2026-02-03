@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateCinematicVideo } from '@/lib/virtualTryOn';
+import { generateRunwayVideo } from '@/lib/runway';
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,6 +13,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // 1. Attempt Runway Gen-3 (High Fidelity)
+    if (process.env.RUNWAY_API_SECRET) {
+      console.log("Using Runway Gen-3 Engine for Cinematic Motion...");
+      const runwayResult = await generateRunwayVideo(imageUrl);
+
+      if (runwayResult.success) {
+        return NextResponse.json(runwayResult);
+      }
+
+      console.warn("Runway generation failed, falling back to SVD:", runwayResult.error);
+      // Fallback proceeds below
+    }
+
+    // 2. Fallback to SVD (Standard)
+    console.log("Using Standard SVD Engine (Replicate)...");
     const result = await generateCinematicVideo(imageUrl);
 
     if (result.success) {
