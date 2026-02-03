@@ -46,7 +46,7 @@ export function ModeSelector() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
-          className="mode-card group relative flex flex-col items-center text-center h-[400px] justify-between focus-visible:ring-2 focus-visible:ring-cyber-lime focus-visible:outline-none"
+          className="mode-card group relative flex flex-col items-center text-center h-[400px] justify-between focus-visible:ring-2 focus-visible:ring-cyber-lime focus-visible:outline-none w-full appearance-none p-0 bg-transparent border-0"
           onClick={() => handleSelect(mode.id)}
           aria-label={`${mode.title}: ${mode.subtitle}`}
         >
