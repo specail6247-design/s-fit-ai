@@ -16,10 +16,10 @@ test.describe('Home Page', () => {
   });
 
   test('should display mode selection options', async ({ page }) => {
-    // Check for presence of mode cards
-    await expect(page.getByText('VIBE CHECK')).toBeVisible();
-    await expect(page.getByText('DIGITAL TWIN')).toBeVisible();
-    await expect(page.getByText('EASY FIT')).toBeVisible();
+    // Check for presence of mode cards using accessible roles
+    await expect(page.getByRole('button', { name: /VIBE CHECK/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /DIGITAL TWIN/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /EASY FIT/i })).toBeVisible();
 
     // Check continue button
     const continueBtn = page.getByRole('button', { name: /Continue/i });
