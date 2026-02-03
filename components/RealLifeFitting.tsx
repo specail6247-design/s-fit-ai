@@ -1,10 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { LegalModal } from '@/components/ui/LegalModal';
-import { SupportHub } from '@/components/ui/SupportHub';
-import { DataSafetyBadge } from '@/components/ui/DataSafetyBadge';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -19,14 +16,6 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
-
-  // Trust & Support State
-  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
-  const [isSupportHubOpen, setIsSupportHubOpen] = useState(false);
-  const [legalInitialTab, setLegalInitialTab] = useState<'privacy' | 'terms'>('privacy');
-
-  // Canvas ref for sharing
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -75,71 +64,16 @@ export default function RealLifeFitting() {
     } catch (err) {
       clearInterval(interval);
       console.error(err);
-      // console.log("Using demo mode fallback");
-      // Fallback for demo
-      setResultImage("https://pub-83c5db439b40468498f97946200806f7.r2.dev/mock-result-sfit.png");
+      console.log("Using demo mode fallback");
+      setResultImage("https://pub-83c5db439b40468498f97946200806f7.r2.dev/mock-result-sfit.png"); // Fallback
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const handleShareToStory = () => {
-    if (!resultImage || !canvasRef.current) return;
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      // Set canvas size to vertical story format (9:16 aspect ratio base)
-      // or match image if vertical. Here we use image dims but add branding.
-      canvas.width = img.width;
-      canvas.height = img.height;
-
-      // Draw Image
-      ctx.drawImage(img, 0, 0);
-
-      // Add Overlay
-      // Gradient at bottom
-      const gradient = ctx.createLinearGradient(0, canvas.height - 200, 0, canvas.height);
-      gradient.addColorStop(0, "transparent");
-      gradient.addColorStop(1, "rgba(0,0,0,0.8)");
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, canvas.height - 200, canvas.width, 200);
-
-      // Add Text
-      ctx.fillStyle = "white";
-      ctx.font = "bold 40px Arial";
-      ctx.textAlign = "center";
-      ctx.fillText("S_FIT NEO", canvas.width / 2, canvas.height - 80);
-
-      ctx.fillStyle = "#007AFF";
-      ctx.font = "20px monospace";
-      ctx.fillText("AI VIRTUAL FITTING", canvas.width / 2, canvas.height - 50);
-
-      // Download
-      const dataUrl = canvas.toDataURL("image/png");
-      const link = document.createElement("a");
-      link.download = `s-fit-story-${Date.now()}.png`;
-      link.href = dataUrl;
-      link.click();
-    };
-    img.src = resultImage;
-  };
-
-  const openLegal = (tab: 'privacy' | 'terms') => {
-    setLegalInitialTab(tab);
-    setIsLegalModalOpen(true);
-  };
-
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
-      {/* Hidden Canvas for Share generation */}
-      <canvas ref={canvasRef} className="hidden" />
-
       {/* LEFT PANEL: CONTROLS */}
       <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
         {/* Background Ambience */}
@@ -155,12 +89,6 @@ export default function RealLifeFitting() {
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
-
-          {/* Data Safety Badge */}
-          <div className="mb-6">
-            <DataSafetyBadge />
-          </div>
-
           {/* User Photo Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
@@ -168,7 +96,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" alt="User" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -185,7 +113,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" alt="Garment" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -230,13 +158,6 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
-          {/* Footer Links */}
-          <div className="mt-8 pt-4 border-t border-white/10 flex flex-wrap gap-4 text-[10px] text-gray-500 uppercase tracking-wider">
-            <button onClick={() => openLegal('privacy')} className="hover:text-white transition-colors">Privacy</button>
-            <button onClick={() => openLegal('terms')} className="hover:text-white transition-colors">Terms</button>
-            <button onClick={() => setIsSupportHubOpen(true)} className="hover:text-white transition-colors ml-auto">Report Issue</button>
-          </div>
-
         </div>
       </div>
 
@@ -275,27 +196,12 @@ export default function RealLifeFitting() {
           >
             <div className="relative group">
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
-
-              <div className="absolute top-4 right-4 flex flex-col gap-2">
-                <button
-                  onClick={() => setResultImage(null)}
-                  className="bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
-                  title="Close"
-                >
-                  ✕
-                </button>
-              </div>
-
-              {/* Share to Story Button */}
-              <div className="absolute bottom-4 right-4">
-                 <button
-                   onClick={handleShareToStory}
-                   className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-full shadow-lg font-bold text-xs uppercase tracking-wider transition-transform hover:scale-105"
-                 >
-                   <span>✨</span> Share to Story
-                 </button>
-              </div>
-
+              <button
+                onClick={() => setResultImage(null)}
+                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+              >
+                ✕ Close
+              </button>
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
@@ -303,19 +209,6 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
-
-      {/* Modals */}
-      <LegalModal
-        isOpen={isLegalModalOpen}
-        onClose={() => setIsLegalModalOpen(false)}
-        initialTab={legalInitialTab}
-      />
-
-      <SupportHub
-        isOpen={isSupportHubOpen}
-        onClose={() => setIsSupportHubOpen(false)}
-      />
-
     </div>
   );
 }
