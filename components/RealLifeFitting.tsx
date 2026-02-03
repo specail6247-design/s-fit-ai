@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
+import { MemberAccessModal } from './MemberAccessModal';
+import { SupportHub } from './SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -11,6 +14,7 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const { setMemberAccessOpen, setSupportHubOpen } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -79,13 +83,31 @@ export default function RealLifeFitting() {
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+        <header className="mb-10 relative z-10 flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-black tracking-tighter italic">
+              S_FIT <span className="text-[#007AFF]">NEO</span>
+            </h1>
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+              Professional Virtual Fitting
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setMemberAccessOpen(true)}
+              className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-[#ecab13] transition-colors"
+              title="Member Access"
+            >
+              <span className="text-xl">🔑</span>
+            </button>
+            <button
+              onClick={() => setSupportHubOpen(true)}
+              className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors"
+              title="Support Hub"
+            >
+              <span className="text-xl">❓</span>
+            </button>
+          </div>
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
@@ -209,6 +231,8 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+      <MemberAccessModal />
+      <SupportHub />
     </div>
   );
 }
