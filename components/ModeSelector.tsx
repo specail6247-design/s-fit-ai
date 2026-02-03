@@ -40,13 +40,15 @@ export function ModeSelector() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto w-full px-4">
       {modes.map((mode, index) => (
-        <motion.div
+        <motion.button
           key={mode.id}
+          type="button"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
-          className="mode-card group relative flex flex-col items-center text-center h-[400px] justify-between"
+          className="mode-card group relative flex flex-col items-center text-center h-[400px] justify-between focus-visible:ring-2 focus-visible:ring-cyber-lime focus-visible:outline-none"
           onClick={() => handleSelect(mode.id)}
+          aria-label={`${mode.title}: ${mode.subtitle}`}
         >
           {/* Badge */}
           {mode.badge && (
@@ -56,7 +58,10 @@ export function ModeSelector() {
           )}
 
           {/* Icon/Visual */}
-          <div className="mt-8 mb-4 w-24 h-24 rounded-full bg-void-black border border-white/10 flex items-center justify-center text-5xl group-hover:scale-110 transition-transform duration-300 shadow-[0_0_30px_rgba(255,255,255,0.05)] group-hover:shadow-[0_0_30px_rgba(204,255,0,0.2)]">
+          <div
+            className="mt-8 mb-4 w-24 h-24 rounded-full bg-void-black border border-white/10 flex items-center justify-center text-5xl group-hover:scale-110 transition-transform duration-300 shadow-[0_0_30px_rgba(255,255,255,0.05)] group-hover:shadow-[0_0_30px_rgba(204,255,0,0.2)]"
+            aria-hidden="true"
+          >
             {mode.icon}
           </div>
 
@@ -75,14 +80,14 @@ export function ModeSelector() {
 
           {/* CTA */}
           <div className="w-full">
-            <button className="w-full py-4 border-t border-white/10 text-xs font-bold uppercase tracking-widest text-soft-gray group-hover:bg-white group-hover:text-void-black transition-all duration-300">
+            <span className="block w-full py-4 border-t border-white/10 text-xs font-bold uppercase tracking-widest text-soft-gray group-hover:bg-white group-hover:text-void-black transition-all duration-300">
               Select Mode_
-            </button>
+            </span>
           </div>
           
           {/* Hover Line Animation */}
           <div className="absolute bottom-0 left-0 h-0.5 bg-cyber-lime w-0 group-hover:w-full transition-all duration-500 ease-out" />
-        </motion.div>
+        </motion.button>
       ))}
     </div>
   );
