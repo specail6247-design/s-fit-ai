@@ -30,6 +30,13 @@ describe('Mock Data Helpers', () => {
     // Test case insensitivity
     const zaraItemsLower = getItemsByBrand('zara');
     expect(zaraItemsLower.length).toBe(zaraItems.length);
+
+    const hermesItems = getItemsByBrand('Hermes');
+    expect(hermesItems.length).toBe(5);
+    hermesItems.forEach(item => {
+        expect(item.brand).toBe('Hermes');
+        expect(item.price).toBeGreaterThan(500);
+    });
   });
 
   it('should filter luxury items', () => {
