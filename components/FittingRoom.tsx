@@ -16,7 +16,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '@/store/useStore';
 import type { UserStats } from '@/store/useStore';
-import { getItemsByBrand, ClothingItem } from '@/data/mockData';
+import { getItemsByBrand, ClothingItem, brands } from '@/data/mockData';
 import type { PoseProportions } from '@/lib/mediapipe';
 import { 
   calculateRecommendedSize, 
@@ -32,6 +32,8 @@ import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
+import { SensoryAmbience } from '@/components/SensoryAmbience';
+import { TheVault } from '@/components/ui/TheVault';
 
 // --- PHYSICS ENGINE (Ammo.js) ---
 
@@ -829,7 +831,8 @@ function AITryOnModal({
 
 export function FittingRoom() {
   const {
-    userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    userStats, selectedBrand, setSelectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    savedLooks, saveLook, removeSavedLook, setVaultOpen
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
@@ -837,6 +840,7 @@ export function FittingRoom() {
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
   const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
   const [aiTryOnLoading, setAITryOnLoading] = useState(false);
+  const [timeLeft, setTimeLeft] = useState<string>('');
   const [userPhotoPreview, setUserPhotoPreview] = useState<string | null>(null);
   const [isMasterpieceMode, setIsMasterpieceMode] = useState(true);
   const [isMacroView, setIsMacroView] = useState(false);
@@ -856,6 +860,11 @@ export function FittingRoom() {
     return false;
   });
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Default to ZARA if no brand selected
+  useEffect(() => {
+    if (!selectedBrand) setSelectedBrand('ZARA');
+  }, [selectedBrand, setSelectedBrand]);
   
   const brandItems = useMemo(() => selectedBrand ? getItemsByBrand(selectedBrand) : [], [selectedBrand]);
   const currentItem = selectedItem || null;
@@ -901,6 +910,28 @@ export function FittingRoom() {
     return () => window.clearInterval(interval);
   }, [autoCycleEnabled, topPicks, setSelectedItem]);
 
+  // Exclusive Drop Countdown Timer
+  useEffect(() => {
+    if (currentItem?.isLocked && currentItem.lockedUntil) {
+      const interval = setInterval(() => {
+        const now = new Date().getTime();
+        const end = new Date(currentItem.lockedUntil!).getTime();
+        const distance = end - now;
+
+        if (distance < 0) {
+          setTimeLeft('UNLOCKED');
+          clearInterval(interval);
+        } else {
+          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+        }
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [currentItem]);
+
   const handleGenerateAITryOn = useCallback(async () => {
     if (!userPhotoPreview || !currentItem?.imageUrl) return;
     setAITryOnLoading(true);
@@ -933,6 +964,8 @@ export function FittingRoom() {
 
   return (
     <div className="w-full h-full flex flex-col bg-void-black text-pure-white">
+      <SensoryAmbience active={isMasterpieceMode} />
+      <TheVault />
       <div className="flex-1 relative min-h-[350px]">
         {webglFailed ? (
           /* 2D Fallback View */
@@ -1011,14 +1044,36 @@ export function FittingRoom() {
         )}
 
         <div className="absolute top-4 left-4 flex gap-2 z-20">
+            <button onClick={() => setVaultOpen(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors" title="Open Vault">
+                <span>🧥</span>
+            </button>
             <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
                 <span>📤</span>
             </button>
-            <motion.button onClick={() => setShowAITryOnModal(true)} 
-                           className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
-                           whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <span>✨</span> AI 피팅 <span className="text-[0.6rem] bg-white/20 px-1.5 py-0.5 rounded-full">NEW</span>
-            </motion.button>
+            {currentItem && (
+              <button
+                onClick={() => saveLook(currentItem.id)}
+                className={`bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors ${savedLooks.includes(currentItem.id) ? 'text-cyber-lime' : 'text-white'}`}
+                title="Save Look"
+              >
+                  <span>{savedLooks.includes(currentItem.id) ? '❤️' : '🤍'}</span>
+              </button>
+            )}
+            {currentItem?.isLocked && timeLeft !== 'UNLOCKED' ? (
+              <div className="bg-void-black/80 backdrop-blur-md px-4 py-2 rounded-xl border border-red-500/50 flex items-center gap-2">
+                 <span className="animate-pulse text-red-500">🔒</span>
+                 <div className="flex flex-col">
+                    <span className="text-[8px] uppercase tracking-widest text-red-500 font-bold">Exclusive Drop</span>
+                    <span className="text-xs font-mono font-bold">{timeLeft}</span>
+                 </div>
+              </div>
+            ) : (
+              <motion.button onClick={() => setShowAITryOnModal(true)}
+                             className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
+                             whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <span>✨</span> AI 피팅 <span className="text-[0.6rem] bg-white/20 px-1.5 py-0.5 rounded-full">NEW</span>
+              </motion.button>
+            )}
         </div>
 
         {topPicks.length > 0 && (
@@ -1054,30 +1109,46 @@ export function FittingRoom() {
         {/* AI Consultant Advice Overlay */}
         <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none">
             <AnimatePresence>
-                {currentItem && poseAnalysis?.proportions && recommendedFit && (
+                {currentItem && (
                     <motion.div 
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                         className="bg-black/60 backdrop-blur-xl border border-white/10 p-3 rounded-2xl shadow-2xl pointer-events-auto max-w-sm"
                     >
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-cyber-lime/20 flex items-center justify-center text-cyber-lime text-xs font-bold ring-1 ring-cyber-lime/30">
-                                {recommendedFit.recommendedSize}
+                        {poseAnalysis?.proportions && recommendedFit ? (
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="w-8 h-8 rounded-full bg-cyber-lime/20 flex items-center justify-center text-cyber-lime text-xs font-bold ring-1 ring-cyber-lime/30">
+                                    {recommendedFit.recommendedSize}
+                                </div>
+                                <div>
+                                    <p className="text-[10px] uppercase tracking-widest text-soft-gray font-bold">AI Recommended Fit</p>
+                                    <p className="text-xs font-bold text-white">Masterpiece Fit Consultant</p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-[10px] uppercase tracking-widest text-soft-gray font-bold">AI Recommended Fit</p>
-                                <p className="text-xs font-bold text-white">Masterpiece Fit Consultant</p>
+                        ) : (
+                            <div className="mb-2">
+                                <p className="text-[10px] uppercase tracking-widest text-soft-gray font-bold">AI Stylist</p>
+                                <p className="text-xs font-bold text-white">Style Advice</p>
                             </div>
-                        </div>
-                        <ul className="space-y-1">
-                            {recommendedFit.fitNotes.map((note, i) => (
-                                <li key={i} className="text-[9px] text-soft-gray flex items-start gap-1.5 leading-relaxed">
-                                    <span className="text-cyber-lime mt-1 flex-shrink-0">●</span>
-                                    {note}
-                                </li>
-                            ))}
-                        </ul>
+                        )}
+
+                        {currentItem.stylingTip && (
+                          <div className="mb-2 pb-2 border-b border-white/10">
+                            <p className="text-[9px] text-cyber-lime italic">&quot;{currentItem.stylingTip}&quot;</p>
+                          </div>
+                        )}
+
+                        {recommendedFit && (
+                            <ul className="space-y-1">
+                                {recommendedFit.fitNotes.map((note, i) => (
+                                    <li key={i} className="text-[9px] text-soft-gray flex items-start gap-1.5 leading-relaxed">
+                                        <span className="text-cyber-lime mt-1 flex-shrink-0">●</span>
+                                        {note}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -1086,6 +1157,19 @@ export function FittingRoom() {
 
       {/* Item Selector Footer */}
       <div className="p-4 border-t border-border-color bg-void-black">
+        {/* Brand Selector */}
+        <div className="flex gap-2 overflow-x-auto pb-2 mb-2 scrollbar-hide">
+          {brands.map((brand) => (
+            <button
+              key={brand.id}
+              onClick={() => setSelectedBrand(brand.name)} // brand.name matches the string type expected currently
+              className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-all whitespace-nowrap ${selectedBrand === brand.name ? 'bg-white text-black border-white' : 'bg-transparent text-soft-gray border-white/20 hover:border-white/50'}`}
+            >
+              {brand.name}
+            </button>
+          ))}
+        </div>
+
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-[10px] uppercase tracking-widest text-soft-gray">{selectedBrand} Collection</h3>
           <button onClick={() => setShowCompareModal(true)} className="text-[10px] text-cyber-lime hover:underline">Compare Picks →</button>
