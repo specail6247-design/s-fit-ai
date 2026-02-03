@@ -17,6 +17,9 @@ export interface ClothingItem {
   sizes: string[];
   colors: string[];
   description: string;
+  stylingTip?: string;
+  lockedUntil?: string;
+  isLocked?: boolean;
 }
 
 export interface Brand {
@@ -110,6 +113,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy', 'Beige'],
     description: 'Relaxed fit blazer with structured shoulders',
+    stylingTip: 'Pair with fitted trousers to balance the oversized silhouette.',
   },
   {
     id: 'zara-002',
@@ -124,6 +128,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'White', 'Camel'],
     description: 'Elegant wide leg trousers with pleats',
+    stylingTip: 'Tuck in a silk blouse to emphasize the waistline.',
   },
   {
     id: 'zara-003',
@@ -138,6 +143,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L'],
     colors: ['Cream', 'Black', 'Sage'],
     description: 'Minimalist cropped sweater',
+    stylingTip: 'Layer over a collared shirt for a preppy, modern look.',
   },
   {
     id: 'zara-004',
@@ -518,6 +524,9 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['Adjustable'],
     colors: ['Red', 'Black', 'Camo'],
     description: 'Cotton canvas camp cap with woven box logo',
+    stylingTip: 'Wear with a monochrome outfit to let the logo pop.',
+    isLocked: true,
+    lockedUntil: new Date(Date.now() + 7200000).toISOString(), // Locked for 2 hours
   },
   {
     id: 'tiffany-necklace-001',
@@ -558,4 +567,15 @@ export const getItemsByCategory = (category: ClothingItem['category']): Clothing
 
 export const getAllItems = (): ClothingItem[] => {
   return mockClothingItems;
+};
+
+export const getCategoryIcon = (category: ClothingItem['category']) => {
+  switch (category) {
+    case 'tops': return '👔';
+    case 'bottoms': return '👖';
+    case 'outerwear': return '🧥';
+    case 'dresses': return '👗';
+    case 'accessories': return '👜';
+    default: return '👔';
+  }
 };
