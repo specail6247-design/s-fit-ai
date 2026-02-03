@@ -1135,7 +1135,7 @@ export function FittingRoom() {
 
                         {currentItem.stylingTip && (
                           <div className="mb-2 pb-2 border-b border-white/10">
-                            <p className="text-[9px] text-cyber-lime italic">"{currentItem.stylingTip}"</p>
+                            <p className="text-[9px] text-cyber-lime italic">&quot;{currentItem.stylingTip}&quot;</p>
                           </div>
                         )}
 
