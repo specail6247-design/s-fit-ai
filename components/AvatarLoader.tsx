@@ -50,5 +50,5 @@ export function AvatarLoader({
   );
 }
 
-// Preload handy RPM models
-useGLTF.preload('https://models.readyplayer.me/64f0263b8655b32115ba9269.glb'); // Example
+// Preload handy RPM models or fallbacks
+useGLTF.preload('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/models/gltf/Xbot.glb');

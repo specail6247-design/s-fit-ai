@@ -309,14 +309,14 @@ function Mannequin({
   height = 170, opacity = 1.0 
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  // Use Xbot as a reliable humanoid mannequin fallback since RPM URL is 404
+  const avatarUrl = "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/models/gltf/Xbot.glb";
   
   return (
     <group scale={[scale, scale, scale]}>
-      {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
-        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-        animationUrl={animationUrl}
+        url={avatarUrl}
+        animationUrl={avatarUrl}
         scale={1.0}
       />
     </group>
@@ -504,7 +504,7 @@ function Scene({
   const scale = height / 170;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
   let mannequinPosition: [number, number, number] = [0, -0.9, 0];
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  const avatarUrl = "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/models/gltf/Xbot.glb";
 
   const heatmapData = useMemo(() => {
     if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !selectedItem) return null;
@@ -531,11 +531,8 @@ function Scene({
       <group position={mannequinPosition} scale={[scale, scale, scale]}>
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
-            url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-            }
-            animationUrl={animationUrl}
+            url={avatarUrl}
+            animationUrl={avatarUrl}
             scale={1.0}
           />
         ) : (
