@@ -37,3 +37,4 @@ https://nextjs.org/telemetry
   path: '/app/.next/dev/cache/webpack/client-development/1.pack.gz'
 }
 <w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, stat '/app/.next/dev/cache/webpack/client-development/1.pack.gz'
+[?25h

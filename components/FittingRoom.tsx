@@ -842,7 +842,6 @@ export function FittingRoom() {
   const [isMacroView, setIsMacroView] = useState(false);
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [webglFailed, setWebglFailed] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [autoCycleEnabled, setAutoCycleEnabled] = useState(() => {
     if (typeof window !== 'undefined') {
       return window.localStorage.getItem('sfit-ai-auto-cycle') === 'true';
