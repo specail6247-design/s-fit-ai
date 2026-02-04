@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
+import NextImage from 'next/image';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import LegalModal from '@/components/LegalModal';
+import DataSafetyBadge from '@/components/DataSafetyBadge';
+import SupportHub from '@/components/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -17,6 +21,11 @@ export default function RealLifeFitting() {
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
 
+  // Trust & Growth State
+  const [showLegalModal, setShowLegalModal] = useState(false);
+  const [legalTab, setLegalTab] = useState<'privacy' | 'terms'>('privacy');
+  const [showSupportHub, setShowSupportHub] = useState(false);
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -24,6 +33,64 @@ export default function RealLifeFitting() {
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = resultImage;
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      // Set canvas dimensions
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      // Draw original image
+      ctx.drawImage(img, 0, 0);
+
+      // Overlay Branding
+      const gradient = ctx.createLinearGradient(0, canvas.height - 250, 0, canvas.height);
+      gradient.addColorStop(0, 'rgba(0,0,0,0)');
+      gradient.addColorStop(1, 'rgba(0,0,0,0.9)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, canvas.height - 250, canvas.width, 250);
+
+      // S_FIT AI Logo Text
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'italic 900 60px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT AI', canvas.width / 2, canvas.height - 100);
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = '24px monospace';
+      ctx.fillText('VIRTUAL FITTING ENGINE', canvas.width / 2, canvas.height - 60);
+
+      // Download
+      const dataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = 's_fit_story.png';
+      link.click();
+    } catch (err) {
+      console.error("Share failed", err);
+      alert("Could not generate share image.");
+    }
+  };
+
+  const openLegal = (tab: 'privacy' | 'terms') => {
+    setLegalTab(tab);
+    setShowLegalModal(true);
   };
 
   const handleTryOn = async () => {
@@ -79,24 +146,44 @@ export default function RealLifeFitting() {
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+        <header className="mb-10 relative z-10 flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-black tracking-tighter italic">
+              S_FIT <span className="text-[#007AFF]">NEO</span>
+            </h1>
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+              Professional Virtual Fitting
+            </p>
+          </div>
+          <button
+            onClick={() => setShowSupportHub(true)}
+            className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-colors"
+            title="Report Issue"
+          >
+            <span className="text-xl">🛠️</span>
+          </button>
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
           {/* User Photo Input */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
+            <div className="flex justify-between items-center">
+              <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
+              <DataSafetyBadge />
+            </div>
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                <div className="relative w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {userImage ? (
+                    <NextImage
+                      src={userImage}
+                      alt="User Preview"
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  ) : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -112,8 +199,16 @@ export default function RealLifeFitting() {
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                <div className="relative w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {garmentImage ? (
+                    <NextImage
+                      src={garmentImage}
+                      alt="Garment Preview"
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  ) : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -158,6 +253,11 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-8 pt-4 border-t border-white/5 flex justify-center gap-6 text-[10px] text-gray-500 uppercase tracking-widest">
+            <button onClick={() => openLegal('privacy')} className="hover:text-white transition-colors">Privacy Policy</button>
+            <button onClick={() => openLegal('terms')} className="hover:text-white transition-colors">Terms of Service</button>
+          </div>
+
         </div>
       </div>
 
@@ -195,13 +295,29 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
-              <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
-              >
-                ✕ Close
-              </button>
+              <NextImage
+                src={resultImage}
+                alt="AI Result"
+                width={0}
+                height={0}
+                sizes="100vw"
+                className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl"
+                unoptimized
+              />
+              <div className="absolute top-4 right-4 flex gap-2">
+                <button
+                  onClick={handleShareToStory}
+                  className="bg-black/60 text-white rounded-full px-4 py-2 hover:bg-[#007AFF] transition-colors flex items-center gap-2 text-xs font-bold"
+                >
+                  <span>📷</span> Share to Story
+                </button>
+                <button
+                  onClick={() => setResultImage(null)}
+                  className="bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                >
+                  ✕ Close
+                </button>
+              </div>
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
@@ -209,6 +325,17 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      {/* Modals */}
+      <LegalModal
+        isOpen={showLegalModal}
+        onClose={() => setShowLegalModal(false)}
+        initialTab={legalTab}
+      />
+      <SupportHub
+        isOpen={showSupportHub}
+        onClose={() => setShowSupportHub(false)}
+      />
     </div>
   );
 }
