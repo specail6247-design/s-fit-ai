@@ -16,7 +16,7 @@ test.describe('Navigation Flow', () => {
 
     // 3. Verify Luxury Page Content
     // Check for "S_FIT AI" header in the top nav
-    await expect(page.getByText('S_FIT AI')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'S_FIT AI' })).toBeVisible();
 
     // Check for the main product title "Metallic Silk"
     await expect(page.getByText('Metallic Silk')).toBeVisible();

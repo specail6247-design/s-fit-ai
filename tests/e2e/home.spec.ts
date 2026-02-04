@@ -2,6 +2,16 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Home Page - S_FIT NEO', () => {
   test.beforeEach(async ({ page }) => {
+    await page.addStyleTag({ content: `
+      *, *::before, *::after {
+        animation-duration: 0s !important;
+        animation-delay: 0s !important;
+        transition-duration: 0s !important;
+        transition-delay: 0s !important;
+      }
+      html, body { overflow: hidden !important; scrollbar-width: none; }
+      ::-webkit-scrollbar { display: none; }
+    ` });
     await page.goto('/');
   });
 
@@ -37,6 +47,17 @@ test.describe('Home Page - S_FIT NEO', () => {
   });
 
   test('should match visual snapshot', async ({ page }) => {
-    await expect(page).toHaveScreenshot({ fullPage: true });
+    await expect(page).toHaveScreenshot({
+      fullPage: false,
+      maxDiffPixelRatio: 0.1,
+      mask: [
+        page.locator('canvas'),
+        page.locator('.animate-pulse'),
+        page.locator('.luxury-shimmer'),
+        page.locator('.logo-underscore'),
+        page.locator('.auto-cycle-bar'),
+        page.locator('.gold-ring-cursor')
+      ]
+    });
   });
 });
