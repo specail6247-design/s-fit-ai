@@ -1,10 +1,10 @@
 
 > s-fit-ai@0.1.0 dev
-> next dev --webpack
+> next dev --webpack -p 3001
 
 ▲ Next.js 16.1.4 (webpack)
-- Local:         http://localhost:3000
-- Network:       http://192.168.0.2:3000
+- Local:         http://localhost:3001
+- Network:       http://192.168.0.2:3001
 
 ✓ Starting...
 Attention: Next.js now collects completely anonymous telemetry regarding usage.
@@ -12,7 +12,29 @@ This information is used to shape Next.js' roadmap and prioritize features.
 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
 https://nextjs.org/telemetry
 
-✓ Ready in 1780ms
-○ Compiling /cinematic-demo ...
+✓ Ready in 1876ms
+○ Compiling /verify-masterpiece ...
 ⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
- GET /cinematic-demo 200 in 12.4s (compile: 12.0s, render: 401ms)
+ GET /verify-masterpiece 200 in 29.0s (compile: 26.7s, render: 2.2s)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /verify-masterpiece 200 in 695ms (compile: 132ms, render: 563ms)
+[Error: ENOENT: no such file or directory, stat '/app/.next/dev/cache/webpack/client-development/1.pack.gz'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: '/app/.next/dev/cache/webpack/client-development/1.pack.gz'
+}
+⨯ unhandledRejection: [Error: ENOENT: no such file or directory, stat '/app/.next/dev/cache/webpack/client-development/1.pack.gz'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: '/app/.next/dev/cache/webpack/client-development/1.pack.gz'
+}
+⨯ unhandledRejection:  [Error: ENOENT: no such file or directory, stat '/app/.next/dev/cache/webpack/client-development/1.pack.gz'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: '/app/.next/dev/cache/webpack/client-development/1.pack.gz'
+}
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, stat '/app/.next/dev/cache/webpack/client-development/1.pack.gz'
+[?25h

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
@@ -72,18 +73,20 @@ export default function RealLifeFitting() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
+    <div className="min-h-screen bg-[#050505] text-white font-space flex overflow-hidden">
       
       {/* LEFT PANEL: CONTROLS */}
-      <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
+      <div
+        className={`w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative transition-opacity duration-1000 ${isProcessing ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+      >
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
         <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
+          <h1 className="text-5xl font-cinzel font-bold tracking-tight">
             S_FIT <span className="text-[#007AFF]">NEO</span>
           </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2 font-mono">
             Professional Virtual Fitting
           </p>
         </header>
@@ -91,12 +94,12 @@ export default function RealLifeFitting() {
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
           {/* User Photo Input */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
+            <label className="text-xs font-bold text-[#007AFF] uppercase tracking-widest">01. Identification</label>
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10 relative">
+                  {userImage ? <Image src={userImage} alt="User Upload" fill className="object-cover" unoptimized /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -112,8 +115,8 @@ export default function RealLifeFitting() {
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10 relative">
+                  {garmentImage ? <Image src={garmentImage} alt="Garment Upload" fill className="object-cover" unoptimized /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -126,28 +129,13 @@ export default function RealLifeFitting() {
 
         {/* Action Button */}
         <div className="mt-8 relative z-10">
-          {isProcessing ? (
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs text-[#007AFF] font-mono">
-                <span>PROCESSING DATA...</span>
-                <span>{progress}%</span>
-              </div>
-              <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-                <motion.div 
-                  className="h-full bg-[#007AFF]" 
-                  initial={{ width: 0 }} 
-                  animate={{ width: `${progress}%` }} 
-                />
-              </div>
-            </div>
-          ) : (
-            <button 
-              onClick={handleTryOn}
-              className="w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
-            >
-              <span>⚡️</span> TRY IT ON
-            </button>
-          )}
+          <button
+            onClick={handleTryOn}
+            disabled={isProcessing}
+            className="w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] disabled:bg-gray-800 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
+          >
+            <span>⚡️</span> TRY IT ON
+          </button>
           
           <div className="mt-4 flex gap-2">
              <a href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
@@ -187,18 +175,37 @@ export default function RealLifeFitting() {
           </ErrorBoundary>
         </div>
 
+        {/* Immersive Progress Indicator */}
+        {isProcessing && (
+          <div className="absolute inset-0 z-30 flex flex-col items-center justify-end pb-20 pointer-events-none">
+            <div className="w-64 space-y-2">
+              <div className="flex justify-between text-xs text-[#007AFF] font-mono tracking-widest">
+                <span>ANALYZING...</span>
+                <span>{progress}%</span>
+              </div>
+              <div className="h-0.5 bg-gray-800 w-full">
+                <motion.div
+                  className="h-full bg-[#007AFF] shadow-[0_0_10px_#007AFF]"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Result Overlay (If success) */}
         {resultImage && !isProcessing && (
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl flex items-center justify-center"
           >
-            <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+            <div className="relative group w-auto h-[70vh] aspect-[3/4]">
+              <Image src={resultImage} alt="Result" fill className="rounded-xl object-contain shadow-2xl" unoptimized />
               <button 
                 onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors z-30"
               >
                 ✕ Close
               </button>
