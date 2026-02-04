@@ -1,6 +1,13 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+
+// Extend the Window interface to include webkitAudioContext
+declare global {
+  interface Window {
+    webkitAudioContext: typeof AudioContext;
+  }
+}
 
 export function SensoryAmbience({ active }: { active: boolean }) {
   const [isMuted, setIsMuted] = useState(false);
@@ -9,11 +16,37 @@ export function SensoryAmbience({ active }: { active: boolean }) {
   const oscillatorRef = useRef<OscillatorNode | null>(null);
   const oscillator2Ref = useRef<OscillatorNode | null>(null);
 
+  const stopAudio = useCallback(() => {
+    if (gainNodeRef.current && audioContextRef.current) {
+      try {
+        const ctx = audioContextRef.current;
+        // Fade out
+        gainNodeRef.current.gain.cancelScheduledValues(ctx.currentTime);
+        gainNodeRef.current.gain.setValueAtTime(gainNodeRef.current.gain.value, ctx.currentTime);
+        gainNodeRef.current.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.5);
+
+        setTimeout(() => {
+             oscillatorRef.current?.stop();
+             oscillator2Ref.current?.stop();
+             oscillatorRef.current?.disconnect();
+             oscillator2Ref.current?.disconnect();
+             gainNodeRef.current?.disconnect();
+
+             oscillatorRef.current = null;
+             oscillator2Ref.current = null;
+             gainNodeRef.current = null;
+        }, 550);
+      } catch {
+        // Ignore cleanup errors
+      }
+    }
+  }, []);
+
   useEffect(() => {
     if (active && !isMuted) {
       const initAudio = async () => {
         try {
-            const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
             if (!AudioContextClass) return;
 
             if (!audioContextRef.current) {
@@ -67,31 +100,7 @@ export function SensoryAmbience({ active }: { active: boolean }) {
         // We don't stop strictly here to allow crossfade, but simple stop for now
         stopAudio();
     };
-  }, [active, isMuted]);
-
-  const stopAudio = () => {
-    if (gainNodeRef.current && audioContextRef.current) {
-      try {
-        const ctx = audioContextRef.current;
-        // Fade out
-        gainNodeRef.current.gain.cancelScheduledValues(ctx.currentTime);
-        gainNodeRef.current.gain.setValueAtTime(gainNodeRef.current.gain.value, ctx.currentTime);
-        gainNodeRef.current.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.5);
-
-        setTimeout(() => {
-             oscillatorRef.current?.stop();
-             oscillator2Ref.current?.stop();
-             oscillatorRef.current?.disconnect();
-             oscillator2Ref.current?.disconnect();
-             gainNodeRef.current?.disconnect();
-
-             oscillatorRef.current = null;
-             oscillator2Ref.current = null;
-             gainNodeRef.current = null;
-        }, 550);
-      } catch (e) {}
-    }
-  };
+  }, [active, isMuted, stopAudio]);
 
   if (!active) return null;
 
