@@ -16,6 +16,8 @@ export default function CinematicViewer({ videoUrl, posterUrl, className = '' }:
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
+  const [downloadFilename] = useState(() => `sfit-cinematic-${Date.now()}.mp4`);
+
   // Toggle Play/Pause
   const togglePlay = () => {
     if (videoRef.current) {
@@ -117,7 +119,7 @@ export default function CinematicViewer({ videoUrl, posterUrl, className = '' }:
         <div className="flex items-center gap-3">
              <a
               href={videoUrl}
-              download={`sfit-cinematic-${Date.now()}.mp4`}
+              download={downloadFilename}
               className="text-white hover:text-white/80 transition-colors p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20"
               title="Download 4K Clip"
               onClick={(e) => e.stopPropagation()}
