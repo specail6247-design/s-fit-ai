@@ -5,7 +5,7 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Hermes';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -89,13 +89,6 @@ export const brands: Brand[] = [
     id: 'tiffany',
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
-    isLuxury: true,
-    tier: 'luxury',
-  },
-  {
-    id: 'hermes',
-    name: 'Hermes',
-    logo: 'https://placehold.co/100x100?text=HERMES',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -541,84 +534,6 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
-  },
-
-  // HERMES - Luxury (5 items)
-  {
-    id: 'hermes-bag-001',
-    name: 'Birkin 30',
-    brand: 'Hermes',
-    category: 'accessories',
-    subCategory: 'bag',
-    zIndex: 50,
-    price: 28500.00,
-    currency: 'USD',
-    imageUrl: '/accessories/hermes_birkin.png',
-    textureUrl: '/accessories/hermes_birkin.png',
-    isLuxury: true,
-    sizes: ['30'],
-    colors: ['Gold', 'Black', 'Etoupe'],
-    description: 'Iconic leather handbag with gold hardware',
-  },
-  {
-    id: 'hermes-scarf-001',
-    name: 'Silk Twill Scarf 90',
-    brand: 'Hermes',
-    category: 'accessories',
-    subCategory: 'scarf',
-    zIndex: 40,
-    price: 495.00,
-    currency: 'USD',
-    imageUrl: '/accessories/hermes_scarf.png',
-    textureUrl: '/accessories/hermes_scarf.png',
-    isLuxury: true,
-    sizes: ['90x90cm'],
-    colors: ['Orange', 'Blue', 'Pink'],
-    description: 'Hand-rolled silk scarf with intricate print',
-  },
-  {
-    id: 'hermes-coat-001',
-    name: 'Cashmere Coat',
-    brand: 'Hermes',
-    category: 'outerwear',
-    price: 5600.00,
-    currency: 'USD',
-    imageUrl: '/clothing/hermes_coat.png',
-    textureUrl: '/clothing/hermes_coat.png',
-    isLuxury: true,
-    sizes: ['FR 36', 'FR 38', 'FR 40'],
-    colors: ['Beige', 'Black'],
-    description: 'Double-face cashmere coat',
-  },
-  {
-    id: 'hermes-bracelet-001',
-    name: 'Clic H Bracelet',
-    brand: 'Hermes',
-    category: 'accessories',
-    subCategory: 'jewelry',
-    zIndex: 35,
-    price: 670.00,
-    currency: 'USD',
-    imageUrl: '/accessories/hermes_bracelet.png',
-    textureUrl: '/accessories/hermes_bracelet.png',
-    isLuxury: true,
-    sizes: ['PM', 'GM'],
-    colors: ['Gold/White', 'Silver/Black'],
-    description: 'Enamel bracelet with H padlock',
-  },
-  {
-    id: 'hermes-dress-001',
-    name: 'Silk Shirt Dress',
-    brand: 'Hermes',
-    category: 'dresses',
-    price: 2900.00,
-    currency: 'USD',
-    imageUrl: '/clothing/hermes_dress.png',
-    textureUrl: '/clothing/hermes_dress.png',
-    isLuxury: true,
-    sizes: ['FR 36', 'FR 38', 'FR 40'],
-    colors: ['Navy', 'Red'],
-    description: 'Printed silk twill dress',
   },
 ];
 
