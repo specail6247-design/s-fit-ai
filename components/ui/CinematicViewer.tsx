@@ -16,6 +16,8 @@ export default function CinematicViewer({ videoUrl, posterUrl, className = '' }:
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
+  const [downloadFilename] = useState(() => `sfit-cinematic-${Date.now()}.mp4`);
+
   // Toggle Play/Pause
   const togglePlay = () => {
     if (videoRef.current) {
@@ -114,17 +116,29 @@ export default function CinematicViewer({ videoUrl, posterUrl, className = '' }:
           )}
         </button>
 
-        <button
-          onClick={toggleFullscreen}
-          className="flex items-center gap-2 px-5 py-2.5 bg-white text-black hover:bg-gray-100 rounded-full text-sm font-bold tracking-wide transition-all shadow-lg transform hover:scale-105"
-        >
-          {isFullscreen ? (
-             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
-          ) : (
-             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-          )}
-          <span>CINEMATIC MODE</span>
-        </button>
+        <div className="flex items-center gap-3">
+             <a
+              href={videoUrl}
+              download={downloadFilename}
+              className="text-white hover:text-white/80 transition-colors p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20"
+              title="Download 4K Clip"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            </a>
+
+            <button
+              onClick={toggleFullscreen}
+              className="flex items-center gap-2 px-5 py-2.5 bg-white text-black hover:bg-gray-100 rounded-full text-sm font-bold tracking-wide transition-all shadow-lg transform hover:scale-105"
+            >
+              {isFullscreen ? (
+                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
+              ) : (
+                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+              )}
+              <span>CINEMATIC MODE</span>
+            </button>
+        </div>
       </motion.div>
 
       {/* Film Grain / Aesthetic Overlay (Optional) */}
