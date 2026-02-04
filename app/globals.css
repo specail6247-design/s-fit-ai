@@ -17,7 +17,7 @@
 
   /* Accent (for hover/interactions) */
   --cyber-lime: var(--color-accent);
-  --luxury-gold: var(--color-primary);
+  --luxury-gold: #ecab13;
 
   /* Design Tokens */
   --background: var(--color-background);
@@ -289,4 +289,30 @@ body {
   .mode-card {
     padding: var(--spacing-lg);
   }
+}
+
+/* ============================================
+   Phase 4: Masterpiece Polish
+   ============================================ */
+
+.font-cinzel {
+  font-family: var(--font-cinzel), serif;
+}
+
+.font-space {
+  font-family: var(--font-space), sans-serif;
+}
+
+.editorial-filter {
+  filter: saturate(0.9) contrast(1.1);
+}
+
+.immersive-hidden {
+  opacity: 1;
+  transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.immersive-mode .immersive-hidden {
+  opacity: 0;
+  pointer-events: none;
 }

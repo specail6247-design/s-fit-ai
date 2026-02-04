@@ -2,13 +2,14 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { LuxuryImageDistortion } from './masterpiece/LuxuryImageDistortion';
 
 export default function LuxuryGarmentDetail() {
+  const heroImage = "https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E";
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
-      <div className="fixed top-0 z-50 w-full bg-[#f8f7f6]/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md">
+      <div className="immersive-hidden fixed top-0 z-50 w-full bg-[#f8f7f6]/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md">
         <div className="flex items-center p-4 justify-between max-w-md mx-auto">
           <Link href="/" className="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors">
             <span className="material-symbols-outlined">arrow_back</span>
@@ -26,15 +27,13 @@ export default function LuxuryGarmentDetail() {
       <main className="max-w-md mx-auto pt-16 pb-32">
         {/* 3D Interactive Viewport (Hero Image) */}
         <div className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900">
-          <div 
-            className="absolute inset-0 bg-cover bg-center" 
-            style={{ 
-              backgroundImage: 'linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' 
-            }}
-          />
+          <div className="absolute inset-0">
+             <LuxuryImageDistortion imageUrl={heroImage} />
+             <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%)' }} />
+          </div>
           
           {/* 3D UI Overlays */}
-          <div className="absolute bottom-6 left-4 right-4 flex justify-between items-end">
+          <div className="immersive-hidden absolute bottom-6 left-4 right-4 flex justify-between items-end">
             <div className="bg-black/40 backdrop-blur-md rounded-lg p-2 flex flex-col gap-2 border border-white/10">
               <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">zoom_in</span></button>
               <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">360</span></button>
@@ -48,7 +47,7 @@ export default function LuxuryGarmentDetail() {
         </div>
 
         {/* Material Stats */}
-        <div className="px-4 -mt-4 relative z-10">
+        <div className="immersive-hidden px-4 -mt-4 relative z-10">
           <div className="flex flex-wrap gap-3 bg-[#1a1a1a]/60 backdrop-blur-xl border border-[#2d2d2d] p-4 rounded-xl">
             <div className="flex min-w-[80px] flex-1 flex-col gap-1 items-center text-center">
               <p className="text-[#ecab13] text-xl font-bold leading-tight">99.8%</p>
@@ -68,13 +67,13 @@ export default function LuxuryGarmentDetail() {
         </div>
 
         {/* Material Science Description */}
-        <div className="mt-8 px-4">
+        <div className="immersive-hidden mt-8 px-4">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-white text-xs font-bold tracking-[0.2em] uppercase">Material Science</h2>
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
@@ -92,7 +91,7 @@ export default function LuxuryGarmentDetail() {
         </div>
 
         {/* Macro Gallery */}
-        <div className="mb-8">
+        <div className="immersive-hidden mb-8">
           <div className="px-4 flex items-center justify-between mb-4">
             <h2 className="text-white text-xs font-bold tracking-[0.2em] uppercase">Detail Macro View</h2>
             <p className="text-zinc-500 text-xs">4K Textures</p>
@@ -114,7 +113,7 @@ export default function LuxuryGarmentDetail() {
         </div>
 
         {/* Comparison Table */}
-        <div className="px-4 py-4 bg-[#1a1a1a]/30 border-y border-[#2d2d2d] mb-8">
+        <div className="immersive-hidden px-4 py-4 bg-[#1a1a1a]/30 border-y border-[#2d2d2d] mb-8">
           <div className="flex justify-between items-center py-2">
             <span className="text-zinc-500 text-xs uppercase tracking-widest">Weight</span>
             <span className="text-white text-sm">240 GSM</span>
@@ -131,7 +130,7 @@ export default function LuxuryGarmentDetail() {
       </main>
 
       {/* Bottom Action Bar */}
-      <div className="fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex gap-4 items-center z-50">
+      <div className="immersive-hidden fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex gap-4 items-center z-50">
         <div className="flex flex-col flex-1">
           <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
           <p className="text-white text-xl font-bold">$2,850</p>
