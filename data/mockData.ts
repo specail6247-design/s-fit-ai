@@ -17,6 +17,9 @@ export interface ClothingItem {
   sizes: string[];
   colors: string[];
   description: string;
+  stylingTip?: string;
+  lockedUntil?: string;
+  isLocked?: boolean;
 }
 
 export interface Brand {
@@ -110,6 +113,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy', 'Beige'],
     description: 'Relaxed fit blazer with structured shoulders',
+    stylingTip: 'Pair with slim trousers to balance the oversized silhouette.',
   },
   {
     id: 'zara-002',
@@ -124,6 +128,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'White', 'Camel'],
     description: 'Elegant wide leg trousers with pleats',
+    stylingTip: 'Tuck in a fitted top to accentuate the waistline.',
   },
   {
     id: 'zara-003',
@@ -138,6 +143,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L'],
     colors: ['Cream', 'Black', 'Sage'],
     description: 'Minimalist cropped sweater',
+    stylingTip: 'Ideal for layering over a collared shirt or high-waisted denim.',
   },
   {
     id: 'zara-004',
@@ -152,6 +158,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Champagne', 'Black', 'Burgundy'],
     description: 'Elegant satin dress with cowl neck',
+    stylingTip: 'Add strappy heels and a clutch for an evening look.',
   },
   {
     id: 'zara-005',
@@ -166,6 +173,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     colors: ['Black', 'Brown'],
     description: 'Faux leather bomber with ribbed trim',
+    stylingTip: 'Throw over a slip dress for a tough-luxe vibe.',
   },
 
   // GUCCI - Luxury (5 items with isLuxury: true)
@@ -182,6 +190,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 44', 'IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Beige/Ebony'],
     description: 'Iconic GG pattern wool blazer with silk lining',
+    stylingTip: 'Match with the coordinating trousers for a full runway look.',
   },
   {
     id: 'gucci-002',
@@ -196,6 +205,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 38', 'IT 40', 'IT 42', 'IT 44', 'IT 46'],
     colors: ['Ivory', 'Black'],
     description: 'Pure silk blouse with signature horsebit print',
+    stylingTip: 'Tuck into a leather skirt to mix textures.',
   },
   {
     id: 'gucci-003',
@@ -210,6 +220,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy'],
     description: 'Technical jersey pants with Web stripe',
+    stylingTip: 'Elevate with loafers or keep it casual with chunky sneakers.',
   },
   {
     id: 'gucci-004',
@@ -224,6 +235,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 38', 'IT 40', 'IT 42', 'IT 44'],
     colors: ['Pink Flora'],
     description: 'Flowing silk georgette dress with iconic Flora print',
+    stylingTip: 'Keep accessories minimal to let the print stand out.',
   },
   {
     id: 'gucci-005',
@@ -238,6 +250,9 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Black'],
     description: 'Genuine leather bomber with embroidered patches',
+    stylingTip: 'A statement piece that works best with simple denim.',
+    isLocked: true,
+    lockedUntil: '2025-12-31T23:59:59Z',
   },
 
   // UNIQLO - Basic (5 items)
