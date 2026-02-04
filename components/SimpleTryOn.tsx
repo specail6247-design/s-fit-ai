@@ -67,7 +67,7 @@ const SFitAIProject = () => {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} />
               {userImage && (
                 <div style={{ position: 'relative', width: '100%', height: '200px', marginTop: '10px' }}>
-                  <Image src={userImage} fill style={{ objectFit: 'cover', borderRadius: '10px' }} alt="User" />
+                  <Image src={userImage} fill style={{ objectFit: 'cover', borderRadius: '10px' }} alt="User" unoptimized />
                 </div>
               )}
             </div>
@@ -79,7 +79,7 @@ const SFitAIProject = () => {
               <input type="file" onChange={(e) => handleFileUpload(e, setClothingImage)} />
               {clothingImage && (
                 <div style={{ position: 'relative', width: '100%', height: '200px', marginTop: '10px' }}>
-                  <Image src={clothingImage} fill style={{ objectFit: 'cover', borderRadius: '10px' }} alt="Cloth" />
+                  <Image src={clothingImage} fill style={{ objectFit: 'cover', borderRadius: '10px' }} alt="Cloth" unoptimized />
                 </div>
               )}
             </div>
