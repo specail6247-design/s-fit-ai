@@ -17,6 +17,9 @@ export interface ClothingItem {
   sizes: string[];
   colors: string[];
   description: string;
+  stylingTip?: string;
+  isLocked?: boolean;
+  unlockDate?: string; // ISO String
 }
 
 export interface Brand {
@@ -110,6 +113,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy', 'Beige'],
     description: 'Relaxed fit blazer with structured shoulders',
+    stylingTip: 'Pair with fitted trousers to balance the oversized silhouette.',
   },
   {
     id: 'zara-002',
@@ -124,6 +128,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'White', 'Camel'],
     description: 'Elegant wide leg trousers with pleats',
+    stylingTip: 'Tuck in a silk blouse to accentuate the waistline.',
   },
   {
     id: 'zara-003',
@@ -138,6 +143,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L'],
     colors: ['Cream', 'Black', 'Sage'],
     description: 'Minimalist cropped sweater',
+    stylingTip: 'Style with high-waisted denim for a casual chic look.',
   },
   {
     id: 'zara-004',
@@ -152,6 +158,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Champagne', 'Black', 'Burgundy'],
     description: 'Elegant satin dress with cowl neck',
+    stylingTip: 'Add strappy heels and gold jewelry for an evening event.',
   },
   {
     id: 'zara-005',
@@ -166,6 +173,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     colors: ['Black', 'Brown'],
     description: 'Faux leather bomber with ribbed trim',
+    stylingTip: 'Layer over a graphic tee for an edgy urban vibe.',
   },
 
   // GUCCI - Luxury (5 items with isLuxury: true)
@@ -182,6 +190,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 44', 'IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Beige/Ebony'],
     description: 'Iconic GG pattern wool blazer with silk lining',
+    stylingTip: 'Combine with matching trousers for the full runway impact.',
   },
   {
     id: 'gucci-002',
@@ -196,6 +205,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 38', 'IT 40', 'IT 42', 'IT 44', 'IT 46'],
     colors: ['Ivory', 'Black'],
     description: 'Pure silk blouse with signature horsebit print',
+    stylingTip: 'Wear under a blazer or solo with a midi skirt for sophistication.',
   },
   {
     id: 'gucci-003',
@@ -210,6 +220,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy'],
     description: 'Technical jersey pants with Web stripe',
+    stylingTip: 'Elevate with loafers for a luxe-athleisure aesthetic.',
   },
   {
     id: 'gucci-004',
@@ -224,6 +235,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 38', 'IT 40', 'IT 42', 'IT 44'],
     colors: ['Pink Flora'],
     description: 'Flowing silk georgette dress with iconic Flora print',
+    stylingTip: 'Keep accessories minimal to let the print stand out.',
   },
   {
     id: 'gucci-005',
@@ -238,6 +250,9 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Black'],
     description: 'Genuine leather bomber with embroidered patches',
+    stylingTip: 'This exclusive piece demands center stage; pair with simple denim.',
+    isLocked: true,
+    unlockDate: new Date(Date.now() + 7200000).toISOString(), // Unlocks in 2 hours
   },
 
   // UNIQLO - Basic (5 items)
@@ -254,6 +269,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['Black', 'Navy', 'Olive', 'Wine'],
     description: 'Lightweight, compact down jacket',
+    stylingTip: 'Perfect for layering under wool coats for extra warmth.',
   },
   {
     id: 'uniqlo-002',
@@ -268,6 +284,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
     colors: ['White', 'Black', 'Gray', 'Navy', 'Olive'],
     description: 'Premium Supima cotton basic tee',
+    stylingTip: 'A wardrobe staple that works with absolutely everything.',
   },
   {
     id: 'uniqlo-003',
@@ -282,6 +299,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['Black', 'Navy', 'Gray', 'Beige'],
     description: 'Easy care stretch ankle pants',
+    stylingTip: 'Show off your favorite socks or sneakers with the cropped length.',
   },
   {
     id: 'uniqlo-004',
@@ -296,6 +314,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['Black', 'Navy', 'Wine', 'Cream'],
     description: 'Soft merino wool blend crew neck',
+    stylingTip: 'Layer over a collared shirt for a preppy, polished look.',
   },
   {
     id: 'uniqlo-005',
@@ -310,6 +329,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy', 'Olive'],
     description: 'Comfortable everyday rayon dress',
+    stylingTip: 'Cinch with a belt to define your waist.',
   },
 
   // H&M - Mass Market (5 items)
@@ -326,6 +346,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['White', 'Light Blue', 'Black'],
     description: 'Classic slim fit dress shirt',
+    stylingTip: 'Roll up the sleeves for a relaxed business-casual feel.',
   },
   {
     id: 'hm-002',
@@ -340,6 +361,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy', 'Gray'],
     description: 'Versatile regular fit blazer',
+    stylingTip: 'Dress up your jeans instantly with this structured piece.',
   },
   {
     id: 'hm-003',
@@ -354,6 +376,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['28', '30', '32', '34', '36'],
     colors: ['Dark Blue', 'Black', 'Light Blue'],
     description: 'Cotton blend slim fit jeans',
+    stylingTip: 'Pair with boots and a leather jacket for a timeless cool look.',
   },
   {
     id: 'hm-004',
@@ -368,6 +391,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['White', 'Black', 'Beige'],
     description: 'Fitted ribbed tank top',
+    stylingTip: 'The ultimate base layer; wear under cardigans or blazers.',
   },
   {
     id: 'hm-005',
@@ -382,6 +406,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Floral', 'Red'],
     description: 'Elegant wrap dress with tie waist',
+    stylingTip: 'Complements all body types; pair with simple pumps.',
   },
 
   // COS - Premium Mass Market (2 items)
@@ -398,6 +423,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L'],
     colors: ['Black', 'Cream', 'Navy'],
     description: 'Minimalist wool blend top',
+    stylingTip: 'Keep it monochromatic for a high-fashion architectural look.',
   },
   {
     id: 'cos-002',
@@ -412,6 +438,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L'],
     colors: ['Black', 'Beige', 'Gray'],
     description: 'High-waisted wide-leg trousers',
+    stylingTip: 'Balance the volume with a fitted top.',
   },
 
   // GAP - Basic (5 items)
@@ -428,6 +455,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['Gray', 'Navy', 'Black', 'Oatmeal'],
     description: 'Soft fleece pullover hoodie',
+    stylingTip: 'Perfect for weekend lounging or a casual gym run.',
   },
   {
     id: 'gap-002',
@@ -442,6 +470,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['White', 'Blue', 'Pink'],
     description: 'Classic button-down oxford shirt',
+    stylingTip: 'Wear open over a tee for a relaxed vibe.',
   },
   {
     id: 'gap-003',
@@ -456,6 +485,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['White', 'Black', 'Navy', 'Gray'],
     description: 'Everyday essential cotton tee',
+    stylingTip: 'Stock up on multiples; it goes with everything.',
   },
   {
     id: 'gap-004',
@@ -470,6 +500,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['28', '30', '32', '34', '36', '38'],
     colors: ['Khaki', 'Navy', 'Black'],
     description: 'Straight fit modern khaki pants',
+    stylingTip: 'A great alternative to jeans for a smarter casual look.',
   },
   {
     id: 'gap-005',
@@ -484,6 +515,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Gray', 'Navy'],
     description: 'Comfortable athletic joggers',
+    stylingTip: 'Pair with clean sneakers for an athleisure style.',
   },
 
   // ACCESSORIES - New Category
@@ -502,6 +534,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Black', 'Beige'],
     description: 'Iconic quilted leather handbag with chain strap',
+    stylingTip: 'The ultimate investment piece that elevates any outfit.',
   },
   {
     id: 'supreme-hat-001',
@@ -518,6 +551,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['Adjustable'],
     colors: ['Red', 'Black', 'Camo'],
     description: 'Cotton canvas camp cap with woven box logo',
+    stylingTip: 'Add instant street cred to your casual fits.',
   },
   {
     id: 'tiffany-necklace-001',
@@ -534,6 +568,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+    stylingTip: 'Layer with other delicate chains for a modern look.',
   },
 ];
 
