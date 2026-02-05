@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import MemberAccessModal from './MemberAccessModal';
+import SupportHub from './SupportHub';
+import { useStore } from '@/store/useStore';
+import { ModeSelector } from './ModeSelector';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -11,11 +16,16 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const { selectedMode, resetSession } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  // Phase 5 State
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
+  const [isSupportHubOpen, setIsSupportHubOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -71,6 +81,58 @@ export default function RealLifeFitting() {
     }
   };
 
+  // --- RENDER MODE SELECTION (Home) ---
+  if (!selectedMode) {
+    return (
+      <div className="min-h-screen bg-[#050505] text-white font-sans flex flex-col relative overflow-hidden">
+        {/* Background Ambience */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
+
+        {/* Header */}
+        <header className="p-8 relative z-10 flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-black tracking-tighter italic">
+              S_FIT <span className="text-[#007AFF]">NEO</span>
+            </h1>
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+              Professional Virtual Fitting
+            </p>
+          </div>
+          <button
+            onClick={() => setIsMemberModalOpen(true)}
+            className="px-3 py-1 border border-[#ecab13] text-[#ecab13] text-[10px] uppercase tracking-widest hover:bg-[#ecab13] hover:text-black transition-colors"
+          >
+            Member Access
+          </button>
+        </header>
+
+        {/* Main Content: Mode Selection */}
+        <main className="flex-1 flex flex-col items-center justify-center p-8 relative z-10 w-full">
+           <div className="mb-12 text-center">
+              <h2 className="text-2xl font-bold mb-4">Choose Your Experience</h2>
+              <p className="text-gray-400">Select a fitting mode to begin your session.</p>
+           </div>
+           <ModeSelector />
+        </main>
+
+        {/* Footer / Support */}
+        <div className="p-8 text-center relative z-10">
+           <button
+              onClick={() => setIsSupportHubOpen(true)}
+              className="text-[10px] text-gray-600 hover:text-[#007AFF] uppercase tracking-widest transition-colors flex items-center justify-center gap-2 mx-auto"
+            >
+              <span>?</span> Need Help? Support Hub
+            </button>
+        </div>
+
+        {/* Global Modals */}
+        <MemberAccessModal isOpen={isMemberModalOpen} onClose={() => setIsMemberModalOpen(false)} />
+        <SupportHub isOpen={isSupportHubOpen} onClose={() => setIsSupportHubOpen(false)} />
+      </div>
+    );
+  }
+
+  // --- RENDER FITTING INTERFACE (Selected Mode) ---
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
@@ -79,13 +141,24 @@ export default function RealLifeFitting() {
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+        <header className="mb-10 relative z-10 flex justify-between items-start">
+          <div>
+            <button onClick={resetSession} className="text-[10px] text-[#007AFF] hover:text-white uppercase tracking-widest mb-2 block">
+              ← Change Mode
+            </button>
+            <h1 className="text-4xl font-black tracking-tighter italic">
+              S_FIT <span className="text-[#007AFF]">NEO</span>
+            </h1>
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+              {selectedMode.replace('-', ' ').toUpperCase()} MODE
+            </p>
+          </div>
+          <button
+            onClick={() => setIsMemberModalOpen(true)}
+            className="px-3 py-1 border border-[#ecab13] text-[#ecab13] text-[10px] uppercase tracking-widest hover:bg-[#ecab13] hover:text-black transition-colors"
+          >
+            Member Access
+          </button>
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
@@ -95,8 +168,8 @@ export default function RealLifeFitting() {
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10 relative">
+                  {userImage ? <Image src={userImage} alt="User Photo" fill className="object-cover" unoptimized /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -112,8 +185,8 @@ export default function RealLifeFitting() {
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10 relative">
+                  {garmentImage ? <Image src={garmentImage} alt="Garment Photo" fill className="object-cover" unoptimized /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -158,8 +231,22 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Support Hub Trigger - Hidden until needed style */}
+          <div className="mt-8 text-center">
+            <button
+              onClick={() => setIsSupportHubOpen(true)}
+              className="text-[10px] text-gray-600 hover:text-[#007AFF] uppercase tracking-widest transition-colors flex items-center justify-center gap-2 mx-auto"
+            >
+              <span>?</span> Need Help? Support Hub
+            </button>
+          </div>
+
         </div>
       </div>
+
+      {/* Modals & Drawers */}
+      <MemberAccessModal isOpen={isMemberModalOpen} onClose={() => setIsMemberModalOpen(false)} />
+      <SupportHub isOpen={isSupportHubOpen} onClose={() => setIsSupportHubOpen(false)} />
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
@@ -195,6 +282,7 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 

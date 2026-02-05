@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+/* eslint-disable @next/next/no-img-element */
 const SFitAIProject = () => {
   const [userImage, setUserImage] = useState<string | null>(null);
   const [clothingImage, setClothingImage] = useState<string | null>(null);
