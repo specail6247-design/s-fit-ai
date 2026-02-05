@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { useFrame, extend, ReactThreeFiber } from '@react-three/fiber';
+import { useFrame, extend } from '@react-three/fiber';
 import { useTexture, shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -82,15 +82,6 @@ const ImageDistortionMaterial = shaderMaterial(
 );
 
 extend({ ImageDistortionMaterial });
-
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSX {
-    interface IntrinsicElements {
-      imageDistortionMaterial: ReactThreeFiber.Object3DNode<THREE.ShaderMaterial, typeof ImageDistortionMaterial>;
-    }
-  }
-}
 
 interface LuxuryImageDistortionProps {
   imageUrl: string;
