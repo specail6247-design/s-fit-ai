@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateCinematicVideo } from '@/lib/virtualTryOn';
+import { generateCinematicVideo as generateSVDVideo } from '@/lib/virtualTryOn';
+import { generateRunwayVideo } from '@/lib/runway';
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,7 +13,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await generateCinematicVideo(imageUrl);
+    // Attempt Runway Gen-3 first (High Fidelity)
+    let result = await generateRunwayVideo(imageUrl);
+
+    // Fallback to SVD if Runway fails or key missing
+    if (!result.success) {
+        console.log("Falling back to SVD generation due to:", result.error);
+        result = await generateSVDVideo(imageUrl);
+    }
 
     if (result.success) {
       return NextResponse.json(result);
