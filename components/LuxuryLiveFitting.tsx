@@ -235,6 +235,7 @@ export default function LuxuryLiveFitting() {
                      className={`interactive group flex flex-col gap-4 cursor-pointer ${selectedItem?.id === item.id ? 'opacity-100' : 'opacity-50 hover:opacity-100'} transition-opacity duration-500`}
                    >
                       <div className={`aspect-[3/4] w-full rounded-sm overflow-hidden relative border ${selectedItem?.id === item.id ? 'border-[#ecab13]' : 'border-transparent'}`}>
+                         {/* eslint-disable-next-line @next/next/no-img-element */}
                          <img
                            src={item.imageUrl}
                            alt={item.name}
