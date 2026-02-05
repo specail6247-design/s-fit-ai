@@ -12,7 +12,53 @@ This information is used to shape Next.js' roadmap and prioritize features.
 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
 https://nextjs.org/telemetry
 
-✓ Ready in 1780ms
-○ Compiling /cinematic-demo ...
+✓ Ready in 1903ms
+○ Compiling / ...
 ⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
- GET /cinematic-demo 200 in 12.4s (compile: 12.0s, render: 401ms)
+ GET / 200 in 24.8s (compile: 22.9s, render: 1880ms)
+ GET / 200 in 75ms (compile: 10ms, render: 65ms)
+○ Compiling /masterpiece ...
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /masterpiece 200 in 8.8s (compile: 7.8s, render: 1020ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /masterpiece 200 in 799ms (compile: 124ms, render: 676ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET / 200 in 849ms (compile: 326ms, render: 523ms)
+ GET / 200 in 88ms (compile: 6ms, render: 81ms)
+ GET / 200 in 159ms (compile: 13ms, render: 147ms)
+ GET / 200 in 159ms (compile: 11ms, render: 147ms)
+○ Compiling /luxury ...
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET / 200 in 14.2s (compile: 13.7s, render: 482ms)
+ GET /luxury 200 in 15.3s (compile: 14.7s, render: 529ms)
+ GET / 200 in 144ms (compile: 7ms, render: 137ms)
+ GET / 200 in 142ms (compile: 20ms, render: 121ms)
+ GET / 200 in 60ms (compile: 8ms, render: 52ms)
+ GET / 200 in 69ms (compile: 15ms, render: 54ms)
+ GET / 200 in 74ms (compile: 4ms, render: 70ms)
+ GET /luxury 200 in 892ms (compile: 22ms, render: 870ms)
+ GET / 200 in 101ms (compile: 4ms, render: 97ms)
+ GET / 200 in 2.7s (compile: 2.6s, render: 99ms)
+ GET / 200 in 66ms (compile: 10ms, render: 55ms)
+ GET / 200 in 115ms (compile: 20ms, render: 95ms)
+ GET / 200 in 118ms (compile: 4ms, render: 114ms)
+ GET / 200 in 120ms (compile: 5ms, render: 115ms)
+ GET /luxury 200 in 233ms (compile: 23ms, render: 210ms)
+ GET / 200 in 165ms (compile: 24ms, render: 141ms)
+ GET / 200 in 114ms (compile: 8ms, render: 106ms)
+ GET / 200 in 94ms (compile: 26ms, render: 69ms)
+ GET / 200 in 127ms (compile: 20ms, render: 107ms)
+ GET / 200 in 81ms (compile: 4ms, render: 77ms)
+ GET / 200 in 471ms (compile: 183ms, render: 289ms)
+ GET /luxury 200 in 521ms (compile: 287ms, render: 234ms)
+ GET / 200 in 85ms (compile: 8ms, render: 77ms)
+ GET / 200 in 158ms (compile: 7ms, render: 152ms)
+ GET / 200 in 158ms (compile: 27ms, render: 131ms)
+ GET / 200 in 62ms (compile: 4ms, render: 58ms)
+ GET / 200 in 86ms (compile: 8ms, render: 77ms)
+ GET / 200 in 105ms (compile: 7ms, render: 98ms)
+ GET /luxury 200 in 125ms (compile: 10ms, render: 115ms)
+ GET / 200 in 97ms (compile: 5ms, render: 93ms)
+ GET / 200 in 97ms (compile: 3ms, render: 93ms)
+ GET / 200 in 94ms (compile: 4ms, render: 90ms)
+ GET / 200 in 92ms (compile: 16ms, render: 76ms)
