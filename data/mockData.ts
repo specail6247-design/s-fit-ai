@@ -5,7 +5,7 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'ADER Error';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -89,6 +89,13 @@ export const brands: Brand[] = [
     id: 'tiffany',
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'adererror',
+    name: 'ADER Error',
+    logo: 'https://placehold.co/100x100?text=ADER',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -534,6 +541,36 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+  },
+
+  // ADER ERROR - K-Fashion (2 items)
+  {
+    id: 'ader-001',
+    name: 'Deconstructed Oversized Blazer',
+    brand: 'ADER Error',
+    category: 'outerwear',
+    price: 450.00,
+    currency: 'USD',
+    imageUrl: '/clothing/ader_blazer.png',
+    textureUrl: '/clothing/ader_blazer.png',
+    isLuxury: true,
+    sizes: ['A1', 'A2', 'A3'],
+    colors: ['Charcoal', 'Blue'],
+    description: 'Signature deconstructed blazer with raw edges',
+  },
+  {
+    id: 'ader-002',
+    name: 'Tetris Logo Hoodie',
+    brand: 'ADER Error',
+    category: 'tops',
+    price: 320.00,
+    currency: 'USD',
+    imageUrl: '/clothing/ader_hoodie.png',
+    textureUrl: '/clothing/ader_hoodie.png',
+    isLuxury: true,
+    sizes: ['A1', 'A2', 'A3'],
+    colors: ['Blue', 'Grey'],
+    description: 'Heavyweight cotton hoodie with distorted logo',
   },
 ];
 
