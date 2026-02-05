@@ -23,6 +23,8 @@ export interface Brand {
   id: string;
   name: string;
   logo: string;
+  bannerImage?: string;
+  description?: string;
   isLuxury: boolean;
   tier: 'mass' | 'luxury' | 'basic';
 }
@@ -33,6 +35,8 @@ export const brands: Brand[] = [
     id: 'zara',
     name: 'ZARA',
     logo: 'https://placehold.co/100x100?text=ZARA',
+    bannerImage: 'https://placehold.co/1200x400/000000/FFFFFF?text=ZARA+COLLECTION',
+    description: 'Trend-driven fashion making runway styles accessible to everyone.',
     isLuxury: false,
     tier: 'mass',
   },
@@ -40,6 +44,8 @@ export const brands: Brand[] = [
     id: 'gucci',
     name: 'GUCCI',
     logo: 'https://placehold.co/100x100?text=GUCCI',
+    bannerImage: 'https://placehold.co/1200x400/1a1a1a/ecab13?text=GUCCI+ATELIER',
+    description: 'An icon of Italian craftsmanship, reinterpreting luxury for the 21st century.',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -47,6 +53,8 @@ export const brands: Brand[] = [
     id: 'uniqlo',
     name: 'UNIQLO',
     logo: 'https://placehold.co/100x100?text=UNIQLO',
+    bannerImage: 'https://placehold.co/1200x400/ffffff/ff0000?text=LIFEWEAR',
+    description: 'Simple, high-quality, everyday clothing that enhances everyone’s life.',
     isLuxury: false,
     tier: 'basic',
   },
@@ -75,6 +83,8 @@ export const brands: Brand[] = [
     id: 'chanel',
     name: 'Chanel',
     logo: 'https://placehold.co/100x100?text=CHANEL',
+    bannerImage: 'https://placehold.co/1200x400/000000/ffffff?text=CHANEL',
+    description: 'Fashion, fragrance, and jewelry creating a legacy of timeless elegance.',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -82,6 +92,8 @@ export const brands: Brand[] = [
     id: 'supreme',
     name: 'Supreme',
     logo: 'https://placehold.co/100x100?text=SUPREME',
+    bannerImage: 'https://placehold.co/1200x400/ff0000/ffffff?text=SUPREME',
+    description: 'Skateboarding culture meets street style in exclusive, limited drops.',
     isLuxury: false,
     tier: 'mass',
   },
@@ -89,6 +101,8 @@ export const brands: Brand[] = [
     id: 'tiffany',
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
+    bannerImage: 'https://placehold.co/1200x400/81d8d0/ffffff?text=TIFFANY+&+CO',
+    description: 'America’s house of design and the world’s premier jeweler.',
     isLuxury: true,
     tier: 'luxury',
   },
