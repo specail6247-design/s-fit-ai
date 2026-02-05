@@ -2,7 +2,7 @@
 
 // S_FIT AI - 3D Fitting Room Component
 // Consolidated Version: Masterpiece Engine + Physics (Ammo.js) + Full UI Features
-// Includes: Accessory & Layering, Cinematic Video, AI Stylist, Comparison, Sharing, Vault, Sensory Ambience
+// Includes: Accessory & Layering, Cinematic Video, AI Stylist, Comparison, Sharing
 
 import React, { Suspense, useRef, useState, useCallback, useEffect, useMemo } from 'react';
 import Image from 'next/image';
@@ -32,8 +32,6 @@ import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
-import { SensoryAmbience } from '@/components/ui/SensoryAmbience';
-import { BottomSheet } from '@/components/ui/BottomSheet';
 
 // --- PHYSICS ENGINE (Ammo.js) ---
 
@@ -278,30 +276,6 @@ function LoadingSpinner() {
   );
 }
 
-function Countdown({ targetDate }: { targetDate: string }) {
-  const [timeLeft, setTimeLeft] = useState('');
-
-  useEffect(() => {
-    const target = new Date(targetDate).getTime();
-    const interval = setInterval(() => {
-      const now = new Date().getTime();
-      const distance = target - now;
-      if (distance < 0) {
-        setTimeLeft('Available Now');
-        clearInterval(interval);
-      } else {
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [targetDate]);
-
-  return <span>{timeLeft}</span>;
-}
-
 const colorMap: Record<string, string> = {
   'Black': '#1a1a1a', 'White': '#f5f5f5', 'Navy': '#1a2744', 'Beige': '#d4c4a8', 
   'Camel': '#c19a6b', 'Gray': '#6b6b6b', 'Cream': '#fffdd0', 'Brown': '#5c4033', 
@@ -332,16 +306,16 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170
+  height = 170, opacity = 1.0
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  const animationUrl = "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb";
+  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
   
   return (
     <group scale={[scale, scale, scale]}>
       {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
-        url="https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb"
+        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb"
         animationUrl={animationUrl}
         scale={1.0}
       />
@@ -530,7 +504,7 @@ function Scene({
   const scale = height / 170;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
   let mannequinPosition: [number, number, number] = [0, -0.9, 0];
-  const animationUrl = "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb";
+  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
 
   const heatmapData = useMemo(() => {
     if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !selectedItem) return null;
@@ -557,7 +531,10 @@ function Scene({
       <group position={mannequinPosition} scale={[scale, scale, scale]}>
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
-            url="https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb"
+            url={selectedMode === 'vibe-check'
+              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb"
+              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb"
+            }
             animationUrl={animationUrl}
             scale={1.0}
           />
@@ -604,27 +581,17 @@ function ItemCard({
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
-  const isLocked = item.isLocked && item.unlockDate ? new Date(item.unlockDate) > new Date() : false;
-
   return (
     <motion.button
-      onClick={isLocked ? undefined : onSelect}
-      disabled={isLocked}
-      className={`relative flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start overflow-hidden ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'} ${isLocked ? 'opacity-70 grayscale' : ''}`}
-      whileHover={!isLocked ? { scale: 1.05 } : undefined}
-      whileTap={!isLocked ? { scale: 0.95 } : undefined}
+      onClick={onSelect}
+      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
     >
       <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
         <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
         {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
-
-        {isLocked && (
-            <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-20">
-                <span className="text-lg mb-1">🔒</span>
-                {item.unlockDate && <span className="text-[0.4rem] font-mono text-soft-gray"><Countdown targetDate={item.unlockDate} /></span>}
-            </div>
-        )}
       </div>
       <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
       <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
@@ -863,13 +830,11 @@ function AITryOnModal({
 export function FittingRoom() {
   const {
     userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
-    savedLooks, saveLook, removeLook, isLookSaved
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
-  const [showVault, setShowVault] = useState(false);
   const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
   const [aiTryOnLoading, setAITryOnLoading] = useState(false);
   const [userPhotoPreview, setUserPhotoPreview] = useState<string | null>(null);
@@ -966,19 +931,8 @@ export function FittingRoom() {
     );
   }, [poseAnalysis, currentItem, resolvedHeight]);
 
-  const toggleSaveLook = () => {
-    if (!currentItem) return;
-    if (isLookSaved(currentItem.id)) {
-      removeLook(currentItem.id);
-    } else {
-      saveLook(currentItem);
-    }
-  };
-
   return (
     <div className="w-full h-full flex flex-col bg-void-black text-pure-white">
-      <SensoryAmbience isActive={isMasterpieceMode} />
-
       <div className="flex-1 relative min-h-[350px]">
         {webglFailed ? (
           /* 2D Fallback View */
@@ -1057,9 +1011,6 @@ export function FittingRoom() {
         )}
 
         <div className="absolute top-4 left-4 flex gap-2 z-20">
-            <button onClick={() => setShowVault(true)} className="bg-charcoal/60 backdrop-blur-md px-3 py-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors text-xs font-bold flex items-center gap-1">
-                <span>🏰</span> The Vault
-            </button>
             <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
                 <span>📤</span>
             </button>
@@ -1069,16 +1020,6 @@ export function FittingRoom() {
                 <span>✨</span> AI 피팅 <span className="text-[0.6rem] bg-white/20 px-1.5 py-0.5 rounded-full">NEW</span>
             </motion.button>
         </div>
-
-        {/* Heart/Save Button positioned near the top right of the viewport but below the toggle controls or near the item */}
-        {currentItem && (
-            <button
-                onClick={toggleSaveLook}
-                className="absolute top-4 right-32 z-20 bg-charcoal/60 backdrop-blur-md p-2 rounded-full border border-white/10 hover:bg-charcoal/80 transition-colors text-lg"
-            >
-                {isLookSaved(currentItem.id) ? '❤️' : '🤍'}
-            </button>
-        )}
 
         {topPicks.length > 0 && (
           <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-20">
@@ -1113,45 +1054,30 @@ export function FittingRoom() {
         {/* AI Consultant Advice Overlay */}
         <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none">
             <AnimatePresence>
-                {currentItem && (
+                {currentItem && poseAnalysis?.proportions && recommendedFit && (
                     <motion.div 
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                         className="bg-black/60 backdrop-blur-xl border border-white/10 p-3 rounded-2xl shadow-2xl pointer-events-auto max-w-sm"
                     >
-                        {poseAnalysis?.proportions && recommendedFit ? (
-                            <>
-                                <div className="flex items-center gap-3 mb-2">
-                                    <div className="w-8 h-8 rounded-full bg-cyber-lime/20 flex items-center justify-center text-cyber-lime text-xs font-bold ring-1 ring-cyber-lime/30">
-                                        {recommendedFit.recommendedSize}
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] uppercase tracking-widest text-soft-gray font-bold">AI Recommended Fit</p>
-                                        <p className="text-xs font-bold text-white">Masterpiece Fit Consultant</p>
-                                    </div>
-                                </div>
-                                <ul className="space-y-1">
-                                    {recommendedFit.fitNotes.map((note, i) => (
-                                        <li key={i} className="text-[9px] text-soft-gray flex items-start gap-1.5 leading-relaxed">
-                                            <span className="text-cyber-lime mt-1 flex-shrink-0">●</span>
-                                            {note}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </>
-                        ) : (
-                            <div className="flex items-center gap-2 mb-1">
-                                <span className="text-lg">✨</span>
-                                <p className="text-[10px] uppercase tracking-widest text-soft-gray font-bold">AI Stylist</p>
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="w-8 h-8 rounded-full bg-cyber-lime/20 flex items-center justify-center text-cyber-lime text-xs font-bold ring-1 ring-cyber-lime/30">
+                                {recommendedFit.recommendedSize}
                             </div>
-                        )}
-
-                        {currentItem.stylingTip && (
-                            <div className={`pt-2 ${poseAnalysis?.proportions ? 'mt-2 border-t border-white/10' : ''}`}>
-                                <p className="text-[9px] text-cyber-lime italic font-serif">&quot; {currentItem.stylingTip} &quot;</p>
+                            <div>
+                                <p className="text-[10px] uppercase tracking-widest text-soft-gray font-bold">AI Recommended Fit</p>
+                                <p className="text-xs font-bold text-white">Masterpiece Fit Consultant</p>
                             </div>
-                        )}
+                        </div>
+                        <ul className="space-y-1">
+                            {recommendedFit.fitNotes.map((note, i) => (
+                                <li key={i} className="text-[9px] text-soft-gray flex items-start gap-1.5 leading-relaxed">
+                                    <span className="text-cyber-lime mt-1 flex-shrink-0">●</span>
+                                    {note}
+                                </li>
+                            ))}
+                        </ul>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -1222,48 +1148,6 @@ export function FittingRoom() {
         result={aiTryOnResult}
         onGenerateTryOn={handleGenerateAITryOn}
       />
-
-      {/* The Vault Drawer */}
-      <BottomSheet isOpen={showVault} onClose={() => setShowVault(false)} title="The Vault">
-        <div className="grid grid-cols-3 gap-3">
-          {savedLooks.length === 0 ? (
-            <div className="col-span-3 text-center py-8 text-soft-gray">
-              <p className="text-2xl mb-2">🕸️</p>
-              <p className="text-xs">Your vault is empty.</p>
-              <p className="text-[10px] mt-1">Save looks to compare them here.</p>
-            </div>
-          ) : (
-            savedLooks.map((item) => (
-              <button
-                key={`vault-${item.id}`}
-                onClick={() => { setSelectedItem(item); setShowVault(false); }}
-                className="relative bg-void-black border border-white/10 rounded-xl overflow-hidden hover:border-cyber-lime/50 transition-colors group aspect-[3/4]"
-              >
-                 <div className="absolute inset-0 bg-charcoal/20">
-                     <Image
-                        src={item.imageUrl}
-                        alt={item.name}
-                        fill
-                        className="object-contain p-2"
-                        sizes="(max-width: 768px) 33vw, 150px"
-                        unoptimized
-                     />
-                 </div>
-                 <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black to-transparent">
-                    <p className="text-[8px] font-bold text-white truncate">{item.name}</p>
-                    <p className="text-[7px] text-soft-gray">{item.brand}</p>
-                 </div>
-                 <button
-                    onClick={(e) => { e.stopPropagation(); removeLook(item.id); }}
-                    className="absolute top-1 right-1 w-5 h-5 flex items-center justify-center bg-black/50 rounded-full text-[10px] opacity-0 group-hover:opacity-100 transition-opacity"
-                 >
-                    ✕
-                 </button>
-              </button>
-            ))
-          )}
-        </div>
-      </BottomSheet>
     </div>
   );
 }
