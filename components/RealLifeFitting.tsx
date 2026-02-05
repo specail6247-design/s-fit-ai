@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import MemberAccessModal from './MemberAccessModal';
 import SupportHub from './SupportHub';
+import { useStore } from '@/store/useStore';
+import { ModeSelector } from './ModeSelector';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -14,6 +16,7 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const { selectedMode, resetSession } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -78,6 +81,58 @@ export default function RealLifeFitting() {
     }
   };
 
+  // --- RENDER MODE SELECTION (Home) ---
+  if (!selectedMode) {
+    return (
+      <div className="min-h-screen bg-[#050505] text-white font-sans flex flex-col relative overflow-hidden">
+        {/* Background Ambience */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
+
+        {/* Header */}
+        <header className="p-8 relative z-10 flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-black tracking-tighter italic">
+              S_FIT <span className="text-[#007AFF]">NEO</span>
+            </h1>
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+              Professional Virtual Fitting
+            </p>
+          </div>
+          <button
+            onClick={() => setIsMemberModalOpen(true)}
+            className="px-3 py-1 border border-[#ecab13] text-[#ecab13] text-[10px] uppercase tracking-widest hover:bg-[#ecab13] hover:text-black transition-colors"
+          >
+            Member Access
+          </button>
+        </header>
+
+        {/* Main Content: Mode Selection */}
+        <main className="flex-1 flex flex-col items-center justify-center p-8 relative z-10 w-full">
+           <div className="mb-12 text-center">
+              <h2 className="text-2xl font-bold mb-4">Choose Your Experience</h2>
+              <p className="text-gray-400">Select a fitting mode to begin your session.</p>
+           </div>
+           <ModeSelector />
+        </main>
+
+        {/* Footer / Support */}
+        <div className="p-8 text-center relative z-10">
+           <button
+              onClick={() => setIsSupportHubOpen(true)}
+              className="text-[10px] text-gray-600 hover:text-[#007AFF] uppercase tracking-widest transition-colors flex items-center justify-center gap-2 mx-auto"
+            >
+              <span>?</span> Need Help? Support Hub
+            </button>
+        </div>
+
+        {/* Global Modals */}
+        <MemberAccessModal isOpen={isMemberModalOpen} onClose={() => setIsMemberModalOpen(false)} />
+        <SupportHub isOpen={isSupportHubOpen} onClose={() => setIsSupportHubOpen(false)} />
+      </div>
+    );
+  }
+
+  // --- RENDER FITTING INTERFACE (Selected Mode) ---
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
@@ -88,11 +143,14 @@ export default function RealLifeFitting() {
         
         <header className="mb-10 relative z-10 flex justify-between items-start">
           <div>
+            <button onClick={resetSession} className="text-[10px] text-[#007AFF] hover:text-white uppercase tracking-widest mb-2 block">
+              ← Change Mode
+            </button>
             <h1 className="text-4xl font-black tracking-tighter italic">
               S_FIT <span className="text-[#007AFF]">NEO</span>
             </h1>
             <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-              Professional Virtual Fitting
+              {selectedMode.replace('-', ' ').toUpperCase()} MODE
             </p>
           </div>
           <button
