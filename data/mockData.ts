@@ -5,7 +5,7 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Hermes';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -89,6 +89,13 @@ export const brands: Brand[] = [
     id: 'tiffany',
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'hermes',
+    name: 'Hermes',
+    logo: 'https://placehold.co/100x100?text=HERMES',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -534,6 +541,84 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+  },
+
+  // HERMES - Luxury (5 items)
+  {
+    id: 'hermes-scarf-001',
+    name: 'Silk Twill Scarf',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'scarf',
+    price: 495.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/600x800/orange/white?text=Hermes+Scarf',
+    textureUrl: 'https://placehold.co/600x800/orange/white?text=Hermes+Scarf',
+    isLuxury: true,
+    sizes: ['90x90cm'],
+    colors: ['Orange/Multi', 'Blue/Multi'],
+    description: 'Iconic silk twill scarf with hand-rolled edges',
+  },
+  {
+    id: 'hermes-bag-001',
+    name: 'Birkin 30',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'bag',
+    price: 12500.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/600x800/brown/white?text=Birkin+30',
+    textureUrl: 'https://placehold.co/600x800/brown/white?text=Birkin+30',
+    isLuxury: true,
+    sizes: ['30cm'],
+    colors: ['Gold', 'Black', 'Etoupe'],
+    description: 'Heritage leather handbag with gold-plated hardware',
+  },
+  {
+    id: 'hermes-sandal-001',
+    name: 'Oran Sandal',
+    brand: 'Hermes',
+    category: 'bottoms', // Temporarily mapped to bottoms or create shoes category? sticking to existing types
+    subCategory: 'jewelry', // Misused field or need new one? Let's use existing category 'accessories' or 'dresses'?
+    // Actually mockData types are limited. Let's use 'accessories' for sandals for now as there is no shoes category.
+    // Wait, the interface says category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories'.
+    // Shoes fit best in accessories or bottoms? Let's use accessories.
+    price: 760.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/600x800/white/black?text=Oran+Sandal',
+    textureUrl: 'https://placehold.co/600x800/white/black?text=Oran+Sandal',
+    isLuxury: true,
+    sizes: ['36', '37', '38', '39', '40'],
+    colors: ['Gold', 'Black', 'White'],
+    description: 'Iconic leather sandal with H cut-out',
+  },
+  {
+    id: 'hermes-coat-001',
+    name: 'Cashmere Wrap Coat',
+    brand: 'Hermes',
+    category: 'outerwear',
+    price: 5800.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/600x800/beige/white?text=Cashmere+Coat',
+    textureUrl: 'https://placehold.co/600x800/beige/white?text=Cashmere+Coat',
+    isLuxury: true,
+    sizes: ['34', '36', '38', '40'],
+    colors: ['Beige', 'Black'],
+    description: 'Double-face cashmere coat with leather details',
+  },
+  {
+    id: 'hermes-blouse-001',
+    name: 'Silk Bow Blouse',
+    brand: 'Hermes',
+    category: 'tops',
+    price: 1850.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/600x800/cream/black?text=Silk+Blouse',
+    textureUrl: 'https://placehold.co/600x800/cream/black?text=Silk+Blouse',
+    isLuxury: true,
+    sizes: ['34', '36', '38', '40', '42'],
+    colors: ['Cream', 'Blue'],
+    description: 'Flowing silk blouse with bow tie neck',
   },
 ];
 
