@@ -256,8 +256,20 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
   }
 }
 
-// Keep generateRunwayVideo as an alias for backward compatibility or internal use
-export const generateRunwayVideo = async (imageUrl: string) => {
+/**
+ * Runway Gen-3/4 Integration Point
+ *
+ * Currently aliases to Stability Video Diffusion (SVD) via Replicate.
+ * To use actual Runway Gen-3 API:
+ * 1. Configure RUNWAY_API_KEY in environment variables.
+ * 2. Replace implementation below with call to https://api.runwayml.com/v1/image_to_video
+ */
+export const generateRunwayVideo = async (imageUrl: string): Promise<string | null> => {
+    // Placeholder for actual Runway implementation
+    // const runway = new Runway({ apiKey: process.env.RUNWAY_API_KEY });
+    // const result = await runway.imageToVideo({ ... });
+
+    // Fallback to SVD for now
     const res = await generateCinematicVideo(imageUrl);
-    return res.success ? res.videoUrl : null;
+    return res.success ? res.videoUrl || null : null;
 };

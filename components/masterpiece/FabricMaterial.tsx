@@ -1,20 +1,23 @@
 import { useTexture } from '@react-three/drei';
+import { useThree, useFrame } from '@react-three/fiber';
 import { FabricType, FABRIC_PRESETS } from './types';
 import * as THREE from 'three';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 interface FabricMaterialProps {
   textureUrl: string;
   fabricType: FabricType;
   opacity?: number;
   transparent?: boolean;
+  isMacroView?: boolean;
 }
 
 export function FabricMaterial({
   textureUrl,
   fabricType = 'cotton',
   opacity = 1,
-  transparent = true
+  transparent = true,
+  isMacroView = false
 }: FabricMaterialProps) {
   const baseTexture = useTexture(textureUrl);
   const texture = useMemo(() => {
@@ -27,7 +30,20 @@ export function FabricMaterial({
     return cloned;
   }, [baseTexture]);
 
+  const { camera } = useThree();
+  const [isCloseUp, setIsCloseUp] = useState(false);
+
+  useFrame(() => {
+    const isClose = camera.position.z < 2.0;
+    if (isClose !== isCloseUp) setIsCloseUp(isClose);
+  });
+
+  const effectiveMacro = isMacroView || isCloseUp;
   const config = FABRIC_PRESETS[fabricType];
+
+  // Amplify details in Macro Mode
+  const normalScale = effectiveMacro ? config.normalScale * 2.5 : config.normalScale;
+  const displacementScale = effectiveMacro ? config.displacementScale * 1.5 : config.displacementScale;
 
   return (
     <meshPhysicalMaterial
@@ -40,13 +56,13 @@ export function FabricMaterial({
       // We use the texture itself as a height map proxy.
       // Ideally this would be a real depth map.
       displacementMap={texture}
-      displacementScale={config.displacementScale}
-      displacementBias={-config.displacementScale / 2}
+      displacementScale={displacementScale}
+      displacementBias={-displacementScale / 2}
 
       // Micro-surface details
       // Using the texture as a normal map adds surface detail corresponding to the visual pattern.
       normalMap={texture}
-      normalScale={new THREE.Vector2(config.normalScale, config.normalScale)}
+      normalScale={new THREE.Vector2(normalScale, normalScale)}
 
       // Advanced Fabric features
       sheen={config.sheen || 0}

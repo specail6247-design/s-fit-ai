@@ -15,6 +15,8 @@ export interface ClothingStyleAnalysis {
   drapingLevel: number; // 1-10 (how much the fabric folds) - DEPRECATED in favor of drapingFactor
   stretchLevel: number; // 1-10 - DEPRECATED in favor of stretchFactor
   description: string;
+  structureLevel?: number; // 1-10
+  textureType?: string;
 }
 
 export interface SizeRecommendation {

@@ -5,7 +5,7 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Gentle Monster' | 'ADER Error';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -89,6 +89,20 @@ export const brands: Brand[] = [
     id: 'tiffany',
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'gentle monster',
+    name: 'Gentle Monster',
+    logo: 'https://placehold.co/100x100?text=GENTLE',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'ader error',
+    name: 'ADER Error',
+    logo: 'https://placehold.co/100x100?text=ADER',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -534,6 +548,72 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+  },
+
+  // GENTLE MONSTER - K-Fashion Leader (Eyewear)
+  {
+    id: 'gm-001',
+    name: 'Lilit 01',
+    brand: 'Gentle Monster',
+    category: 'accessories',
+    subCategory: 'glasses',
+    zIndex: 55,
+    price: 269.00,
+    currency: 'USD',
+    imageUrl: '/accessories/gm_lilit.png',
+    textureUrl: '/accessories/gm_lilit.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Black'],
+    description: 'Square black acetate frame with soft curves',
+  },
+  {
+    id: 'gm-002',
+    name: 'Bold Collection Antena',
+    brand: 'Gentle Monster',
+    category: 'accessories',
+    subCategory: 'glasses',
+    zIndex: 55,
+    price: 320.00,
+    currency: 'USD',
+    imageUrl: '/accessories/gm_antena.png',
+    textureUrl: '/accessories/gm_antena.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Silver', 'Black'],
+    description: 'Futuristic wrap-around metallic sunglasses',
+  },
+
+  // ADER ERROR - K-Fashion Leader (Streetwear)
+  {
+    id: 'ader-001',
+    name: 'Destroyed Wool Scarf',
+    brand: 'ADER Error',
+    category: 'accessories',
+    subCategory: 'scarf',
+    zIndex: 40,
+    price: 210.00,
+    currency: 'USD',
+    imageUrl: '/clothing/ader_scarf.png',
+    textureUrl: '/clothing/ader_scarf.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Blue', 'Grey'],
+    description: 'Oversized wool scarf with distressed details and signature blue tag',
+  },
+  {
+    id: 'ader-002',
+    name: 'Layered Hoodie',
+    brand: 'ADER Error',
+    category: 'tops',
+    price: 350.00,
+    currency: 'USD',
+    imageUrl: '/clothing/ader_hoodie.png',
+    textureUrl: '/clothing/ader_hoodie.png',
+    isLuxury: true,
+    sizes: ['A1', 'A2', 'A3'],
+    colors: ['Grey'],
+    description: 'Deconstructed layered hoodie with geometric graphics',
   },
 ];
 
