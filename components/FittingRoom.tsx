@@ -306,16 +306,16 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170
-}: { height?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
+  height = 170, opacity = 1.0
+}: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  const animationUrl = "https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/models/gltf/Xbot.glb";
+  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
   
   return (
     <group scale={[scale, scale, scale]}>
       {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
-        url="https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/models/gltf/Xbot.glb"
+        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb"
         animationUrl={animationUrl}
         scale={1.0}
       />
@@ -504,7 +504,7 @@ function Scene({
   const scale = height / 170;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
   let mannequinPosition: [number, number, number] = [0, -0.9, 0];
-  const animationUrl = "https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/models/gltf/Xbot.glb";
+  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
 
   const heatmapData = useMemo(() => {
     if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !selectedItem) return null;
@@ -532,14 +532,14 @@ function Scene({
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
             url={selectedMode === 'vibe-check' 
-              ? "https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/models/gltf/Xbot.glb"
-              : "https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/models/gltf/Xbot.glb"
+              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb"
+              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb"
             }
             animationUrl={animationUrl}
             scale={1.0}
           />
         ) : (
-          <Mannequin height={height} opacity={1.0} />
+          <Mannequin height={height} />
         )}
         
         {/* Fit Heatmap Visual Overlay */}
@@ -589,15 +589,8 @@ function ItemCard({
       whileTap={{ scale: 0.95 }}
     >
       <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
-        {isSelected && (
-           <motion.div
-             className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent z-0"
-             animate={{ x: ['-100%', '200%'] }}
-             transition={{ repeat: Infinity, duration: 2, ease: "linear", repeatDelay: 1 }}
-           />
-        )}
-        <span className="text-2xl drop-shadow-lg z-10">{getCategoryIcon(item.category)}</span>
-        {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center z-10"><span className="text-[0.5rem]">✦</span></div>}
+        <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+        {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
       </div>
       <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
