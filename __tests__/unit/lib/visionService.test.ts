@@ -17,8 +17,11 @@ describe('Vision Service', () => {
     const mockProportions: PoseProportions = {
       shoulderWidth: 0.5,
       hipWidth: 0.5,
+      waistWidth: 0.4,
       torsoHeight: 0.5,
       legLength: 0.5,
+      armLength: 0.6,
+      shoulderSlope: 0.05,
       overallRatio: 0.5
     };
     const userHeight = 175; // cm
@@ -74,7 +77,9 @@ describe('Vision Service', () => {
             drapingFactor: 3,
             drapingLevel: 3,
             stretchLevel: 4,
-            description: 'desc'
+            description: 'desc',
+            structureLevel: 5,
+            textureType: 'smooth'
         };
 
         const resultStretchy = calculateRecommendedSize(
