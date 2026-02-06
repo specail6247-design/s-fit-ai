@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
+import { MemberAccessModal } from '@/components/ui/MemberAccessModal';
+import SupportHub from '@/components/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -11,6 +14,7 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const { setLoginModalOpen, setSupportHubOpen, isPremium } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -72,20 +76,31 @@ export default function RealLifeFitting() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
+    <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden relative">
+      <MemberAccessModal />
+      <SupportHub />
       
       {/* LEFT PANEL: CONTROLS */}
       <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+        <header className="mb-10 relative z-10 flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-black tracking-tighter italic">
+              S_FIT <span className="text-[#007AFF]">NEO</span>
+            </h1>
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+              Professional Virtual Fitting
+            </p>
+          </div>
+
+          <button
+            onClick={() => setLoginModalOpen(true)}
+            className="text-[10px] font-bold border border-white/20 px-3 py-1.5 rounded-full hover:bg-white/10 hover:border-white/40 transition-colors uppercase tracking-widest"
+          >
+            {isPremium ? 'VIP MEMBER' : 'MEMBER ACCESS'}
+          </button>
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
@@ -96,7 +111,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {userImage ? <img src={userImage} alt="User Photo" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +129,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {garmentImage ? <img src={garmentImage} alt="Garment Photo" className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -158,6 +175,17 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Support Trigger */}
+          <div className="mt-6 flex justify-center">
+            <button
+              onClick={() => setSupportHubOpen(true)}
+              className="text-[10px] text-gray-500 hover:text-white flex items-center gap-2 transition-colors uppercase tracking-widest"
+            >
+              <span>Need Help?</span>
+              <span className="w-4 h-4 rounded-full border border-gray-500 flex items-center justify-center text-[9px]">?</span>
+            </button>
+          </div>
+
         </div>
       </div>
 
@@ -195,6 +223,7 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
