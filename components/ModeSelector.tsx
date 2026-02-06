@@ -37,27 +37,16 @@ export function ModeSelector() {
     setSelectedMode(modeId as FittingMode);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent, modeId: string) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleSelect(modeId);
-    }
-  };
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto w-full px-4">
       {modes.map((mode, index) => (
         <motion.div
           key={mode.id}
-          role="button"
-          tabIndex={0}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
-          className="mode-card group relative flex flex-col items-center text-center h-[400px] justify-between w-full focus-visible:ring-2 focus-visible:ring-cyber-lime focus-visible:outline-none cursor-pointer"
+          className="mode-card group relative flex flex-col items-center text-center h-[400px] justify-between"
           onClick={() => handleSelect(mode.id)}
-          onKeyDown={(e) => handleKeyDown(e, mode.id)}
-          aria-label={`Select ${mode.title} mode`}
         >
           {/* Badge */}
           {mode.badge && (
@@ -86,9 +75,9 @@ export function ModeSelector() {
 
           {/* CTA */}
           <div className="w-full">
-            <div className="w-full py-4 border-t border-white/10 text-xs font-bold uppercase tracking-widest text-soft-gray group-hover:bg-white group-hover:text-void-black transition-all duration-300">
+            <button className="w-full py-4 border-t border-white/10 text-xs font-bold uppercase tracking-widest text-soft-gray group-hover:bg-white group-hover:text-void-black transition-all duration-300">
               Select Mode_
-            </div>
+            </button>
           </div>
           
           {/* Hover Line Animation */}
