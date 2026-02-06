@@ -12,16 +12,24 @@ function localFileToDataUri(localPath: string): string | null {
   try {
     // Remove leading slash and resolve to public directory
     const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
-    const absolutePath = path.join(process.cwd(), 'public', relativePath);
-    
-    console.log('Reading local file:', absolutePath);
-    
-    if (!fs.existsSync(absolutePath)) {
-      console.error('File not found:', absolutePath);
+    const publicDir = path.join(process.cwd(), 'public');
+    const absolutePath = path.join(publicDir, relativePath);
+
+    // Security: Prevent Path Traversal
+    const resolvedPath = path.resolve(absolutePath);
+    if (!resolvedPath.startsWith(publicDir)) {
+      console.error('Security Alert: Path traversal attempt blocked:', localPath);
       return null;
     }
     
-    const fileBuffer = fs.readFileSync(absolutePath);
+    console.log('Reading local file:', resolvedPath);
+    
+    if (!fs.existsSync(resolvedPath)) {
+      console.error('File not found:', resolvedPath);
+      return null;
+    }
+    
+    const fileBuffer = fs.readFileSync(resolvedPath);
     const base64 = fileBuffer.toString('base64');
     
     // Determine MIME type from extension

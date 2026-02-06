@@ -5,10 +5,18 @@ test.describe('User Flow', () => {
     await page.goto('/');
   });
 
-  test('should complete Easy Fit flow', async ({ page }) => {
+  // Flaky on mobile environments due to layout shifts/visibility
+  test('should complete Easy Fit flow', async ({ page, isMobile }) => {
     // 1. Select Easy Fit Mode
     // Force click to ensure it hits even if covered or slightly off-screen in mobile
-    await page.getByText('EASY FIT').click({ force: true });
+    // Wait for the element to be stable first
+    const easyFitBtn = page.getByText('EASY FIT');
+    await easyFitBtn.waitFor({ state: 'visible' });
+    if (isMobile) {
+      // On mobile, sometimes elements are obstructed or need scrolling
+      await easyFitBtn.scrollIntoViewIfNeeded();
+    }
+    await easyFitBtn.click({ force: true });
 
     // Verify selection (border color change or checkmark)
     const continueToModeBtn = page.getByRole('button', { name: /Continue →/i });
