@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ModeSelector } from '@/components/ModeSelector';
 import { useStore } from '@/store/useStore';
-import { vi } from 'vitest';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 // Mock the store
 vi.mock('@/store/useStore', () => ({
