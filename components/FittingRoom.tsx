@@ -251,9 +251,6 @@ function SoftBodyPlane({
   };
 
   const finalMaterialProps = { ...(materialProps ?? {}) };
-  if (isMicroMode) {
-      finalMaterialProps.normalScale = new THREE.Vector2(3, 3);
-  }
 
   return (
     <mesh ref={meshRef} position={[0,0,0]} renderOrder={renderOrder} onClick={handleClick} castShadow receiveShadow>
@@ -329,6 +326,7 @@ interface ClothingProps {
   shapeScale?: { shoulders: number; waist: number; hips: number };
   fabricType?: FabricType;
   useMasterpiece?: boolean;
+  isMacroView?: boolean;
 }
 
 function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
@@ -417,8 +415,34 @@ function AccessoryClothing({ item }: ClothingProps) {
   const aspect = img ? img.width / img.height : 1;
   const zIndex = layeringEngine.getItemZIndex(item);
   
-  const baseWidth = item.subCategory === 'bag' ? 0.4 : 0.2;
-  const position: [number, number, number] = item.subCategory === 'bag' ? [0.35, 0.8, 0.2] : [0, 1.45, 0.15];
+  let baseWidth = 0.2;
+  let position: [number, number, number] = [0, 1.45, 0.15];
+
+  switch (item.subCategory) {
+    case 'bag':
+      baseWidth = 0.4;
+      position = [0.35, 0.8, 0.2];
+      break;
+    case 'glasses':
+      baseWidth = 0.18;
+      position = [0, 1.65, 0.2];
+      break;
+    case 'hat':
+      baseWidth = 0.3;
+      position = [0, 1.75, 0.1];
+      break;
+    case 'jewelry': // Necklace
+      baseWidth = 0.28;
+      position = [0, 1.5, 0.12];
+      break;
+    case 'scarf':
+      baseWidth = 0.35;
+      position = [0, 1.45, 0.15];
+      break;
+    default:
+      baseWidth = 0.2;
+      position = [0, 1.45, 0.15];
+  }
 
   return (
     <mesh position={position} renderOrder={zIndex} castShadow receiveShadow>
