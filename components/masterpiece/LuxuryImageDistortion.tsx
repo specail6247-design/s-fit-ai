@@ -154,7 +154,7 @@ function ImagePlane({ imageUrl }: { imageUrl: string }) {
       onPointerMove={handlePointerMove}
     >
       <planeGeometry args={[1, 1, 64, 64]} />
-      {/* @ts-ignore */}
+      {/* @ts-expect-error - Custom shader material not fully typed in JSX */}
       <distortionMaterial
         ref={materialRef}
         uTexture={texture}
