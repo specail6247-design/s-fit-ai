@@ -306,8 +306,8 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
-}: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
+  height = 170
+}: { height?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/models/gltf/Xbot.glb";
   
