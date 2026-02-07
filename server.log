@@ -12,18 +12,7 @@ This information is used to shape Next.js' roadmap and prioritize features.
 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
 https://nextjs.org/telemetry
 
-✓ Ready in 2.5s
-○ Compiling /verify-fitting-room ...
+✓ Ready in 1780ms
+○ Compiling /cinematic-demo ...
 ⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
- GET /verify-fitting-room 200 in 31.3s (compile: 28.9s, render: 2.4s)
- GET /verify-fitting-room 200 in 101ms (compile: 12ms, render: 89ms)
- GET /verify-fitting-room 200 in 134ms (compile: 22ms, render: 112ms)
- GET /verify-fitting-room 200 in 100ms (compile: 6ms, render: 94ms)
- GET /verify-fitting-room 200 in 69ms (compile: 6ms, render: 63ms)
- GET /verify-fitting-room 200 in 94ms (compile: 17ms, render: 78ms)
-⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
- GET /verify-fitting-room 200 in 860ms (compile: 135ms, render: 724ms)
- GET /verify-fitting-room 200 in 171ms (compile: 34ms, render: 137ms)
- GET /verify-fitting-room 200 in 137ms (compile: 14ms, render: 122ms)
- GET /verify-fitting-room 200 in 101ms (compile: 26ms, render: 75ms)
- GET /verify-fitting-room 200 in 104ms (compile: 10ms, render: 94ms)
+ GET /cinematic-demo 200 in 12.4s (compile: 12.0s, render: 401ms)

@@ -306,7 +306,6 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   height = 170, opacity = 1.0 
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
@@ -316,7 +315,7 @@ function Mannequin({
     <group scale={[scale, scale, scale]}>
       {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
-        url="https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb"
+        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb"
         animationUrl={animationUrl}
         scale={1.0}
       />
@@ -533,8 +532,8 @@ function Scene({
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
             url={selectedMode === 'vibe-check' 
-              ? "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb"
-              : "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb"
+              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb"
+              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb"
             }
             animationUrl={animationUrl}
             scale={1.0}
@@ -582,42 +581,21 @@ function ItemCard({
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
-  const [imageError, setImageError] = useState(false);
-
   return (
     <motion.button
       onClick={onSelect}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start relative overflow-hidden ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
+      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
-      {isSelected && (
-        <motion.div
-          className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
-          initial={{ x: '-100%' }}
-          animate={{ x: '100%' }}
-          transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}
-        />
-      )}
-      <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden z-10" style={{ backgroundColor: primaryColor }}>
-        {!imageError ? (
-            <Image
-                src={item.imageUrl}
-                alt={item.name}
-                fill
-                className="object-cover"
-                onError={() => setImageError(true)}
-                unoptimized
-            />
-        ) : (
-            <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
-        )}
+      <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
+        <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
         {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
       </div>
-      <p className="text-[0.6rem] text-pure-white truncate relative z-10">{item.name}</p>
-      <p className="text-[0.55rem] text-soft-gray relative z-10">${item.price}</p>
-      <p className="text-[0.55rem] text-cyber-lime relative z-10">Fit {fitScore}%</p>
+      <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
+      <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
+      <p className="text-[0.55rem] text-cyber-lime">Fit {fitScore}%</p>
     </motion.button>
   );
 }
