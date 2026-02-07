@@ -59,4 +59,28 @@ describe('Mock Data Helpers', () => {
       expect(item.category).toBe('tops');
     });
   });
+
+  it('should filter items by new luxury brands', () => {
+    const hermesItems = getItemsByBrand('Hermes');
+    expect(hermesItems.length).toBeGreaterThan(0);
+    hermesItems.forEach(item => {
+      expect(item.brand).toBe('Hermes');
+      expect(item.isLuxury).toBe(true);
+    });
+
+    const gmItems = getItemsByBrand('Gentle Monster');
+    expect(gmItems.length).toBeGreaterThan(0);
+    gmItems.forEach(item => {
+      expect(item.brand).toBe('Gentle Monster');
+      expect(item.isLuxury).toBe(true);
+    });
+  });
+
+  it('should correctly categorize accessories', () => {
+    const accessories = getItemsByCategory('accessories');
+    expect(accessories.length).toBeGreaterThan(0);
+    const birkin = accessories.find(item => item.id === 'hermes-birkin');
+    expect(birkin).toBeDefined();
+    expect(birkin?.subCategory).toBe('bag');
+  });
 });
