@@ -17,9 +17,6 @@ export interface ClothingItem {
   sizes: string[];
   colors: string[];
   description: string;
-  stylingTip?: string;
-  isLocked?: boolean;
-  unlockDate?: string;
 }
 
 export interface Brand {
@@ -113,7 +110,6 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy', 'Beige'],
     description: 'Relaxed fit blazer with structured shoulders',
-    stylingTip: 'Pair with high-waisted trousers and a sleek belt for a modern office look.',
   },
   {
     id: 'zara-002',
@@ -156,7 +152,6 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Champagne', 'Black', 'Burgundy'],
     description: 'Elegant satin dress with cowl neck',
-    stylingTip: 'Add a leather jacket for an edgy evening transition.',
   },
   {
     id: 'zara-005',
@@ -187,7 +182,6 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 44', 'IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Beige/Ebony'],
     description: 'Iconic GG pattern wool blazer with silk lining',
-    stylingTip: 'Layer over a silk blouse for a complete runway ensemble.',
   },
   {
     id: 'gucci-002',
@@ -260,7 +254,6 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['Black', 'Navy', 'Olive', 'Wine'],
     description: 'Lightweight, compact down jacket',
-    stylingTip: 'Ideal for layering under a wool coat for extra warmth without bulk.',
   },
   {
     id: 'uniqlo-002',
@@ -509,7 +502,6 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Black', 'Beige'],
     description: 'Iconic quilted leather handbag with chain strap',
-    stylingTip: 'The ultimate investment piece—elevates even a simple tee and jeans.',
   },
   {
     id: 'supreme-hat-001',
@@ -542,24 +534,6 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
-  },
-  // EXCLUSIVE DROP - Locked Item
-  {
-    id: 'exclusive-drop-001',
-    name: 'Neon Genesis Jacket',
-    brand: 'Supreme',
-    category: 'outerwear',
-    price: 850.00,
-    currency: 'USD',
-    imageUrl: '/clothing/supreme_jacket.png', // Placeholder path
-    textureUrl: '/clothing/supreme_jacket.png',
-    isLuxury: false,
-    sizes: ['M', 'L', 'XL'],
-    colors: ['Neon Green', 'Cyber Black'],
-    description: 'Limited edition holographic windbreaker from the future.',
-    isLocked: true,
-    unlockDate: new Date(Date.now() + 7200000).toISOString(), // Unlocks in 2 hours
-    stylingTip: 'Wear with confidence and attitude.',
   },
 ];
 
