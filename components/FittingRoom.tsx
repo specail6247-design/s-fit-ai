@@ -31,6 +31,8 @@ import { FabricMaterial } from './masterpiece/FabricMaterial';
 import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
 import CinematicViewer from '@/components/ui/CinematicViewer';
+import SensoryAmbience from '@/components/ui/SensoryAmbience';
+import TheVault from '@/components/ui/TheVault';
 import { layeringEngine } from '@/lib/layering';
 
 // --- PHYSICS ENGINE (Ammo.js) ---
@@ -309,13 +311,13 @@ function Mannequin({
   height = 170, opacity = 1.0 
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  const animationUrl = "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb";
   
   return (
     <group scale={[scale, scale, scale]}>
       {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
-        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+        url="https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb"
         animationUrl={animationUrl}
         scale={1.0}
       />
@@ -504,7 +506,7 @@ function Scene({
   const scale = height / 170;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
   let mannequinPosition: [number, number, number] = [0, -0.9, 0];
-  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  const animationUrl = "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb";
 
   const heatmapData = useMemo(() => {
     if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !selectedItem) return null;
@@ -532,8 +534,8 @@ function Scene({
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
             url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
-              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
+              ? "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb"
+              : "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Xbot.glb"
             }
             animationUrl={animationUrl}
             scale={1.0}
@@ -581,21 +583,37 @@ function ItemCard({
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
+  const isLocked = item.isLocked;
+
   return (
     <motion.button
-      onClick={onSelect}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      onClick={() => !isLocked && onSelect()}
+      disabled={isLocked}
+      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'} ${isLocked ? 'opacity-80 grayscale cursor-not-allowed' : ''}`}
+      whileHover={{ scale: isLocked ? 1 : 1.05 }}
+      whileTap={{ scale: isLocked ? 1 : 0.95 }}
     >
       <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
-        <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+        {isLocked ? (
+           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 z-10 backdrop-blur-[1px]">
+             <span className="text-xl mb-1">🔒</span>
+             <span className="text-[0.5rem] font-mono text-cyber-lime font-bold">02:00:00</span>
+           </div>
+        ) : (
+           <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+        )}
         {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
       </div>
       <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
-      <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
-      <p className="text-[0.55rem] text-cyber-lime">Fit {fitScore}%</p>
+      {isLocked ? (
+         <p className="text-[0.55rem] text-cyber-lime font-bold uppercase tracking-wider">Dropping Soon</p>
+      ) : (
+         <>
+           <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
+           <p className="text-[0.55rem] text-cyber-lime">Fit {fitScore}%</p>
+         </>
+      )}
     </motion.button>
   );
 }
@@ -830,6 +848,7 @@ function AITryOnModal({
 export function FittingRoom() {
   const {
     userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    addToVault, setIsVaultOpen,
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
@@ -1011,6 +1030,15 @@ export function FittingRoom() {
         )}
 
         <div className="absolute top-4 left-4 flex gap-2 z-20">
+            <button onClick={() => setIsVaultOpen(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors relative group">
+                <span>👜</span>
+                <span className="absolute left-full ml-2 px-2 py-1 bg-black/80 rounded text-[9px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">The Vault</span>
+            </button>
+            {currentItem && (
+              <button onClick={() => { addToVault(currentItem); setIsVaultOpen(true); }} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-cyber-lime hover:text-black transition-colors" title="Save Look">
+                  <span>🔖</span>
+              </button>
+            )}
             <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
                 <span>📤</span>
             </button>
@@ -1070,7 +1098,7 @@ export function FittingRoom() {
                                 <p className="text-xs font-bold text-white">Masterpiece Fit Consultant</p>
                             </div>
                         </div>
-                        <ul className="space-y-1">
+                        <ul className="space-y-1 mb-2">
                             {recommendedFit.fitNotes.map((note, i) => (
                                 <li key={i} className="text-[9px] text-soft-gray flex items-start gap-1.5 leading-relaxed">
                                     <span className="text-cyber-lime mt-1 flex-shrink-0">●</span>
@@ -1078,6 +1106,12 @@ export function FittingRoom() {
                                 </li>
                             ))}
                         </ul>
+                        {currentItem.stylingTip && (
+                          <div className="pt-2 border-t border-white/10">
+                            <p className="text-[9px] font-bold text-cyber-lime uppercase tracking-wider mb-1">Stylist&apos;s Note</p>
+                            <p className="text-[9px] text-white italic">&ldquo;{currentItem.stylingTip}&rdquo;</p>
+                          </div>
+                        )}
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -1148,6 +1182,12 @@ export function FittingRoom() {
         result={aiTryOnResult}
         onGenerateTryOn={handleGenerateAITryOn}
       />
+
+      {/* Immersive Audio */}
+      <SensoryAmbience active={isMasterpieceMode} />
+
+      {/* Digital Wardrobe */}
+      <TheVault />
     </div>
   );
 }
