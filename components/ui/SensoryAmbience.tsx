@@ -9,28 +9,36 @@ export default function SensoryAmbience({ active }: { active: boolean }) {
   const oscillatorRef = useRef<OscillatorNode | null>(null);
   const noiseNodeRef = useRef<AudioBufferSourceNode | null>(null);
 
-  useEffect(() => {
-    return () => {
-      stopAudio();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (active && !isMuted) {
-      startAudio();
-    } else {
-      stopAudio();
+  const stopAudio = () => {
+    if (oscillatorRef.current) {
+        try { oscillatorRef.current.stop(); } catch {}
+        oscillatorRef.current.disconnect();
+        oscillatorRef.current = null;
     }
-  }, [active, isMuted]);
+    if (noiseNodeRef.current) {
+        try { noiseNodeRef.current.stop(); } catch {}
+        noiseNodeRef.current.disconnect();
+        noiseNodeRef.current = null;
+    }
+    if (gainNodeRef.current) {
+        gainNodeRef.current.disconnect();
+        gainNodeRef.current = null;
+    }
+    if (audioContextRef.current) {
+        audioContextRef.current.close();
+        audioContextRef.current = null;
+    }
+  };
 
   const startAudio = () => {
     if (audioContextRef.current) return;
 
     try {
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-      if (!AudioContext) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const AudioContextCtor = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextCtor) return;
 
-      const ctx = new AudioContext();
+      const ctx = new AudioContextCtor();
       audioContextRef.current = ctx;
 
       const gainNode = ctx.createGain();
@@ -74,26 +82,19 @@ export default function SensoryAmbience({ active }: { active: boolean }) {
     }
   };
 
-  const stopAudio = () => {
-    if (oscillatorRef.current) {
-        try { oscillatorRef.current.stop(); } catch(e){}
-        oscillatorRef.current.disconnect();
-        oscillatorRef.current = null;
+  useEffect(() => {
+    return () => {
+      stopAudio();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (active && !isMuted) {
+      startAudio();
+    } else {
+      stopAudio();
     }
-    if (noiseNodeRef.current) {
-        try { noiseNodeRef.current.stop(); } catch(e){}
-        noiseNodeRef.current.disconnect();
-        noiseNodeRef.current = null;
-    }
-    if (gainNodeRef.current) {
-        gainNodeRef.current.disconnect();
-        gainNodeRef.current = null;
-    }
-    if (audioContextRef.current) {
-        audioContextRef.current.close();
-        audioContextRef.current = null;
-    }
-  };
+  }, [active, isMuted]);
 
   if (!active) return null;
 
