@@ -63,7 +63,7 @@ export default function SupportHub() {
               {['guide', 'caution', 'qa', 'report'].map((tab) => (
                 <button
                   key={tab}
-                  onClick={() => setActiveTab(tab as any)}
+                  onClick={() => setActiveTab(tab as 'guide' | 'caution' | 'qa' | 'report')}
                   className={`flex-1 py-4 text-xs font-bold uppercase tracking-wider text-center transition-colors border-b-2 ${
                     activeTab === tab
                       ? 'text-[#007AFF] border-[#007AFF] bg-white/5'
