@@ -1,11 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import LuxuryGarmentDetail from '@/components/LuxuryGarmentDetail';
+import React from 'react';
 
 // Mock Next.js Link
 vi.mock('next/link', () => {
   return {
-    default: ({ href, children, ...props }: any) => {
+    default: ({ href, children, ...props }: React.ComponentProps<'a'>) => {
       return (
         <a href={href} {...props}>
           {children}
