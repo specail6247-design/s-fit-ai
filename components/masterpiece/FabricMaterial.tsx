@@ -2,7 +2,7 @@ import { useTexture } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { FabricType, FABRIC_PRESETS } from './types';
 import * as THREE from 'three';
-import { useMemo, useState, useRef, useEffect } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
 
 interface FabricMaterialProps {
   textureUrl: string;
@@ -90,7 +90,7 @@ export function FabricMaterial({
   const { camera } = useThree();
 
   // Hyper-Zoom Logic: Adjust Bump Scale based on distance
-  useFrame((state) => {
+  useFrame(() => {
     if (!materialRef.current) return;
 
     // Get world position of the object (approximation, assuming parent is at 0 or close)
