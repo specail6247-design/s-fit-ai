@@ -1,11 +1,10 @@
 // S_FIT AI - Mock Data
-// 15 items: 5 Mass Market (ZARA), 5 Luxury (Gucci), 5 Basic (Uniqlo)
-// Updated with real product images
+// Updated with real product images and new Brand Library structure
 
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Hermes' | 'Gentle Monster';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -24,17 +23,27 @@ export interface Brand {
   name: string;
   logo: string;
   isLuxury: boolean;
-  tier: 'mass' | 'luxury' | 'basic';
+  tier: 'mass' | 'luxury' | 'basic' | 'high-end-luxury' | 'k-fashion-leader';
+  region: 'Global' | 'Korea';
 }
 
 // Brand Data
 export const brands: Brand[] = [
   {
-    id: 'zara',
-    name: 'ZARA',
-    logo: 'https://placehold.co/100x100?text=ZARA',
-    isLuxury: false,
-    tier: 'mass',
+    id: 'hermes',
+    name: 'Hermes',
+    logo: 'https://placehold.co/100x100?text=HERMES',
+    isLuxury: true,
+    tier: 'high-end-luxury',
+    region: 'Global',
+  },
+  {
+    id: 'chanel',
+    name: 'Chanel',
+    logo: 'https://placehold.co/100x100?text=CHANEL',
+    isLuxury: true,
+    tier: 'high-end-luxury',
+    region: 'Global',
   },
   {
     id: 'gucci',
@@ -42,48 +51,15 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=GUCCI',
     isLuxury: true,
     tier: 'luxury',
+    region: 'Global',
   },
   {
-    id: 'uniqlo',
-    name: 'UNIQLO',
-    logo: 'https://placehold.co/100x100?text=UNIQLO',
-    isLuxury: false,
-    tier: 'basic',
-  },
-  {
-    id: 'hm',
-    name: 'H&M',
-    logo: 'https://placehold.co/100x100?text=H%26M',
-    isLuxury: false,
-    tier: 'mass',
-  },
-  {
-    id: 'cos',
-    name: 'COS',
-    logo: 'https://placehold.co/100x100?text=COS',
-    isLuxury: false,
-    tier: 'mass',
-  },
-  {
-    id: 'gap',
-    name: 'GAP',
-    logo: 'https://placehold.co/100x100?text=GAP',
-    isLuxury: false,
-    tier: 'basic',
-  },
-  {
-    id: 'chanel',
-    name: 'Chanel',
-    logo: 'https://placehold.co/100x100?text=CHANEL',
+    id: 'gentle-monster',
+    name: 'Gentle Monster',
+    logo: 'https://placehold.co/100x100?text=GM',
     isLuxury: true,
-    tier: 'luxury',
-  },
-  {
-    id: 'supreme',
-    name: 'Supreme',
-    logo: 'https://placehold.co/100x100?text=SUPREME',
-    isLuxury: false,
-    tier: 'mass',
+    tier: 'k-fashion-leader',
+    region: 'Korea',
   },
   {
     id: 'tiffany',
@@ -91,11 +67,163 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=TIFFANY',
     isLuxury: true,
     tier: 'luxury',
+    region: 'Global',
+  },
+  {
+    id: 'zara',
+    name: 'ZARA',
+    logo: 'https://placehold.co/100x100?text=ZARA',
+    isLuxury: false,
+    tier: 'mass',
+    region: 'Global',
+  },
+  {
+    id: 'uniqlo',
+    name: 'UNIQLO',
+    logo: 'https://placehold.co/100x100?text=UNIQLO',
+    isLuxury: false,
+    tier: 'basic',
+    region: 'Global',
+  },
+  {
+    id: 'hm',
+    name: 'H&M',
+    logo: 'https://placehold.co/100x100?text=H%26M',
+    isLuxury: false,
+    tier: 'mass',
+    region: 'Global',
+  },
+  {
+    id: 'cos',
+    name: 'COS',
+    logo: 'https://placehold.co/100x100?text=COS',
+    isLuxury: false,
+    tier: 'mass',
+    region: 'Global',
+  },
+  {
+    id: 'gap',
+    name: 'GAP',
+    logo: 'https://placehold.co/100x100?text=GAP',
+    isLuxury: false,
+    tier: 'basic',
+    region: 'Global',
+  },
+  {
+    id: 'supreme',
+    name: 'Supreme',
+    logo: 'https://placehold.co/100x100?text=SUPREME',
+    isLuxury: false,
+    tier: 'mass',
+    region: 'Global',
   },
 ];
 
 // Mock Clothing Items with Real Product Images
 export const mockClothingItems: ClothingItem[] = [
+  // --- HIGH-END LUXURY ---
+  // HERMES
+  {
+    id: 'hermes-birkin',
+    name: 'Birkin 25 Bag',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'bag',
+    zIndex: 50,
+    price: 12500.00,
+    currency: 'USD',
+    imageUrl: '/clothing/hermes_birkin.png',
+    textureUrl: '/clothing/hermes_birkin.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Gold', 'Black', 'Etoupe'],
+    description: 'The iconic Birkin bag in Togo leather with gold hardware.',
+  },
+  {
+    id: 'hermes-oran',
+    name: 'Oran Sandal',
+    brand: 'Hermes',
+    category: 'accessories', // Technically footwear, but mapping to accessories/bottoms context or just generic
+    subCategory: 'bag', // Hack for now, or add footwear. Let's stick to known types or expand. Keeping as accessories for simple layer.
+    zIndex: 10,
+    price: 760.00,
+    currency: 'USD',
+    imageUrl: '/clothing/hermes_oran.png',
+    textureUrl: '/clothing/hermes_oran.png',
+    isLuxury: true,
+    sizes: ['36', '37', '38', '39', '40'],
+    colors: ['Gold', 'Black', 'White'],
+    description: 'Iconic leather sandal with H cut-out.',
+  },
+
+  // CHANEL (Expanded)
+  {
+    id: 'chanel-bag-001',
+    name: 'Classic Flap Bag',
+    brand: 'Chanel',
+    category: 'accessories',
+    subCategory: 'bag',
+    zIndex: 50,
+    price: 10200.00,
+    currency: 'USD',
+    imageUrl: '/accessories/chanel_bag.png',
+    textureUrl: '/accessories/chanel_bag.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Black', 'Beige'],
+    description: 'Iconic quilted leather handbag with chain strap',
+  },
+  {
+    id: 'chanel-jacket',
+    name: 'Tweed Jacket',
+    brand: 'Chanel',
+    category: 'outerwear',
+    price: 8500.00,
+    currency: 'USD',
+    imageUrl: '/clothing/chanel_jacket.png',
+    textureUrl: '/clothing/chanel_jacket.png',
+    isLuxury: true,
+    sizes: ['FR 36', 'FR 38', 'FR 40'],
+    colors: ['Black/White'],
+    description: 'Timeless tweed jacket with silk lining.',
+  },
+
+  // --- K-FASHION LEADERS ---
+  // GENTLE MONSTER
+  {
+    id: 'gm-001',
+    name: 'Lilit 01',
+    brand: 'Gentle Monster',
+    category: 'accessories',
+    subCategory: 'glasses',
+    zIndex: 60,
+    price: 280.00,
+    currency: 'USD',
+    imageUrl: '/accessories/gm_lilit.png',
+    textureUrl: '/accessories/gm_lilit.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Black', 'Brown'],
+    description: 'Bold square frame sunglasses with metal details.',
+  },
+  {
+    id: 'gm-002',
+    name: 'Tam 01',
+    brand: 'Gentle Monster',
+    category: 'accessories',
+    subCategory: 'glasses',
+    zIndex: 60,
+    price: 320.00,
+    currency: 'USD',
+    imageUrl: '/accessories/gm_tam.png',
+    textureUrl: '/accessories/gm_tam.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Black', 'Grey'],
+    description: 'Oversized cat-eye sunglasses.',
+  },
+
+
   // ZARA - Mass Market (5 items)
   {
     id: 'zara-001',
@@ -487,22 +615,6 @@ export const mockClothingItems: ClothingItem[] = [
   },
 
   // ACCESSORIES - New Category
-  {
-    id: 'chanel-bag-001',
-    name: 'Classic Flap Bag',
-    brand: 'Chanel',
-    category: 'accessories',
-    subCategory: 'bag',
-    zIndex: 50,
-    price: 10200.00,
-    currency: 'USD',
-    imageUrl: '/accessories/chanel_bag.png',
-    textureUrl: '/accessories/chanel_bag.png',
-    isLuxury: true,
-    sizes: ['One Size'],
-    colors: ['Black', 'Beige'],
-    description: 'Iconic quilted leather handbag with chain strap',
-  },
   {
     id: 'supreme-hat-001',
     name: 'Box Logo Camp Cap',
