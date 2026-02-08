@@ -32,6 +32,8 @@ import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
+import { SensoryAmbience } from './SensoryAmbience';
+import { TheVault } from './ui/TheVault';
 
 // --- PHYSICS ENGINE (Ammo.js) ---
 
@@ -580,22 +582,75 @@ interface ItemCardProps {
 function ItemCard({
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
+  const { savedLooks, toggleSaveLook } = useStore();
+  const isSaved = savedLooks.includes(item.id);
+  const isLocked = item.isLocked && item.unlockDate ? new Date(item.unlockDate) > new Date() : false;
+
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
+
+  const [timeLeft, setTimeLeft] = useState('');
+
+  useEffect(() => {
+    if (!isLocked || !item.unlockDate) return;
+
+    const updateTimer = () => {
+      const diff = new Date(item.unlockDate!).getTime() - new Date().getTime();
+      if (diff <= 0) {
+        setTimeLeft('UNLOCKED');
+        return;
+      }
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      setTimeLeft(`${hours}h ${minutes}m ${seconds}s`);
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [isLocked, item.unlockDate]);
+
   return (
     <motion.button
-      onClick={onSelect}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      onClick={isLocked ? undefined : onSelect}
+      className={`relative flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'} ${isLocked ? 'cursor-not-allowed opacity-80' : ''}`}
+      whileHover={!isLocked ? { scale: 1.05 } : {}}
+      whileTap={!isLocked ? { scale: 0.95 } : {}}
     >
-      <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
+      <div className={`aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden ${isLocked ? 'grayscale' : ''}`} style={{ backgroundColor: primaryColor }}>
         <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+
+        {/* Luxury Badge */}
         {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
+
+        {/* AI Pick Badge */}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
+
+        {/* Locked Overlay */}
+        {isLocked && (
+            <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-center p-1">
+                <span className="text-lg">🔒</span>
+                <span className="text-[0.5rem] font-bold text-cyber-lime font-mono mt-1">
+                    {timeLeft}
+                </span>
+            </div>
+        )}
       </div>
-      <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
-      <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
-      <p className="text-[0.55rem] text-cyber-lime">Fit {fitScore}%</p>
+
+      <div className="flex justify-between items-start">
+        <div className="min-w-0 flex-1 text-left">
+            <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
+            <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
+        </div>
+        <button
+            onClick={(e) => { e.stopPropagation(); toggleSaveLook(item.id); }}
+            className={`ml-1 hover:scale-110 transition-transform ${isSaved ? 'text-red-500' : 'text-gray-600 hover:text-red-400'}`}
+        >
+            {isSaved ? '♥' : '♡'}
+        </button>
+      </div>
+
+      {!isLocked && <p className="text-[0.55rem] text-cyber-lime text-left mt-1">Fit {fitScore}%</p>}
     </motion.button>
   );
 }
@@ -830,6 +885,7 @@ function AITryOnModal({
 export function FittingRoom() {
   const {
     userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    setVaultOpen, isAudioEnabled, setAudioEnabled
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
@@ -1000,6 +1056,12 @@ export function FittingRoom() {
             <button onClick={() => setShowHeatmap(!showHeatmap)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 🔥 Fit Heatmap
             </button>
+            <button onClick={() => setVaultOpen(true)} className="px-3 py-1 rounded-full text-[10px] font-bold transition-all border bg-black/50 text-gray-400 border-gray-600 hover:text-white hover:border-white">
+                🧥 Vault
+            </button>
+            <button onClick={() => setAudioEnabled(!isAudioEnabled)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isAudioEnabled ? 'bg-white/10 text-white border-white/30' : 'bg-black/50 text-gray-500 border-gray-700'}`}>
+                {isAudioEnabled ? '🔊' : '🔇'}
+            </button>
         </div>
 
         {/* Rotation hint */}
@@ -1078,6 +1140,12 @@ export function FittingRoom() {
                                 </li>
                             ))}
                         </ul>
+                        {currentItem.stylingTip && (
+                          <div className="mt-2 pt-2 border-t border-white/10">
+                            <p className="text-[9px] text-cyber-lime font-bold uppercase tracking-wider mb-1">Stylist Note</p>
+                            <p className="text-[9px] text-soft-gray italic">&quot;{currentItem.stylingTip}&quot;</p>
+                          </div>
+                        )}
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -1148,6 +1216,8 @@ export function FittingRoom() {
         result={aiTryOnResult}
         onGenerateTryOn={handleGenerateAITryOn}
       />
+      <SensoryAmbience isMasterpieceMode={isMasterpieceMode} />
+      <TheVault />
     </div>
   );
 }

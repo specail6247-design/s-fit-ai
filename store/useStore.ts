@@ -96,6 +96,16 @@ interface StoreState {
   selectedItem: ClothingItem | null;
   setSelectedItem: (item: ClothingItem | null) => void;
 
+  // The Vault (Saved Looks)
+  savedLooks: string[];
+  toggleSaveLook: (itemId: string) => void;
+  isVaultOpen: boolean;
+  setVaultOpen: (isOpen: boolean) => void;
+
+  // Sensory Ambience
+  isAudioEnabled: boolean;
+  setAudioEnabled: (isEnabled: boolean) => void;
+
   // Daily Usage (Freemium)
   dailyUsage: DailyUsage;
   incrementUsage: () => void;
@@ -186,6 +196,24 @@ export const useStore = create<StoreState>()(
       selectedItem: null,
       setSelectedItem: (item) => set({ selectedItem: item }),
 
+      // The Vault
+      savedLooks: [],
+      toggleSaveLook: (itemId) =>
+        set((state) => {
+          const isSaved = state.savedLooks.includes(itemId);
+          return {
+            savedLooks: isSaved
+              ? state.savedLooks.filter((id) => id !== itemId)
+              : [...state.savedLooks, itemId],
+          };
+        }),
+      isVaultOpen: false,
+      setVaultOpen: (isOpen) => set({ isVaultOpen: isOpen }),
+
+      // Sensory Ambience
+      isAudioEnabled: true,
+      setAudioEnabled: (isEnabled) => set({ isAudioEnabled: isEnabled }),
+
       // Daily Usage
       dailyUsage: {
         count: 0,
@@ -257,6 +285,8 @@ export const useStore = create<StoreState>()(
         userStats: state.userStats,
         selectedAIModels: state.selectedAIModels,
         trainingData: state.trainingData,
+        savedLooks: state.savedLooks,
+        isAudioEnabled: state.isAudioEnabled,
       }),
     }
   )
