@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { HyperZoom } from './ui/HyperZoom';
 import { ClothingItem, mockClothingItems } from '@/data/mockData';
 
@@ -152,6 +152,7 @@ export default function MasterpieceFitting() {
                   className={`block w-full aspect-[3/4] rounded-sm border ${userPhoto ? 'border-[#d4af37]/50' : 'border-white/10 border-dashed'} bg-black/20 hover:bg-white/5 hover:border-white/30 transition-all cursor-pointer overflow-hidden relative`}
                 >
                   {userPhoto ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
                     <img src={userPhoto} alt="Client" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                   ) : (
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-white/20 gap-3">
@@ -189,6 +190,7 @@ export default function MasterpieceFitting() {
                    className={`relative aspect-[3/4] group border transition-all ${selectedGarment?.id === item.id ? 'border-[#d4af37] ring-1 ring-[#d4af37]/50' : 'border-white/10 hover:border-white/30'}`}
                  >
                    <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity z-10" />
+                   {/* eslint-disable-next-line @next/next/no-img-element */}
                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover p-2" />
                    <div className="absolute bottom-0 inset-x-0 p-2 bg-gradient-to-t from-black/90 to-transparent">
                      <p className="text-[9px] text-white/70 truncate font-mono uppercase">{item.brand}</p>
@@ -251,7 +253,7 @@ export default function MasterpieceFitting() {
                </div>
             ) : resultImage ? (
               <div className="relative w-full h-full">
-                  <HyperZoom imageUrl={resultImage} alt="Masterpiece Result" className="w-full h-full" />
+                  <HyperZoom key={resultImage} imageUrl={resultImage} alt="Masterpiece Result" className="w-full h-full" />
 
                   {/* Controls Overlay */}
                   <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-4">

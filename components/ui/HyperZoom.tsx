@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 
 interface HyperZoomProps {
   imageUrl: string;
@@ -14,12 +14,6 @@ export function HyperZoom({ imageUrl, alt, className = '' }: HyperZoomProps) {
   const [isDragging, setIsDragging] = useState(false);
   const startPos = useRef({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Reset when image changes
-  useEffect(() => {
-    setScale(1);
-    setPosition({ x: 0, y: 0 });
-  }, [imageUrl]);
 
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
