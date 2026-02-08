@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
+import { LegalModal } from './ui/LegalModal';
+import { DataSafetyBadge } from './ui/DataSafetyBadge';
+import { SupportHub } from './SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -11,11 +15,64 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const { toggleLegalModal, toggleSupportHub } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // 1. Background
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0, 0, 1080, 1920);
+
+    // 2. Load Image
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = resultImage;
+    await new Promise((resolve) => { img.onload = resolve; });
+
+    // 3. Draw Image (Contain aspect ratio)
+    const scale = Math.min(1080 / img.width, 1920 / img.height);
+    const w = img.width * scale;
+    const h = img.height * scale;
+    const x = (1080 - w) / 2;
+    const y = (1920 - h) / 2;
+    ctx.drawImage(img, x, y, w, h);
+
+    // 4. Overlay Gradient
+    const gradient = ctx.createLinearGradient(0, 1500, 0, 1920);
+    gradient.addColorStop(0, 'transparent');
+    gradient.addColorStop(1, '#000000');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 1080, 1920);
+
+    // 5. Branding
+    ctx.font = 'bold italic 60px sans-serif';
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.fillText('S_FIT NEO', 540, 1800);
+
+    ctx.font = '30px monospace';
+    ctx.fillStyle = '#007AFF';
+    ctx.fillText('VIRTUAL FITTING PROTOCOL', 540, 1850);
+
+    // 6. Download
+    const dataUrl = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = `s-fit-story-${Date.now()}.png`;
+    link.click();
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -104,6 +161,7 @@ export default function RealLifeFitting() {
                 </div>
               </label>
             </div>
+            <DataSafetyBadge />
           </div>
 
           {/* Garment Input */}
@@ -158,6 +216,17 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-8 pt-6 border-t border-white/10 flex justify-between items-center text-[10px] text-gray-500 uppercase tracking-widest">
+            <div className="flex gap-4">
+              <button onClick={() => toggleLegalModal(true)} className="hover:text-white transition-colors">Privacy</button>
+              <button onClick={() => toggleLegalModal(true)} className="hover:text-white transition-colors">Terms</button>
+            </div>
+            <button onClick={() => toggleSupportHub(true)} className="flex items-center gap-1 hover:text-[#007AFF] transition-colors">
+              <span>Support</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+            </button>
+          </div>
+
         </div>
       </div>
 
@@ -206,9 +275,20 @@ export default function RealLifeFitting() {
                 AI GENERATED_
               </div>
             </div>
+
+            <button
+              onClick={handleShareToStory}
+              className="w-full mt-4 py-3 bg-gradient-to-r from-pink-500 via-purple-500 to-orange-500 rounded-xl font-bold text-white shadow-lg transform transition-transform hover:scale-105 flex items-center justify-center gap-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+              Share to Story
+            </button>
           </motion.div>
         )}
       </div>
+
+      <LegalModal />
+      <SupportHub />
     </div>
   );
 }
