@@ -2,10 +2,10 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import LuxuryImageDistortion from './masterpiece/LuxuryImageDistortion';
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -13,9 +13,16 @@ const containerVariants = {
   }
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.8,
+      ease: [0.16, 1, 0.3, 1]
+    }
+  }
 };
 
 export default function LuxuryGarmentDetail() {
