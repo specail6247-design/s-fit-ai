@@ -64,6 +64,7 @@ export function HyperZoom({ imageUrl, alt, className = '' }: HyperZoomProps) {
         }}
         className="w-full h-full flex items-center justify-center"
       >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={imageUrl}
           alt={alt}
