@@ -1,4 +1,3 @@
-
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -6,6 +5,7 @@ import { localFileToDataUri } from '@/app/api/try-on/route';
 
 // Mock fs to avoid real file system access
 vi.mock('fs', async (importOriginal) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const actual: any = await importOriginal();
   return {
     ...actual,
@@ -15,13 +15,13 @@ vi.mock('fs', async (importOriginal) => {
 });
 
 describe('localFileToDataUri Security', () => {
-  const publicDir = path.resolve(process.cwd(), 'public');
+  // const publicDir = path.resolve(process.cwd(), 'public');
 
   beforeEach(() => {
     vi.clearAllMocks();
     // Default behavior: file exists and has content
-    (fs.existsSync as any).mockReturnValue(true);
-    (fs.readFileSync as any).mockReturnValue(Buffer.from('fake-image-data'));
+    (vi.mocked(fs.existsSync)).mockReturnValue(true);
+    (vi.mocked(fs.readFileSync)).mockReturnValue(Buffer.from('fake-image-data'));
   });
 
   it('should allow valid files within public directory', () => {
@@ -59,7 +59,7 @@ describe('localFileToDataUri Security', () => {
 
   it('should block traversal even if file exists on disk', () => {
     // Mock that the secret file exists
-    (fs.existsSync as any).mockReturnValue(true);
+    (vi.mocked(fs.existsSync)).mockReturnValue(true);
 
     // Attempt to access package.json which is outside public
     const result = localFileToDataUri('../package.json');
