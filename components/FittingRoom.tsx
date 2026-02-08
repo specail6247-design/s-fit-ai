@@ -990,7 +990,7 @@ export function FittingRoom() {
         )}
         
         {/* Controls Overlay */}
-        <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
+        <div className={`absolute top-4 right-4 flex flex-col gap-2 z-10 transition-opacity duration-700 ${aiTryOnLoading ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
             </button>
@@ -1004,13 +1004,13 @@ export function FittingRoom() {
 
         {/* Rotation hint */}
         {!webglFailed && (
-          <motion.div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-soft-gray/60 text-xs bg-void-black/50 px-3 py-1 rounded-full z-10"
+          <motion.div className={`absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-soft-gray/60 text-xs bg-void-black/50 px-3 py-1 rounded-full z-10 transition-opacity duration-700 ${aiTryOnLoading ? 'opacity-0' : 'opacity-100'}`}
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }}>
             <span>↔️ Drag to rotate</span>
           </motion.div>
         )}
 
-        <div className="absolute top-4 left-4 flex gap-2 z-20">
+        <div className={`absolute top-4 left-4 flex gap-2 z-20 transition-opacity duration-700 ${aiTryOnLoading ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
                 <span>📤</span>
             </button>
@@ -1022,7 +1022,7 @@ export function FittingRoom() {
         </div>
 
         {topPicks.length > 0 && (
-          <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-20">
+          <div className={`absolute top-16 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-20 transition-opacity duration-700 ${aiTryOnLoading ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             {isMiniBarCollapsed ? (
               <div className="glass-card px-3 py-2 flex items-center justify-between gap-3">
                 <span className="text-[0.55rem] uppercase tracking-[0.2em] text-soft-gray">AI Picks</span>
@@ -1052,7 +1052,7 @@ export function FittingRoom() {
         )}
 
         {/* AI Consultant Advice Overlay */}
-        <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none">
+        <div className={`absolute bottom-4 left-4 right-4 z-10 pointer-events-none transition-opacity duration-700 ${aiTryOnLoading ? 'opacity-0' : 'opacity-100'}`}>
             <AnimatePresence>
                 {currentItem && poseAnalysis?.proportions && recommendedFit && (
                     <motion.div 
@@ -1085,7 +1085,7 @@ export function FittingRoom() {
       </div>
 
       {/* Item Selector Footer */}
-      <div className="p-4 border-t border-border-color bg-void-black">
+      <div className={`p-4 border-t border-border-color bg-void-black transition-opacity duration-700 ${aiTryOnLoading ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-[10px] uppercase tracking-widest text-soft-gray">{selectedBrand} Collection</h3>
           <button onClick={() => setShowCompareModal(true)} className="text-[10px] text-cyber-lime hover:underline">Compare Picks →</button>
@@ -1104,7 +1104,7 @@ export function FittingRoom() {
 
       {/* AI Stylist & Complementary Items */}
       {currentItem && (
-        <div className="p-4 bg-charcoal/30 border-t border-border-color">
+        <div className={`p-4 bg-charcoal/30 border-t border-border-color transition-opacity duration-700 ${aiTryOnLoading ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <span className="text-xs">🎨</span>
