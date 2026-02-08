@@ -7,6 +7,11 @@ interface SensoryAmbienceProps {
   isMasterpieceMode: boolean;
 }
 
+// Extend Window interface to include webkitAudioContext
+interface WindowWithWebkitAudio extends Window {
+  webkitAudioContext?: typeof AudioContext;
+}
+
 export function SensoryAmbience({ isMasterpieceMode }: SensoryAmbienceProps) {
   const { isAudioEnabled } = useStore();
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -15,34 +20,18 @@ export function SensoryAmbience({ isMasterpieceMode }: SensoryAmbienceProps) {
   const lfoRef = useRef<OscillatorNode | null>(null);
   const isPlayingRef = useRef(false);
 
-  useEffect(() => {
-    // Initialize Audio Context on mount (but don't start until interaction/needed)
-    // Note: Browsers require user interaction to start AudioContext.
-    // We assume the user has already interacted with the page by the time they reach this component.
-    return () => {
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    const shouldPlay = isMasterpieceMode && isAudioEnabled;
-
-    if (shouldPlay) {
-      startAudio();
-      fadeIn();
-    } else {
-      fadeOut();
-    }
-  }, [isMasterpieceMode, isAudioEnabled]);
-
   const startAudio = () => {
     if (isPlayingRef.current) return;
 
     try {
       if (!audioContextRef.current) {
-        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const AudioContextClass = window.AudioContext || (window as unknown as WindowWithWebkitAudio).webkitAudioContext;
+        if (AudioContextClass) {
+            audioContextRef.current = new AudioContextClass();
+        } else {
+            console.warn("Web Audio API not supported");
+            return;
+        }
       }
 
       const ctx = audioContextRef.current;
@@ -111,6 +100,28 @@ export function SensoryAmbience({ isMasterpieceMode }: SensoryAmbienceProps) {
     // Stop oscillators after fade out (optional optimization, but keeping them running at 0 gain is smoother for toggling)
     // For now we keep them running but silent.
   };
+
+  useEffect(() => {
+    // Initialize Audio Context on mount (but don't start until interaction/needed)
+    // Note: Browsers require user interaction to start AudioContext.
+    // We assume the user has already interacted with the page by the time they reach this component.
+    return () => {
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const shouldPlay = isMasterpieceMode && isAudioEnabled;
+
+    if (shouldPlay) {
+      startAudio();
+      fadeIn();
+    } else {
+      fadeOut();
+    }
+  }, [isMasterpieceMode, isAudioEnabled]);
 
   return null; // No visual UI, just audio logic
 }

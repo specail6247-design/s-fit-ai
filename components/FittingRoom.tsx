@@ -1143,7 +1143,7 @@ export function FittingRoom() {
                         {currentItem.stylingTip && (
                           <div className="mt-2 pt-2 border-t border-white/10">
                             <p className="text-[9px] text-cyber-lime font-bold uppercase tracking-wider mb-1">Stylist Note</p>
-                            <p className="text-[9px] text-soft-gray italic">"{currentItem.stylingTip}"</p>
+                            <p className="text-[9px] text-soft-gray italic">&quot;{currentItem.stylingTip}&quot;</p>
                           </div>
                         )}
                     </motion.div>
