@@ -1,0 +1,48 @@
+import type { ClothingItem } from './mockData';
+
+export const hermesItems: ClothingItem[] = [
+  {
+    id: 'hermes-001',
+    name: 'Birkin 30 Bag',
+    brand: 'Hermes' as any,
+    category: 'accessories',
+    subCategory: 'bag',
+    zIndex: 50,
+    price: 12500.00,
+    currency: 'USD',
+    imageUrl: '/accessories/hermes_bag.png',
+    textureUrl: '/accessories/hermes_bag.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Gold', 'Black', 'Etoupe'],
+    description: 'The iconic Birkin bag in Togo calfskin with gold-plated hardware.',
+  },
+  {
+    id: 'hermes-002',
+    name: 'Silk Twill Dress',
+    brand: 'Hermes' as any,
+    category: 'dresses',
+    price: 3200.00,
+    currency: 'USD',
+    imageUrl: '/clothing/hermes_dress.png',
+    textureUrl: '/clothing/hermes_dress.png',
+    isLuxury: true,
+    sizes: ['36', '38', '40'],
+    colors: ['Orange', 'White'],
+    description: 'Silk twill dress with iconic print.',
+  },
+  {
+    id: 'hermes-003',
+    name: 'Structured Blazer',
+    brand: 'Hermes' as any,
+    category: 'outerwear',
+    price: 2800.00,
+    currency: 'USD',
+    imageUrl: '/clothing/hermes_blazer.png',
+    textureUrl: '/clothing/hermes_blazer.png',
+    isLuxury: true,
+    sizes: ['38', '40', '42'],
+    colors: ['Navy', 'Black'],
+    description: 'Tailored blazer in wool and silk.',
+  }
+];
