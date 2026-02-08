@@ -4,7 +4,7 @@ export const hermesItems: ClothingItem[] = [
   {
     id: 'hermes-001',
     name: 'Birkin 30 Bag',
-    brand: 'Hermes' as any,
+    brand: 'Hermes',
     category: 'accessories',
     subCategory: 'bag',
     zIndex: 50,
@@ -20,7 +20,7 @@ export const hermesItems: ClothingItem[] = [
   {
     id: 'hermes-002',
     name: 'Silk Twill Dress',
-    brand: 'Hermes' as any,
+    brand: 'Hermes',
     category: 'dresses',
     price: 3200.00,
     currency: 'USD',
@@ -34,7 +34,7 @@ export const hermesItems: ClothingItem[] = [
   {
     id: 'hermes-003',
     name: 'Structured Blazer',
-    brand: 'Hermes' as any,
+    brand: 'Hermes',
     category: 'outerwear',
     price: 2800.00,
     currency: 'USD',
