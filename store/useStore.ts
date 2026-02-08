@@ -257,8 +257,6 @@ export const useStore = create<StoreState>()(
         userStats: state.userStats,
         selectedAIModels: state.selectedAIModels,
         trainingData: state.trainingData,
-        selectedBrand: state.selectedBrand,
-        selectedMode: state.selectedMode,
       }),
     }
   )
