@@ -5,6 +5,7 @@ import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 export default function GoldRingCursor() {
   const [isHovering, setIsHovering] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
   // Use motion values for better performance
@@ -30,12 +31,19 @@ export default function GoldRingCursor() {
       setIsHovering(!!isInteractive);
     };
 
+    const handleMouseDown = () => setIsClicked(true);
+    const handleMouseUp = () => setIsClicked(false);
+
     window.addEventListener('mousemove', moveCursor);
     window.addEventListener('mouseover', handleMouseOver);
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
 
     return () => {
       window.removeEventListener('mousemove', moveCursor);
       window.removeEventListener('mouseover', handleMouseOver);
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [mouseX, mouseY, isVisible]);
 
@@ -69,7 +77,7 @@ export default function GoldRingCursor() {
         <motion.div
           className="absolute inset-0 rounded-full border-2 border-[#ecab13]"
           animate={{
-            scale: isHovering ? 1.5 : 1,
+            scale: isClicked ? 0.8 : (isHovering ? 1.5 : 1),
             opacity: isHovering ? 1 : 0.8,
             borderColor: isHovering ? '#ecab13' : '#ffffff', // Gold on hover, white otherwise (or keep gold)
           }}

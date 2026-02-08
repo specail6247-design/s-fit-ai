@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useMemo } from 'react';
+import React, { useRef } from 'react';
 import { Canvas, useFrame, extend, useThree } from '@react-three/fiber';
 import { shaderMaterial, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
@@ -90,7 +90,7 @@ const ImageDistortionMaterial = shaderMaterial(
 extend({ ImageDistortionMaterial });
 
 function Scene({ imageUrl }: { imageUrl: string }) {
-  const materialRef = useRef<any>(null); // Use any to bypass TS check for custom material
+  const materialRef = useRef<THREE.ShaderMaterial>(null);
   const texture = useTexture(imageUrl);
   const { viewport } = useThree();
   const hoverRef = useRef(0);
@@ -122,7 +122,7 @@ function Scene({ imageUrl }: { imageUrl: string }) {
         onPointerOut={() => { hoverRef.current = 0; }}
     >
       <planeGeometry args={[viewport.width, viewport.height]} />
-      {/* @ts-ignore */}
+      {/* @ts-expect-error: Custom shader material not in JSX types */}
       <imageDistortionMaterial ref={materialRef} uTexture={texture} toneMapped={false} transparent />
     </mesh>
   );
