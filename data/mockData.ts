@@ -5,7 +5,7 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Gentle Monster' | 'Ader Error' | 'Wooyoungmi';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -24,7 +24,7 @@ export interface Brand {
   name: string;
   logo: string;
   isLuxury: boolean;
-  tier: 'mass' | 'luxury' | 'basic';
+  tier: 'mass' | 'luxury' | 'basic' | 'k-fashion';
 }
 
 // Brand Data
@@ -91,6 +91,28 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=TIFFANY',
     isLuxury: true,
     tier: 'luxury',
+  },
+  // K-Fashion Leaders
+  {
+    id: 'gentle-monster',
+    name: 'Gentle Monster',
+    logo: 'https://placehold.co/100x100?text=GENTLE+MONSTER',
+    isLuxury: true,
+    tier: 'k-fashion',
+  },
+  {
+    id: 'ader-error',
+    name: 'Ader Error',
+    logo: 'https://placehold.co/100x100?text=ADER',
+    isLuxury: true,
+    tier: 'k-fashion',
+  },
+  {
+    id: 'wooyoungmi',
+    name: 'Wooyoungmi',
+    logo: 'https://placehold.co/100x100?text=WOOYOUNGMI',
+    isLuxury: true,
+    tier: 'k-fashion',
   },
 ];
 
@@ -535,6 +557,51 @@ export const mockClothingItems: ClothingItem[] = [
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
   },
+
+  // NEW K-FASHION ITEMS
+  {
+    id: 'gm-001',
+    name: 'Lilit 01',
+    brand: 'Gentle Monster',
+    category: 'accessories',
+    subCategory: 'glasses',
+    price: 270.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x400?text=Lilit+01',
+    textureUrl: 'https://placehold.co/400x400?text=Lilit+01',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Black'],
+    description: 'Square black acetate frame with black lenses',
+  },
+  {
+    id: 'ader-001',
+    name: 'Twin Heart Logo Hoodie',
+    brand: 'Ader Error',
+    category: 'tops',
+    price: 320.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x600?text=ADER+Hoodie',
+    textureUrl: 'https://placehold.co/400x600?text=ADER+Hoodie',
+    isLuxury: true,
+    sizes: ['A1', 'A2', 'A3'],
+    colors: ['Blue', 'Grey'],
+    description: 'Signature oversized hoodie with double heart embroidery',
+  },
+  {
+    id: 'wym-001',
+    name: 'Back Logo T-Shirt',
+    brand: 'Wooyoungmi',
+    category: 'tops',
+    price: 250.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x600?text=WYM+Tee',
+    textureUrl: 'https://placehold.co/400x600?text=WYM+Tee',
+    isLuxury: true,
+    sizes: ['46', '48', '50', '52'],
+    colors: ['White', 'Black'],
+    description: 'Cotton jersey t-shirt with classic back logo print',
+  },
 ];
 
 // Helper functions
@@ -547,6 +614,12 @@ export const getItemsByBrand = (brandId: string): ClothingItem[] => {
 export const getLuxuryItems = (): ClothingItem[] => {
   return mockClothingItems.filter((item) => item.isLuxury);
 };
+
+export const getKFashionItems = (): ClothingItem[] => {
+    // Return items from brands with tier 'k-fashion'
+    const kFashionBrandIds = brands.filter(b => b.tier === 'k-fashion').map(b => b.name);
+    return mockClothingItems.filter(item => kFashionBrandIds.includes(item.brand));
+}
 
 export const getItemById = (id: string): ClothingItem | undefined => {
   return mockClothingItems.find((item) => item.id === id);
