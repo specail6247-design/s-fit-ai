@@ -306,7 +306,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
@@ -547,11 +547,11 @@ function Scene({
           <group position={[0, 0, 0.05]}>
             <mesh position={[0, 1.1, 0.01]}>
               <planeGeometry args={[0.5, 0.6]} />
-              <meshBasicMaterial color={new THREE.Color().setHSL((1 - heatmapData.chest) * 0.4, 1, 0.5)} transparent opacity={0.4} />
+              <meshBasicMaterial color={new THREE.Color().setHSL((1 - heatmapData.chest) * 0.4, 1, 0.5)} transparent />
             </mesh>
             <mesh position={[0, 0.9, 0.01]}>
               <planeGeometry args={[0.4, 0.2]} />
-              <meshBasicMaterial color={new THREE.Color().setHSL((1 - heatmapData.waist) * 0.4, 1, 0.5)} transparent opacity={0.4} />
+              <meshBasicMaterial color={new THREE.Color().setHSL((1 - heatmapData.waist) * 0.4, 1, 0.5)} transparent />
             </mesh>
           </group>
         )}
