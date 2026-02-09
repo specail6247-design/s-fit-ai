@@ -17,6 +17,9 @@ export interface ClothingItem {
   sizes: string[];
   colors: string[];
   description: string;
+  stylingTip?: string;
+  isLocked?: boolean;
+  unlockDate?: string;
 }
 
 export interface Brand {
@@ -182,6 +185,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 44', 'IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Beige/Ebony'],
     description: 'Iconic GG pattern wool blazer with silk lining',
+    stylingTip: 'Pair with tailored black trousers and loafers for a sharp, sophisticated look.',
   },
   {
     id: 'gucci-002',
@@ -196,6 +200,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 38', 'IT 40', 'IT 42', 'IT 44', 'IT 46'],
     colors: ['Ivory', 'Black'],
     description: 'Pure silk blouse with signature horsebit print',
+    stylingTip: 'Tuck into a high-waisted pencil skirt to accentuate the waistline.',
   },
   {
     id: 'gucci-003',
@@ -210,6 +215,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy'],
     description: 'Technical jersey pants with Web stripe',
+    stylingTip: 'Combine with a crisp white tee and sneakers for an elevated casual ensemble.',
   },
   {
     id: 'gucci-004',
@@ -224,6 +230,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 38', 'IT 40', 'IT 42', 'IT 44'],
     colors: ['Pink Flora'],
     description: 'Flowing silk georgette dress with iconic Flora print',
+    stylingTip: 'Accessorize with minimal gold jewelry to let the print take center stage.',
   },
   {
     id: 'gucci-005',
@@ -238,6 +245,9 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Black'],
     description: 'Genuine leather bomber with embroidered patches',
+    stylingTip: 'Layer over a hoodie for a modern streetwear vibe.',
+    isLocked: true,
+    unlockDate: new Date(Date.now() + 1000 * 60 * 60 * 48).toISOString(), // Unlocks in 48 hours
   },
 
   // UNIQLO - Basic (5 items)
@@ -502,6 +512,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Black', 'Beige'],
     description: 'Iconic quilted leather handbag with chain strap',
+    stylingTip: 'The ultimate investment piece that elevates any outfit, from jeans to evening wear.',
   },
   {
     id: 'supreme-hat-001',
@@ -534,6 +545,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+    stylingTip: 'Wear alone for a delicate statement or layer with other chains for a curated look.',
   },
 ];
 
