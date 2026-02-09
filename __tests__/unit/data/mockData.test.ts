@@ -30,6 +30,15 @@ describe('Mock Data Helpers', () => {
     // Test case insensitivity
     const zaraItemsLower = getItemsByBrand('zara');
     expect(zaraItemsLower.length).toBe(zaraItems.length);
+
+    // Verify Hermes items (New addition)
+    const hermesItems = getItemsByBrand('Hermes');
+    expect(hermesItems.length).toBeGreaterThan(0);
+    hermesItems.forEach(item => {
+      expect(item.brand).toBe('Hermes');
+      expect(item.isLuxury).toBe(true);
+      expect(item.price).toBeGreaterThan(1000);
+    });
   });
 
   it('should filter luxury items', () => {
