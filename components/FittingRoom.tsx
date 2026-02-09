@@ -547,11 +547,11 @@ function Scene({
           <group position={[0, 0, 0.05]}>
             <mesh position={[0, 1.1, 0.01]}>
               <planeGeometry args={[0.5, 0.6]} />
-              <meshBasicMaterial color={new THREE.Color().setHSL((1 - heatmapData.chest) * 0.4, 1, 0.5)} transparent opacity={0.4} />
+              <meshBasicMaterial color={new THREE.Color().setHSL((1 - heatmapData.chest) * 0.4, 1, 0.5)} transparent />
             </mesh>
             <mesh position={[0, 0.9, 0.01]}>
               <planeGeometry args={[0.4, 0.2]} />
-              <meshBasicMaterial color={new THREE.Color().setHSL((1 - heatmapData.waist) * 0.4, 1, 0.5)} transparent opacity={0.4} />
+              <meshBasicMaterial color={new THREE.Color().setHSL((1 - heatmapData.waist) * 0.4, 1, 0.5)} transparent />
             </mesh>
           </group>
         )}

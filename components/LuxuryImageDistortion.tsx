@@ -50,7 +50,8 @@ const FluidImage = ({ imageUrl }: { imageUrl: string }) => {
   });
 
   // Calculate cover scale
-  const imageAspect = texture.image.width / texture.image.height;
+  const img = texture.image as HTMLImageElement;
+  const imageAspect = img.width / img.height;
   const viewportAspect = viewport.width / viewport.height;
 
   let scale: [number, number, number] = [1, 1, 1];
