@@ -6,12 +6,24 @@ import React from 'react';
 // Mock framer-motion to avoid animation issues in tests
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, className, style, onHoverStart, onHoverEnd, animate, initial, exit, transition, ...props }: any) => (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    div: ({ children, className, style, onHoverStart, onHoverEnd, animate, initial, exit, transition, ...props }: React.PropsWithChildren<{
+      className?: string;
+      style?: React.CSSProperties;
+      onHoverStart?: unknown;
+      onHoverEnd?: unknown;
+      animate?: unknown;
+      initial?: unknown;
+      exit?: unknown;
+      transition?: unknown;
+      [key: string]: unknown;
+    }>) => (
       <div className={className} style={style} {...props}>
         {children}
       </div>
     ),
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
