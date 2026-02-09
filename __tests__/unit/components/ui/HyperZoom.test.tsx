@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import HyperZoom from '@/components/ui/HyperZoom';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import React from 'react';
 
 // Mock framer-motion to avoid animation issues in tests

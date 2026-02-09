@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   getLuxuryItems,
@@ -20,6 +20,7 @@ export default function MasterpieceFitting() {
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStatus, setProcessingStatus] = useState('');
   const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
