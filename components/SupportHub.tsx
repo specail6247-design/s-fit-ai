@@ -8,7 +8,7 @@ const drawerVariants = {
   hidden: { x: '100%' },
   visible: {
     x: 0,
-    transition: { type: 'spring', damping: 25, stiffness: 300 }
+    transition: { type: 'spring', damping: 25, stiffness: 300 } as const
   },
   exit: { x: '100%' },
 };
