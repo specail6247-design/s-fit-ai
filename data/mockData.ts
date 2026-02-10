@@ -5,7 +5,7 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Burberry';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -17,6 +17,7 @@ export interface ClothingItem {
   sizes: string[];
   colors: string[];
   description: string;
+  material?: string; // e.g. 'Silk', 'Denim', 'Wool', 'Leather'
 }
 
 export interface Brand {
@@ -89,6 +90,13 @@ export const brands: Brand[] = [
     id: 'tiffany',
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'burberry',
+    name: 'Burberry',
+    logo: 'https://placehold.co/100x100?text=BURBERRY',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -534,6 +542,23 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+  },
+  {
+    id: 'burberry-scarf-001',
+    name: 'Classic Check Cashmere Scarf',
+    brand: 'Burberry',
+    category: 'accessories',
+    subCategory: 'scarf',
+    zIndex: 40,
+    price: 520.00,
+    currency: 'USD',
+    imageUrl: '/accessories/burberry_scarf.png',
+    textureUrl: '/accessories/burberry_scarf.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Archive Beige', 'Navy', 'Grey'],
+    description: 'The iconic cashmere scarf in check is made at a 200-year-old mill in the Scottish countryside.',
+    material: 'Cashmere Wool',
   },
 ];
 

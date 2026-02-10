@@ -221,9 +221,9 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
           input_image: imageUrl,
           video_length: "25_frames_with_svd_xt",
           sizing_strategy: "maintain_aspect_ratio",
-          motion_bucket_id: 127,
+          motion_bucket_id: 180, // High fidelity motion (drape & swing)
           frames_per_second: 6,
-          cond_aug: 0.02
+          cond_aug: 0.05 // Increased augmentation for more dynamic variation
         }
       }
     );
