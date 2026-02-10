@@ -17,6 +17,9 @@ export interface ClothingItem {
   sizes: string[];
   colors: string[];
   description: string;
+  stylingTip?: string;
+  isLocked?: boolean;
+  unlockDate?: string;
 }
 
 export interface Brand {
@@ -110,6 +113,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy', 'Beige'],
     description: 'Relaxed fit blazer with structured shoulders',
+    stylingTip: 'Pair with a crisp white tee and structured denim for a modern power-casual look.',
   },
   {
     id: 'zara-002',
@@ -182,6 +186,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 44', 'IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Beige/Ebony'],
     description: 'Iconic GG pattern wool blazer with silk lining',
+    stylingTip: 'Balance the boldness with sleek, monochromatic trousers to let the pattern shine.',
   },
   {
     id: 'gucci-002',
@@ -268,6 +273,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
     colors: ['White', 'Black', 'Gray', 'Navy', 'Olive'],
     description: 'Premium Supima cotton basic tee',
+    stylingTip: 'Tuck into high-waisted trousers for an effortless, clean silhouette.',
   },
   {
     id: 'uniqlo-003',
@@ -502,6 +508,9 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Black', 'Beige'],
     description: 'Iconic quilted leather handbag with chain strap',
+    stylingTip: 'The ultimate statement piece. Wear with everything from jeans to evening gowns.',
+    isLocked: true,
+    unlockDate: new Date(Date.now() + 1000 * 60 * 60 * 2).toISOString(), // Unlocks in 2 hours
   },
   {
     id: 'supreme-hat-001',

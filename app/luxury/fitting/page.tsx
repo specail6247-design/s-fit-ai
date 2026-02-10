@@ -1,8 +1,12 @@
-import PhotoFitting from "@/components/PhotoFitting";
+'use client';
+
+import { FittingRoom } from "@/components/FittingRoom";
 import React from 'react';
 
 export default function LuxuryFittingPage() {
   return (
-    <PhotoFitting />
+    <div className="h-screen w-full">
+      <FittingRoom />
+    </div>
   );
 }
