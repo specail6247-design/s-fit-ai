@@ -17,7 +17,9 @@ const FABRIC_TYPE_MAP: Record<FabricType, number> = {
   'silk': 1,
   'denim': 2,
   'wool': 3,
-  'leather': 4
+  'leather': 4,
+  'velvet': 5,
+  'sequin': 6
 };
 
 export function FabricMaterial({
@@ -63,7 +65,8 @@ export function FabricMaterial({
     }
   });
 
-  const onBeforeCompile = (shader: THREE.Shader) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onBeforeCompile = (shader: any) => {
     materialRef.current!.userData.shader = shader;
 
     shader.uniforms.uMicroMix = { value: 0 };

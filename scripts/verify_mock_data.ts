@@ -31,7 +31,7 @@ mockClothingItems.forEach(item => {
     errors++;
   }
 
-  if (item.category === 'accessories' && !subCategories.includes(item.subCategory)) {
+  if (item.category === 'accessories' && (!item.subCategory || !subCategories.includes(item.subCategory))) {
     console.error(`FAIL: Invalid subCategory for accessory ${item.id}: ${item.subCategory}`);
     errors++;
   }
@@ -47,7 +47,7 @@ mockClothingItems.forEach(item => {
       errors++;
     }
     if (item.material !== 'Cashmere Wool') {
-      console.error(`FAIL: Burberry Scarf has wrong material: ${item.material}`);
+      console.error(`FAIL: Burberry Scarf has wrong material: ${item.material ?? 'undefined'}`);
       errors++;
     }
     console.log('PASS: Burberry Scarf item verified');
