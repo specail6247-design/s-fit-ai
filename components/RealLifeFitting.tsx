@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
+import MemberAccessModal from './MemberAccessModal';
+import SupportHub from './SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -11,6 +14,7 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const { setLoginModalOpen, setSupportHubOpen } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -79,13 +83,31 @@ export default function RealLifeFitting() {
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+        <header className="mb-10 relative z-10 flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-black tracking-tighter italic">
+                S_FIT <span className="text-[#007AFF]">NEO</span>
+            </h1>
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+                Professional Virtual Fitting
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+                onClick={() => setLoginModalOpen(true)}
+                className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 hover:border-[#ecab13] transition-colors group bg-black/50 backdrop-blur-sm"
+                title="Member Access"
+            >
+                <span className="material-symbols-outlined text-sm group-hover:text-[#ecab13]">person</span>
+            </button>
+            <button
+                onClick={() => setSupportHubOpen(true)}
+                className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 hover:border-blue-400 transition-colors group bg-black/50 backdrop-blur-sm"
+                title="Support Hub"
+            >
+                <span className="material-symbols-outlined text-sm group-hover:text-blue-400">help</span>
+            </button>
+          </div>
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
@@ -208,6 +230,10 @@ export default function RealLifeFitting() {
             </div>
           </motion.div>
         )}
+
+        {/* Global Modals */}
+        <MemberAccessModal />
+        <SupportHub />
       </div>
     </div>
   );
