@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
+import LegalModal from './LegalModal';
+import SupportHub from './SupportHub';
+import DataSafetyBadge from './DataSafetyBadge';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -11,6 +15,7 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const { setLegalModalOpen, setSupportHubOpen } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -71,6 +76,55 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleShareToStory = () => {
+    if (!resultImage) return;
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Set dimensions for Instagram Story (9:16)
+    canvas.width = 1080;
+    canvas.height = 1920;
+
+    // Background
+    const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
+    gradient.addColorStop(0, '#0a0a0a');
+    gradient.addColorStop(1, '#1a1a1a');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 1080, 1920);
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      // Draw Image (Centered and Contain)
+      const scale = Math.min(1080 / img.width, 1500 / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (1080 - w) / 2;
+      const y = (1920 - h) / 2;
+
+      ctx.drawImage(img, x, y, w, h);
+
+      // Branding Overlay
+      ctx.font = 'bold italic 60px "Helvetica Neue", Arial';
+      ctx.fillStyle = '#FFFFFF';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT NEO', 540, 1800);
+
+      ctx.font = '30px "Courier New", monospace';
+      ctx.fillStyle = '#007AFF';
+      ctx.fillText('VIRTUAL FITTING', 540, 1850);
+
+      // Download
+      const link = document.createElement('a');
+      link.download = `s_fit_story_${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    };
+    img.src = resultImage;
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
@@ -96,7 +150,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {userImage ? <img src={userImage} alt="User Upload" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +168,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {garmentImage ? <img src={garmentImage} alt="Garment Upload" className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -122,6 +178,9 @@ export default function RealLifeFitting() {
               </label>
             </div>
           </div>
+
+          {/* Data Safety Badge */}
+          <DataSafetyBadge />
         </div>
 
         {/* Action Button */}
@@ -156,6 +215,12 @@ export default function RealLifeFitting() {
              <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                Luxury Line
              </a>
+          </div>
+
+          {/* Legal & Support Links */}
+          <div className="mt-6 flex justify-center gap-6 text-[10px] text-gray-500 uppercase tracking-widest">
+            <button onClick={() => setLegalModalOpen(true)} className="hover:text-white transition-colors">Privacy & Terms</button>
+            <button onClick={() => setSupportHubOpen(true)} className="hover:text-white transition-colors">Support</button>
           </div>
 
         </div>
@@ -195,6 +260,7 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
@@ -205,10 +271,22 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+              {/* Share to Story Button */}
+              <button
+                onClick={handleShareToStory}
+                className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] rounded-full font-bold text-white shadow-lg hover:scale-105 transition-transform"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      {/* Modals */}
+      <LegalModal />
+      <SupportHub />
     </div>
   );
 }

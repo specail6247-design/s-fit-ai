@@ -42,5 +42,10 @@ describe('RealLifeFitting', () => {
     
     // Check for CTA
     expect(screen.getByText(/TRY IT ON/i)).toBeInTheDocument();
+
+    // Check for new Trust & Growth elements
+    expect(screen.getByText(/Data Safe/i)).toBeInTheDocument();
+    expect(screen.getByText(/Privacy & Terms/i)).toBeInTheDocument();
+    expect(screen.getByText(/Support/i)).toBeInTheDocument();
   });
 });
