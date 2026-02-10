@@ -1,10 +1,20 @@
-import { Manrope } from 'next/font/google'
+import { Cinzel, Space_Grotesk } from 'next/font/google'
 import React from 'react'
+import SmoothScroll from '@/components/SmoothScroll'
+import GoldRingCursor from '@/components/ui/GoldRingCursor'
 
-const manrope = Manrope({
+const cinzel = Cinzel({
   subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-manrope',
+  display: 'optional',
+  variable: '--font-cinzel',
+  adjustFontFallback: false,
+})
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  display: 'optional',
+  variable: '--font-space-grotesk',
+  adjustFontFallback: false,
 })
 
 export default function LuxuryLayout({
@@ -13,7 +23,7 @@ export default function LuxuryLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className={manrope.className}>
+    <div className={`${cinzel.variable} ${spaceGrotesk.variable} font-sans selection:bg-[var(--luxury-gold)] selection:text-black`}>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
       <style dangerouslySetInnerHTML={{__html: `
         .material-symbols-outlined {
@@ -30,8 +40,18 @@ export default function LuxuryLayout({
           direction: ltr;
           -webkit-font-smoothing: antialiased;
         }
+        /* Hide default cursor to allow GoldRingCursor to shine */
+        body {
+          cursor: none;
+        }
+        a, button, [role="button"], input, select, textarea {
+          cursor: none;
+        }
       `}} />
-      {children}
+      <SmoothScroll>
+        <GoldRingCursor />
+        {children}
+      </SmoothScroll>
     </div>
   )
 }

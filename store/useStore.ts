@@ -110,6 +110,12 @@ interface StoreState {
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
 
+  // Masterpiece / Digital Mirror State
+  isAnalyzing: boolean;
+  setIsAnalyzing: (status: boolean) => void;
+  isFitting: boolean;
+  setIsFitting: (status: boolean) => void;
+
   // Reset
   resetSession: () => void;
 }
@@ -235,6 +241,12 @@ export const useStore = create<StoreState>()(
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
 
+      // Masterpiece / Digital Mirror State
+      isAnalyzing: false,
+      setIsAnalyzing: (status) => set({ isAnalyzing: status }),
+      isFitting: false,
+      setIsFitting: (status) => set({ isFitting: status }),
+
       // Reset Session
       resetSession: () =>
         set({
@@ -247,6 +259,8 @@ export const useStore = create<StoreState>()(
           sizeRecommendation: null,
           selectedBrand: null,
           selectedItem: null,
+          isAnalyzing: false,
+          isFitting: false,
         }),
     }),
     {
