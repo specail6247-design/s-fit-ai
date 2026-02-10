@@ -64,7 +64,7 @@ const SFitAIProject = () => {
             <h3>User Photo</h3>
             <div style={styles.uploadBox}>
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} />
-              {userImage && <img src={userImage} style={styles.preview} alt="User" />}
+              {userImage && <img src={userImage} style={styles.preview} alt="User uploaded photo" />}
             </div>
           </div>
 
@@ -72,7 +72,7 @@ const SFitAIProject = () => {
             <h3>Garment</h3>
             <div style={styles.uploadBox}>
               <input type="file" onChange={(e) => handleFileUpload(e, setClothingImage)} />
-              {clothingImage && <img src={clothingImage} style={styles.preview} alt="Cloth" />}
+              {clothingImage && <img src={clothingImage} style={styles.preview} alt="Garment photo" />}
             </div>
           </div>
         </div>
@@ -90,7 +90,7 @@ const SFitAIProject = () => {
         {finalResult && (
           <div style={styles.resultContainer}>
             <h2 style={styles.resultTitle}>Fitting Result</h2>
-            <img src={finalResult} style={styles.finalImg} alt="Result" />
+            <img src={finalResult} style={styles.finalImg} alt="Virtual try-on result" />
           </div>
         )}
       </main>
