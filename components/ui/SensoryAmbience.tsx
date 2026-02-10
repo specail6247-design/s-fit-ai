@@ -21,6 +21,7 @@ export function SensoryAmbience() {
 
     const initAudio = () => {
       try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
         const ctx = new AudioContextClass();
         audioContextRef.current = ctx;

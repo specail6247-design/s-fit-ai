@@ -1139,7 +1139,7 @@ export function FittingRoom() {
                             </div>
                             <div>
                                 <p className="text-[9px] uppercase tracking-widest text-cyber-lime font-bold mb-0.5">Stylist Note</p>
-                                <p className="text-xs text-white leading-tight">"{currentItem.stylingTip}"</p>
+                                <p className="text-xs text-white leading-tight">&quot;{currentItem.stylingTip}&quot;</p>
                             </div>
                         </div>
                     </motion.div>
