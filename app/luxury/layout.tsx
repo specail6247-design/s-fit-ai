@@ -5,14 +5,14 @@ import GoldRingCursor from '@/components/ui/GoldRingCursor'
 
 const cinzel = Cinzel({
   subsets: ['latin'],
-  display: 'swap',
+  display: 'optional',
   variable: '--font-cinzel',
   adjustFontFallback: false,
 })
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
-  display: 'swap',
+  display: 'optional',
   variable: '--font-space-grotesk',
   adjustFontFallback: false,
 })

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/store/useStore";
 import LuxuryImageDistortion from "@/components/masterpiece/LuxuryImageDistortion";
@@ -141,7 +141,7 @@ export default function LuxuryLiveFitting() {
               animate="visible"
             >
                {/* Just placeholders for controls */}
-               {['texture', 'lighting', 'motion'].map((control, i) => (
+               {['texture', 'lighting', 'motion'].map((control) => (
                  <motion.button
                    key={control}
                    variants={fadeInUp}
