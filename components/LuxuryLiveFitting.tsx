@@ -29,8 +29,8 @@ export default function LuxuryLiveFitting() {
 
   // UI Fade Animation Variants
   const uiVariants = {
-    visible: { opacity: 1, transition: { duration: 0.8, ease: "easeOut" } },
-    hidden: { opacity: 0, transition: { duration: 1.5, ease: "easeInOut" } },
+    visible: { opacity: 1, transition: { duration: 0.8, ease: [0, 0, 0.2, 1] as const } },
+    hidden: { opacity: 0, transition: { duration: 1.5, ease: [0.4, 0, 0.2, 1] as const } },
   };
 
   // Staggered Reveal Variants
