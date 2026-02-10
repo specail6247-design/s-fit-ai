@@ -5,6 +5,7 @@ const manrope = Manrope({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-manrope',
+  adjustFontFallback: false,
 })
 
 export default function LuxuryLayout({
