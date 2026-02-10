@@ -21,20 +21,21 @@ export default function LuxuryLiveFitting() {
   const [selectedBrand, setSelectedBrand] = useState<Brand>(
     brands.find(b => b.name === 'GUCCI') || brands.find(b => b.isLuxury) || brands[0]
   );
-  const [items, setItems] = useState<ClothingItem[]>([]);
+
+  // Memoize items to avoid unnecessary state updates
+  const items = React.useMemo(() => getItemsByBrand(selectedBrand.id), [selectedBrand.id]);
+
   const [selectedItem, setSelectedItem] = useState<ClothingItem | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Set initial item when brand changes
   useEffect(() => {
-    // Load items for the selected brand
-    const brandItems = getItemsByBrand(selectedBrand.id);
-    setItems(brandItems);
-    if (brandItems.length > 0) {
-      setSelectedItem(brandItems[0]);
+    if (items.length > 0) {
+      setSelectedItem(items[0]);
     } else {
       setSelectedItem(null);
     }
-  }, [selectedBrand]);
+  }, [items]);
 
   // Simulate loading when item changes
   useEffect(() => {
