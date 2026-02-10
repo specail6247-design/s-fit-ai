@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
+import DataSafetyBadge from '@/components/DataSafetyBadge';
+import SupportHub from '@/components/SupportHub';
+import LegalModal from '@/components/LegalModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -11,6 +15,7 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const { toggleSupportHub, toggleLegalModal } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -24,6 +29,74 @@ export default function RealLifeFitting() {
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleShare = async () => {
+    if (!resultImage) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Background
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, '#0a0a0a');
+    gradient.addColorStop(1, '#111111');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Load Image
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = resultImage;
+    await new Promise((resolve) => {
+      img.onload = resolve;
+      img.onerror = resolve; // Continue even if error (though it won't draw)
+    });
+
+    // Draw Image (Centered, Contain)
+    const scale = Math.min((canvas.width * 0.9) / img.width, (canvas.height * 0.65) / img.height);
+    const w = img.width * scale;
+    const h = img.height * scale;
+    const x = (canvas.width - w) / 2;
+    const y = (canvas.height - h) / 2;
+
+    // Drop shadow for image
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+    ctx.shadowBlur = 50;
+    ctx.drawImage(img, x, y, w, h);
+    ctx.shadowBlur = 0;
+
+    // Branding Text
+    ctx.font = 'italic 900 80px sans-serif'; // Assuming font availability, fallback to sans-serif
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.fillText('S_FIT', canvas.width / 2, 200);
+
+    // "NEO" in accent color
+    const textWidth = ctx.measureText('S_FIT').width;
+    ctx.fillStyle = '#007AFF';
+    ctx.fillText('NEO', (canvas.width / 2) + (textWidth / 2) + 20, 200); // Rough positioning
+
+    ctx.font = '400 30px monospace';
+    ctx.fillStyle = '#888888';
+    ctx.letterSpacing = '10px'; // Canvas doesn't support letterSpacing easily, but we'll ignore for now
+    ctx.fillText('PROFESSIONAL VIRTUAL FITTING', canvas.width / 2, 260);
+
+    // Date/Time Badge
+    const date = new Date().toLocaleDateString();
+    ctx.font = '24px monospace';
+    ctx.fillStyle = '#333333';
+    ctx.fillText(date, canvas.width / 2, canvas.height - 150);
+
+    // Download
+    const dataUrl = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = `s-fit-story-${Date.now()}.png`;
+    link.click();
   };
 
   const handleTryOn = async () => {
@@ -79,13 +152,22 @@ export default function RealLifeFitting() {
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+        <header className="mb-10 relative z-10 flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-black tracking-tighter italic">
+              S_FIT <span className="text-[#007AFF]">NEO</span>
+            </h1>
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+              Professional Virtual Fitting
+            </p>
+          </div>
+          <button
+            onClick={() => toggleSupportHub(true)}
+            className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-gray-400 hover:text-[#007AFF] transition-colors"
+            aria-label="Help & Support"
+          >
+            <span className="text-xl">?</span>
+          </button>
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
@@ -122,6 +204,10 @@ export default function RealLifeFitting() {
               </label>
             </div>
           </div>
+
+          <div className="pt-2">
+            <DataSafetyBadge />
+          </div>
         </div>
 
         {/* Action Button */}
@@ -156,6 +242,15 @@ export default function RealLifeFitting() {
              <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                Luxury Line
              </a>
+          </div>
+
+          <div className="mt-6 flex justify-center">
+            <button
+              onClick={() => toggleLegalModal(true)}
+              className="text-[10px] text-gray-500 hover:text-white uppercase tracking-wider transition-colors"
+            >
+              Legal & Privacy
+            </button>
           </div>
 
         </div>
@@ -205,10 +300,24 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+              {/* Share Button */}
+              <button
+                onClick={handleShare}
+                className="absolute bottom-4 right-4 bg-[#007AFF] hover:bg-[#005bb5] text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider shadow-lg flex items-center gap-2 transition-transform hover:scale-105"
+              >
+                <span>Share to Story</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                   <path fillRule="evenodd" d="M15.75 4.5a3 3 0 11.825 2.066l-8.421 4.679a3.002 3.002 0 010 1.51l8.421 4.679a3 3 0 11-.729 1.31l-8.421-4.678a3 3 0 110-4.132l8.421-4.679a3 3 0 01-.096-.755z" clipRule="evenodd" />
+                </svg>
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      <SupportHub />
+      <LegalModal />
     </div>
   );
 }
