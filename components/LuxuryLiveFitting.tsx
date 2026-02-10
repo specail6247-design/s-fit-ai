@@ -39,9 +39,13 @@ export default function LuxuryLiveFitting() {
   // Simulate loading when item changes
   useEffect(() => {
     if (selectedItem) {
-      setIsLoading(true);
-      const timer = setTimeout(() => setIsLoading(false), 1500); // 1.5s sophisticated loading
-      return () => clearTimeout(timer);
+      // Use a timeout to avoid synchronous state update warning
+      const loadTimer = setTimeout(() => {
+        setIsLoading(true);
+        const finishTimer = setTimeout(() => setIsLoading(false), 1500); // 1.5s sophisticated loading
+        return () => clearTimeout(finishTimer);
+      }, 0);
+      return () => clearTimeout(loadTimer);
     }
   }, [selectedItem]);
 
