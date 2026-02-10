@@ -30,11 +30,15 @@ export default function LuxuryLiveFitting() {
 
   // Set initial item when brand changes
   useEffect(() => {
-    if (items.length > 0) {
-      setSelectedItem(items[0]);
-    } else {
-      setSelectedItem(null);
-    }
+    // Wrap in setTimeout to avoid synchronous state update during effect
+    const timer = setTimeout(() => {
+      if (items.length > 0) {
+        setSelectedItem(items[0]);
+      } else {
+        setSelectedItem(null);
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, [items]);
 
   // Simulate loading when item changes
