@@ -54,7 +54,7 @@ export default function SupportHub() {
             <div className="flex items-center justify-between p-6 border-b border-white/10">
               <div>
                 <h2 className="text-xl font-bold text-white">Support Hub</h2>
-                <p className="text-xs text-gray-400 mt-1">We're here to help.</p>
+                <p className="text-xs text-gray-400 mt-1">We&apos;re here to help.</p>
               </div>
               <button
                 onClick={() => setSupportHubOpen(false)}

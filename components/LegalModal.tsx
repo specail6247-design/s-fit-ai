@@ -121,7 +121,7 @@ export default function LegalModal() {
 
                   <section>
                     <h4 className="font-bold text-white mt-4 mb-2">4. Disclaimer</h4>
-                    <p>The service is provided "as is" without warranties of any kind. We do not guarantee that the virtual fitting results will be 100% accurate to real-life fit.</p>
+                    <p>The service is provided &quot;as is&quot; without warranties of any kind. We do not guarantee that the virtual fitting results will be 100% accurate to real-life fit.</p>
                   </section>
                 </div>
               )}
