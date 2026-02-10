@@ -44,7 +44,6 @@ export function FabricMaterial({
   // Hyper-Zoom Logic: Update uniform based on camera distance
   useFrame(({ camera }) => {
     if (materialRef.current && materialRef.current.userData.shader) {
-      const worldPos = new THREE.Vector3();
       // Since the material is on a mesh, we need the mesh position.
       // But here we are inside the material component.
       // We can approximate by assuming the object is near 0,0,0 or pass a ref.
