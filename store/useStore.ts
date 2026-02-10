@@ -110,6 +110,16 @@ interface StoreState {
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
 
+  // The Vault (Digital Wardrobe)
+  savedLooks: string[];
+  toggleSavedLook: (itemId: string) => void;
+  isVaultOpen: boolean;
+  setVaultOpen: (isOpen: boolean) => void;
+
+  // Sensory Ambience
+  isAudioEnabled: boolean;
+  setAudioEnabled: (enabled: boolean) => void;
+
   // Reset
   resetSession: () => void;
 }
@@ -235,6 +245,23 @@ export const useStore = create<StoreState>()(
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
 
+      // The Vault
+      savedLooks: [],
+      toggleSavedLook: (itemId) => set((state) => {
+        const exists = state.savedLooks.includes(itemId);
+        return {
+          savedLooks: exists
+            ? state.savedLooks.filter((id) => id !== itemId)
+            : [...state.savedLooks, itemId]
+        };
+      }),
+      isVaultOpen: false,
+      setVaultOpen: (isOpen) => set({ isVaultOpen: isOpen }),
+
+      // Sensory Ambience
+      isAudioEnabled: false,
+      setAudioEnabled: (enabled) => set({ isAudioEnabled: enabled }),
+
       // Reset Session
       resetSession: () =>
         set({
@@ -257,6 +284,8 @@ export const useStore = create<StoreState>()(
         userStats: state.userStats,
         selectedAIModels: state.selectedAIModels,
         trainingData: state.trainingData,
+        savedLooks: state.savedLooks,
+        isAudioEnabled: state.isAudioEnabled,
       }),
     }
   )

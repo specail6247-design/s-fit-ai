@@ -32,6 +32,8 @@ import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
+import { SensoryAmbience } from '@/components/ui/SensoryAmbience';
+import { TheVault } from '@/components/ui/TheVault';
 
 // --- PHYSICS ENGINE (Ammo.js) ---
 
@@ -581,21 +583,55 @@ function ItemCard({
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
+
+  // Locked Item Logic (Phase 7)
+  const isLocked = item.isLocked && item.unlockDate && new Date(item.unlockDate) > new Date();
+  const [timeLeft, setTimeLeft] = useState('');
+
+  useEffect(() => {
+    if (!isLocked || !item.unlockDate) return;
+    const interval = setInterval(() => {
+      const now = new Date();
+      const end = new Date(item.unlockDate!);
+      const diff = end.getTime() - now.getTime();
+      if (diff <= 0) {
+        setTimeLeft('Unlocked');
+        clearInterval(interval);
+      } else {
+        const h = Math.floor(diff / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+        setTimeLeft(`${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isLocked, item.unlockDate]);
+
   return (
     <motion.button
-      onClick={onSelect}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      onClick={isLocked ? undefined : onSelect}
+      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${
+          isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'
+      } ${isLocked ? 'opacity-70 cursor-not-allowed grayscale' : ''}`}
+      whileHover={isLocked ? {} : { scale: 1.05 }}
+      whileTap={isLocked ? {} : { scale: 0.95 }}
     >
       <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
         <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
-        {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
-        {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
+
+        {!isLocked && item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
+        {!isLocked && isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
+
+        {isLocked && (
+            <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 p-1">
+                <span className="text-xl mb-1">🔒</span>
+                <span className="text-[8px] font-mono text-white whitespace-nowrap">{timeLeft || 'Locked'}</span>
+            </div>
+        )}
       </div>
       <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
       <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
-      <p className="text-[0.55rem] text-cyber-lime">Fit {fitScore}%</p>
+      {!isLocked && <p className="text-[0.55rem] text-cyber-lime">Fit {fitScore}%</p>}
     </motion.button>
   );
 }
@@ -830,8 +866,14 @@ function AITryOnModal({
 export function FittingRoom() {
   const {
     userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    isAudioEnabled, setAudioEnabled, setVaultOpen, savedLooks, toggleSavedLook, setSelectedBrand
   } = useStore();
   
+  // Initialize default state for demo
+  useEffect(() => {
+    if (!selectedBrand) setSelectedBrand('Gucci');
+  }, [selectedBrand, setSelectedBrand]);
+
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
@@ -858,7 +900,16 @@ export function FittingRoom() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
   const brandItems = useMemo(() => selectedBrand ? getItemsByBrand(selectedBrand) : [], [selectedBrand]);
+
+  // Auto-select first item if none selected
+  useEffect(() => {
+    if (!selectedItem && brandItems.length > 0) {
+      setSelectedItem(brandItems[0]);
+    }
+  }, [selectedItem, brandItems, setSelectedItem]);
+
   const currentItem = selectedItem || null;
+  const isSaved = currentItem ? savedLooks.includes(currentItem.id) : false;
 
   const fitScore = useMemo(() => {
     if (selectedMode === 'vibe-check' && faceAnalysis) return Math.round(Math.min(95, 60 + faceAnalysis.score * 0.4));
@@ -933,6 +984,8 @@ export function FittingRoom() {
 
   return (
     <div className="w-full h-full flex flex-col bg-void-black text-pure-white">
+      <SensoryAmbience />
+      <TheVault />
       <div className="flex-1 relative min-h-[350px]">
         {webglFailed ? (
           /* 2D Fallback View */
@@ -1000,6 +1053,9 @@ export function FittingRoom() {
             <button onClick={() => setShowHeatmap(!showHeatmap)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 🔥 Fit Heatmap
             </button>
+            <button onClick={() => setAudioEnabled(!isAudioEnabled)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isAudioEnabled ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                {isAudioEnabled ? '🔊 Ambience' : '🔇 Mute'}
+            </button>
         </div>
 
         {/* Rotation hint */}
@@ -1011,6 +1067,21 @@ export function FittingRoom() {
         )}
 
         <div className="absolute top-4 left-4 flex gap-2 z-20">
+            <button onClick={() => setVaultOpen(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors relative group">
+                <span>🧥</span>
+                {savedLooks.length > 0 && <span className="absolute -top-1 -right-1 w-3 h-3 bg-cyber-lime rounded-full text-[8px] text-black flex items-center justify-center font-bold">{savedLooks.length}</span>}
+                <span className="absolute left-full ml-2 bg-black/80 px-2 py-1 rounded text-[9px] opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity">The Vault</span>
+            </button>
+
+            {currentItem && (
+                <button
+                    onClick={() => toggleSavedLook(currentItem.id)}
+                    className={`bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors ${isSaved ? 'text-red-500' : 'text-white'}`}
+                >
+                    <span className={isSaved ? 'animate-pulse' : ''}>{isSaved ? '❤️' : '🤍'}</span>
+                </button>
+            )}
+
             <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
                 <span>📤</span>
             </button>
@@ -1052,7 +1123,29 @@ export function FittingRoom() {
         )}
 
         {/* AI Consultant Advice Overlay */}
-        <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none">
+        <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none flex flex-col gap-2 items-start">
+            {/* AI Stylist Note (Phase 7) */}
+            <AnimatePresence>
+                {currentItem?.stylingTip && (
+                     <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        className="bg-charcoal/80 backdrop-blur-xl border border-cyber-lime/30 p-3 rounded-2xl shadow-2xl pointer-events-auto max-w-sm"
+                    >
+                        <div className="flex items-start gap-3">
+                            <div className="w-8 h-8 rounded-full bg-cyber-lime flex items-center justify-center text-black text-lg">
+                                🧣
+                            </div>
+                            <div>
+                                <p className="text-[9px] uppercase tracking-widest text-cyber-lime font-bold mb-0.5">Stylist Note</p>
+                                <p className="text-xs text-white leading-tight">&quot;{currentItem.stylingTip}&quot;</p>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             <AnimatePresence>
                 {currentItem && poseAnalysis?.proportions && recommendedFit && (
                     <motion.div 
