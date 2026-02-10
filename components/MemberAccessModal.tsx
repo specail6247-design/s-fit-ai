@@ -57,8 +57,9 @@ export default function MemberAccessModal() {
         if (error) throw error;
         handleClose(); // Success!
       }
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.message || 'Authentication failed.' });
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Authentication failed.';
+      setMessage({ type: 'error', text: errorMessage });
     } finally {
       setLoading(false);
     }
