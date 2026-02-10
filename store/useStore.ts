@@ -110,6 +110,17 @@ interface StoreState {
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
 
+  // Vault (Phase 7)
+  savedLooks: ClothingItem[];
+  saveLook: (item: ClothingItem) => void;
+  removeLook: (itemId: string) => void;
+  isVaultOpen: boolean;
+  toggleVault: () => void;
+
+  // Sensory Ambience (Phase 7)
+  isAudioEnabled: boolean;
+  setAudioEnabled: (enabled: boolean) => void;
+
   // Reset
   resetSession: () => void;
 }
@@ -235,6 +246,21 @@ export const useStore = create<StoreState>()(
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
 
+      // Vault (Phase 7)
+      savedLooks: [],
+      saveLook: (item) => set((state) => ({
+        savedLooks: state.savedLooks.some((i) => i.id === item.id)
+          ? state.savedLooks
+          : [...state.savedLooks, item]
+      })),
+      removeLook: (itemId) => set((state) => ({ savedLooks: state.savedLooks.filter((i) => i.id !== itemId) })),
+      isVaultOpen: false,
+      toggleVault: () => set((state) => ({ isVaultOpen: !state.isVaultOpen })),
+
+      // Sensory Ambience (Phase 7)
+      isAudioEnabled: false,
+      setAudioEnabled: (enabled) => set({ isAudioEnabled: enabled }),
+
       // Reset Session
       resetSession: () =>
         set({
@@ -257,6 +283,8 @@ export const useStore = create<StoreState>()(
         userStats: state.userStats,
         selectedAIModels: state.selectedAIModels,
         trainingData: state.trainingData,
+        savedLooks: state.savedLooks,
+        isAudioEnabled: state.isAudioEnabled,
       }),
     }
   )
