@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
+import DataSafetyBadge from '@/components/ui/DataSafetyBadge';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -11,11 +13,97 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const { setLegalModalOpen, setSupportHubOpen } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // 9:16 Aspect Ratio (Story format: 1080x1920)
+      canvas.width = 1080;
+      canvas.height = 1920;
+
+      // Fill Background
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, '#0a0a0a');
+      gradient.addColorStop(1, '#111111');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Branding Overlay (Top)
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 60px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT AI', canvas.width / 2, 160);
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = 'bold 30px monospace';
+      ctx.fillText('VIRTUAL FITTING', canvas.width / 2, 210);
+
+      // Load Image
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = resultImage;
+      });
+
+      // Draw Image (Centered, Maintain Aspect Ratio)
+      // Calculate scaling to fit within padding
+      const padding = 100;
+      const maxWidth = canvas.width - (padding * 2);
+      const maxHeight = canvas.height - 400; // Leave space for header/footer
+
+      const scale = Math.min(maxWidth / img.width, maxHeight / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (canvas.width - w) / 2;
+      const y = (canvas.height - h) / 2 + 50; // Offset slightly down
+
+      // Shadow
+      ctx.shadowColor = 'rgba(0,0,0,0.5)';
+      ctx.shadowBlur = 50;
+      ctx.shadowOffsetY = 30;
+
+      // Draw image
+      ctx.drawImage(img, x, y, w, h);
+
+      // Reset Shadow
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+
+      // Footer
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      ctx.font = '30px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Try it yourself @ s-fit.ai', canvas.width / 2, canvas.height - 100);
+
+      // Trigger Download
+      const dataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `s_fit_story_${Date.now()}.png`;
+      link.href = dataUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+    } catch (err) {
+      console.error("Failed to generate story image", err);
+      alert("Failed to generate image. Please try again.");
+    }
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -121,6 +209,9 @@ export default function RealLifeFitting() {
                 </div>
               </label>
             </div>
+
+            {/* Data Safety Badge */}
+            <DataSafetyBadge />
           </div>
         </div>
 
@@ -156,6 +247,16 @@ export default function RealLifeFitting() {
              <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                Luxury Line
              </a>
+          </div>
+
+          {/* Legal & Support Triggers */}
+          <div className="mt-6 flex justify-between text-[10px] text-gray-500 font-mono border-t border-white/10 pt-4">
+             <button onClick={() => setLegalModalOpen(true)} className="hover:text-white transition-colors flex items-center gap-1">
+               <span className="material-symbols-outlined text-xs">gavel</span> LEGAL & PRIVACY
+             </button>
+             <button onClick={() => setSupportHubOpen(true)} className="hover:text-white transition-colors flex items-center gap-1">
+               <span className="material-symbols-outlined text-xs">help</span> SUPPORT HUB
+             </button>
           </div>
 
         </div>
@@ -205,6 +306,14 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#FCAF45] text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 hover:opacity-90 transition-opacity shadow-lg"
+              >
+                <span className="material-symbols-outlined text-sm">ios_share</span>
+                SHARE TO STORY
+              </button>
             </div>
           </motion.div>
         )}
