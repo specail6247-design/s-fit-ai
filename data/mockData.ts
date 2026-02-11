@@ -1,11 +1,11 @@
 // S_FIT AI - Mock Data
 // 15 items: 5 Mass Market (ZARA), 5 Luxury (Gucci), 5 Basic (Uniqlo)
-// Updated with real product images
+// Updated with real product images and K-Fashion Leaders
 
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'ADER ERROR' | 'Gentle Monster' | 'Low Classic' | 'Maison Margiela';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -24,7 +24,7 @@ export interface Brand {
   name: string;
   logo: string;
   isLuxury: boolean;
-  tier: 'mass' | 'luxury' | 'basic';
+  tier: 'mass' | 'luxury' | 'basic' | 'k-fashion';
 }
 
 // Brand Data
@@ -92,6 +92,35 @@ export const brands: Brand[] = [
     isLuxury: true,
     tier: 'luxury',
   },
+  // K-Fashion Leaders
+  {
+    id: 'ader-error',
+    name: 'ADER ERROR',
+    logo: 'https://placehold.co/100x100?text=ADER',
+    isLuxury: true,
+    tier: 'k-fashion',
+  },
+  {
+    id: 'gentle-monster',
+    name: 'Gentle Monster',
+    logo: 'https://placehold.co/100x100?text=GM',
+    isLuxury: true,
+    tier: 'k-fashion',
+  },
+  {
+    id: 'low-classic',
+    name: 'Low Classic',
+    logo: 'https://placehold.co/100x100?text=LOW',
+    isLuxury: true,
+    tier: 'k-fashion',
+  },
+  {
+    id: 'maison-margiela',
+    name: 'Maison Margiela',
+    logo: 'https://placehold.co/100x100?text=MM',
+    isLuxury: true,
+    tier: 'luxury',
+  }
 ];
 
 // Mock Clothing Items with Real Product Images
@@ -534,6 +563,98 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+  },
+  {
+    id: 'mm-bag-001',
+    name: 'Glam Slam Shoulder Bag',
+    brand: 'Maison Margiela',
+    category: 'accessories',
+    subCategory: 'bag',
+    zIndex: 50,
+    price: 2450.00,
+    currency: 'USD',
+    imageUrl: '/accessories/mm_glam.png',
+    textureUrl: '/accessories/mm_glam.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['White', 'Black'],
+    description: 'Quilted soft leather shoulder bag with pillow effect',
+  },
+  {
+    id: 'gm-glasses-001',
+    name: 'Lilit 01',
+    brand: 'Gentle Monster',
+    category: 'accessories',
+    subCategory: 'glasses',
+    zIndex: 60,
+    price: 269.00,
+    currency: 'USD',
+    imageUrl: '/accessories/gm_lilit.png',
+    textureUrl: '/accessories/gm_lilit.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Black', 'Brown'],
+    description: 'Square black acetate frame with dark lenses',
+  },
+
+  // ADER ERROR - K-Fashion (2 items)
+  {
+    id: 'ader-001',
+    name: 'Oversized Logo Sweatshirt',
+    brand: 'ADER ERROR',
+    category: 'tops',
+    price: 320.00,
+    currency: 'USD',
+    imageUrl: '/clothing/ader_sweatshirt.png',
+    textureUrl: '/clothing/ader_sweatshirt.png',
+    isLuxury: true,
+    sizes: ['A1', 'A2', 'A3'],
+    colors: ['Blue'],
+    description: 'Signature oversized blue sweatshirt with deconstructed details',
+  },
+  {
+    id: 'ader-002',
+    name: 'Deconstructed Jeans',
+    brand: 'ADER ERROR',
+    category: 'bottoms',
+    price: 450.00,
+    currency: 'USD',
+    imageUrl: '/clothing/ader_jeans.png',
+    textureUrl: '/clothing/ader_jeans.png',
+    isLuxury: true,
+    sizes: ['A1', 'A2', 'A3'],
+    colors: ['Light Blue'],
+    description: 'Wide fit jeans with asymmetrical cutting',
+  },
+
+  // Low Classic - K-Fashion (2 items)
+  {
+    id: 'low-001',
+    name: 'Belted Trench Coat',
+    brand: 'Low Classic',
+    category: 'outerwear',
+    price: 580.00,
+    currency: 'USD',
+    imageUrl: '/clothing/low_trench.png',
+    textureUrl: '/clothing/low_trench.png',
+    isLuxury: true,
+    sizes: ['S', 'M', 'L'],
+    colors: ['Beige'],
+    description: 'Minimalist oversized trench coat',
+  },
+  {
+    id: 'low-002',
+    name: 'Pleated Midi Skirt',
+    brand: 'Low Classic',
+    category: 'bottoms',
+    price: 320.00,
+    currency: 'USD',
+    imageUrl: '/clothing/low_skirt.png',
+    textureUrl: '/clothing/low_skirt.png',
+    isLuxury: true,
+    sizes: ['S', 'M', 'L'],
+    colors: ['Black', 'Cream'],
+    description: 'Asymmetrical pleated midi skirt',
   },
 ];
 
