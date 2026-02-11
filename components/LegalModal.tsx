@@ -71,10 +71,10 @@ export default function LegalModal() {
                 </h3>
                 <div className="space-y-4">
                   <p>
-                    <strong>1. Acceptable Use:</strong> You agree to use S_FIT AI only for lawful purposes. You must not upload content that is illegal, offensive, or infringes on others' rights.
+                    <strong>1. Acceptable Use:</strong> You agree to use S_FIT AI only for lawful purposes. You must not upload content that is illegal, offensive, or infringes on others&apos; rights.
                   </p>
                   <p>
-                    <strong>2. Service Availability:</strong> While we strive for 99.9% uptime, S_FIT AI is provided "as is" without warranties of any kind regarding reliability or availability.
+                    <strong>2. Service Availability:</strong> While we strive for 99.9% uptime, S_FIT AI is provided &quot;as is&quot; without warranties of any kind regarding reliability or availability.
                   </p>
                   <p>
                     <strong>3. User Content:</strong> You retain ownership of your content. By uploading, you grant us a limited license to process the content for the purpose of generating fitting results.
