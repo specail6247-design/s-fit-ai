@@ -1,10 +1,22 @@
-import { Manrope } from 'next/font/google'
-import React from 'react'
+'use client';
 
-const manrope = Manrope({
+import { Cinzel, Space_Grotesk } from 'next/font/google'
+import React from 'react'
+import { useStore } from '@/store/useStore';
+import SmoothScroll from '@/components/SmoothScroll';
+import GoldRingCursor from '@/components/ui/GoldRingCursor';
+import { motion } from 'framer-motion';
+
+const cinzel = Cinzel({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-manrope',
+  variable: '--font-cinzel',
+})
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-space-grotesk',
 })
 
 export default function LuxuryLayout({
@@ -12,8 +24,22 @@ export default function LuxuryLayout({
 }: {
   children: React.ReactNode
 }) {
+  const isAnalyzing = useStore((state) => state.isAnalyzing);
+  const isFitting = useStore((state) => state.isFitting);
+
+  const shouldFadeOut = isAnalyzing || isFitting;
+
   return (
-    <div className={manrope.className}>
+    <div
+      className={`${cinzel.variable} ${spaceGrotesk.variable} font-sans selection:bg-[#ecab13] selection:text-black`}
+      style={{
+        '--font-sans': 'var(--font-space-grotesk)',
+        '--font-serif': 'var(--font-cinzel)',
+      } as React.CSSProperties}
+    >
+      <SmoothScroll />
+      <GoldRingCursor />
+
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
       <style dangerouslySetInnerHTML={{__html: `
         .material-symbols-outlined {
@@ -31,7 +57,14 @@ export default function LuxuryLayout({
           -webkit-font-smoothing: antialiased;
         }
       `}} />
-      {children}
+
+      <motion.div
+        animate={{ opacity: shouldFadeOut ? 0 : 1 }}
+        transition={{ duration: 0.8, ease: "easeInOut" }}
+        className="min-h-screen"
+      >
+        {children}
+      </motion.div>
     </div>
   )
 }
