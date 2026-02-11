@@ -290,3 +290,8 @@ body {
     padding: var(--spacing-lg);
   }
 }
+
+/* Masterpiece Polish */
+.luxury-filter {
+  filter: saturate(0.9) contrast(1.1);
+}
