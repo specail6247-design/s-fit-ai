@@ -85,7 +85,7 @@ function ImagePlane({ imageUrl }: { imageUrl: string }) {
 
   useFrame((state) => {
     if (mesh.current) {
-      // @ts-ignore
+      // @ts-expect-error - Custom shader material uniforms are not typed in Three.js default types
       mesh.current.material.uniforms.uTime.value = state.clock.elapsedTime;
     }
   });
