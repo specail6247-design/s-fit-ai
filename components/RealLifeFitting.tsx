@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import CinematicViewer from '@/components/ui/CinematicViewer';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -17,6 +18,13 @@ export default function RealLifeFitting() {
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
 
+  // New Features State
+  const [upscaledImage, setUpscaledImage] = useState<string | null>(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [isUpscaling, setIsUpscaling] = useState(false);
+  const [isVideoGenerating, setIsVideoGenerating] = useState(false);
+  const [zoomProps, setZoomProps] = useState({ x: 0, y: 0, show: false });
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -31,6 +39,9 @@ export default function RealLifeFitting() {
     
     setIsProcessing(true);
     setProgress(0);
+    setResultImage(null);
+    setUpscaledImage(null);
+    setVideoUrl(null);
 
     // Simulate progress bar
     const interval = setInterval(() => {
@@ -71,6 +82,61 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleUpscale = async () => {
+    if (!resultImage) return;
+    setIsUpscaling(true);
+    try {
+      const res = await fetch('/api/upscale', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: resultImage })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setUpscaledImage(data.imageUrl);
+      } else {
+        alert("Upscale failed: " + data.error);
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Upscale failed");
+    } finally {
+      setIsUpscaling(false);
+    }
+  };
+
+  const handleGenerateVideo = async () => {
+    const sourceImage = upscaledImage || resultImage;
+    if (!sourceImage) return;
+    setIsVideoGenerating(true);
+    try {
+      const res = await fetch('/api/cinematic-try-on', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: sourceImage })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setVideoUrl(data.videoUrl);
+      } else {
+        alert("Video generation failed: " + data.error);
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Video generation failed");
+    } finally {
+      setIsVideoGenerating(false);
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!upscaledImage) return;
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setZoomProps({ x, y, show: true });
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
@@ -96,7 +162,10 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={userImage} className="w-full h-full object-cover" alt="User" />
+                  ) : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +182,10 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={garmentImage} className="w-full h-full object-cover" alt="Garment" />
+                  ) : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -192,18 +264,100 @@ export default function RealLifeFitting() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 w-auto max-w-[90%] max-h-[90vh]"
           >
-            <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+             <div className="p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl relative">
               <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                onClick={() => {
+                  setResultImage(null);
+                  setUpscaledImage(null);
+                  setVideoUrl(null);
+                }}
+                className="absolute -top-4 -right-4 bg-black/80 text-white rounded-full p-2 z-50 hover:bg-red-500 transition-colors border border-white/20"
               >
-                ✕ Close
+                ✕
               </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
-                AI GENERATED_
+
+              {videoUrl ? (
+                <div className="w-[360px]">
+                  <CinematicViewer videoUrl={videoUrl} posterUrl={upscaledImage || resultImage || undefined} className="rounded-xl" />
+                </div>
+              ) : (
+                <div
+                  className="relative group overflow-hidden rounded-xl cursor-crosshair"
+                  onMouseMove={handleMouseMove}
+                  onMouseLeave={() => setZoomProps(prev => ({ ...prev, show: false }))}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={upscaledImage || resultImage}
+                    alt="Result"
+                    className="max-h-[70vh] w-auto object-contain"
+                  />
+
+                  {/* Hyper-Zoom Lens */}
+                  {upscaledImage && zoomProps.show && (
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        backgroundImage: `url(${upscaledImage})`,
+                        backgroundPosition: `${zoomProps.x}% ${zoomProps.y}%`,
+                        backgroundSize: '250%',
+                        opacity: 1
+                      }}
+                    />
+                  )}
+
+                  {!upscaledImage && (
+                    <div className="absolute top-2 left-2 px-2 py-1 bg-black/60 text-xs text-gray-400 rounded backdrop-blur-sm font-mono">
+                      PREVIEW QUALITY
+                    </div>
+                  )}
+                  {upscaledImage && (
+                     <div className="absolute top-2 left-2 px-2 py-1 bg-[#007AFF]/80 text-xs text-white rounded backdrop-blur-sm font-bold font-mono border border-white/20">
+                      4K HYPER-ZOOM ACTIVE
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Action Bar */}
+              <div className="mt-4 flex gap-3">
+                {!upscaledImage && !videoUrl && (
+                  <button
+                    onClick={handleUpscale}
+                    disabled={isUpscaling}
+                    className="flex-1 py-3 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-bold uppercase flex items-center justify-center gap-2 border border-white/10 transition-all disabled:opacity-50"
+                  >
+                    {isUpscaling ? <span className="animate-spin">⏳</span> : <span>🔍</span>}
+                    Enhance to 4K
+                  </button>
+                )}
+
+                {!videoUrl && (
+                  <button
+                    onClick={handleGenerateVideo}
+                    disabled={isVideoGenerating}
+                    className="flex-1 py-3 bg-gradient-to-r from-[#007AFF] to-[#00C6FF] hover:opacity-90 rounded-xl text-xs font-bold uppercase flex items-center justify-center gap-2 shadow-lg transition-all disabled:opacity-50"
+                  >
+                    {isVideoGenerating ? <span className="animate-spin">🎬</span> : <span>🎥</span>}
+                    Cinematic Video
+                  </button>
+                )}
+
+                {videoUrl && (
+                  <button
+                    onClick={() => {
+                        const a = document.createElement('a');
+                        a.href = videoUrl;
+                        a.download = 's_fit_cinematic.mp4';
+                        a.click();
+                    }}
+                    className="flex-1 py-3 bg-[#007AFF] rounded-xl text-xs font-bold uppercase flex items-center justify-center gap-2"
+                  >
+                    ⬇ Download
+                  </button>
+                )}
               </div>
             </div>
           </motion.div>
