@@ -98,11 +98,6 @@ const ImageMesh: React.FC<ImageMeshProps> = ({ imageUrl }) => {
   // However, simple scaling here stretches the image.
   // To do proper "object-fit: cover", we need to know image aspect and viewport aspect.
 
-  const viewportAspect = viewport.width / viewport.height;
-  const imageAspect = (texture.image && (texture.image as HTMLImageElement).width)
-    ? (texture.image as HTMLImageElement).width / (texture.image as HTMLImageElement).height
-    : 1;
-
   // If we want to cover the viewport with the image without distortion of the image content itself (UV mapping),
   // we usually modify UVs in shader or scale the mesh.
   // For simplicity here, we'll scale the mesh to fill the viewport (stretching)

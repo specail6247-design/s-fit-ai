@@ -39,10 +39,6 @@ export default function GoldRingCursor() {
       setIsHovering(isClickable);
     };
 
-    const handleMouseOut = () => {
-       setIsHovering(false);
-    };
-
     window.addEventListener('mousemove', moveCursor);
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
@@ -81,7 +77,7 @@ export default function GoldRingCursor() {
                 borderColor: isHovering ? '#ecab13' : '#ecab13cc',
                 backgroundColor: isHovering ? 'rgba(236, 171, 19, 0.1)' : 'transparent',
             }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 } as any}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 } as const}
         >
             <motion.div
                 className="h-1 w-1 rounded-full bg-[#ecab13]"
