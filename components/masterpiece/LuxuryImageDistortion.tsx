@@ -146,7 +146,6 @@ const ImageMesh: React.FC<ImageMeshProps> = ({ imageUrl }) => {
       onPointerOut={() => setHover(false)}
     >
       <planeGeometry args={[1, 1, 32, 32]} />
-      {/* @ts-expect-error Uniforms type mismatch with Three types is common */}
       <shaderMaterial
         ref={materialRef}
         vertexShader={vertexShader}
