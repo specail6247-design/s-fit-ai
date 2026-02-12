@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Space_Grotesk, Cinzel } from 'next/font/google';
 import CinematicViewer from '@/components/ui/CinematicViewer';
-import { brands, getItemsByBrand, ClothingItem, Brand, getAllItems } from '@/data/mockData';
+import { brands, getItemsByBrand, ClothingItem, Brand } from '@/data/mockData';
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'] });
 const cinzel = Cinzel({ subsets: ['latin'] });
@@ -242,7 +242,9 @@ export default function MasterpieceFitting() {
               onClick={() => fileInputRef.current?.click()}
             >
               {userPhoto ? (
-                <Image src={userPhoto} alt="User" fill className="object-cover" />
+                <div className="relative w-full h-full">
+                  <Image src={userPhoto} alt="User" fill className="object-cover" />
+                </div>
               ) : (
                 <div className="flex flex-col items-center text-gray-500 group-hover:text-[#D4AF37]">
                   <span className="material-symbols-outlined text-4xl mb-2">add_a_photo</span>
@@ -328,6 +330,7 @@ export default function MasterpieceFitting() {
                 className="relative h-[85vh] w-auto max-w-full aspect-[3/4] shadow-2xl"
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={resultImage}
                   alt="Masterpiece Result"
