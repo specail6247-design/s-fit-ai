@@ -20,3 +20,4 @@ https://nextjs.org/telemetry
  GET /verify-fitting 200 in 65ms (compile: 6ms, render: 60ms)
  GET /verify-fitting 200 in 72ms (compile: 5ms, render: 66ms)
  GET /verify-fitting 200 in 64ms (compile: 10ms, render: 54ms)
+[?25h

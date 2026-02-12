@@ -1,0 +1,20 @@
+
+> s-fit-ai@0.1.0 dev
+> next dev --webpack
+
+▲ Next.js 16.1.4 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+
+✓ Starting...
+✓ Ready in 3.8s
+○ Compiling / ...
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET / 200 in 13.9s (compile: 13.4s, render: 532ms)
+○ Compiling /luxury/fitting ...
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /luxury/fitting 200 in 10.5s (compile: 10.2s, render: 321ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /spa/fitting 200 in 2.9s (compile: 2.6s, render: 296ms)
+ GET /spa/fitting 200 in 137ms (compile: 14ms, render: 123ms)
+ GET /spa/fitting 200 in 77ms (compile: 6ms, render: 71ms)
