@@ -1,11 +1,11 @@
 // S_FIT AI - Mock Data
 // 15 items: 5 Mass Market (ZARA), 5 Luxury (Gucci), 5 Basic (Uniqlo)
-// Updated with real product images
+// Updated with real product images + K-Fashion + Accessories
 
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'ADER ERROR' | 'Gentle Monster' | 'Low Classic' | 'Burberry';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -24,7 +24,7 @@ export interface Brand {
   name: string;
   logo: string;
   isLuxury: boolean;
-  tier: 'mass' | 'luxury' | 'basic';
+  tier: 'mass' | 'luxury' | 'basic' | 'k-fashion';
 }
 
 // Brand Data
@@ -92,6 +92,35 @@ export const brands: Brand[] = [
     isLuxury: true,
     tier: 'luxury',
   },
+  // K-Fashion Brands
+  {
+    id: 'ader_error',
+    name: 'ADER ERROR',
+    logo: 'https://placehold.co/100x100?text=ADER',
+    isLuxury: true,
+    tier: 'k-fashion',
+  },
+  {
+    id: 'gentle_monster',
+    name: 'Gentle Monster',
+    logo: 'https://placehold.co/100x100?text=GM',
+    isLuxury: true,
+    tier: 'k-fashion',
+  },
+  {
+    id: 'low_classic',
+    name: 'Low Classic',
+    logo: 'https://placehold.co/100x100?text=LOW',
+    isLuxury: true,
+    tier: 'k-fashion',
+  },
+  {
+    id: 'burberry',
+    name: 'Burberry',
+    logo: 'https://placehold.co/100x100?text=BURBERRY',
+    isLuxury: true,
+    tier: 'luxury',
+  }
 ];
 
 // Mock Clothing Items with Real Product Images
@@ -486,7 +515,81 @@ export const mockClothingItems: ClothingItem[] = [
     description: 'Comfortable athletic joggers',
   },
 
-  // ACCESSORIES - New Category
+  // ADER ERROR - K-Fashion (3 items)
+  {
+    id: 'ader-001',
+    name: 'Logo Patch Hoodie',
+    brand: 'ADER ERROR',
+    category: 'tops',
+    price: 320.00,
+    currency: 'USD',
+    imageUrl: '/clothing/ader_hoodie.png',
+    textureUrl: '/clothing/ader_hoodie.png',
+    isLuxury: true,
+    sizes: ['A1', 'A2', 'A3'],
+    colors: ['Blue', 'Gray'],
+    description: 'Oversized hoodie with signature blue logo patch',
+  },
+  {
+    id: 'ader-002',
+    name: 'Distressed Denim Jacket',
+    brand: 'ADER ERROR',
+    category: 'outerwear',
+    price: 450.00,
+    currency: 'USD',
+    imageUrl: '/clothing/ader_jacket.png',
+    textureUrl: '/clothing/ader_jacket.png',
+    isLuxury: true,
+    sizes: ['A1', 'A2', 'A3'],
+    colors: ['Blue Denim'],
+    description: 'Deconstructed denim jacket with raw edges',
+  },
+  {
+    id: 'ader-003',
+    name: 'Cuffed Joggers',
+    brand: 'ADER ERROR',
+    category: 'bottoms',
+    price: 280.00,
+    currency: 'USD',
+    imageUrl: '/clothing/ader_joggers.png',
+    textureUrl: '/clothing/ader_joggers.png',
+    isLuxury: true,
+    sizes: ['A1', 'A2', 'A3'],
+    colors: ['Black'],
+    description: 'Relaxed fit joggers with drawstring waist',
+  },
+
+  // Low Classic - K-Fashion (2 items)
+  {
+    id: 'low-001',
+    name: 'Belted Trench Coat',
+    brand: 'Low Classic',
+    category: 'outerwear',
+    price: 580.00,
+    currency: 'USD',
+    imageUrl: '/clothing/low_trench.png',
+    textureUrl: '/clothing/low_trench.png',
+    isLuxury: true,
+    sizes: ['S', 'M', 'L'],
+    colors: ['Beige'],
+    description: 'Minimalist trench coat with wide belt',
+  },
+  {
+    id: 'low-002',
+    name: 'Pleated Wide Trousers',
+    brand: 'Low Classic',
+    category: 'bottoms',
+    price: 320.00,
+    currency: 'USD',
+    imageUrl: '/clothing/low_trousers.png',
+    textureUrl: '/clothing/low_trousers.png',
+    isLuxury: true,
+    sizes: ['S', 'M', 'L'],
+    colors: ['Khaki', 'Black'],
+    description: 'High-waisted trousers with deep pleats',
+  },
+
+  // ACCESSORIES - Updated
   {
     id: 'chanel-bag-001',
     name: 'Classic Flap Bag',
@@ -535,6 +638,38 @@ export const mockClothingItems: ClothingItem[] = [
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
   },
+  {
+    id: 'gm-glasses-001',
+    name: 'Gentle Monster Lilit 01',
+    brand: 'Gentle Monster',
+    category: 'accessories',
+    subCategory: 'glasses',
+    zIndex: 55,
+    price: 280.00,
+    currency: 'USD',
+    imageUrl: '/accessories/gm_lilit.png',
+    textureUrl: '/accessories/gm_lilit.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Black'],
+    description: 'Square acetate frame with 99.9% UV protection',
+  },
+  {
+    id: 'burberry-scarf-001',
+    name: 'Classic Check Cashmere Scarf',
+    brand: 'Burberry',
+    category: 'accessories',
+    subCategory: 'scarf',
+    zIndex: 40,
+    price: 520.00,
+    currency: 'USD',
+    imageUrl: '/accessories/burberry_scarf.png',
+    textureUrl: '/accessories/burberry_scarf.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Archive Beige'],
+    description: 'Classic check cashmere scarf made in Scotland',
+  }
 ];
 
 // Helper functions
