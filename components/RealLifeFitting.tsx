@@ -1,7 +1,12 @@
+/* eslint-disable @next/next/no-img-element */
+'use client';
+
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { DataSafetyBadge } from '@/components/ui/DataSafetyBadge';
+import { useStore } from '@/store/useStore';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +21,7 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const { setLegalModalOpen, setSupportHubOpen } = useStore();
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -71,6 +77,79 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Instagram Story size
+      canvas.width = 1080;
+      canvas.height = 1920;
+
+      // 1. Background
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, '#0a0a0a');
+      gradient.addColorStop(1, '#111111');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 2. Load Image
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = resultImage;
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      // 3. Draw Image (Contain) - Max 70% height
+      const maxHeight = canvas.height * 0.7;
+      const maxWidth = canvas.width * 0.9;
+      const scale = Math.min(maxWidth / img.width, maxHeight / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (canvas.width - w) / 2;
+      const y = (canvas.height - h) / 2;
+
+      // Glow effect behind image
+      ctx.shadowBlur = 50;
+      ctx.shadowColor = 'rgba(0, 122, 255, 0.3)';
+      ctx.drawImage(img, x, y, w, h);
+      ctx.shadowBlur = 0;
+
+      // 4. Overlay Branding
+      // Logo
+      ctx.font = 'italic 900 80px sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT NEO', canvas.width / 2, 150);
+
+      // Tagline
+      ctx.font = 'bold 30px monospace';
+      ctx.fillStyle = '#007AFF';
+      ctx.fillText('AI VIRTUAL FITTING', canvas.width / 2, 210);
+
+      // Footer URL
+      ctx.font = '30px sans-serif';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.fillText('Try it at s-fit.ai', canvas.width / 2, canvas.height - 100);
+
+      // 5. Download
+      const dataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `s-fit-story-${Date.now()}.png`;
+      link.href = dataUrl;
+      link.click();
+
+    } catch (err) {
+      console.error('Failed to generate story', err);
+      alert('Failed to generate story image. Please try again.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
@@ -91,12 +170,15 @@ export default function RealLifeFitting() {
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
           {/* User Photo Input */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
+              <DataSafetyBadge />
+            </div>
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? <img src={userImage} className="w-full h-full object-cover" alt="User upload" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +195,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" alt="Garment upload" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -156,6 +238,12 @@ export default function RealLifeFitting() {
              <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                Luxury Line
              </a>
+          </div>
+
+          {/* Footer Links */}
+          <div className="mt-8 flex justify-center gap-6 text-[10px] text-gray-500 uppercase tracking-widest pb-4">
+            <button onClick={() => setLegalModalOpen(true)} className="hover:text-white transition-colors">Legal</button>
+            <button onClick={() => setSupportHubOpen(true)} className="hover:text-white transition-colors">Support</button>
           </div>
 
         </div>
@@ -205,6 +293,14 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+              {/* Share Button */}
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg hover:opacity-90 transition-opacity flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
