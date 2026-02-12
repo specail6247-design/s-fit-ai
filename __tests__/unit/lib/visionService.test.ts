@@ -19,7 +19,10 @@ describe('Vision Service', () => {
       hipWidth: 0.5,
       torsoHeight: 0.5,
       legLength: 0.5,
-      overallRatio: 0.5
+      overallRatio: 0.5,
+      waistWidth: 0.4,
+      armLength: 0.6,
+      shoulderSlope: 0.05
     };
     const userHeight = 175; // cm
 
@@ -106,7 +109,21 @@ describe('Vision Service', () => {
 
     it('should prioritize matching colors (black/white)', () => {
         // Create a mock black item
-        const blackItem = { ...getAllItems()[0], colors: ['Black'], category: 'tops' };
+        const blackItem: ClothingItem = {
+            ...getAllItems()[0],
+            colors: ['Black'],
+            category: 'tops',
+            // Ensure strict types for brand and other required fields if they were missing or loose
+            brand: 'ZARA', // default fallback
+            price: 0,
+            currency: 'USD',
+            imageUrl: '',
+            textureUrl: '',
+            isLuxury: false,
+            sizes: [],
+            description: '',
+            id: 'mock-black-item'
+        };
         const recommendations = getComplementaryItems(blackItem);
         expect(recommendations.length).toBeGreaterThan(0);
     });
