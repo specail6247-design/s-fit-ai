@@ -2,12 +2,14 @@
 // 15 items: 5 Mass Market (ZARA), 5 Luxury (Gucci), 5 Basic (Uniqlo)
 // Updated with real product images
 
+import { luxuryProducts } from './luxuryProducts';
+
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Hermes';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
-  subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
+  subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses' | 'shoes';
   zIndex?: number;
   price: number;
   currency: string;
@@ -40,6 +42,13 @@ export const brands: Brand[] = [
     id: 'gucci',
     name: 'GUCCI',
     logo: 'https://placehold.co/100x100?text=GUCCI',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'hermes',
+    name: 'Hermes',
+    logo: 'https://placehold.co/100x100?text=HERMES',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -535,6 +544,7 @@ export const mockClothingItems: ClothingItem[] = [
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
   },
+  ...luxuryProducts,
 ];
 
 // Helper functions

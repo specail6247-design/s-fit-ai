@@ -417,8 +417,16 @@ function AccessoryClothing({ item }: ClothingProps) {
   const aspect = img ? img.width / img.height : 1;
   const zIndex = layeringEngine.getItemZIndex(item);
   
-  const baseWidth = item.subCategory === 'bag' ? 0.4 : 0.2;
-  const position: [number, number, number] = item.subCategory === 'bag' ? [0.35, 0.8, 0.2] : [0, 1.45, 0.15];
+  let baseWidth = 0.2;
+  let position: [number, number, number] = [0, 1.45, 0.15]; // Default (e.g., jewelry/hat)
+
+  if (item.subCategory === 'bag') {
+    baseWidth = 0.4;
+    position = [0.35, 0.8, 0.2];
+  } else if (item.subCategory === 'shoes') {
+    baseWidth = 0.3;
+    position = [0, 0.1, 0.1];
+  }
 
   return (
     <mesh position={position} renderOrder={zIndex} castShadow receiveShadow>
@@ -581,15 +589,31 @@ function ItemCard({
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
+  const [imageError, setImageError] = useState(false);
+
   return (
     <motion.button
       onClick={onSelect}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
+      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal luxury-shimmer' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
-      <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
-        <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+      <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden bg-gray-800">
+        {!imageError ? (
+          <Image
+            src={item.imageUrl}
+            alt={item.name}
+            fill
+            className="object-cover"
+            sizes="100px"
+            onError={() => setImageError(true)}
+            unoptimized={item.imageUrl.startsWith('http')}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: primaryColor }}>
+            <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+          </div>
+        )}
         {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
       </div>

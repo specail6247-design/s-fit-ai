@@ -12,7 +12,11 @@ This information is used to shape Next.js' roadmap and prioritize features.
 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
 https://nextjs.org/telemetry
 
-✓ Ready in 1780ms
-○ Compiling /cinematic-demo ...
+✓ Ready in 1795ms
+○ Compiling /verify-fitting ...
 ⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
- GET /cinematic-demo 200 in 12.4s (compile: 12.0s, render: 401ms)
+ GET /verify-fitting 200 in 51s (compile: 48s, render: 3.1s)
+ GET /verify-fitting 200 in 179ms (compile: 13ms, render: 165ms)
+ GET /verify-fitting 200 in 65ms (compile: 6ms, render: 60ms)
+ GET /verify-fitting 200 in 72ms (compile: 5ms, render: 66ms)
+ GET /verify-fitting 200 in 64ms (compile: 10ms, render: 54ms)
