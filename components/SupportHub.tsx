@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { useStore } from '@/store/useStore';
 
 type Tab = 'guide' | 'caution' | 'qa';
 
-const drawerVariants = {
+const drawerVariants: Variants = {
   hidden: { x: '100%' },
   visible: {
     x: 0,
@@ -19,7 +19,7 @@ const drawerVariants = {
   }
 };
 
-const backdropVariants = {
+const backdropVariants: Variants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1 },
 };
