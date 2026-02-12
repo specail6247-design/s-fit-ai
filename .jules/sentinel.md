@@ -1,0 +1,4 @@
+## 2026-02-12 - Critical Path Traversal in API
+**Vulnerability:** A critical Path Traversal vulnerability was found in `app/api/try-on/route.ts` where the `localFileToDataUri` function accepted arbitrary relative paths (e.g., `../package.json`) via the `garmentImageUrl` parameter, allowing unauthenticated file read access to the entire server filesystem.
+**Learning:** The vulnerability existed because `path.join` resolves `..` segments relative to the current working directory, and the initial implementation trusted the result without validating that the final resolved path was contained within the intended `public` directory.
+**Prevention:** Always validate file paths by resolving them to an absolute path (`path.resolve`) and verifying that the result starts with the intended directory root (e.g., `publicDir + path.sep`). Never trust user input to construct file paths directly without canonicalization and boundary checks.
