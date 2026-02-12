@@ -5,7 +5,6 @@ import React from 'react'
 import SmoothScroll from '@/components/SmoothScroll'
 import GoldRingCursor from '@/components/ui/GoldRingCursor'
 import { useStore } from '@/store/useStore'
-import { motion } from 'framer-motion'
 
 const cinzel = Cinzel({
   subsets: ['latin'],
