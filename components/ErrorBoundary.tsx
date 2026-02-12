@@ -1,9 +1,7 @@
-'use client';
-
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
-  children?: ReactNode;
+  children: ReactNode;
   fallback?: ReactNode;
 }
 
@@ -21,14 +19,14 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("Uncaught error:", error, errorInfo);
+    console.error('Uncaught error:', error, errorInfo);
   }
 
   public render() {
     if (this.state.hasError) {
       return this.props.fallback || (
-        <div className="flex items-center justify-center h-full w-full bg-black/80 text-red-500 font-mono text-xs p-4 text-center border border-red-900 rounded-lg">
-          ⚠️ 3D ENGINE RELOADING...
+        <div className="p-4 border border-red-500 rounded bg-red-500/10 text-red-500 text-sm">
+          Something went wrong.
         </div>
       );
     }
