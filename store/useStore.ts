@@ -110,6 +110,12 @@ interface StoreState {
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
 
+  // Immersive Fitting State
+  isAnalyzing: boolean;
+  setAnalyzing: (status: boolean) => void;
+  isFitting: boolean;
+  setFitting: (status: boolean) => void;
+
   // Reset
   resetSession: () => void;
 }
@@ -235,6 +241,12 @@ export const useStore = create<StoreState>()(
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
 
+      // Immersive Fitting State
+      isAnalyzing: false,
+      setAnalyzing: (status) => set({ isAnalyzing: status }),
+      isFitting: false,
+      setFitting: (status) => set({ isFitting: status }),
+
       // Reset Session
       resetSession: () =>
         set({
@@ -247,6 +259,8 @@ export const useStore = create<StoreState>()(
           sizeRecommendation: null,
           selectedBrand: null,
           selectedItem: null,
+          isAnalyzing: false,
+          isFitting: false,
         }),
     }),
     {

@@ -290,3 +290,25 @@ body {
     padding: var(--spacing-lg);
   }
 }
+
+/* Luxury Filter */
+.luxury-filter {
+  filter: saturate(0.9) contrast(1.1);
+}
+
+/* Immersive Mode - Fade out UI overlays */
+.immersive-mode .z-50,
+.immersive-mode .z-40,
+.immersive-mode .z-30,
+.immersive-mode .z-20,
+.immersive-mode .glass-panel {
+  opacity: 0 !important;
+  transition: opacity 0.8s ease-in-out;
+  pointer-events: none;
+}
+
+/* Button Feedback */
+button:active {
+  transform: scale(0.95);
+  transition: transform 0.1s;
+}
