@@ -35,7 +35,6 @@ describe('Modals', () => {
 
   describe('MemberAccessModal', () => {
     it('renders when isLoginModalOpen is true', () => {
-      // @ts-expect-error - mock override
       (useStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
         ...defaultStore,
         isLoginModalOpen: true,
@@ -47,7 +46,6 @@ describe('Modals', () => {
     });
 
     it('does not render when isLoginModalOpen is false', () => {
-      // @ts-expect-error - mock override
       (useStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
         ...defaultStore,
         isLoginModalOpen: false,
@@ -58,7 +56,6 @@ describe('Modals', () => {
     });
 
     it('closes on cancel click', () => {
-      // @ts-expect-error - mock override
       (useStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
         ...defaultStore,
         isLoginModalOpen: true,
@@ -71,7 +68,6 @@ describe('Modals', () => {
     });
 
     it('calls setPremium and closes on submit', () => {
-      // @ts-expect-error - mock override
       (useStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
         ...defaultStore,
         isLoginModalOpen: true,
@@ -94,7 +90,6 @@ describe('Modals', () => {
 
   describe('SupportHub', () => {
     it('renders when isSupportHubOpen is true', () => {
-      // @ts-expect-error - mock override
       (useStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
         ...defaultStore,
         isSupportHubOpen: true,
@@ -106,7 +101,6 @@ describe('Modals', () => {
     });
 
     it('does not render when isSupportHubOpen is false', () => {
-      // @ts-expect-error - mock override
       (useStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
         ...defaultStore,
         isSupportHubOpen: false,
@@ -117,7 +111,6 @@ describe('Modals', () => {
     });
 
     it('closes on close button click', () => {
-      // @ts-expect-error - mock override
       (useStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
         ...defaultStore,
         isSupportHubOpen: true,
@@ -130,7 +123,6 @@ describe('Modals', () => {
     });
 
     it('switches tabs', () => {
-       // @ts-expect-error - mock override
        (useStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
         ...defaultStore,
         isSupportHubOpen: true,
