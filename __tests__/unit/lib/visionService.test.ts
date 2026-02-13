@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { calculateRecommendedSize, getComplementaryItems } from '@/lib/visionService';
+import { calculateRecommendedSize, getComplementaryItems, ClothingStyleAnalysis } from '@/lib/visionService';
 import type { PoseProportions } from '@/lib/mediapipe';
-import type { ClothingStyleAnalysis } from '@/lib/visionService';
 import { ClothingItem, getAllItems } from '@/data/mockData';
 
 // Mock OpenAI
@@ -20,10 +19,7 @@ describe('Vision Service', () => {
       hipWidth: 0.5,
       torsoHeight: 0.5,
       legLength: 0.5,
-      overallRatio: 0.5,
-      waistWidth: 0.45,
-      armLength: 0.6,
-      shoulderSlope: 0.1
+      overallRatio: 0.5
     };
     const userHeight = 175; // cm
 
@@ -104,17 +100,13 @@ describe('Vision Service', () => {
       recommendations.forEach(item => {
         expect(item.id).not.toBe(topItem.id);
         // Tops usually match with bottoms or outerwear
-        expect(['bottoms', 'outerwear', 'accessories', 'dresses']).toContain(item.category);
+        expect(['bottoms', 'outerwear']).toContain(item.category);
       });
     });
 
     it('should prioritize matching colors (black/white)', () => {
         // Create a mock black item
-        const blackItem: ClothingItem = {
-            ...getAllItems()[0],
-            colors: ['Black'],
-            category: 'tops'
-        };
+        const blackItem = { ...getAllItems()[0], colors: ['Black'], category: 'tops' };
         const recommendations = getComplementaryItems(blackItem);
         expect(recommendations.length).toBeGreaterThan(0);
     });
