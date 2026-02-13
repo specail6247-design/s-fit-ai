@@ -33,6 +33,7 @@ export default function ZoomableImage({ src, alt, className = '' }: ZoomableImag
       onMouseLeave={() => setIsZoomed(false)}
       onMouseMove={handleMouseMove}
     >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         ref={imageRef}
         src={src}
