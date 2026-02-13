@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Cinzel, Space_Grotesk } from "next/font/google";
 import { motion, AnimatePresence } from "framer-motion";
 import { brands, mockClothingItems, ClothingItem, Brand } from "@/data/mockData";
@@ -21,32 +21,39 @@ const formatCurrency = (amount: number, currency: string) => {
 };
 
 export default function LuxuryLiveFitting() {
-  const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
-  const [items, setItems] = useState<ClothingItem[]>([]);
-  const [activeItem, setActiveItem] = useState<ClothingItem | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [selectedBrand, setSelectedBrand] = useState<Brand | null>(() => {
+    // Find Gucci or first luxury brand
+    return brands.find(b => b.name === 'GUCCI') || brands.find(b => b.isLuxury) || brands[0] || null;
+  });
+
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize with a default brand (e.g., Gucci for luxury)
-  useEffect(() => {
-    // Find Gucci or first luxury brand
-    const luxuryBrand = brands.find(b => b.name === 'GUCCI') || brands.find(b => b.isLuxury) || brands[0];
-    setSelectedBrand(luxuryBrand);
+  // Derived state for items
+  const items = useMemo(() => {
+    if (selectedBrand) {
+      return mockClothingItems.filter(item => item.brand.toLowerCase() === selectedBrand.name.toLowerCase());
+    }
+    return [];
+  }, [selectedBrand]);
 
-    // Simulate loading
+  // Derived state for default active item, or managed state if user selects one
+  const [userActiveItem, setUserActiveItem] = useState<ClothingItem | null>(null);
+
+  // When items change, if user hasn't selected one, or the selection is no longer valid, default to first
+  const activeItem = useMemo(() => {
+    if (userActiveItem && items.find(i => i.id === userActiveItem.id)) {
+      return userActiveItem;
+    }
+    return items.length > 0 ? items[0] : null;
+  }, [items, userActiveItem]);
+
+
+  // Simulate loading on mount
+  useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
-
-  // Update items when brand changes
-  useEffect(() => {
-    if (selectedBrand) {
-      const brandItems = mockClothingItems.filter(item => item.brand.toLowerCase() === selectedBrand.name.toLowerCase());
-      setItems(brandItems);
-      if (brandItems.length > 0) {
-        setActiveItem(brandItems[0]);
-      }
-    }
-  }, [selectedBrand]);
 
   return (
     <div className={`relative min-h-screen w-full bg-[#101922] text-[#D4AF37] ${cinzel.className} overflow-x-hidden selection:bg-[#D4AF37] selection:text-[#101922] cursor-none`}>
@@ -63,13 +70,6 @@ export default function LuxuryLiveFitting() {
             transition={{ duration: 1 }}
           >
             <div className="relative size-32">
-              <motion.div
-                className="absolute inset-0 border-2 border-[#D4AF37]"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 2, ease: "easeInOut" }}
-                style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" }} // Using clip path as border-path animation is tricky on div, better svg
-              />
                {/* Use SVG for path tracing animation */}
                <svg className="size-full" viewBox="0 0 100 100">
                   <motion.rect
@@ -150,7 +150,7 @@ export default function LuxuryLiveFitting() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.1 * index }}
                         className="group relative cursor-pointer"
-                        onClick={() => setActiveItem(item)}
+                        onClick={() => setUserActiveItem(item)}
                     >
                         {/* Image Container */}
                         <div className="relative aspect-[3/4] overflow-hidden bg-[#0a1016]">

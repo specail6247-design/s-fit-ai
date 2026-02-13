@@ -19,14 +19,29 @@ vi.mock('@/components/ui/GoldRingCursor', () => ({
 }));
 
 // Mock framer-motion
+// eslint-disable-next-line react/display-name
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    div: ({ children, ...props }: any) => {
+        // Remove layoutId to prevent React warning during test
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { layoutId, ...rest } = props;
+        return <div {...rest}>{children}</div>;
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     h2: ({ children, ...props }: any) => <h2 {...props}>{children}</h2>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     p: ({ children, ...props }: any) => <p {...props}>{children}</p>,
-    img: ({ ...props }: any) => <img {...props} />,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    img: ({ ...props }: any) => {
+      // eslint-disable-next-line @next/next/no-img-element
+      return <img {...props} alt={props.alt || "mocked-img"} />;
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     rect: ({ children, ...props }: any) => <rect {...props}>{children}</rect>,
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
