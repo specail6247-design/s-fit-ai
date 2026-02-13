@@ -16,7 +16,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '@/store/useStore';
 import type { UserStats } from '@/store/useStore';
-import { getItemsByBrand, ClothingItem } from '@/data/mockData';
+import { getItemsByBrand, getAllItems, ClothingItem, brands } from '@/data/mockData';
 import type { PoseProportions } from '@/lib/mediapipe';
 import { 
   calculateRecommendedSize, 
@@ -25,6 +25,7 @@ import {
 } from '@/lib/visionService';
 import * as THREE from 'three';
 import { AvatarLoader } from './AvatarLoader';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 // Masterpiece Components
 import { FabricMaterial } from './masterpiece/FabricMaterial';
@@ -580,16 +581,28 @@ interface ItemCardProps {
 function ItemCard({
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
+  const [imageError, setImageError] = useState(false);
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
   return (
     <motion.button
       onClick={onSelect}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
+      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal luxury-shimmer' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
       <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
-        <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+        {!imageError && item.imageUrl ? (
+           <Image
+             src={item.imageUrl}
+             alt={item.name}
+             fill
+             className="object-cover"
+             onError={() => setImageError(true)}
+             unoptimized
+           />
+        ) : (
+           <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+        )}
         {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
       </div>
@@ -829,7 +842,7 @@ function AITryOnModal({
 
 export function FittingRoom() {
   const {
-    userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    userStats, selectedBrand, setSelectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
@@ -857,7 +870,7 @@ export function FittingRoom() {
   });
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
-  const brandItems = useMemo(() => selectedBrand ? getItemsByBrand(selectedBrand) : [], [selectedBrand]);
+  const brandItems = useMemo(() => (selectedBrand === 'all' || !selectedBrand) ? getAllItems() : getItemsByBrand(selectedBrand), [selectedBrand]);
   const currentItem = selectedItem || null;
 
   const fitScore = useMemo(() => {
@@ -966,27 +979,29 @@ export function FittingRoom() {
             </div>
           </div>
         ) : (
-          <Suspense fallback={<LoadingSpinner />}>
-            <Canvas 
-              ref={canvasRef}
-              shadows 
-              camera={{ position: [0, 0.5, 2.8], fov: 45 }}
-              gl={{ antialias: true, preserveDrawingBuffer: true, powerPreference: 'high-performance' }}
-              onCreated={({ gl }) => {
-                gl.domElement.addEventListener('webglcontextlost', (e) => { e.preventDefault(); setWebglFailed(true); });
-                gl.domElement.addEventListener('webglcontextrestored', () => setWebglFailed(false));
-              }}
-            >
-              <PhysicsProvider>
-                <Scene 
-                  userStats={userStats} selectedItem={currentItem} 
-                  isMasterpieceMode={isMasterpieceMode} isMacroView={isMacroView} 
-                  showHeatmap={showHeatmap}
-                />
-              </PhysicsProvider>
-              <OrbitControls enabled={!isMacroView && selectedMode !== 'digital-twin'} />
-            </Canvas>
-          </Suspense>
+          <ErrorBoundary fallback={<div className="flex items-center justify-center h-full w-full bg-void-black text-soft-gray text-xs">⚠️ 3D Engine Unavailable (Model Fetch Error)</div>}>
+            <Suspense fallback={<LoadingSpinner />}>
+              <Canvas
+                ref={canvasRef}
+                shadows
+                camera={{ position: [0, 0.5, 2.8], fov: 45 }}
+                gl={{ antialias: true, preserveDrawingBuffer: true, powerPreference: 'high-performance' }}
+                onCreated={({ gl }) => {
+                  gl.domElement.addEventListener('webglcontextlost', (e) => { e.preventDefault(); setWebglFailed(true); });
+                  gl.domElement.addEventListener('webglcontextrestored', () => setWebglFailed(false));
+                }}
+              >
+                <PhysicsProvider>
+                  <Scene
+                    userStats={userStats} selectedItem={currentItem}
+                    isMasterpieceMode={isMasterpieceMode} isMacroView={isMacroView}
+                    showHeatmap={showHeatmap}
+                  />
+                </PhysicsProvider>
+                <OrbitControls enabled={!isMacroView && selectedMode !== 'digital-twin'} />
+              </Canvas>
+            </Suspense>
+          </ErrorBoundary>
         )}
         
         {/* Controls Overlay */}
@@ -1087,7 +1102,19 @@ export function FittingRoom() {
       {/* Item Selector Footer */}
       <div className="p-4 border-t border-border-color bg-void-black">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-[10px] uppercase tracking-widest text-soft-gray">{selectedBrand} Collection</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-[10px] uppercase tracking-widest text-soft-gray">Collection:</h3>
+            <select
+              value={selectedBrand || 'all'}
+              onChange={(e) => setSelectedBrand(e.target.value === 'all' ? null : e.target.value)}
+              className="bg-transparent text-[10px] font-bold uppercase text-pure-white border-none outline-none cursor-pointer"
+            >
+              <option value="all" className="bg-void-black text-soft-gray">All Products</option>
+              {brands.map(b => (
+                <option key={b.id} value={b.id} className="bg-void-black text-pure-white">{b.name}</option>
+              ))}
+            </select>
+          </div>
           <button onClick={() => setShowCompareModal(true)} className="text-[10px] text-cyber-lime hover:underline">Compare Picks →</button>
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
