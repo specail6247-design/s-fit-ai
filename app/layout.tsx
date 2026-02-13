@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { validateEnv } from "@/lib/env";
 import "./globals.css";
+import { GlobalModals } from "@/components/GlobalModals";
 
 // Validate environment variables on startup
 validateEnv();
@@ -49,6 +50,7 @@ export default function RootLayout({
       >
         {/* Grain Overlay for Premium Feel */}
         <div className="grain-overlay" aria-hidden="true" />
+        <GlobalModals />
         {children}
       </body>
     </html>
