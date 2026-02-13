@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 const SFitAIProject = () => {
+  /* eslint-disable @next/next/no-img-element */
   const [userImage, setUserImage] = useState<string | null>(null);
   const [clothingImage, setClothingImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
