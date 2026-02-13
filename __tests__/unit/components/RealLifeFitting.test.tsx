@@ -40,7 +40,7 @@ describe('RealLifeFitting', () => {
     vi.spyOn(useStoreModule, 'useStore').mockReturnValue({
       setSupportHubOpen,
       setLegalModalOpen,
-    } as any);
+    } as unknown as ReturnType<typeof useStoreModule.useStore>);
   });
 
   it('renders the Night City UI structure', () => {
