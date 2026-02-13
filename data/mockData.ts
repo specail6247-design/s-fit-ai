@@ -25,6 +25,8 @@ export interface Brand {
   logo: string;
   isLuxury: boolean;
   tier: 'mass' | 'luxury' | 'basic';
+  bannerImage?: string;
+  description?: string;
 }
 
 // Brand Data
@@ -35,6 +37,8 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=ZARA',
     isLuxury: false,
     tier: 'mass',
+    bannerImage: 'https://images.unsplash.com/photo-1571513722275-4b41940f54b8?auto=format&fit=crop&q=80&w=2000',
+    description: 'Trend-driven fast fashion for the modern individual.',
   },
   {
     id: 'gucci',
@@ -42,6 +46,8 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=GUCCI',
     isLuxury: true,
     tier: 'luxury',
+    bannerImage: 'https://images.unsplash.com/photo-1548625361-1372aebc3668?auto=format&fit=crop&q=80&w=2000',
+    description: 'Italian luxury fashion house known for its eclectic, contemporary, and romantic design.',
   },
   {
     id: 'uniqlo',
@@ -49,6 +55,8 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=UNIQLO',
     isLuxury: false,
     tier: 'basic',
+    bannerImage: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=2000',
+    description: 'LifeWear: simple, high-quality, everyday clothing with a practical sense of beauty.',
   },
   {
     id: 'hm',
@@ -56,6 +64,8 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=H%26M',
     isLuxury: false,
     tier: 'mass',
+    bannerImage: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&q=80&w=2000',
+    description: 'Fashion and quality at the best price in a sustainable way.',
   },
   {
     id: 'cos',
@@ -63,6 +73,8 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=COS',
     isLuxury: false,
     tier: 'mass',
+    bannerImage: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&q=80&w=2000',
+    description: 'Modern, functional, and considered design for men and women.',
   },
   {
     id: 'gap',
@@ -70,6 +82,8 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=GAP',
     isLuxury: false,
     tier: 'basic',
+    bannerImage: 'https://images.unsplash.com/photo-1479064555552-3ef4979f8908?auto=format&fit=crop&q=80&w=2000',
+    description: 'Clean, confident, comfortable, and accessible American style.',
   },
   {
     id: 'chanel',
@@ -77,6 +91,8 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=CHANEL',
     isLuxury: true,
     tier: 'luxury',
+    bannerImage: 'https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?auto=format&fit=crop&q=80&w=2000',
+    description: 'The ultimate house of luxury, defining style and elegance since 1910.',
   },
   {
     id: 'supreme',
@@ -84,6 +100,8 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=SUPREME',
     isLuxury: false,
     tier: 'mass',
+    bannerImage: 'https://images.unsplash.com/photo-1512418490979-92798cec1380?auto=format&fit=crop&q=80&w=2000',
+    description: 'Skateboarding lifestyle brand known for its quality, style, and authenticity.',
   },
   {
     id: 'tiffany',
@@ -91,6 +109,8 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=TIFFANY',
     isLuxury: true,
     tier: 'luxury',
+    bannerImage: 'https://images.unsplash.com/photo-1617038224531-16d88b916810?auto=format&fit=crop&q=80&w=2000',
+    description: 'America’s house of design and jewelry, symbolizing love and beauty.',
   },
 ];
 
