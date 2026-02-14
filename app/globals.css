@@ -290,3 +290,21 @@ body {
     padding: var(--spacing-lg);
   }
 }
+
+/* ============================================
+   Phase 4: The Masterpiece Polish
+   ============================================ */
+
+.luxury-filter {
+  filter: saturate(0.9) contrast(1.1);
+}
+
+.immersive-mode {
+  transition: opacity 0.8s ease-in-out;
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+.cursor-none {
+  cursor: none;
+}
