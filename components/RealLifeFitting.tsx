@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
+import DataSafetyBadge from './ui/DataSafetyBadge';
+import { generateStoryImage } from '@/lib/shareUtils';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -11,11 +14,26 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const { setLegalModalOpen, setSupportHubOpen } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+    try {
+      const storyImage = await generateStoryImage(resultImage);
+      const link = document.createElement('a');
+      link.href = storyImage;
+      link.download = 's-fit-story.png';
+      link.click();
+    } catch (e) {
+      console.error("Failed to generate story image", e);
+      alert("Could not generate story image.");
+    }
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -91,7 +109,10 @@ export default function RealLifeFitting() {
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
           {/* User Photo Input */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
+            <div className="flex justify-between items-center">
+              <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
+              <DataSafetyBadge className="scale-75 origin-right" />
+            </div>
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
@@ -158,6 +179,14 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-8 pt-6 border-t border-white/10 flex justify-between text-[10px] text-gray-500 font-mono">
+             <div className="flex gap-4">
+               <button onClick={() => setLegalModalOpen(true)} className="hover:text-white transition-colors">LEGAL</button>
+               <button onClick={() => setSupportHubOpen(true)} className="hover:text-white transition-colors">SUPPORT</button>
+             </div>
+             <span>v2.4.0-NEO</span>
+          </div>
+
         </div>
       </div>
 
@@ -194,17 +223,26 @@ export default function RealLifeFitting() {
             animate={{ opacity: 1, scale: 1 }}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
-            <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
-              <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
-              >
-                ✕ Close
-              </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
-                AI GENERATED_
+            <div className="relative group flex flex-col items-center gap-4">
+              <div className="relative">
+                <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+                <button
+                  onClick={() => setResultImage(null)}
+                  className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors z-30"
+                >
+                  ✕ Close
+                </button>
+                <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30 pointer-events-none">
+                  AI GENERATED_
+                </div>
               </div>
+
+              <button 
+                onClick={handleShareToStory}
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full font-bold text-white shadow-lg hover:scale-105 transition-transform"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
