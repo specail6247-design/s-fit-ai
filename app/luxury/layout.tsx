@@ -1,10 +1,17 @@
-import { Manrope } from 'next/font/google'
+import { Cinzel, Space_Grotesk } from 'next/font/google'
 import React from 'react'
+import LuxuryClientWrapper from '@/components/LuxuryClientWrapper'
 
-const manrope = Manrope({
+const cinzel = Cinzel({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-manrope',
+  variable: '--font-cinzel',
+})
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-space-grotesk',
 })
 
 export default function LuxuryLayout({
@@ -13,8 +20,9 @@ export default function LuxuryLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className={manrope.className}>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <div className={`${cinzel.variable} ${spaceGrotesk.variable} font-[family-name:var(--font-space-grotesk)] bg-black text-white min-h-screen`}>
+      {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=optional" />
       <style dangerouslySetInnerHTML={{__html: `
         .material-symbols-outlined {
           font-family: 'Material Symbols Outlined';
@@ -30,8 +38,17 @@ export default function LuxuryLayout({
           direction: ltr;
           -webkit-font-smoothing: antialiased;
         }
+
+        /* Apply Cinzel to headers within this layout */
+        .luxury-layout h1, .luxury-layout h2, .luxury-layout h3, .luxury-layout h4, .luxury-layout h5, .luxury-layout h6 {
+            font-family: var(--font-cinzel), serif;
+        }
       `}} />
-      {children}
+      <div className="luxury-layout">
+        <LuxuryClientWrapper>
+            {children}
+        </LuxuryClientWrapper>
+      </div>
     </div>
   )
 }
