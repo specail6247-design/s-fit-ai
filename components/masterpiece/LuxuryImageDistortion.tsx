@@ -93,6 +93,7 @@ const LuxuryDistortionMaterial = shaderMaterial(
 extend({ LuxuryDistortionMaterial });
 
 declare module 'react' {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
       luxuryDistortionMaterial: ThreeElement<typeof LuxuryDistortionMaterial>;
