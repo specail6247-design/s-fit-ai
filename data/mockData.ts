@@ -5,9 +5,9 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Hermes';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
-  subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
+  subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses' | 'shoes';
   zIndex?: number;
   price: number;
   currency: string;
@@ -89,6 +89,13 @@ export const brands: Brand[] = [
     id: 'tiffany',
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'hermes',
+    name: 'Hermes',
+    logo: 'https://placehold.co/100x100?text=HERMES',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -534,6 +541,86 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+  },
+
+  // HERMES - Luxury (5 items)
+  {
+    id: 'hermes-001',
+    name: 'Birkin 25 Togo Bag',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'bag',
+    zIndex: 50,
+    price: 10400.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x600/orange/white?text=Birkin+Bag',
+    textureUrl: 'https://placehold.co/400x600/orange/white?text=Birkin+Texture',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Gold', 'Black', 'Etoupe'],
+    description: 'The iconic Birkin bag in Togo calfskin with gold-plated hardware',
+  },
+  {
+    id: 'hermes-002',
+    name: 'Silk Twill Scarf 90',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'scarf',
+    zIndex: 40,
+    price: 550.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x600/orange/white?text=Silk+Scarf',
+    textureUrl: 'https://placehold.co/400x600/orange/white?text=Silk+Texture',
+    isLuxury: true,
+    sizes: ['90x90cm'],
+    colors: ['Orange', 'Blue', 'Pink'],
+    description: 'Hand-rolled 100% silk twill scarf with signature print',
+  },
+  {
+    id: 'hermes-003',
+    name: 'Oran Sandal',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'shoes', // Using new subCategory
+    zIndex: 10,
+    price: 760.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x600/brown/white?text=Oran+Sandal',
+    textureUrl: 'https://placehold.co/400x600/brown/white?text=Oran+Texture',
+    isLuxury: true,
+    sizes: ['36', '37', '38', '39', '40'],
+    colors: ['Gold', 'Black', 'White'],
+    description: 'Iconic leather sandal with H cut-out',
+  },
+  {
+    id: 'hermes-004',
+    name: 'Clic H Bracelet',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'jewelry',
+    zIndex: 35,
+    price: 740.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x600/gold/white?text=Clic+H',
+    textureUrl: 'https://placehold.co/400x600/gold/white?text=Clic+H+Texture',
+    isLuxury: true,
+    sizes: ['PM', 'GM'],
+    colors: ['Gold/White', 'Rose Gold/Black'],
+    description: 'Enamel bracelet with gold-plated hardware',
+  },
+  {
+    id: 'hermes-005',
+    name: 'Cashmere Poncho',
+    brand: 'Hermes',
+    category: 'outerwear',
+    price: 1850.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x600/grey/white?text=Cashmere+Poncho',
+    textureUrl: 'https://placehold.co/400x600/grey/white?text=Poncho+Texture',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Gris Chine', 'Marine'],
+    description: 'Luxurious cashmere and silk blend poncho with leather piping',
   },
 ];
 
