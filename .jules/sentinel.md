@@ -1,0 +1,4 @@
+## 2025-03-05 - Path Traversal in app/api/try-on/route.ts
+**Vulnerability:** The `localFileToDataUri` function was vulnerable to path traversal because it used `path.join` with user-controlled input (`garmentImageUrl`). This allowed reading arbitrary files (e.g., `../../package.json`) by manipulating the relative path.
+**Learning:** `path.join` does not prevent directory traversal (e.g., `..`). It only concatenates paths. The vulnerability existed because the input wasn't sanitized, and only `fs.existsSync` was used as a check (which passes for existing sensitive files).
+**Prevention:** To prevent this, always resolve the absolute path using `path.resolve` and verify that the resulting path starts with the trusted root directory (e.g., `public/`) using `absolutePath.startsWith(trustedRoot + path.sep)`.
