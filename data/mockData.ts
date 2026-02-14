@@ -23,6 +23,8 @@ export interface Brand {
   id: string;
   name: string;
   logo: string;
+  bannerImage?: string;
+  description?: string;
   isLuxury: boolean;
   tier: 'mass' | 'luxury' | 'basic';
 }
@@ -40,6 +42,8 @@ export const brands: Brand[] = [
     id: 'gucci',
     name: 'GUCCI',
     logo: 'https://placehold.co/100x100?text=GUCCI',
+    bannerImage: 'https://images.unsplash.com/photo-1548624149-f321d7ad7b9e?auto=format&fit=crop&q=80&w=2000',
+    description: 'Influential, innovative and progressive, Gucci is reinventing a wholly modern approach to fashion.',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -75,6 +79,8 @@ export const brands: Brand[] = [
     id: 'chanel',
     name: 'Chanel',
     logo: 'https://placehold.co/100x100?text=CHANEL',
+    bannerImage: 'https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?auto=format&fit=crop&q=80&w=2000',
+    description: 'A standard of style, elegance and class. Chanel is a high fashion house that specializes in haute couture.',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -89,6 +95,8 @@ export const brands: Brand[] = [
     id: 'tiffany',
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
+    bannerImage: 'https://images.unsplash.com/photo-1617038224531-ab627b5d3263?auto=format&fit=crop&q=80&w=2000',
+    description: 'Tiffany & Co. is an American luxury jewelry and specialty retailer headquartered in New York City.',
     isLuxury: true,
     tier: 'luxury',
   },
