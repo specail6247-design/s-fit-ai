@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useRef, useMemo } from "react";
-import { Canvas, useFrame, extend, ReactThreeFiber } from "@react-three/fiber";
+import React, { useRef } from "react";
+import { Canvas, useFrame, extend, ThreeElement } from "@react-three/fiber";
 import { shaderMaterial, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
@@ -92,19 +92,10 @@ const LuxuryDistortionMaterial = shaderMaterial(
 
 extend({ LuxuryDistortionMaterial });
 
-declare global {
+declare module 'react' {
   namespace JSX {
     interface IntrinsicElements {
-      luxuryDistortionMaterial: ReactThreeFiber.Object3DNode<
-        THREE.ShaderMaterial,
-        typeof LuxuryDistortionMaterial
-      > & {
-        uTime?: number;
-        uTexture?: THREE.Texture;
-        uMouse?: THREE.Vector2;
-        uHover?: number;
-        uResolution?: THREE.Vector2;
-      };
+      luxuryDistortionMaterial: ThreeElement<typeof LuxuryDistortionMaterial>;
     }
   }
 }
