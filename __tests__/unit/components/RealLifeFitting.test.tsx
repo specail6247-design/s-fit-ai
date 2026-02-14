@@ -34,7 +34,8 @@ describe('RealLifeFitting', () => {
     
     // Check for Main Header
     expect(screen.getByText(/S_FIT/i)).toBeInTheDocument();
-    expect(screen.getByText(/NEO/i)).toBeInTheDocument();
+    // NEO appears in header and footer version, so getAllByText is safer
+    expect(screen.getAllByText(/NEO/i).length).toBeGreaterThan(0);
     
     // Check for Sections
     expect(screen.getByText(/01. Identification/i)).toBeInTheDocument();
