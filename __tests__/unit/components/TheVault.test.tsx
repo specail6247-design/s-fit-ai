@@ -7,14 +7,17 @@ import { mockClothingItems } from '@/data/mockData';
 
 // Mock dependencies
 vi.mock('next/image', () => ({
-  default: (props: any) => <img {...props} />,
+  default: ({ fill, unoptimized, ...props }: React.ComponentProps<'img'> & { fill?: boolean; unoptimized?: boolean }) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img {...props} data-fill={fill?.toString()} data-unoptimized={unoptimized?.toString()} alt={props.alt || ''} />
+  ),
 }));
 
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    div: ({ children, ...props }: React.ComponentProps<'div'>) => <div {...props}>{children}</div>,
   },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 vi.mock('@/store/useStore', () => ({
