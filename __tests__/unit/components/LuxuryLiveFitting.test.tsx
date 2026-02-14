@@ -15,10 +15,10 @@ vi.mock('@/components/masterpiece/LuxuryImageDistortion', () => ({
 // Mock framer-motion to avoid animation issues in tests
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    rect: ({ children, ...props }: any) => <rect {...props}>{children}</rect>,
+    div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => <div {...props}>{children}</div>,
+    rect: ({ children, ...props }: React.SVGAttributes<SVGRectElement>) => <rect {...props}>{children}</rect>,
   },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useMotionValue: () => ({ set: vi.fn() }),
   useSpring: () => ({ get: () => 0 }),
 }));
