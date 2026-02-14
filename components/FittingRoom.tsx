@@ -32,6 +32,7 @@ import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
+import TheVault from '@/components/TheVault';
 
 // --- PHYSICS ENGINE (Ammo.js) ---
 
@@ -575,28 +576,94 @@ interface ItemCardProps {
   onSelect: () => void;
   isRecommended?: boolean;
   fitScore: number;
+  isSaved?: boolean;
+  onToggleSave?: (e: React.MouseEvent) => void;
 }
 
 function ItemCard({
-  item, isSelected, onSelect, isRecommended, fitScore
+  item, isSelected, onSelect, isRecommended, fitScore, isSaved, onToggleSave
 }: ItemCardProps) {
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
+  const isLocked = item.lockedUntil && new Date(item.lockedUntil) > new Date();
+
+  const [timeLeft, setTimeLeft] = useState<string>('');
+
+  useEffect(() => {
+    if (!isLocked || !item.lockedUntil) return;
+
+    const updateTimer = () => {
+      const now = new Date();
+      const end = new Date(item.lockedUntil!);
+      const diff = end.getTime() - now.getTime();
+
+      if (diff <= 0) {
+        setTimeLeft('00:00:00');
+        return;
+      }
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [isLocked, item.lockedUntil]);
+
   return (
-    <motion.button
-      onClick={onSelect}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+    <motion.div
+      className={`relative flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start cursor-pointer ${
+        isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'
+      } ${isLocked ? 'opacity-70 grayscale cursor-not-allowed' : ''}`}
+      whileHover={!isLocked ? { scale: 1.05 } : {}}
+      whileTap={!isLocked ? { scale: 0.95 } : {}}
+      onClick={!isLocked ? onSelect : undefined}
+      role="button"
+      tabIndex={isLocked ? -1 : 0}
+      onKeyDown={(e) => {
+        if (!isLocked && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          onSelect();
+        }
+      }}
     >
       <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
-        <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+        {isLocked ? (
+           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 z-10">
+             <span className="material-symbols-outlined text-white text-lg">lock</span>
+             <span className="text-[0.5rem] text-white font-mono mt-0.5">{timeLeft}</span>
+           </div>
+        ) : (
+           <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+        )}
+
         {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
+
+        {/* Save Button */}
+        {!isLocked && onToggleSave && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleSave(e);
+            }}
+            className="absolute bottom-1 right-1 size-5 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 transition-colors z-20 focus:outline-none focus:ring-1 focus:ring-white"
+            aria-label={isSaved ? "Remove from vault" : "Save to vault"}
+          >
+            <span className={`material-symbols-outlined text-[10px] ${isSaved ? 'text-red-500 fill-current' : 'text-white'}`}>
+              favorite
+            </span>
+          </button>
+        )}
       </div>
       <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
       <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
       <p className="text-[0.55rem] text-cyber-lime">Fit {fitScore}%</p>
-    </motion.button>
+    </motion.div>
   );
 }
 
@@ -830,6 +897,7 @@ function AITryOnModal({
 export function FittingRoom() {
   const {
     userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    isVaultOpen, setVaultOpen, savedItemIds, toggleSavedItem
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
@@ -842,6 +910,19 @@ export function FittingRoom() {
   const [isMacroView, setIsMacroView] = useState(false);
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [webglFailed, setWebglFailed] = useState(false);
+  const [isAmbienceOn, setIsAmbienceOn] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Toggle Ambience
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isAmbienceOn) {
+        audioRef.current.play().catch(e => console.log('Audio play failed:', e));
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isAmbienceOn]);
   const [autoCycleEnabled, setAutoCycleEnabled] = useState(() => {
     if (typeof window !== 'undefined') {
       return window.localStorage.getItem('sfit-ai-auto-cycle') === 'true';
@@ -1000,6 +1081,12 @@ export function FittingRoom() {
             <button onClick={() => setShowHeatmap(!showHeatmap)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 🔥 Fit Heatmap
             </button>
+            <button onClick={() => setIsAmbienceOn(!isAmbienceOn)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isAmbienceOn ? 'bg-purple-500 text-white border-purple-500' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                {isAmbienceOn ? '🔊 Ambience ON' : '🔇 Ambience OFF'}
+            </button>
+            <button onClick={() => setVaultOpen(true)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isVaultOpen ? 'bg-white text-black border-white' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                🔐 Vault ({savedItemIds.length})
+            </button>
         </div>
 
         {/* Rotation hint */}
@@ -1077,6 +1164,12 @@ export function FittingRoom() {
                                     {note}
                                 </li>
                             ))}
+                            {currentItem.stylingTip && (
+                                <li className="text-[9px] text-white/90 italic flex items-start gap-1.5 leading-relaxed mt-2 pt-2 border-t border-white/10">
+                                    <span className="text-purple-400 mt-1 flex-shrink-0">★</span>
+                                    Stylist Note: {currentItem.stylingTip}
+                                </li>
+                            )}
                         </ul>
                     </motion.div>
                 )}
@@ -1097,6 +1190,11 @@ export function FittingRoom() {
                     isSelected={currentItem?.id === item.id} 
                     onSelect={() => setSelectedItem(item)}
                     fitScore={fitScore + (item.isLuxury ? 5 : 0)}
+                    isSaved={savedItemIds.includes(item.id)}
+                    onToggleSave={(e) => {
+                      e?.stopPropagation();
+                      toggleSavedItem(item.id);
+                    }}
                 />
             ))}
         </div>
@@ -1148,6 +1246,8 @@ export function FittingRoom() {
         result={aiTryOnResult}
         onGenerateTryOn={handleGenerateAITryOn}
       />
+      <TheVault />
+      <audio ref={audioRef} loop src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_73105432b6.mp3?filename=soft-ambient-noise.mp3" />
     </div>
   );
 }
