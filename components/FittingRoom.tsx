@@ -14,6 +14,7 @@ import {
   SpotLight,
 } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { useStore } from '@/store/useStore';
 import type { UserStats } from '@/store/useStore';
 import { getItemsByBrand, ClothingItem } from '@/data/mockData';
@@ -306,7 +307,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
@@ -581,17 +582,45 @@ function ItemCard({
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
+
+  const isLocked = item.lockedUntil ? new Date(item.lockedUntil) > new Date() : false;
+  const [countdown, setCountdown] = useState('');
+
+  useEffect(() => {
+    if (!isLocked || !item.lockedUntil) return;
+    const updateTimer = () => {
+        const diff = new Date(item.lockedUntil!).getTime() - new Date().getTime();
+        if (diff <= 0) {
+             setCountdown('');
+             return;
+        }
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        setCountdown(`${hours}h ${minutes}m ${seconds}s`);
+    };
+    updateTimer();
+    const timer = setInterval(updateTimer, 1000);
+    return () => clearInterval(timer);
+  }, [isLocked, item.lockedUntil]);
+
   return (
     <motion.button
-      onClick={onSelect}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      onClick={isLocked ? undefined : onSelect}
+      className={`relative flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'} ${isLocked ? 'opacity-70 cursor-not-allowed' : ''}`}
+      whileHover={isLocked ? {} : { scale: 1.05 }}
+      whileTap={isLocked ? {} : { scale: 0.95 }}
     >
       <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
         <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
         {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
+        {isLocked && (
+            <div className="absolute inset-0 bg-black/60 flex items-center justify-center flex-col">
+                <span className="text-xl">🔒</span>
+                <span className="text-[0.4rem] font-mono mt-1 text-white">{countdown || 'LOCKED'}</span>
+            </div>
+        )}
       </div>
       <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
       <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
@@ -830,6 +859,7 @@ function AITryOnModal({
 export function FittingRoom() {
   const {
     userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    savedItemIds, toggleSavedItem, setVaultOpen, isAmbienceOn, setAmbienceOn
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
@@ -967,6 +997,7 @@ export function FittingRoom() {
           </div>
         ) : (
           <Suspense fallback={<LoadingSpinner />}>
+            <ErrorBoundary fallback={<div className="absolute inset-0 flex items-center justify-center text-red-500 font-bold">3D Engine Unavailable (Network Error)</div>}>
             <Canvas 
               ref={canvasRef}
               shadows 
@@ -986,20 +1017,29 @@ export function FittingRoom() {
               </PhysicsProvider>
               <OrbitControls enabled={!isMacroView && selectedMode !== 'digital-twin'} />
             </Canvas>
+            </ErrorBoundary>
           </Suspense>
         )}
         
         {/* Controls Overlay */}
-        <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
-            <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
-                {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
+        <div className="absolute top-4 right-4 flex flex-col gap-2 z-10 items-end">
+            <button onClick={() => setVaultOpen(true)} className="px-3 py-1 rounded-full text-[10px] font-bold transition-all border bg-black/50 text-pure-white border-gray-600 hover:border-cyber-lime flex items-center gap-2 mb-2">
+                <span>🧥</span> The Vault
             </button>
-            <button onClick={() => setIsMacroView(!isMacroView)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMacroView ? 'bg-white text-black border-white' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
-                🔍 Macro View
-            </button>
-            <button onClick={() => setShowHeatmap(!showHeatmap)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
-                🔥 Fit Heatmap
-            </button>
+            <div className="flex flex-col gap-2">
+              <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                  {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
+              </button>
+              <button onClick={() => setIsMacroView(!isMacroView)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMacroView ? 'bg-white text-black border-white' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                  🔍 Macro View
+              </button>
+              <button onClick={() => setShowHeatmap(!showHeatmap)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                  🔥 Fit Heatmap
+              </button>
+              <button onClick={() => setAmbienceOn(!isAmbienceOn)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isAmbienceOn ? 'bg-purple-500 text-white border-purple-500' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                  {isAmbienceOn ? '🔊 Ambience ON' : '🔇 Ambience OFF'}
+              </button>
+            </div>
         </div>
 
         {/* Rotation hint */}
@@ -1014,6 +1054,11 @@ export function FittingRoom() {
             <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
                 <span>📤</span>
             </button>
+            {currentItem && (
+              <button onClick={() => toggleSavedItem(currentItem.id)} className={`bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border transition-colors ${savedItemIds.includes(currentItem.id) ? 'border-red-500 text-red-500' : 'border-white/10 hover:bg-charcoal/80'}`}>
+                  <span>{savedItemIds.includes(currentItem.id) ? '❤️' : '🤍'}</span>
+              </button>
+            )}
             <motion.button onClick={() => setShowAITryOnModal(true)} 
                            className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
                            whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -1077,6 +1122,12 @@ export function FittingRoom() {
                                     {note}
                                 </li>
                             ))}
+                            {currentItem.stylingTip && (
+                                <li className="text-[9px] text-soft-gray flex items-start gap-1.5 leading-relaxed mt-2 pt-2 border-t border-white/10">
+                                    <span className="text-purple-400 text-xs flex-shrink-0">💡</span>
+                                    <span className="italic text-purple-200">{currentItem.stylingTip}</span>
+                                </li>
+                            )}
                         </ul>
                     </motion.div>
                 )}

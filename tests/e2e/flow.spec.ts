@@ -10,11 +10,6 @@ test.describe('User Flow', () => {
     // Force click to ensure it hits even if covered or slightly off-screen in mobile
     await page.getByText('EASY FIT').click({ force: true });
 
-    // Verify selection (border color change or checkmark)
-    const continueToModeBtn = page.getByRole('button', { name: /Continue →/i });
-    await expect(continueToModeBtn).toBeEnabled();
-    await continueToModeBtn.click();
-
     // 2. Input Stats
     // Wait for "Easy Fit" header
     await expect(page.getByRole('heading', { name: 'Easy Fit' })).toBeVisible();

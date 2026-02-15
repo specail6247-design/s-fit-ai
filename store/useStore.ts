@@ -110,6 +110,16 @@ interface StoreState {
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
 
+  // The Vault
+  savedItemIds: string[];
+  toggleSavedItem: (itemId: string) => void;
+  isVaultOpen: boolean;
+  setVaultOpen: (open: boolean) => void;
+
+  // Sensory Ambience
+  isAmbienceOn: boolean;
+  setAmbienceOn: (on: boolean) => void;
+
   // Reset
   resetSession: () => void;
 }
@@ -235,6 +245,24 @@ export const useStore = create<StoreState>()(
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
 
+      // The Vault
+      savedItemIds: [],
+      toggleSavedItem: (itemId) =>
+        set((state) => {
+          const exists = state.savedItemIds.includes(itemId);
+          return {
+            savedItemIds: exists
+              ? state.savedItemIds.filter((id) => id !== itemId)
+              : [...state.savedItemIds, itemId],
+          };
+        }),
+      isVaultOpen: false,
+      setVaultOpen: (open) => set({ isVaultOpen: open }),
+
+      // Sensory Ambience
+      isAmbienceOn: false,
+      setAmbienceOn: (on) => set({ isAmbienceOn: on }),
+
       // Reset Session
       resetSession: () =>
         set({
@@ -257,6 +285,8 @@ export const useStore = create<StoreState>()(
         userStats: state.userStats,
         selectedAIModels: state.selectedAIModels,
         trainingData: state.trainingData,
+        savedItemIds: state.savedItemIds,
+        isAmbienceOn: state.isAmbienceOn,
       }),
     }
   )
