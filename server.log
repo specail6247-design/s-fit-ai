@@ -7,11 +7,8 @@
 - Network:       http://192.168.0.2:3000
 
 ✓ Starting...
-✓ Ready in 3.8s
+✓ Ready in 3.9s
 ○ Compiling / ...
 ⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
- GET / 200 in 17.1s (compile: 16.0s, render: 1181ms)
- GET / 200 in 56ms (compile: 20ms, render: 36ms)
- GET / 200 in 74ms (compile: 6ms, render: 67ms)
- GET / 200 in 50ms (compile: 16ms, render: 34ms)
+ GET / 200 in 15.5s (compile: 13.2s, render: 2.3s)
 [?25h
