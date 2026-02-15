@@ -88,7 +88,7 @@ describe('LuxuryLiveFitting', () => {
 
     // Find a brand button that is NOT Gucci (e.g., Chanel or Hermes if available in mockData)
     // Assuming mockData has 'CHANEL' or 'HERMES'
-    const brandButtons = screen.getAllByRole('button');
+    // const brandButtons = screen.getAllByRole('button');
     // We expect brand buttons + other UI buttons.
     // Let's look for text content.
 
