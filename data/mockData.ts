@@ -5,7 +5,7 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'ADER ERROR' | 'Gentle Monster';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -89,6 +89,20 @@ export const brands: Brand[] = [
     id: 'tiffany',
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'ader-error',
+    name: 'ADER ERROR',
+    logo: 'https://placehold.co/100x100?text=ADER',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'gentle-monster',
+    name: 'Gentle Monster',
+    logo: 'https://placehold.co/100x100?text=GM',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -534,6 +548,70 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+  },
+
+  // ADER ERROR - K-Fashion (2 items)
+  {
+    id: 'ader-001',
+    name: 'Distressed Wool Knit',
+    brand: 'ADER ERROR',
+    category: 'tops',
+    price: 420.00,
+    currency: 'USD',
+    imageUrl: '/clothing/ader_knit.png',
+    textureUrl: '/clothing/ader_knit.png',
+    isLuxury: true,
+    sizes: ['A1', 'A2', 'A3'],
+    colors: ['Blue', 'Grey'],
+    description: 'Signature oversized distressed knit sweater',
+  },
+  {
+    id: 'ader-002',
+    name: 'Deconstructed Blazer',
+    brand: 'ADER ERROR',
+    category: 'outerwear',
+    price: 650.00,
+    currency: 'USD',
+    imageUrl: '/clothing/ader_blazer.png',
+    textureUrl: '/clothing/ader_blazer.png',
+    isLuxury: true,
+    sizes: ['A1', 'A2', 'A3'],
+    colors: ['Black', 'Charcoal'],
+    description: 'Asymmetric deconstructed wool blazer',
+  },
+
+  // Gentle Monster - K-Fashion (2 items)
+  {
+    id: 'gm-001',
+    name: 'Lilit 01',
+    brand: 'Gentle Monster',
+    category: 'accessories',
+    subCategory: 'glasses',
+    zIndex: 60,
+    price: 269.00,
+    currency: 'USD',
+    imageUrl: '/accessories/gm_lilit.png',
+    textureUrl: '/accessories/gm_lilit.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Black', 'Brown'],
+    description: 'Bold square frame sunglasses with FLATBA lens',
+  },
+  {
+    id: 'gm-002',
+    name: 'Tam 01',
+    brand: 'Gentle Monster',
+    category: 'accessories',
+    subCategory: 'glasses',
+    zIndex: 60,
+    price: 280.00,
+    currency: 'USD',
+    imageUrl: '/accessories/gm_tam.png',
+    textureUrl: '/accessories/gm_tam.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Black'],
+    description: 'Cat-eye silhouette with metallic details',
   },
 ];
 
