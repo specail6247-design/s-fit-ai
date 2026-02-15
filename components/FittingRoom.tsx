@@ -306,7 +306,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
@@ -1115,12 +1115,12 @@ export function FittingRoom() {
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {/* These would normally come from lib/visionService.getComplementaryItems */}
             {brandItems.filter(i => i.id !== currentItem.id).slice(0, 3).map((compItem) => (
-              <button key={`comp-${compItem.id}`} onClick={() => setSelectedItem(compItem)}
-                        className="flex-shrink-0 w-20 p-2 rounded-lg border border-white/5 bg-void-black/40 hover:border-cyber-lime/30 transition-all text-left">
+              <div key={`comp-${compItem.id}`} onClick={() => setSelectedItem(compItem)}
+                        className="flex-shrink-0 w-20 p-2 rounded-lg border border-white/5 bg-void-black/40 hover:border-cyber-lime/30 transition-all text-left cursor-pointer">
                 <div className="aspect-square bg-charcoal/30 rounded flex items-center justify-center mb-1 text-base">{getCategoryIcon(compItem.category)}</div>
                 <p className="text-[8px] text-pure-white truncate font-medium">{compItem.name}</p>
                 <p className="text-[7px] text-soft-gray">${compItem.price}</p>
-              </button>
+              </div>
             ))}
           </div>
         </div>
