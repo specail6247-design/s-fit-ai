@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Space_Grotesk, Cinzel } from 'next/font/google';
 import { mockClothingItems, ClothingItem, brands } from '@/data/mockData';
 import Link from 'next/link';
@@ -16,7 +16,6 @@ export default function MasterpieceFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [resultVideo, setResultVideo] = useState<string | null>(null);
-  const [zoomLevel, setZoomLevel] = useState(1);
   const [isSharing, setIsSharing] = useState(false);
   const [shareSuccess, setShareSuccess] = useState(false);
 
