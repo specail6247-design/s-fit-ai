@@ -7,11 +7,24 @@ const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(true);
+
+  useEffect(() => {
+    // Simulate processing duration
+    const timer = setTimeout(() => {
+      setIsProcessing(false);
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const uiTransition = "transition-opacity duration-1000";
+  const fadeOutWhenProcessing = isProcessing ? "opacity-0 pointer-events-none" : "opacity-100";
+  const fadeInWhenProcessing = isProcessing ? "opacity-100" : "opacity-0 pointer-events-none";
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
       {/* Top App Bar */}
-      <div className="z-50 flex items-center justify-between bg-transparent p-4">
+      <div className={`z-50 flex items-center justify-between bg-transparent p-4 ${uiTransition} ${fadeOutWhenProcessing}`}>
         <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
           <span className="material-symbols-outlined">arrow_back_ios_new</span>
         </div>
@@ -36,7 +49,7 @@ export default function PhotoFitting() {
         >
           {/* Scanning Effect */}
           <div
-            className="absolute top-[40%] z-20 h-[2px] w-full"
+            className={`absolute top-[40%] z-20 h-[2px] w-full ${uiTransition} ${fadeInWhenProcessing}`}
             style={{
               background: "linear-gradient(180deg, transparent 0%, #256af4 50%, transparent 100%)",
               boxShadow: "0 0 15px #256af4",
@@ -44,7 +57,7 @@ export default function PhotoFitting() {
           ></div>
 
           {/* HUD Overlays */}
-          <div className="glass-panel absolute left-4 top-24 rounded-lg p-3" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
+          <div className={`glass-panel absolute left-4 top-24 rounded-lg p-3 ${uiTransition} ${fadeOutWhenProcessing}`} style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
             <div className="flex items-center gap-2">
               <div className="size-2 animate-pulse rounded-full bg-[#256af4]"></div>
               <p className="text-[10px] font-bold uppercase tracking-tighter text-[#90a4cb]">Real-time Simulation</p>
@@ -53,7 +66,7 @@ export default function PhotoFitting() {
               Fabric: <span className="text-[#256af4]">Metallic Liquid Silk</span>
             </p>
           </div>
-          <div className="glass-panel absolute right-4 top-24 rounded-lg p-3 text-right" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
+          <div className={`glass-panel absolute right-4 top-24 rounded-lg p-3 text-right ${uiTransition} ${fadeOutWhenProcessing}`} style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
             <p className="text-[10px] font-bold uppercase tracking-tighter text-[#90a4cb]">Mesh Density</p>
             <p className="mt-1 text-xs">42,000 Polygons</p>
           </div>
@@ -61,7 +74,7 @@ export default function PhotoFitting() {
       </div>
 
       {/* Processing State (Overlay) */}
-      <div className="absolute inset-x-0 top-1/2 z-30 -translate-y-1/2 px-6">
+      <div className={`absolute inset-x-0 top-1/2 z-30 -translate-y-1/2 px-6 ${uiTransition} ${fadeInWhenProcessing}`}>
         <div className="glass-panel mx-auto max-w-sm rounded-xl p-6 shadow-2xl" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
           <div className="flex flex-col gap-3">
             <div className="flex items-end justify-between gap-6">
@@ -80,7 +93,7 @@ export default function PhotoFitting() {
       </div>
 
       {/* Controls Footer */}
-      <div className="mt-auto space-y-4 p-4 z-40">
+      <div className={`mt-auto space-y-4 p-4 z-40 ${uiTransition} ${fadeOutWhenProcessing}`}>
         <div className="flex items-center justify-between px-2">
           <h3 className="text-sm font-bold leading-tight tracking-wider uppercase text-white">Fitting Controls</h3>
           <span className="rounded bg-[#256af4]/20 px-2 py-0.5 text-[10px] text-[#256af4]">ADVANCED</span>
@@ -125,7 +138,7 @@ export default function PhotoFitting() {
       </div>
 
       {/* Heatmap Legend */}
-      <div className="glass-panel absolute bottom-64 left-4 z-40 flex flex-col gap-1.5 rounded-lg p-2" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
+      <div className={`glass-panel absolute bottom-64 left-4 z-40 flex flex-col gap-1.5 rounded-lg p-2 ${uiTransition} ${fadeOutWhenProcessing}`} style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
         <div className="flex items-center gap-2">
           <div className="size-2 rounded-full bg-red-500"></div>
           <span className="text-[9px] font-bold uppercase text-white">Tight</span>
