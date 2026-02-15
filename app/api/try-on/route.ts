@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateVirtualTryOn } from '@/lib/virtualTryOn';
+import { generateVirtualTryOn, upscaleImage, generateCinematicVideo } from '@/lib/virtualTryOn';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -45,7 +45,7 @@ function localFileToDataUri(localPath: string): string | null {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userPhotoUrl, garmentImageUrl, category } = body;
+    const { userPhotoUrl, garmentImageUrl, category, upscale, video } = body;
 
     if (!userPhotoUrl || !garmentImageUrl) {
       return NextResponse.json(
@@ -95,9 +95,37 @@ export async function POST(request: NextRequest) {
     });
 
     if (result.success) {
+      let finalImageUrl = result.imageUrl;
+      let videoUrl: string | undefined;
+
+      // Upscale if requested
+      if (upscale && finalImageUrl) {
+        console.log('Upscaling image...');
+        const upscaled = await upscaleImage(finalImageUrl);
+        if (upscaled) {
+          finalImageUrl = upscaled;
+          console.log('Upscaling successful');
+        } else {
+          console.warn('Upscaling failed, using original image');
+        }
+      }
+
+      // Generate Cinematic Video if requested
+      if (video && finalImageUrl) {
+        console.log('Generating cinematic video...');
+        const videoResult = await generateCinematicVideo(finalImageUrl);
+        if (videoResult.success) {
+          videoUrl = videoResult.videoUrl;
+          console.log('Video generation successful');
+        } else {
+          console.warn('Video generation failed:', videoResult.error);
+        }
+      }
+
       return NextResponse.json({
         success: true,
-        imageUrl: result.imageUrl
+        imageUrl: finalImageUrl,
+        videoUrl: videoUrl
       });
     } else {
       return NextResponse.json(
