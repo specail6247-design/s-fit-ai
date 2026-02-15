@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { validateEnv } from "@/lib/env";
+import MemberAccessModal from '@/components/MemberAccessModal';
+import SupportHub from '@/components/SupportHub';
+import GlobalControls from '@/components/GlobalControls';
 import "./globals.css";
 
 // Validate environment variables on startup
@@ -43,6 +46,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
+      <head>
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=optional" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-void-black text-pure-white`}
         suppressHydrationWarning
@@ -50,6 +57,9 @@ export default function RootLayout({
         {/* Grain Overlay for Premium Feel */}
         <div className="grain-overlay" aria-hidden="true" />
         {children}
+        <GlobalControls />
+        <MemberAccessModal />
+        <SupportHub />
       </body>
     </html>
   );
