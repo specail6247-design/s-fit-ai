@@ -12,9 +12,10 @@ const playfair = Playfair_Display({ subsets: ["latin"] });
 
 export default function LuxuryLiveFitting() {
   const [selectedBrand, setSelectedBrand] = useState(brands.find(b => b.name === "GUCCI") || brands[1]);
-  const [items, setItems] = useState(getItemsByBrand(selectedBrand.id));
-  const [selectedItem, setSelectedItem] = useState(items[0]);
+  const [selectedItem, setSelectedItem] = useState(getItemsByBrand(selectedBrand.id)[0]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const items = getItemsByBrand(selectedBrand.id);
 
   useEffect(() => {
     // Simulate initial loading
@@ -22,13 +23,13 @@ export default function LuxuryLiveFitting() {
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    const newItems = getItemsByBrand(selectedBrand.id);
-    setItems(newItems);
+  const handleBrandChange = (brand: typeof selectedBrand) => {
+    setSelectedBrand(brand);
+    const newItems = getItemsByBrand(brand.id);
     if (newItems.length > 0) {
       setSelectedItem(newItems[0]);
     }
-  }, [selectedBrand]);
+  };
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(price);
@@ -84,7 +85,7 @@ export default function LuxuryLiveFitting() {
             {brands.filter(b => b.isLuxury).map(brand => (
               <button
                 key={brand.id}
-                onClick={() => setSelectedBrand(brand)}
+                onClick={() => handleBrandChange(brand)}
                 className={`text-sm tracking-widest uppercase transition-all duration-700 ${selectedBrand.id === brand.id ? "text-[#ecab13]" : "text-white/50 hover:text-white"}`}
               >
                 {brand.name}

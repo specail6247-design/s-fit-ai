@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import LuxuryLiveFitting from '@/components/LuxuryLiveFitting';
 
@@ -20,14 +20,14 @@ vi.mock('@/components/ui/GoldRingCursor', () => ({
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, className, onClick, ...props }: any) => (
+    div: ({ children, className, onClick, ...props }: React.ComponentProps<'div'>) => (
       <div className={className} onClick={onClick} {...props}>
         {children}
       </div>
     ),
-    rect: ({ children, ...props }: any) => <rect {...props}>{children}</rect>,
+    rect: ({ children, ...props }: React.SVGProps<SVGRectElement>) => <rect {...props}>{children}</rect>,
   },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 describe('LuxuryLiveFitting', () => {
