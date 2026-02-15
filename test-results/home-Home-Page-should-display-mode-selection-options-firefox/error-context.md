@@ -1,0 +1,58 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - banner [ref=e5]:
+      - heading "S_FIT NEO" [level=1] [ref=e6]
+      - generic [ref=e7]:
+        - paragraph [ref=e8]: Professional Virtual Fitting
+        - generic "Photos are processed securely and not shared." [ref=e9]:
+          - img [ref=e10]
+          - generic [ref=e12]: Securely Processed
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - text: 01. Identification
+        - generic [ref=e16] [cursor=pointer]:
+          - generic [ref=e18]: 👤
+          - generic [ref=e19]:
+            - generic [ref=e20]: Upload User Photo
+            - generic [ref=e21]: Supports JPG, PNG (Max 5MB)
+      - generic [ref=e22]:
+        - text: 02. Target Garment
+        - generic [ref=e24] [cursor=pointer]:
+          - generic [ref=e26]: 👕
+          - generic [ref=e27]:
+            - generic [ref=e28]: Select Garment
+            - generic [ref=e29]: Front view preferred
+    - generic [ref=e30]:
+      - button "⚡️ TRY IT ON" [ref=e31]:
+        - generic [ref=e32]: ⚡️
+        - text: TRY IT ON
+      - generic [ref=e33]:
+        - link "SPA Line" [ref=e34] [cursor=pointer]:
+          - /url: /spa
+        - link "Luxury Line" [ref=e35] [cursor=pointer]:
+          - /url: /luxury
+      - generic [ref=e36]:
+        - generic [ref=e37]:
+          - button "Privacy" [ref=e38]
+          - button "Terms" [ref=e39]
+        - button "bug_report Report Issue" [ref=e40]:
+          - generic [ref=e41]: bug_report
+          - text: Report Issue
+  - generic [ref=e54] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e55]:
+      - img [ref=e56]
+    - generic [ref=e60]:
+      - button "Open issues overlay" [ref=e61]:
+        - generic [ref=e62]:
+          - generic [ref=e63]: "3"
+          - generic [ref=e64]: "4"
+        - generic [ref=e65]:
+          - text: Issue
+          - generic [ref=e66]: s
+      - button "Collapse issues badge" [ref=e67]:
+        - img [ref=e68]
+  - alert [ref=e70]
+```
