@@ -47,8 +47,9 @@
   --color-gold-primary: #ecab13;
   --color-surface-dark: #1a1a1a;
   --color-border-dark: #2d2d2d;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-space-grotesk);
+  --font-display: var(--font-cinzel);
+  --font-mono: var(--font-space-grotesk);
 }
 
 /* Base Styles */
@@ -63,7 +64,7 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -277,6 +278,11 @@ body {
 .auto-cycle-bar {
   transform-origin: left;
   animation: autoCycle 5s linear infinite;
+}
+
+/* Luxury Filter */
+.luxury-filter {
+  filter: saturate(0.9) contrast(1.1);
 }
 
 /* Mobile Responsiveness */
