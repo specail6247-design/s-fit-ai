@@ -1,6 +1,6 @@
 import { render, screen, act } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
 import PhotoFitting from '@/components/PhotoFitting';
-import { vi } from 'vitest';
 
 // Mock LuxuryImageDistortion to avoid WebGL in tests
 vi.mock('@/components/masterpiece/LuxuryImageDistortion', () => ({
