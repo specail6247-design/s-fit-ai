@@ -2,7 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-namespace */
 import React, { useRef, Suspense } from 'react';
-import { Canvas, useFrame, extend, useThree, ReactThreeFiber } from '@react-three/fiber';
+import { Canvas, useFrame, extend, useThree } from '@react-three/fiber';
 import { shaderMaterial, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -116,16 +116,6 @@ declare module 'react' {
 interface LuxuryImageDistortionProps {
   imageUrl: string;
   className?: string;
-}
-
-// Custom interface for our shader material
-interface WaveShaderMaterialType extends THREE.ShaderMaterial {
-  uTime: number;
-  uColor: THREE.Color;
-  uTexture: THREE.Texture;
-  uHover: number;
-  uMouse: THREE.Vector2;
-  uResolution: THREE.Vector2;
 }
 
 const Wave = ({ imageUrl }: { imageUrl: string }) => {
