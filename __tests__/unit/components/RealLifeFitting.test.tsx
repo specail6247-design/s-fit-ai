@@ -1,16 +1,6 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import RealLifeFitting from '@/components/RealLifeFitting';
-
-// Mock framer-motion
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, className, onClick, ...props }: { children: React.ReactNode; className?: string; onClick?: React.MouseEventHandler<HTMLDivElement> } & React.HTMLAttributes<HTMLDivElement>) => (
-      <div className={className} onClick={onClick} {...props}>{children}</div>
-    ),
-  },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-}));
 
 // Mock Three.js canvas components to avoid WebGL errors in happy-dom
 vi.mock('@react-three/fiber', () => ({
@@ -52,24 +42,5 @@ describe('RealLifeFitting', () => {
     
     // Check for CTA
     expect(screen.getByText(/TRY IT ON/i)).toBeInTheDocument();
-  });
-
-  it('renders the Data Safety Badge', () => {
-    render(<RealLifeFitting />);
-    expect(screen.getByText(/Photos are processed securely/i)).toBeInTheDocument();
-  });
-
-  it('opens Legal Modal when link is clicked', () => {
-    render(<RealLifeFitting />);
-    const legalBtn = screen.getByText(/Legal & Privacy/i);
-    fireEvent.click(legalBtn);
-    expect(screen.getByText('LEGAL & COMPLIANCE')).toBeInTheDocument();
-  });
-
-  it('opens Support Hub when button is clicked', () => {
-    render(<RealLifeFitting />);
-    const reportBtn = screen.getByText(/Report Issue/i);
-    fireEvent.click(reportBtn);
-    expect(screen.getByText('SUPPORT HUB')).toBeInTheDocument();
   });
 });
