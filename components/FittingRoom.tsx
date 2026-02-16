@@ -306,7 +306,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170, opacity = 1.0
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
@@ -1014,7 +1014,7 @@ export function FittingRoom() {
             <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
                 <span>📤</span>
             </button>
-            <motion.button onClick={() => setShowAITryOnModal(true)} 
+            <motion.button onClick={() => setShowAITryOnModal(true)}
                            className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
                            whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <span>✨</span> AI 피팅 <span className="text-[0.6rem] bg-white/20 px-1.5 py-0.5 rounded-full">NEW</span>
@@ -1055,7 +1055,7 @@ export function FittingRoom() {
         <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none">
             <AnimatePresence>
                 {currentItem && poseAnalysis?.proportions && recommendedFit && (
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
@@ -1092,9 +1092,9 @@ export function FittingRoom() {
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
             {brandItems.map((item) => (
-                <ItemCard 
-                    key={item.id} item={item} 
-                    isSelected={currentItem?.id === item.id} 
+                <ItemCard
+                    key={item.id} item={item}
+                    isSelected={currentItem?.id === item.id}
                     onSelect={() => setSelectedItem(item)}
                     fitScore={fitScore + (item.isLuxury ? 5 : 0)}
                 />
