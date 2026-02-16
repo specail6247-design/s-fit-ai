@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { localFileToDataUri } from '@/app/api/try-on/route';
+import { localFileToDataUri } from '@/lib/fileUtils';
 
 describe('Security Check: Path Traversal', () => {
   it('should prevent access to files outside public directory', () => {
