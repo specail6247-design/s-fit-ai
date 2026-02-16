@@ -8,13 +8,22 @@ export const runtime = 'nodejs';
 export const maxDuration = 120;
 
 // Helper: Convert local file to base64 data URI
-function localFileToDataUri(localPath: string): string | null {
+export function localFileToDataUri(localPath: string): string | null {
   try {
     // Remove leading slash and resolve to public directory
     const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
-    const absolutePath = path.join(process.cwd(), 'public', relativePath);
+
+    // Security Fix: Prevent path traversal
+    const publicDir = path.resolve(process.cwd(), 'public');
+    const absolutePath = path.resolve(publicDir, relativePath);
     
     console.log('Reading local file:', absolutePath);
+
+    // Verify the resolved path is inside the public directory
+    if (!absolutePath.startsWith(publicDir + path.sep)) {
+      console.error('Security violation: Attempted path traversal:', absolutePath);
+      return null;
+    }
     
     if (!fs.existsSync(absolutePath)) {
       console.error('File not found:', absolutePath);
