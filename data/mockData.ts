@@ -5,7 +5,7 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'ADER ERROR' | 'Gentle Monster' | 'Hermes';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -89,6 +89,27 @@ export const brands: Brand[] = [
     id: 'tiffany',
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'ader_error',
+    name: 'ADER ERROR',
+    logo: 'https://placehold.co/100x100?text=ADER',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'gentle_monster',
+    name: 'Gentle Monster',
+    logo: 'https://placehold.co/100x100?text=GM',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'hermes',
+    name: 'Hermes',
+    logo: 'https://placehold.co/100x100?text=HERMES',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -534,6 +555,74 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+  },
+
+  // ADER ERROR - K-Fashion Luxury
+  {
+    id: 'ader-001',
+    name: 'Deconstructed Wool Blazer',
+    brand: 'ADER ERROR',
+    category: 'outerwear',
+    price: 650.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x600/png?text=ADER+Blazer',
+    textureUrl: 'https://placehold.co/400x600/png?text=ADER+Texture',
+    isLuxury: true,
+    sizes: ['A1', 'A2', 'A3'],
+    colors: ['Blue', 'Charcoal'],
+    description: 'Signature deconstructed wool blazer with raw edges',
+  },
+
+  // Gentle Monster - K-Fashion Luxury Accessories
+  {
+    id: 'gm-001',
+    name: 'Lilit 01 Sunglasses',
+    brand: 'Gentle Monster',
+    category: 'accessories',
+    subCategory: 'glasses',
+    zIndex: 40,
+    price: 280.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x600/png?text=GM+Sunglasses',
+    textureUrl: 'https://placehold.co/400x600/png?text=GM+Texture',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Black'],
+    description: 'Square black acetate frame with grey lenses',
+  },
+
+  // Hermes - High-End Luxury
+  {
+    id: 'hermes-001',
+    name: 'Silk Twill Scarf 90',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'scarf',
+    zIndex: 45,
+    price: 550.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x600/png?text=Hermes+Scarf',
+    textureUrl: 'https://placehold.co/400x600/png?text=Hermes+Texture',
+    isLuxury: true,
+    sizes: ['90x90cm'],
+    colors: ['Orange', 'Blue'],
+    description: 'Hand-rolled 100% silk twill scarf',
+  },
+  {
+    id: 'hermes-002',
+    name: 'Birkin 30 Togo',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'bag',
+    zIndex: 50,
+    price: 12500.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x600/png?text=Hermes+Birkin',
+    textureUrl: 'https://placehold.co/400x600/png?text=Hermes+Texture',
+    isLuxury: true,
+    sizes: ['30cm'],
+    colors: ['Gold', 'Black', 'Etoupe'],
+    description: 'Iconic Birkin bag in Togo calfskin with gold hardware',
   },
 ];
 
