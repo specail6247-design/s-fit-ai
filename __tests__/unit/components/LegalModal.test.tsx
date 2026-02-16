@@ -5,11 +5,11 @@ import LegalModal from '@/components/LegalModal';
 // Mock framer-motion AnimatePresence
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, onClick, className }: any) => (
+    div: ({ children, onClick, className }: { children: React.ReactNode; onClick?: React.MouseEventHandler<HTMLDivElement>; className?: string }) => (
       <div onClick={onClick} className={className}>{children}</div>
     ),
   },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 describe('LegalModal', () => {

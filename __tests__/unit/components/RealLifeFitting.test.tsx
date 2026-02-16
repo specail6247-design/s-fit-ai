@@ -5,11 +5,11 @@ import RealLifeFitting from '@/components/RealLifeFitting';
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, className, onClick, ...props }: any) => (
+    div: ({ children, className, onClick, ...props }: { children: React.ReactNode; className?: string; onClick?: React.MouseEventHandler<HTMLDivElement> } & React.HTMLAttributes<HTMLDivElement>) => (
       <div className={className} onClick={onClick} {...props}>{children}</div>
     ),
   },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 // Mock Three.js canvas components to avoid WebGL errors in happy-dom

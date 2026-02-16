@@ -109,7 +109,7 @@ export default function LegalModal({ isOpen, onClose }: LegalModalProps) {
                     <section>
                       <h3 className="text-white font-bold mb-2">3. Limitation of Liability</h3>
                       <p>
-                        The service is provided "as is". We are not liable for any damages arising from the use or inability to use our service.
+                        The service is provided &quot;as is&quot;. We are not liable for any damages arising from the use or inability to use our service.
                       </p>
                     </section>
                   </div>
