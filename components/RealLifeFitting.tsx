@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import LegalModal from '@/components/LegalModal';
+import SupportHub from '@/components/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -17,12 +19,74 @@ export default function RealLifeFitting() {
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
 
+  // Modal States
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [isSupportHubOpen, setIsSupportHubOpen] = useState(false);
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+
+      img.onload = () => {
+        // Set canvas to vertical story format (9:16 aspect ratio)
+        canvas.width = 1080;
+        canvas.height = 1920;
+
+        if (!ctx) return;
+
+        // Draw background (dark gradient)
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, '#0a0a0a');
+        gradient.addColorStop(1, '#1a1a1a');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw Image (contain)
+        const scale = Math.min(canvas.width / img.width, (canvas.height * 0.8) / img.height);
+        const x = (canvas.width / 2) - (img.width / 2) * scale;
+        const y = (canvas.height / 2) - (img.height / 2) * scale;
+
+        ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+
+        // Draw Branding Overlay
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillRect(0, canvas.height - 300, canvas.width, 300);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 80px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('S_FIT NEO', canvas.width / 2, canvas.height - 180);
+
+        ctx.fillStyle = '#007AFF';
+        ctx.font = '40px monospace';
+        ctx.fillText('AI VIRTUAL FITTING', canvas.width / 2, canvas.height - 100);
+
+        // Trigger Download
+        const link = document.createElement('a');
+        link.download = `sfit-story-${Date.now()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      };
+
+      img.src = resultImage;
+
+    } catch (e) {
+      console.error("Share failed", e);
+      alert("Could not generate share image.");
     }
   };
 
@@ -104,6 +168,13 @@ export default function RealLifeFitting() {
                 </div>
               </label>
             </div>
+            {/* Data Safety Badge */}
+            <div className="flex items-center gap-2 mt-2 px-3 py-2 bg-white/5 border border-white/10 rounded-lg">
+              <span className="text-xs">🛡️</span>
+              <span className="text-[9px] text-gray-400 font-medium tracking-wide uppercase">
+                Photos are processed securely & deleted after use
+              </span>
+            </div>
           </div>
 
           {/* Garment Input */}
@@ -158,8 +229,26 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-8 pt-6 border-t border-white/10 flex justify-between items-center text-[10px] text-gray-500 font-mono uppercase">
+            <button
+              onClick={() => setIsLegalModalOpen(true)}
+              className="hover:text-white transition-colors"
+            >
+              Legal & Privacy
+            </button>
+            <button
+              onClick={() => setIsSupportHubOpen(true)}
+              className="hover:text-white transition-colors flex items-center gap-1"
+            >
+              <span>●</span> Report Issue
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* MODALS */}
+      <LegalModal isOpen={isLegalModalOpen} onClose={() => setIsLegalModalOpen(false)} />
+      <SupportHub isOpen={isSupportHubOpen} onClose={() => setIsSupportHubOpen(false)} />
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
@@ -205,6 +294,14 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+              {/* Share Button */}
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-[#007AFF] hover:bg-[#005bb5] text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg transition-all transform hover:scale-105 flex items-center gap-2"
+              >
+                <span>📤</span> SHARE TO STORY
+              </button>
             </div>
           </motion.div>
         )}
