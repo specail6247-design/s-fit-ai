@@ -255,10 +255,20 @@ function SoftBodyPlane({
       finalMaterialProps.normalScale = new THREE.Vector2(3, 3);
   }
 
+  const childrenWithMicroMode = React.useMemo(() => {
+    return React.Children.map(children, (child) => {
+      if (React.isValidElement(child)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return React.cloneElement(child, { isMicroMode } as any);
+      }
+      return child;
+    });
+  }, [children, isMicroMode]);
+
   return (
     <mesh ref={meshRef} position={[0,0,0]} renderOrder={renderOrder} onClick={handleClick} castShadow receiveShadow>
        <planeGeometry args={args} />
-       {children ? children : <meshStandardMaterial {...finalMaterialProps} />}
+       {children ? childrenWithMicroMode : <meshStandardMaterial {...finalMaterialProps} />}
     </mesh>
   );
 }
@@ -796,7 +806,7 @@ function AITryOnModal({
                                 <button onClick={async () => {
                                     setIsVideoLoading(true);
                                     try {
-                                        const res = await fetch('/api/cinematic-try-on', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({imageUrl: result}) });
+                                        const res = await fetch('/api/runway-motion', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ imageUrl: result, upscale: true }) });
                                         const data = await res.json();
                                         if(data.success) setVideoUrl(data.videoUrl);
                                     } finally { setIsVideoLoading(false); }

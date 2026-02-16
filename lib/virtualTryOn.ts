@@ -221,8 +221,8 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
           input_image: imageUrl,
           video_length: "25_frames_with_svd_xt",
           sizing_strategy: "maintain_aspect_ratio",
-          motion_bucket_id: 127,
-          frames_per_second: 6,
+          motion_bucket_id: 180,
+          frames_per_second: 8,
           cond_aug: 0.02
         }
       }
