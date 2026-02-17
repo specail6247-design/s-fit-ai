@@ -164,7 +164,7 @@ export default function MemberAccessModal() {
               ].map((provider) => (
                 <button
                   key={provider.id}
-                  onClick={() => handleSocialLogin(provider.id as any)}
+                  onClick={() => handleSocialLogin(provider.id as 'google' | 'kakao' | 'apple' | 'discord')}
                   className="aspect-square flex items-center justify-center border border-white/10 hover:border-white/40 hover:bg-white/5 transition-all rounded-sm text-soft-gray hover:text-white"
                 >
                   <span className="font-mono">{provider.icon}</span>
