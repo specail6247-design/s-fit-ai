@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { DataSafetyBadge } from './DataSafetyBadge';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -24,6 +25,55 @@ export default function RealLifeFitting() {
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Background
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Load Image
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = resultImage;
+    await new Promise((resolve) => { img.onload = resolve; });
+
+    // Draw Image (Centered, Maintain Aspect Ratio)
+    const scale = Math.min(canvas.width / img.width, canvas.height / img.height) * 0.8;
+    const w = img.width * scale;
+    const h = img.height * scale;
+    const x = (canvas.width - w) / 2;
+    const y = (canvas.height - h) / 2;
+
+    // Draw Glow
+    ctx.shadowColor = '#007AFF';
+    ctx.shadowBlur = 50;
+    ctx.drawImage(img, x, y, w, h);
+    ctx.shadowBlur = 0;
+
+    // Branding
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 60px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('S_FIT AI', canvas.width / 2, 150);
+
+    ctx.fillStyle = '#007AFF';
+    ctx.font = '30px monospace';
+    ctx.fillText('VIRTUAL FITTING ROOM', canvas.width / 2, 200);
+
+    // Download
+    const link = document.createElement('a');
+    link.download = `s-fit-story-${Date.now()}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
   };
 
   const handleTryOn = async () => {
@@ -124,6 +174,8 @@ export default function RealLifeFitting() {
               </label>
             </div>
           </div>
+
+          <DataSafetyBadge />
         </div>
 
         {/* Action Button */}
@@ -208,6 +260,14 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+              {/* Share Button */}
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-[#007AFF] hover:bg-[#0062cc] text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg transition-colors flex items-center gap-2"
+              >
+                <span>🚀</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
