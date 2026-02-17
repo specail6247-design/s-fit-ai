@@ -5,7 +5,7 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Hermes';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -89,6 +89,13 @@ export const brands: Brand[] = [
     id: 'tiffany',
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'hermes',
+    name: 'Hermes',
+    logo: 'https://placehold.co/100x100?text=HERMES',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -534,6 +541,68 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+  },
+
+  // HERMES - Ultra Luxury (4 items)
+  {
+    id: 'hermes-001',
+    name: 'Birkin 30 Bag',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'bag',
+    zIndex: 50,
+    price: 12000.00,
+    currency: 'USD',
+    imageUrl: '/accessories/hermes_bag.png',
+    textureUrl: '/accessories/hermes_bag.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Gold', 'Black', 'Etoupe'],
+    description: 'The iconic Birkin bag in Togo calfskin with gold-plated hardware.',
+  },
+  {
+    id: 'hermes-002',
+    name: 'Silk Twill Scarf 90',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'scarf',
+    zIndex: 40,
+    price: 480.00,
+    currency: 'USD',
+    imageUrl: '/clothing/hermes_scarf.png',
+    textureUrl: '/clothing/hermes_scarf.png',
+    isLuxury: true,
+    sizes: ['90x90cm'],
+    colors: ['Orange', 'Blue', 'Pink'],
+    description: 'Essential silk accessory with hand-rolled edges.',
+  },
+  {
+    id: 'hermes-003',
+    name: 'Cashmere Round Neck Sweater',
+    brand: 'Hermes',
+    category: 'tops',
+    price: 1850.00,
+    currency: 'USD',
+    imageUrl: '/clothing/hermes_sweater.png',
+    textureUrl: '/clothing/hermes_sweater.png',
+    isLuxury: true,
+    sizes: ['34', '36', '38', '40', '42'],
+    colors: ['Beige', 'Navy', 'Black'],
+    description: 'Pure cashmere sweater with signature "H" detail.',
+  },
+  {
+    id: 'hermes-004',
+    name: 'Wool Flannel Trousers',
+    brand: 'Hermes',
+    category: 'bottoms',
+    price: 1250.00,
+    currency: 'USD',
+    imageUrl: '/clothing/hermes_trousers.png',
+    textureUrl: '/clothing/hermes_trousers.png',
+    isLuxury: true,
+    sizes: ['34', '36', '38', '40'],
+    colors: ['Charcoal', 'Navy'],
+    description: 'Classic straight-cut trousers in virgin wool flannel.',
   },
 ];
 
