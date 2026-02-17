@@ -12,17 +12,7 @@ This information is used to shape Next.js' roadmap and prioritize features.
 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
 https://nextjs.org/telemetry
 
-✓ Ready in 1983ms
-○ Compiling /verify-fitting ...
+✓ Ready in 1780ms
+○ Compiling /cinematic-demo ...
 ⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
- GET /verify-fitting 200 in 31.4s (compile: 29.0s, render: 2.4s)
- GET /verify-fitting 200 in 74ms (compile: 9ms, render: 64ms)
-⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
- GET /verify-fitting 200 in 851ms (compile: 126ms, render: 725ms)
- GET /verify-fitting 200 in 468ms (compile: 13ms, render: 454ms)
- GET /verify-fitting 200 in 96ms (compile: 6ms, render: 91ms)
-⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
- GET /verify-fitting 200 in 839ms (compile: 123ms, render: 716ms)
- GET /verify-fitting 200 in 114ms (compile: 11ms, render: 103ms)
- GET /verify-fitting 200 in 75ms (compile: 5ms, render: 70ms)
- GET /verify-fitting 200 in 75ms (compile: 5ms, render: 70ms)
+ GET /cinematic-demo 200 in 12.4s (compile: 12.0s, render: 401ms)
