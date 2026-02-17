@@ -1,8 +1,8 @@
-import PhotoFitting from "@/components/PhotoFitting";
+import MasterpieceFitting from "@/components/masterpiece/MasterpieceFitting";
 import React from 'react';
 
 export default function LuxuryFittingPage() {
   return (
-    <PhotoFitting />
+    <MasterpieceFitting />
   );
 }

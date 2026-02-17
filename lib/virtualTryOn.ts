@@ -1,3 +1,5 @@
+"use server";
+
 // Virtual Try-On Service using Replicate IDM-VTON
 // https://replicate.com/cuuupid/idm-vton
 
