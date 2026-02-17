@@ -2,9 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { validateEnv } from "@/lib/env";
 import "./globals.css";
-import { LegalModal } from "@/components/LegalModal";
-import { SupportHub } from "@/components/SupportHub";
-import { GlobalControls } from "@/components/GlobalControls";
 
 // Validate environment variables on startup
 validateEnv();
@@ -53,11 +50,6 @@ export default function RootLayout({
         {/* Grain Overlay for Premium Feel */}
         <div className="grain-overlay" aria-hidden="true" />
         {children}
-
-        {/* Global Overlays */}
-        <LegalModal />
-        <SupportHub />
-        <GlobalControls />
       </body>
     </html>
   );
