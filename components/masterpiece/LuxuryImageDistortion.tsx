@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useRef } from 'react';
-import { Canvas, useFrame, extend, useThree, Object3DNode } from '@react-three/fiber';
+import { Canvas, useFrame, extend, useThree } from '@react-three/fiber';
 import { useTexture, shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -96,13 +96,7 @@ extend({ WaveShaderMaterial });
 // Type augmentation
 declare module '@react-three/fiber' {
   interface ThreeElements {
-    waveShaderMaterial: Object3DNode<THREE.ShaderMaterial, typeof WaveShaderMaterial> & {
-      uTime?: number;
-      uColor?: THREE.Color;
-      uTexture?: THREE.Texture;
-      uMouse?: THREE.Vector2;
-      uHover?: number;
-    };
+    waveShaderMaterial: any; // Simplified type to avoid R3F version conflicts
   }
 }
 
@@ -113,7 +107,10 @@ const DistortionMesh = ({ imageSrc }: { imageSrc: string }) => {
   const [hovered, setHover] = React.useState(false);
 
   // Calculate aspect ratio to fit image within viewport while maintaining aspect ratio
-  const imgAspect = texture.image ? texture.image.width / texture.image.height : 1;
+  const imgElement = texture.image as HTMLImageElement;
+  const imgWidth = imgElement?.width || 1;
+  const imgHeight = imgElement?.height || 1;
+  const imgAspect = imgWidth / imgHeight;
   const viewportAspect = viewport.width / viewport.height;
 
   // Calculate dimensions to cover the viewport (like object-cover)
