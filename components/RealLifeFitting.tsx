@@ -93,10 +93,11 @@ export default function RealLifeFitting() {
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
-              <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
-              <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+              <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="sr-only peer" id="user-upload" />
+              <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#007AFF] peer-focus:ring-offset-2 peer-focus:ring-offset-black rounded-lg">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {userImage ? <img src={userImage} className="w-full h-full object-cover" alt="User uploaded photo" /> : <span className="text-2xl" role="img" aria-label="User icon">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -110,10 +111,11 @@ export default function RealLifeFitting() {
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">02. Target Garment</label>
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
-              <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
-              <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
+              <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="sr-only peer" id="garment-upload" />
+              <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#007AFF] peer-focus:ring-offset-2 peer-focus:ring-offset-black rounded-lg">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" alt="Selected garment" /> : <span className="text-2xl" role="img" aria-label="Garment icon">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -145,7 +147,7 @@ export default function RealLifeFitting() {
               onClick={handleTryOn}
               className="w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
             >
-              <span>⚡️</span> TRY IT ON
+              <span role="img" aria-label="Lightning bolt">⚡️</span> TRY IT ON
             </button>
           )}
           
@@ -173,7 +175,7 @@ export default function RealLifeFitting() {
         <div className="absolute inset-0 z-10">
           <ErrorBoundary fallback={
             <div className="absolute inset-0 flex flex-col items-center justify-center text-white/50 space-y-4">
-              <span className="text-4xl opacity-50">🤖</span>
+              <span className="text-4xl opacity-50" role="img" aria-label="Robot face">🤖</span>
               <p className="text-xs font-mono">3D VISUALIZATION UNAVAILABLE</p>
               <button 
                 onClick={() => window.location.reload()}
@@ -195,10 +197,12 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                aria-label="Close result view"
               >
                 ✕ Close
               </button>
