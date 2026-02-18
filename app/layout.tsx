@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Cinzel, Space_Grotesk, Inter } from "next/font/google";
 import { validateEnv } from "@/lib/env";
 import "./globals.css";
+import SmoothScroll from "@/components/SmoothScroll";
+import GoldRingCursor from "@/components/masterpiece/GoldRingCursor";
 
 // Validate environment variables on startup
 validateEnv();
@@ -14,6 +16,24 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
+  subsets: ["latin"],
+  display: 'swap',
+});
+
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
+  subsets: ["latin"],
+  display: 'swap',
+});
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -44,9 +64,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-void-black text-pure-white`}
+        className={`${geistSans.variable} ${geistMono.variable} ${cinzel.variable} ${spaceGrotesk.variable} ${inter.variable} antialiased bg-void-black text-pure-white`}
         suppressHydrationWarning
       >
+        <SmoothScroll />
+        <GoldRingCursor />
         {/* Grain Overlay for Premium Feel */}
         <div className="grain-overlay" aria-hidden="true" />
         {children}
