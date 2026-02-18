@@ -26,6 +26,85 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+
+    try {
+      const canvas = document.createElement('canvas');
+      // Instagram Story Ratio 9:16
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Background
+      const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
+      gradient.addColorStop(0, '#0a0a0a');
+      gradient.addColorStop(1, '#000000');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 1080, 1920);
+
+      // Load Image
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = resultImage;
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      // Calculate fit
+      const scale = Math.min(1080 / img.width, 1920 / img.height) * 0.9; // 90% size
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (1080 - w) / 2;
+      const y = (1920 - h) / 2;
+
+      // Draw shadow
+      ctx.shadowColor = 'rgba(0, 122, 255, 0.5)';
+      ctx.shadowBlur = 50;
+      ctx.drawImage(img, x, y, w, h);
+      ctx.shadowBlur = 0;
+
+      // Add Border
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(x, y, w, h);
+
+      // Add Branding
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold italic 80px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT NEO', 540, 200);
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = 'bold 40px monospace';
+      ctx.fillText('VIRTUAL TRY-ON', 540, 260);
+
+      ctx.fillStyle = '#666666';
+      ctx.font = '30px monospace';
+      ctx.fillText('s-fit.ai', 540, 1850);
+
+      // Convert to blob and download
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = 's_fit_story.png';
+        link.href = url;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 'image/png');
+
+    } catch (err) {
+      console.error('Share generation failed', err);
+      alert('Failed to generate story image.');
+    }
+  };
+
   const handleTryOn = async () => {
     if (!userImage || !garmentImage) return alert("Please upload both User Photo and Garment.");
     
@@ -122,6 +201,14 @@ export default function RealLifeFitting() {
               </label>
             </div>
           </div>
+
+          {/* Data Safety Badge */}
+          <div className="flex items-center gap-3 p-3 bg-green-900/10 border border-green-500/20 rounded-xl">
+            <span className="text-lg">🔒</span>
+            <p className="text-[10px] text-green-400 font-mono tracking-wide leading-tight">
+              Photos are processed securely and not shared.
+            </p>
+          </div>
         </div>
 
         {/* Action Button */}
@@ -196,12 +283,22 @@ export default function RealLifeFitting() {
           >
             <div className="relative group">
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
-              <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
-              >
-                ✕ Close
-              </button>
+
+              <div className="absolute top-4 right-4 flex gap-2">
+                <button
+                  onClick={handleShareToStory}
+                  className="bg-black/60 backdrop-blur-md text-white rounded-full py-2 px-4 hover:bg-[#007AFF] transition-all flex items-center gap-2 text-xs font-bold border border-white/10"
+                >
+                  <span>📲</span> SHARE TO STORY
+                </button>
+                <button
+                  onClick={() => setResultImage(null)}
+                  className="bg-black/60 backdrop-blur-md text-white rounded-full p-2 hover:bg-red-500 transition-colors border border-white/10 w-8 h-8 flex items-center justify-center"
+                >
+                  ✕
+                </button>
+              </div>
+
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
