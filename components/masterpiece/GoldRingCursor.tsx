@@ -16,7 +16,7 @@ export default function GoldRingCursor() {
 
   useEffect(() => {
     // Only show on non-touch devices ideally, but simpler to just show on md+ screens via CSS
-    setIsVisible(true);
+    const timer = setTimeout(() => setIsVisible(true), 100);
 
     const moveCursor = (e: MouseEvent) => {
       cursorX.set(e.clientX - 16); // Center the 32px cursor
@@ -43,6 +43,7 @@ export default function GoldRingCursor() {
     window.addEventListener('mouseover', handleMouseOver);
 
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('mousemove', moveCursor);
       window.removeEventListener('mouseover', handleMouseOver);
     };

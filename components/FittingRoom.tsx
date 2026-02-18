@@ -307,7 +307,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
@@ -831,7 +831,7 @@ function AITryOnModal({
 export function FittingRoom() {
   const {
     userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
-    isAnalyzing, setIsAnalyzing, isFitting, setIsFitting
+    isAnalyzing, isFitting, setIsFitting
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);

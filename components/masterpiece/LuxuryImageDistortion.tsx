@@ -2,7 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import React, { useRef, useMemo } from 'react';
+import React, { useRef } from 'react';
 import { Canvas, useFrame, extend, useThree, Object3DNode } from '@react-three/fiber';
 import { useTexture, shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
