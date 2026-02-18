@@ -1,0 +1,70 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e6]:
+      - link "arrow_back" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e8]: arrow_back
+      - heading "S_FIT AI" [level=2] [ref=e9]
+      - button "share" [ref=e11]:
+        - generic [ref=e12]: share
+    - main [ref=e13]:
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - button "zoom_in" [ref=e18]:
+            - generic [ref=e19]: zoom_in
+          - button "360" [ref=e20]:
+            - generic [ref=e21]: "360"
+          - button "light_mode" [ref=e22]:
+            - generic [ref=e23]: light_mode
+        - generic [ref=e24]:
+          - paragraph [ref=e25]: Authentic Render
+          - heading "Metallic Silk Evening Blazer" [level=1] [ref=e26]:
+            - text: Metallic Silk
+            - text: Evening Blazer
+      - generic [ref=e28]:
+        - generic [ref=e29]:
+          - paragraph [ref=e30]: 99.8%
+          - paragraph [ref=e31]: Realism
+        - generic [ref=e33]:
+          - paragraph [ref=e34]: High
+          - paragraph [ref=e35]: Metalness
+        - generic [ref=e37]:
+          - paragraph [ref=e38]: "0.85"
+          - paragraph [ref=e39]: Clearcoat
+      - generic [ref=e40]:
+        - generic [ref=e41]:
+          - heading "Material Science" [level=2] [ref=e42]
+          - generic [ref=e43]: info
+        - paragraph [ref=e44]: Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+        - generic [ref=e45]:
+          - paragraph [ref=e47]: Brushed Aluminum Finish
+          - paragraph [ref=e49]: Clearcoat Tech
+          - paragraph [ref=e51]: Silk Blend
+      - generic [ref=e53]:
+        - heading "Detail Macro View" [level=2] [ref=e54]
+        - paragraph [ref=e55]: 4K Textures
+      - generic [ref=e60]:
+        - generic [ref=e61]:
+          - generic [ref=e62]: Weight
+          - generic [ref=e63]: 240 GSM
+        - generic [ref=e64]:
+          - generic [ref=e65]: Composition
+          - generic [ref=e66]: 70% Silk, 30% Metallic Alloy
+        - generic [ref=e67]:
+          - generic [ref=e68]: Physics Mesh
+          - generic [ref=e69]: 12,400 Polygons
+    - generic [ref=e70]:
+      - generic [ref=e71]:
+        - generic [ref=e72]: Starting at
+        - paragraph [ref=e73]: $2,850
+      - link "person_add_alt Try on Mannequin" [ref=e74] [cursor=pointer]:
+        - /url: /luxury/fitting
+        - generic [ref=e75]: person_add_alt
+        - generic [ref=e76]: Try on Mannequin
+  - button "Open Next.js Dev Tools" [ref=e82] [cursor=pointer]:
+    - img [ref=e83]
+  - alert [ref=e87]
+```
