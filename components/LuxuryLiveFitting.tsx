@@ -58,7 +58,7 @@ const LuxuryLoader = () => (
 
 export default function LuxuryLiveFitting() {
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedBrandKey, setSelectedBrandKey] = useState<keyof typeof BRANDS>("GUCCI");
+  const [selectedBrandKey] = useState<keyof typeof BRANDS>("GUCCI");
   const [selectedProduct, setSelectedProduct] = useState(PRODUCTS[0]);
 
   useEffect(() => {

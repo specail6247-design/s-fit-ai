@@ -64,7 +64,7 @@ declare module 'react' {
 /* eslint-enable @typescript-eslint/no-namespace */
 
 const ImagePlane = ({ image }: { image: string }) => {
-  const ref = useRef<any>(null);
+  const ref = useRef<THREE.ShaderMaterial & { uTime: number }>(null);
   const texture = useTexture(image);
   const { viewport } = useThree();
 
@@ -77,7 +77,6 @@ const ImagePlane = ({ image }: { image: string }) => {
   return (
     <mesh scale={[viewport.width, viewport.height, 1]}>
       <planeGeometry args={[1, 1, 64, 64]} />
-      {/* @ts-ignore */}
       <waveShaderMaterial ref={ref} uTexture={texture} transparent />
     </mesh>
   );
