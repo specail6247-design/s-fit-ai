@@ -25,6 +25,7 @@ import {
 } from '@/lib/visionService';
 import * as THREE from 'three';
 import { AvatarLoader } from './AvatarLoader';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 // Masterpiece Components
 import { FabricMaterial } from './masterpiece/FabricMaterial';
@@ -271,6 +272,41 @@ function LoadingSpinner() {
       <div className="text-center">
         <div className="w-12 h-12 border-2 border-soft-gray border-t-cyber-lime rounded-full animate-spin mb-4" />
         <p className="text-soft-gray text-sm">Loading Fitting Room...</p>
+      </div>
+    </div>
+  );
+}
+
+function FallbackView({ item, message }: { item: ClothingItem | null, message?: string }) {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-[#0a0a0a] to-[#1a1a1a]">
+      <div className="relative w-64 h-96">
+        <div className="absolute inset-0 flex items-center justify-center opacity-30">
+          <svg viewBox="0 0 100 160" className="w-full h-full">
+            <ellipse cx="50" cy="20" rx="12" ry="15" fill="#444" />
+            <path d="M38 35 L30 80 L35 80 L40 55 L45 80 L55 80 L60 55 L65 80 L70 80 L62 35 Z" fill="#444" />
+            <path d="M35 80 L30 140 L40 140 L45 100 L50 100 L55 100 L60 140 L70 140 L65 80 Z" fill="#444" />
+          </svg>
+        </div>
+        {item && (
+          <div
+            className="absolute inset-0 flex items-center justify-center"
+            style={{ marginTop: item.category === 'bottoms' ? '30%' : (item.category === 'dresses' ? '0%' : '-20%') }}
+          >
+            <div className="relative w-[70%] h-[50%]">
+              <Image
+                src={item.imageUrl}
+                alt={item.name}
+                fill
+                className="object-contain drop-shadow-2xl"
+                sizes="(max-width: 768px) 60vw, 280px"
+                unoptimized
+              />
+            </div>
+          </div>
+        )}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-40 h-4 bg-gradient-to-t from-charcoal to-transparent rounded-full opacity-50" />
+        {message && <div className="absolute bottom-4 w-full text-center text-red-500/50 text-[10px] font-mono">{message}</div>}
       </div>
     </div>
   );
@@ -581,21 +617,36 @@ function ItemCard({
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
+  const [imgError, setImgError] = useState(false);
+
   return (
     <motion.button
       onClick={onSelect}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
+      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start relative overflow-hidden ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
-      <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
-        <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+      {isSelected && <div className="absolute inset-0 luxury-shimmer pointer-events-none" />}
+
+      <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden z-10" style={{ backgroundColor: imgError ? primaryColor : 'transparent' }}>
+        {!imgError ? (
+           <Image
+             src={item.imageUrl}
+             alt={item.name}
+             fill
+             className="object-contain p-1"
+             onError={() => setImgError(true)}
+             unoptimized
+           />
+        ) : (
+           <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+        )}
         {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
       </div>
-      <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
-      <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
-      <p className="text-[0.55rem] text-cyber-lime">Fit {fitScore}%</p>
+      <p className="text-[0.6rem] text-pure-white truncate relative z-10">{item.name}</p>
+      <p className="text-[0.55rem] text-soft-gray relative z-10">${item.price}</p>
+      <p className="text-[0.55rem] text-cyber-lime relative z-10">Fit {fitScore}%</p>
     </motion.button>
   );
 }
@@ -934,60 +985,33 @@ export function FittingRoom() {
   return (
     <div className="w-full h-full flex flex-col bg-void-black text-pure-white">
       <div className="flex-1 relative min-h-[350px]">
-        {webglFailed ? (
-          /* 2D Fallback View */
-          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-[#0a0a0a] to-[#1a1a1a]">
-            <div className="relative w-64 h-96">
-              <div className="absolute inset-0 flex items-center justify-center opacity-30">
-                <svg viewBox="0 0 100 160" className="w-full h-full">
-                  <ellipse cx="50" cy="20" rx="12" ry="15" fill="#444" />
-                  <path d="M38 35 L30 80 L35 80 L40 55 L45 80 L55 80 L60 55 L65 80 L70 80 L62 35 Z" fill="#444" />
-                  <path d="M35 80 L30 140 L40 140 L45 100 L50 100 L55 100 L60 140 L70 140 L65 80 Z" fill="#444" />
-                </svg>
-              </div>
-              {currentItem && (
-                <div
-                  className="absolute inset-0 flex items-center justify-center"
-                  style={{ marginTop: currentItem.category === 'bottoms' ? '30%' : (currentItem.category === 'dresses' ? '0%' : '-20%') }}
-                >
-                  <div className="relative w-[70%] h-[50%]">
-                    <Image
-                      src={currentItem.imageUrl}
-                      alt={currentItem.name}
-                      fill
-                      className="object-contain drop-shadow-2xl"
-                      sizes="(max-width: 768px) 60vw, 280px"
-                      unoptimized
-                    />
-                  </div>
-                </div>
-              )}
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-40 h-4 bg-gradient-to-t from-charcoal to-transparent rounded-full opacity-50" />
-            </div>
-          </div>
-        ) : (
-          <Suspense fallback={<LoadingSpinner />}>
-            <Canvas 
-              ref={canvasRef}
-              shadows 
-              camera={{ position: [0, 0.5, 2.8], fov: 45 }}
-              gl={{ antialias: true, preserveDrawingBuffer: true, powerPreference: 'high-performance' }}
-              onCreated={({ gl }) => {
-                gl.domElement.addEventListener('webglcontextlost', (e) => { e.preventDefault(); setWebglFailed(true); });
-                gl.domElement.addEventListener('webglcontextrestored', () => setWebglFailed(false));
-              }}
-            >
-              <PhysicsProvider>
-                <Scene 
-                  userStats={userStats} selectedItem={currentItem} 
-                  isMasterpieceMode={isMasterpieceMode} isMacroView={isMacroView} 
-                  showHeatmap={showHeatmap}
-                />
-              </PhysicsProvider>
-              <OrbitControls enabled={!isMacroView && selectedMode !== 'digital-twin'} />
-            </Canvas>
-          </Suspense>
-        )}
+        <ErrorBoundary fallback={<FallbackView item={currentItem} message="3D Engine Unavailable (Network/Asset Error)" />}>
+          {webglFailed ? (
+            <FallbackView item={currentItem} />
+          ) : (
+            <Suspense fallback={<LoadingSpinner />}>
+              <Canvas
+                ref={canvasRef}
+                shadows
+                camera={{ position: [0, 0.5, 2.8], fov: 45 }}
+                gl={{ antialias: true, preserveDrawingBuffer: true, powerPreference: 'high-performance' }}
+                onCreated={({ gl }) => {
+                  gl.domElement.addEventListener('webglcontextlost', (e) => { e.preventDefault(); setWebglFailed(true); });
+                  gl.domElement.addEventListener('webglcontextrestored', () => setWebglFailed(false));
+                }}
+              >
+                <PhysicsProvider>
+                  <Scene
+                    userStats={userStats} selectedItem={currentItem}
+                    isMasterpieceMode={isMasterpieceMode} isMacroView={isMacroView}
+                    showHeatmap={showHeatmap}
+                  />
+                </PhysicsProvider>
+                <OrbitControls enabled={!isMacroView && selectedMode !== 'digital-twin'} />
+              </Canvas>
+            </Suspense>
+          )}
+        </ErrorBoundary>
         
         {/* Controls Overlay */}
         <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
