@@ -2,33 +2,25 @@
 // 15 items: 5 Mass Market (ZARA), 5 Luxury (Gucci), 5 Basic (Uniqlo)
 // Updated with real product images
 
-export interface ClothingItem {
-  id: string;
-  name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
-  category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
-  subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
-  zIndex?: number;
-  price: number;
-  currency: string;
-  imageUrl: string;
-  textureUrl: string;
-  isLuxury: boolean;
-  sizes: string[];
-  colors: string[];
-  description: string;
-}
-
-export interface Brand {
-  id: string;
-  name: string;
-  logo: string;
-  isLuxury: boolean;
-  tier: 'mass' | 'luxury' | 'basic';
-}
+import { ClothingItem, Brand } from './types';
+import { luxuryClothingItems } from './luxuryProducts';
 
 // Brand Data
 export const brands: Brand[] = [
+  {
+    id: 'Loro Piana',
+    name: 'Loro Piana',
+    logo: 'https://placehold.co/100x100?text=LORO',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'hermes',
+    name: 'Hermes',
+    logo: 'https://placehold.co/100x100?text=HERMES',
+    isLuxury: true,
+    tier: 'luxury',
+  },
   {
     id: 'zara',
     name: 'ZARA',
@@ -535,6 +527,7 @@ export const mockClothingItems: ClothingItem[] = [
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
   },
+  ...luxuryClothingItems,
 ];
 
 // Helper functions
