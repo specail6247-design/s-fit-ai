@@ -16,9 +16,7 @@ export class ErrorBoundary extends Component<Props, State> {
     hasError: false
   };
 
-  static getDerivedStateFromError(error: Error): State {
-    // Log the error to console to satisfy linting rules about unused variables
-    console.error('ErrorBoundary caught error:', error);
+  public static getDerivedStateFromError(_: Error): State {
     return { hasError: true };
   }
 
