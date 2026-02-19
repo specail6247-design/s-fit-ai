@@ -110,6 +110,14 @@ interface StoreState {
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
 
+  // UI State - Support Hub & Member Access
+  isMemberAccessOpen: boolean;
+  setMemberAccessOpen: (isOpen: boolean) => void;
+  isSupportHubOpen: boolean;
+  setSupportHubOpen: (isOpen: boolean) => void;
+  supportHubTab: 'guide' | 'caution' | 'qa';
+  setSupportHubTab: (tab: 'guide' | 'caution' | 'qa') => void;
+
   // Reset
   resetSession: () => void;
 }
@@ -234,6 +242,14 @@ export const useStore = create<StoreState>()(
       // UI State
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
+
+      // UI State - Support Hub & Member Access
+      isMemberAccessOpen: false,
+      setMemberAccessOpen: (isOpen) => set({ isMemberAccessOpen: isOpen }),
+      isSupportHubOpen: false,
+      setSupportHubOpen: (isOpen) => set({ isSupportHubOpen: isOpen }),
+      supportHubTab: 'guide',
+      setSupportHubTab: (tab) => set({ supportHubTab: tab }),
 
       // Reset Session
       resetSession: () =>
