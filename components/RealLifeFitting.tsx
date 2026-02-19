@@ -26,6 +26,53 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Instagram Story Size
+    canvas.width = 1080;
+    canvas.height = 1920;
+
+    // Background
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Load Image
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = resultImage;
+    await new Promise((resolve) => { img.onload = resolve; });
+
+    // Draw Image (Fit Width)
+    const scale = canvas.width / img.width;
+    const h = img.height * scale;
+    const y = (canvas.height - h) / 2;
+    ctx.drawImage(img, 0, y, canvas.width, h);
+
+    // Branding Overlay
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillRect(0, canvas.height - 300, canvas.width, 300);
+
+    ctx.font = 'bold 60px monospace';
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.fillText('S_FIT AI', canvas.width / 2, canvas.height - 150);
+
+    ctx.font = '40px sans-serif';
+    ctx.fillStyle = '#007AFF';
+    ctx.fillText('VIRTUAL FITTING', canvas.width / 2, canvas.height - 90);
+
+    // Download
+    const link = document.createElement('a');
+    link.download = `s_fit_story_${Date.now()}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  };
+
   const handleTryOn = async () => {
     if (!userImage || !garmentImage) return alert("Please upload both User Photo and Garment.");
     
@@ -122,6 +169,19 @@ export default function RealLifeFitting() {
               </label>
             </div>
           </div>
+
+          {/* Data Safety Badge */}
+          <div className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-lg">
+             <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
+               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                 <path fillRule="evenodd" d="M12.516 2.17a.75.75 0 00-1.032 0 11.209 11.209 0 01-7.877 3.08.75.75 0 00-.722.515A12.74 12.74 0 002.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 00.374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.352-.272-2.636-.759-3.985a.75.75 0 00-.722-.516l-.143.001c-2.996 0-5.717-1.17-7.734-3.08zm3.094 8.016a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
+               </svg>
+             </div>
+             <div>
+               <p className="text-[10px] font-bold text-white uppercase tracking-wider">Secure Processing</p>
+               <p className="text-[10px] text-gray-400">Photos are deleted after generation.</p>
+             </div>
+          </div>
         </div>
 
         {/* Action Button */}
@@ -205,6 +265,12 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-[#E1306C] hover:bg-[#C13584] text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 shadow-lg transition-colors"
+              >
+                <span>📷</span> SHARE TO STORY
+              </button>
             </div>
           </motion.div>
         )}

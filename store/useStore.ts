@@ -110,6 +110,15 @@ interface StoreState {
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
 
+  // Support & Legal UI State
+  isSupportOpen: boolean;
+  supportTab: 'guide' | 'caution' | 'qa' | 'report';
+  setSupportOpen: (isOpen: boolean, tab?: 'guide' | 'caution' | 'qa' | 'report') => void;
+
+  isLegalOpen: boolean;
+  legalTab: 'privacy' | 'terms';
+  setLegalOpen: (isOpen: boolean, tab?: 'privacy' | 'terms') => void;
+
   // Reset
   resetSession: () => void;
 }
@@ -234,6 +243,17 @@ export const useStore = create<StoreState>()(
       // UI State
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
+
+      // Support & Legal UI State
+      isSupportOpen: false,
+      supportTab: 'guide',
+      setSupportOpen: (isOpen, tab) =>
+        set({ isSupportOpen: isOpen, ...(tab && { supportTab: tab }) }),
+
+      isLegalOpen: false,
+      legalTab: 'privacy',
+      setLegalOpen: (isOpen, tab) =>
+        set({ isLegalOpen: isOpen, ...(tab && { legalTab: tab }) }),
 
       // Reset Session
       resetSession: () =>
