@@ -5,6 +5,8 @@
 import { ClothingItem, Brand } from './types';
 import { luxuryClothingItems } from './luxuryProducts';
 
+export type { ClothingItem, Brand };
+
 // Brand Data
 export const brands: Brand[] = [
   {
