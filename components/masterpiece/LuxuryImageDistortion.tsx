@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import { Canvas, useFrame, extend, ReactThreeFiber } from '@react-three/fiber';
+import { Canvas, useFrame, extend } from '@react-three/fiber';
 import { useTexture, shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -103,13 +103,8 @@ extend({ WaveShaderMaterial });
 // Type augmentation
 declare module '@react-three/fiber' {
   interface ThreeElements {
-    waveShaderMaterial: ReactThreeFiber.Object3DNode<THREE.ShaderMaterial, typeof THREE.ShaderMaterial> & {
-      uTime?: number;
-      uColor?: THREE.Color;
-      uTexture?: THREE.Texture | null;
-      uMouse?: THREE.Vector2;
-      uHover?: number;
-    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    waveShaderMaterial: any;
   }
 }
 
@@ -147,7 +142,6 @@ const Scene = ({ image }: { image: string }) => {
       onPointerOut={() => setHover(false)}
     >
       <planeGeometry args={planeArgs} />
-      {/* @ts-expect-error - Custom material element */}
       <waveShaderMaterial
         ref={materialRef}
         uTexture={texture}
