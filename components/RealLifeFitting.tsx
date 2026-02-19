@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 // Dynamically import the 3D scene with SSR disabled
@@ -75,12 +75,16 @@ export default function RealLifeFitting() {
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
       {/* LEFT PANEL: CONTROLS */}
-      <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
+      <motion.div
+        className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative"
+        animate={{ opacity: isProcessing ? 0 : 1, filter: isProcessing ? 'blur(10px)' : 'blur(0px)' }}
+        transition={{ duration: 0.8 }}
+      >
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
         <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
+          <h1 className="text-4xl font-black tracking-tighter italic font-serif">
             S_FIT <span className="text-[#007AFF]">NEO</span>
           </h1>
           <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
@@ -159,7 +163,7 @@ export default function RealLifeFitting() {
           </div>
 
         </div>
-      </div>
+      </motion.div>
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
@@ -187,6 +191,22 @@ export default function RealLifeFitting() {
           </ErrorBoundary>
         </div>
 
+        {/* Processing Indicator for Right Panel (Minimal) */}
+        <AnimatePresence>
+            {isProcessing && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none"
+                >
+                    <div className="text-[#007AFF] font-mono text-xs tracking-[0.2em] animate-pulse">
+                        DIGITAL MIRROR SYNCHRONIZING...
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
+
         {/* Result Overlay (If success) */}
         {resultImage && !isProcessing && (
           <motion.div 
@@ -195,7 +215,7 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl luxury-filter" />
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
