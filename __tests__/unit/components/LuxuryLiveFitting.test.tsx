@@ -11,11 +11,16 @@ vi.mock('next/font/google', () => ({
 // Mock framer-motion components
 vi.mock('framer-motion', () => ({
   motion: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    img: ({ children, ...props }: any) => <img {...props} />,
-    path: ({ children, ...props }: any) => <path {...props} />,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars, @next/next/no-img-element, jsx-a11y/alt-text
+    img: ({ children: _children, ...props }: any) => <img {...props} />,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    path: (props: any) => <path {...props} />,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
@@ -34,7 +39,8 @@ vi.mock('@/data/mockData', () => ({
     { id: '1', name: 'TestBrand', description: 'Test Description', bannerImage: 'test-banner.jpg' },
     { id: '2', name: 'AnotherBrand', description: 'Another Description', bannerImage: 'another-banner.jpg' }
   ],
-  getItemsByBrand: (brandName: string) => [
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getItemsByBrand: (_brandName: string) => [
     { id: 'item1', name: 'Test Item', price: 1234.56, imageUrl: 'item1.jpg', category: 'tops' }
   ],
 }));

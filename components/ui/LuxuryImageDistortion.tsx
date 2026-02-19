@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useMemo } from 'react';
+import React, { useRef } from 'react';
 import { Canvas, useFrame, extend, ThreeElement } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
@@ -102,7 +102,6 @@ function ImagePlane({ imageUrl }: { imageUrl: string }) {
   return (
     <mesh ref={meshRef}>
       <planeGeometry args={[width, height, 32, 32]} />
-      {/* @ts-ignore: Intrinsic elements are tricky with custom shaders sometimes */}
       <waveShaderMaterial ref={materialRef} uTexture={texture} transparent />
     </mesh>
   );

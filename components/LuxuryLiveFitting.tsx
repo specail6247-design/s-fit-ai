@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Playfair_Display, Cinzel } from "next/font/google";
 import { motion, AnimatePresence } from "framer-motion";
 import { brands, getItemsByBrand, ClothingItem, Brand } from "@/data/mockData";
@@ -12,18 +12,14 @@ const cinzel = Cinzel({ subsets: ["latin"], variable: '--font-cinzel' });
 
 export default function LuxuryLiveFitting() {
   const [selectedBrand, setSelectedBrand] = useState<Brand>(brands.find(b => b.name === 'Gucci') || brands[0]);
-  const [items, setItems] = useState<ClothingItem[]>([]);
   const [selectedItem, setSelectedItem] = useState<ClothingItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load items when brand changes
-  useEffect(() => {
-    setIsLoading(true);
-    const brandItems = getItemsByBrand(selectedBrand.name);
-    setItems(brandItems);
-    setSelectedItem(brandItems[0] || null);
+  const items = useMemo(() => getItemsByBrand(selectedBrand.name), [selectedBrand]);
+  const currentItem = selectedItem || items[0] || null;
 
-    // Simulate loading delay for "sophisticated" feel
+  // Simulate loading delay for "sophisticated" feel
+  useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 1500);
@@ -131,7 +127,7 @@ export default function LuxuryLiveFitting() {
                     </motion.div>
                 ) : (
                     <motion.div
-                        key={selectedItem?.id}
+                        key={currentItem?.id}
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 1.05 }}
@@ -139,15 +135,15 @@ export default function LuxuryLiveFitting() {
                         className="relative h-[60vh] md:h-[70vh] w-full max-w-2xl"
                     >
                         {/* The Luxury Image Distortion Component */}
-                        {selectedItem && (
+                        {currentItem && (
                             <div className="relative w-full h-full border border-white/5 bg-black/20 backdrop-blur-sm shadow-2xl shadow-black/50">
-                                <LuxuryImageDistortion imageUrl={selectedItem.imageUrl} />
+                                <LuxuryImageDistortion imageUrl={currentItem.imageUrl} />
 
                                 {/* Item Details Overlay */}
                                 <div className="absolute bottom-8 left-8 right-8 flex justify-between items-end pointer-events-none">
                                     <div className="pointer-events-auto">
-                                        <h2 className="font-cinzel text-3xl text-white mb-2">{selectedItem.name}</h2>
-                                        <p className="font-playfair text-[#D4AF37] text-xl italic">{formatPrice(selectedItem.price)}</p>
+                                        <h2 className="font-cinzel text-3xl text-white mb-2">{currentItem.name}</h2>
+                                        <p className="font-playfair text-[#D4AF37] text-xl italic">{formatPrice(currentItem.price)}</p>
                                     </div>
                                     <button className="pointer-events-auto px-8 py-3 border border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black transition-all duration-500 uppercase tracking-widest text-xs font-bold">
                                         Try On
@@ -170,9 +166,10 @@ export default function LuxuryLiveFitting() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.1, duration: 0.8 }}
                         onClick={() => setSelectedItem(item)}
-                        className={`group relative cursor-pointer transition-all duration-700 ${selectedItem?.id === item.id ? 'opacity-100' : 'opacity-40 hover:opacity-80'}`}
+                        className={`group relative cursor-pointer transition-all duration-700 ${currentItem?.id === item.id ? 'opacity-100' : 'opacity-40 hover:opacity-80'}`}
                     >
                         <div className="aspect-[3/4] w-full overflow-hidden mb-3 border border-transparent group-hover:border-[#D4AF37]/30 transition-colors duration-500">
+                             {/* eslint-disable-next-line @next/next/no-img-element */}
                              <img
                                 src={item.imageUrl}
                                 alt={item.name}
@@ -184,7 +181,7 @@ export default function LuxuryLiveFitting() {
                             <p className="font-playfair text-xs text-white truncate px-2">{item.name}</p>
                         </div>
 
-                        {selectedItem?.id === item.id && (
+                        {currentItem?.id === item.id && (
                             <motion.div
                                 layoutId="active-indicator"
                                 className="absolute -left-4 top-1/2 h-8 w-[2px] bg-[#D4AF37]"
@@ -209,7 +206,11 @@ export default function LuxuryLiveFitting() {
              {brands.slice(0, 5).map(brand => (
                  <button
                     key={brand.id}
-                    onClick={() => setSelectedBrand(brand)}
+                    onClick={() => {
+                        setIsLoading(true);
+                        setSelectedBrand(brand);
+                        setSelectedItem(null);
+                    }}
                     className={`whitespace-nowrap px-4 py-2 text-[10px] uppercase tracking-widest transition-colors duration-500 ${selectedBrand.id === brand.id ? 'text-[#D4AF37] border-b border-[#D4AF37]' : 'text-white/40 hover:text-white'}`}
                  >
                      {brand.name}
