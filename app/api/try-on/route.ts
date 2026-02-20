@@ -1,46 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateVirtualTryOn } from '@/lib/virtualTryOn';
-import * as fs from 'fs';
-import * as path from 'path';
+import { localFileToDataUri } from '@/lib/fileUtils';
 
 // Config for Node.js Runtime (required for Replicate SDK)
 export const runtime = 'nodejs';
 export const maxDuration = 120;
-
-// Helper: Convert local file to base64 data URI
-function localFileToDataUri(localPath: string): string | null {
-  try {
-    // Remove leading slash and resolve to public directory
-    const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
-    const absolutePath = path.join(process.cwd(), 'public', relativePath);
-    
-    console.log('Reading local file:', absolutePath);
-    
-    if (!fs.existsSync(absolutePath)) {
-      console.error('File not found:', absolutePath);
-      return null;
-    }
-    
-    const fileBuffer = fs.readFileSync(absolutePath);
-    const base64 = fileBuffer.toString('base64');
-    
-    // Determine MIME type from extension
-    const ext = path.extname(localPath).toLowerCase();
-    const mimeTypes: Record<string, string> = {
-      '.png': 'image/png',
-      '.jpg': 'image/jpeg',
-      '.jpeg': 'image/jpeg',
-      '.webp': 'image/webp',
-      '.gif': 'image/gif'
-    };
-    const mimeType = mimeTypes[ext] || 'image/png';
-    
-    return `data:${mimeType};base64,${base64}`;
-  } catch (error) {
-    console.error('Error reading local file:', error);
-    return null;
-  }
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -75,17 +39,11 @@ export async function POST(request: NextRequest) {
           );
         }
         garmentImageInput = dataUri;
-        console.log('Converted local file to data URI, length:', dataUri.length);
       } else if (garmentImageUrl.startsWith('http://') || garmentImageUrl.startsWith('https://')) {
         // External URL - Replicate can fetch this directly
         garmentImageInput = garmentImageUrl;
       }
     }
-
-    console.log('Calling Replicate with:');
-    console.log('- userPhoto type:', userPhotoInput.startsWith('data:') ? 'data URI' : 'URL');
-    console.log('- garmentImage type:', garmentImageInput.startsWith('data:') ? 'data URI' : 'URL');
-    console.log('- category:', category || 'upper_body');
 
     // Call Replicate API
     const result = await generateVirtualTryOn({
