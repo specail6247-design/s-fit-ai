@@ -1,50 +1,51 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('User Flow', () => {
+test.describe('User Flow & Support Hub', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
   });
 
-  test('should complete Easy Fit flow', async ({ page }) => {
-    // 1. Select Easy Fit Mode
-    // Force click to ensure it hits even if covered or slightly off-screen in mobile
-    await page.getByText('EASY FIT').click({ force: true });
+  test('should open Support Hub and navigate tabs', async ({ page }) => {
+    // 1. Open Support Hub
+    const helpButton = page.getByRole('button', { name: 'Help & Support' });
+    await expect(helpButton).toBeVisible();
+    await helpButton.click();
 
-    // Verify selection (border color change or checkmark)
-    const continueToModeBtn = page.getByRole('button', { name: /Continue →/i });
-    await expect(continueToModeBtn).toBeEnabled();
-    await continueToModeBtn.click();
+    // Verify Drawer Opens
+    const supportHubHeader = page.getByRole('heading', { name: 'Support Hub' });
+    await expect(supportHubHeader).toBeVisible();
 
-    // 2. Input Stats
-    // Wait for "Easy Fit" header
-    await expect(page.getByRole('heading', { name: 'Easy Fit' })).toBeVisible();
+    // 2. Default Tab: Help & Guide
+    await expect(page.getByText('Getting Started')).toBeVisible();
+    await expect(page.getByText('Upload a clear, front-facing photo')).toBeVisible();
 
-    // Just click "Continue to Fitting Room" as defaults are valid.
-    await page.getByRole('button', { name: /Continue to Fitting Room/i }).click();
+    // 3. Navigate to Legal Tab
+    await page.getByRole('button', { name: 'Legal' }).click();
+    await expect(page.getByText('Privacy Policy')).toBeVisible();
+    await expect(page.getByText('Data Collection: We collect only the images')).toBeVisible();
+    await expect(page.getByText('Terms of Service')).toBeVisible();
 
-    // 3. Brand Selection
-    // Wait for "Select Brand" header
-    await expect(page.getByText('Select Brand')).toBeVisible();
+    // 4. Navigate to Report Tab
+    await page.getByRole('button', { name: 'Report Issue' }).click();
+    await expect(page.getByPlaceholder('e.g., Upload failed')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Send Report' })).toBeVisible();
 
-    // Easy Fit defaults to Uniqlo auto-selected.
-    // Check if Uniqlo button has class indicating selection (border-pure-white) or just check if "Enter Fitting Room" is enabled.
-    const enterFittingRoomBtn = page.getByRole('button', { name: /Enter Fitting Room/i });
-    await expect(enterFittingRoomBtn).toBeEnabled();
+    // 5. Close Support Hub
+    const closeButton = page.locator('button > span.material-symbols-outlined:has-text("close")');
+    await closeButton.click();
+    await expect(supportHubHeader).not.toBeVisible();
+  });
 
-    // We can also switch brand manually.
-    // Note: buttons in BrandSelector might have text "ZARA" and role "button"
-    await page.getByRole('button', { name: 'ZARA' }).click();
+  test('should prevent Try On without images', async ({ page }) => {
+    // Attempt to click Try On without uploading images
+    // Note: The app uses `alert()` which stops execution unless handled.
 
-    await enterFittingRoomBtn.click();
+    // Setup dialog handler
+    page.on('dialog', async dialog => {
+      expect(dialog.message()).toContain('Please upload both User Photo and Garment');
+      await dialog.dismiss();
+    });
 
-    // 4. Fitting Room
-    // Should see "Fitting Room" component.
-    // Home.tsx: "Back to brands" button visible.
-    await expect(page.getByRole('button', { name: /Back to brands/i })).toBeVisible();
-
-    // Should see 3D canvas (maybe check for canvas element)
-    // Note: WebGL might not be available in all headless environments
-    // We check if the container exists at least.
-    await expect(page.locator('.glass-card').first()).toBeVisible();
+    await page.getByRole('button', { name: /TRY IT ON/i }).click();
   });
 });
