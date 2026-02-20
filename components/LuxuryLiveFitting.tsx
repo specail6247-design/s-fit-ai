@@ -12,16 +12,15 @@ const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfa
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space" });
 
 export default function LuxuryLiveFitting() {
-  const [selectedItem, setSelectedItem] = useState<ClothingItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<ClothingItem | null>(() => {
+    // Filter for luxury items, fallback to all if none found
+    const luxuryItems = mockClothingItems.filter(i => i.isLuxury);
+    return luxuryItems.length > 0 ? luxuryItems[0] : mockClothingItems[0];
+  });
   const [loading, setLoading] = useState(true);
 
   // Initialize with a luxury item
   useEffect(() => {
-    // Filter for luxury items, fallback to all if none found
-    const luxuryItems = mockClothingItems.filter(i => i.isLuxury);
-    const initialItem = luxuryItems.length > 0 ? luxuryItems[0] : mockClothingItems[0];
-    setSelectedItem(initialItem);
-
     // Simulate initial loading for the "Sophisticated Loading State"
     const timer = setTimeout(() => setLoading(false), 2000);
     return () => clearTimeout(timer);
@@ -92,6 +91,7 @@ export default function LuxuryLiveFitting() {
                  transition={{ duration: 1.5 }}
                  className="absolute inset-0 z-0"
                >
+                 {/* eslint-disable-next-line @next/next/no-img-element */}
                  <img
                    src={selectedBrand.bannerImage}
                    alt={selectedBrand.name}
@@ -181,6 +181,7 @@ export default function LuxuryLiveFitting() {
                     >
                         <div className="relative aspect-[3/4] w-full overflow-hidden rounded-sm border border-white/5 group-hover:border-[#ecab13]/30 transition-colors duration-500">
                             {/* We use a simple img here for the list, the distortion is only for the main view */}
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={item.imageUrl}
                                 alt={item.name}

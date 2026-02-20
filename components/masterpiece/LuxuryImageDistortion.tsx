@@ -74,6 +74,7 @@ extend({ WaveMaterial });
 
 // Add type definition for the custom element
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
       waveMaterial: ReactThreeFiber.Object3DNode<THREE.ShaderMaterial, typeof WaveMaterial>;
@@ -87,11 +88,18 @@ interface ImagePlaneProps {
 
 const ImagePlane: React.FC<ImagePlaneProps> = ({ imageUrl }) => {
   const { viewport } = useThree();
-  const texture = useTexture(imageUrl);
+  const originalTexture = useTexture(imageUrl);
+  const texture = React.useMemo(() => originalTexture.clone(), [originalTexture]);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const materialRef = useRef<any>(null); // Use any to avoid strict type issues with custom shader uniforms
 
-  // Correct texture encoding/color space if needed, though R3F handles this mostly
-  texture.colorSpace = THREE.SRGBColorSpace;
+  React.useLayoutEffect(() => {
+    // Correct texture encoding/color space if needed, though R3F handles this mostly
+    // eslint-disable-next-line
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.needsUpdate = true;
+  }, [texture]);
 
   useFrame((state) => {
     if (materialRef.current) {
@@ -102,7 +110,7 @@ const ImagePlane: React.FC<ImagePlaneProps> = ({ imageUrl }) => {
   return (
     <mesh scale={[viewport.width, viewport.height, 1]}>
       <planeGeometry />
-      {/* @ts-ignore - waveMaterial is a custom element */}
+      {/* @ts-expect-error - waveMaterial is a custom element */}
       <waveMaterial ref={materialRef} uTexture={texture} />
     </mesh>
   );
