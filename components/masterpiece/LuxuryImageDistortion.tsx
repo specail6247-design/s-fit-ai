@@ -77,7 +77,8 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
-      waveMaterial: ReactThreeFiber.Object3DNode<THREE.ShaderMaterial, typeof WaveMaterial>;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      waveMaterial: any;
     }
   }
 }
