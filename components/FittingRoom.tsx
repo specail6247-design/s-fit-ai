@@ -1261,7 +1261,7 @@ export function FittingRoom() {
               <span className="text-lg">💡</span>
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-cyber-lime mb-0.5">Stylist Tip</p>
-                <p className="text-[10px] text-soft-gray italic leading-relaxed">"{currentItem.stylingTip}"</p>
+                <p className="text-[10px] text-soft-gray italic leading-relaxed">&quot;{currentItem.stylingTip}&quot;</p>
               </div>
             </motion.div>
           )}
