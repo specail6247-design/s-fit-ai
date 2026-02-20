@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 const SFitAIProject = () => {
   const [userImage, setUserImage] = useState<string | null>(null);
@@ -64,7 +65,11 @@ const SFitAIProject = () => {
             <h3>User Photo</h3>
             <div style={styles.uploadBox}>
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} />
-              {userImage && <img src={userImage} style={styles.preview} alt="User" />}
+              {userImage && (
+                <div style={{ position: 'relative', height: '200px', width: '100%', marginTop: '10px' }}>
+                  <Image src={userImage} alt="User" fill style={{ borderRadius: '10px', objectFit: 'cover' }} unoptimized />
+                </div>
+              )}
             </div>
           </div>
 
@@ -72,7 +77,11 @@ const SFitAIProject = () => {
             <h3>Garment</h3>
             <div style={styles.uploadBox}>
               <input type="file" onChange={(e) => handleFileUpload(e, setClothingImage)} />
-              {clothingImage && <img src={clothingImage} style={styles.preview} alt="Cloth" />}
+              {clothingImage && (
+                <div style={{ position: 'relative', height: '200px', width: '100%', marginTop: '10px' }}>
+                  <Image src={clothingImage} alt="Cloth" fill style={{ borderRadius: '10px', objectFit: 'cover' }} unoptimized />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -90,7 +99,9 @@ const SFitAIProject = () => {
         {finalResult && (
           <div style={styles.resultContainer}>
             <h2 style={styles.resultTitle}>Fitting Result</h2>
-            <img src={finalResult} style={styles.finalImg} alt="Result" />
+            <div style={{ position: 'relative', maxWidth: '100%', height: 'auto', minHeight: '400px' }}>
+              <Image src={finalResult} alt="Result" width={600} height={800} style={{ maxWidth: '100%', height: 'auto', borderRadius: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }} unoptimized />
+            </div>
           </div>
         )}
       </main>
