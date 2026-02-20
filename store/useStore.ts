@@ -109,6 +109,8 @@ interface StoreState {
   // UI State
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
+  isSupportOpen: boolean;
+  toggleSupport: () => void;
 
   // Reset
   resetSession: () => void;
@@ -234,6 +236,8 @@ export const useStore = create<StoreState>()(
       // UI State
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
+      isSupportOpen: false,
+      toggleSupport: () => set((state) => ({ isSupportOpen: !state.isSupportOpen })),
 
       // Reset Session
       resetSession: () =>
