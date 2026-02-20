@@ -33,9 +33,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         />
 
         {/* Overlay Actions */}
-        <div className="absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100 flex items-center justify-center">
           <motion.button
             onClick={onTryOn}
+            aria-label={`Try on ${name}`}
             className="rounded-full bg-[var(--color-surface)] px-6 py-2 text-sm font-semibold text-[var(--color-secondary)] hover:bg-[var(--color-primary)] transition-colors shadow-lg"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
