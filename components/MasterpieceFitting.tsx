@@ -166,6 +166,7 @@ export default function MasterpieceFitting() {
                <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload-lux" />
                <label htmlFor="user-upload-lux" className="cursor-pointer flex items-center gap-4">
                  <div className="w-12 h-12 bg-black rounded border border-white/10 overflow-hidden flex items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     {userImage ? <img src={userImage} className="w-full h-full object-cover" alt="User" /> : <span className="text-xl text-gray-600">👤</span>}
                  </div>
                  <div>
@@ -183,6 +184,7 @@ export default function MasterpieceFitting() {
                <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload-lux" />
                <label htmlFor="garment-upload-lux" className="cursor-pointer flex items-center gap-4">
                  <div className="w-12 h-12 bg-black rounded border border-white/10 overflow-hidden flex items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" alt="Garment" /> : <span className="text-xl text-gray-600">👗</span>}
                  </div>
                  <div>
@@ -204,7 +206,8 @@ export default function MasterpieceFitting() {
                         className={`aspect-square rounded border ${selectedAccessory.id === acc.id ? 'border-[#ecab13] bg-[#ecab13]/10' : 'border-white/10 bg-black'} flex items-center justify-center relative overflow-hidden group transition-all`}
                         title={acc.name}
                     >
-                        {acc.image ? <img src={acc.image} className="w-full h-full object-cover opacity-70 group-hover:opacity-100" /> : <span className="text-[9px] text-gray-600">None</span>}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        {acc.image ? <img src={acc.image} className="w-full h-full object-cover opacity-70 group-hover:opacity-100" alt={acc.name} /> : <span className="text-[9px] text-gray-600">None</span>}
                     </button>
                 ))}
             </div>
@@ -242,10 +245,12 @@ export default function MasterpieceFitting() {
                         <video src={cinematicVideo} autoPlay loop controls className="w-full h-full object-contain rounded-lg shadow-2xl border border-white/10" />
                     ) : (
                         <div className="relative w-full h-full">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={isZoomed && highResImage ? highResImage : resultImage}
                                 className={`w-full h-full object-contain rounded-lg shadow-2xl border border-white/10 transition-transform duration-700 ${isZoomed ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in'}`}
                                 onClick={() => isZoomed ? setIsZoomed(false) : handleUpscale()}
+                                alt="Result"
                             />
 
                             {/* Controls Overlay */}
