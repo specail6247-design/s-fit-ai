@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, Suspense } from 'react';
-import { Canvas, useFrame, useLoader, extend, useThree, ReactThreeFiber } from '@react-three/fiber';
+import { Canvas, useFrame, useLoader, extend, useThree } from '@react-three/fiber';
 import { TextureLoader, Vector2, Color } from 'three';
 import * as THREE from 'three';
 import { shaderMaterial } from '@react-three/drei';
@@ -93,34 +93,20 @@ extend({ WaveMaterial: WaveShaderMaterial });
 // Add type definition to intrinsic elements
 declare module '@react-three/fiber' {
   interface ThreeElements {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     waveMaterial: any;
   }
 }
 
 function ImagePlane({ imageUrl }: { imageUrl: string }) {
   const meshRef = useRef<THREE.Mesh>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const materialRef = useRef<any>(null); // Using any to avoid strict type issues with custom shader material props
   const texture = useLoader(TextureLoader, imageUrl);
   const { viewport } = useThree();
   const hoverValue = useRef(0);
 
-  // Calculate aspect ratio to cover (object-fit: cover equivalent)
-  const imageAspect = texture.image.width / texture.image.height;
-  const viewportAspect = viewport.width / viewport.height;
-
-  let scaleX = viewport.width;
-  let scaleY = viewport.height;
-
-  if (imageAspect > viewportAspect) {
-     // Image is wider than viewport
-     // scaleX = viewport.height * imageAspect;
-  } else {
-     // Image is taller than viewport
-     // scaleY = viewport.width / imageAspect;
-  }
-  // Actually, for a simple plane filling the canvas, we just use viewport size and let the texture stretch or UV map handle it.
-  // But to simulate "cover", we should adjust UVs or scale the plane.
-  // For simplicity here, we'll stretch the plane to viewport and let the distortion happen.
+  // Removed unused scaleX/scaleY calculation logic that was causing linting errors
 
   useFrame((state) => {
     if (materialRef.current) {
