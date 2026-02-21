@@ -1,11 +1,12 @@
 // S_FIT AI - Mock Data
 // 15 items: 5 Mass Market (ZARA), 5 Luxury (Gucci), 5 Basic (Uniqlo)
 // Updated with real product images
+import { luxuryBrands, luxuryItems } from './luxuryProducts';
 
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Hermes';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -29,73 +30,55 @@ export interface Brand {
 
 // Brand Data
 export const brands: Brand[] = [
+  ...luxuryBrands,
   {
     id: 'zara',
     name: 'ZARA',
-    logo: 'https://placehold.co/100x100?text=ZARA',
+    logo: 'https://placehold.co/100x100.png?text=ZARA',
     isLuxury: false,
     tier: 'mass',
   },
   {
-    id: 'gucci',
-    name: 'GUCCI',
-    logo: 'https://placehold.co/100x100?text=GUCCI',
-    isLuxury: true,
-    tier: 'luxury',
-  },
-  {
     id: 'uniqlo',
     name: 'UNIQLO',
-    logo: 'https://placehold.co/100x100?text=UNIQLO',
+    logo: 'https://placehold.co/100x100.png?text=UNIQLO',
     isLuxury: false,
     tier: 'basic',
   },
   {
     id: 'hm',
     name: 'H&M',
-    logo: 'https://placehold.co/100x100?text=H%26M',
+    logo: 'https://placehold.co/100x100.png?text=H%26M',
     isLuxury: false,
     tier: 'mass',
   },
   {
     id: 'cos',
     name: 'COS',
-    logo: 'https://placehold.co/100x100?text=COS',
+    logo: 'https://placehold.co/100x100.png?text=COS',
     isLuxury: false,
     tier: 'mass',
   },
   {
     id: 'gap',
     name: 'GAP',
-    logo: 'https://placehold.co/100x100?text=GAP',
+    logo: 'https://placehold.co/100x100.png?text=GAP',
     isLuxury: false,
     tier: 'basic',
   },
   {
-    id: 'chanel',
-    name: 'Chanel',
-    logo: 'https://placehold.co/100x100?text=CHANEL',
-    isLuxury: true,
-    tier: 'luxury',
-  },
-  {
     id: 'supreme',
     name: 'Supreme',
-    logo: 'https://placehold.co/100x100?text=SUPREME',
+    logo: 'https://placehold.co/100x100.png?text=SUPREME',
     isLuxury: false,
     tier: 'mass',
-  },
-  {
-    id: 'tiffany',
-    name: 'Tiffany',
-    logo: 'https://placehold.co/100x100?text=TIFFANY',
-    isLuxury: true,
-    tier: 'luxury',
   },
 ];
 
 // Mock Clothing Items with Real Product Images
 export const mockClothingItems: ClothingItem[] = [
+  ...luxuryItems,
+
   // ZARA - Mass Market (5 items)
   {
     id: 'zara-001',
@@ -166,78 +149,6 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     colors: ['Black', 'Brown'],
     description: 'Faux leather bomber with ribbed trim',
-  },
-
-  // GUCCI - Luxury (5 items with isLuxury: true)
-  {
-    id: 'gucci-001',
-    name: 'GG Jacquard Wool Blazer',
-    brand: 'Gucci',
-    category: 'outerwear',
-    price: 2890.00,
-    currency: 'USD',
-    imageUrl: '/clothing/gucci_blazer.png',
-    textureUrl: '/clothing/gucci_blazer.png',
-    isLuxury: true,
-    sizes: ['IT 44', 'IT 46', 'IT 48', 'IT 50', 'IT 52'],
-    colors: ['Beige/Ebony'],
-    description: 'Iconic GG pattern wool blazer with silk lining',
-  },
-  {
-    id: 'gucci-002',
-    name: 'Horsebit Silk Blouse',
-    brand: 'Gucci',
-    category: 'tops',
-    price: 1450.00,
-    currency: 'USD',
-    imageUrl: '/clothing/gucci_blouse.png',
-    textureUrl: '/clothing/gucci_blouse.png',
-    isLuxury: true,
-    sizes: ['IT 38', 'IT 40', 'IT 42', 'IT 44', 'IT 46'],
-    colors: ['Ivory', 'Black'],
-    description: 'Pure silk blouse with signature horsebit print',
-  },
-  {
-    id: 'gucci-003',
-    name: 'Web Stripe Track Pants',
-    brand: 'Gucci',
-    category: 'bottoms',
-    price: 980.00,
-    currency: 'USD',
-    imageUrl: '/clothing/gucci_pants.png',
-    textureUrl: '/clothing/gucci_pants.png',
-    isLuxury: true,
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    colors: ['Black', 'Navy'],
-    description: 'Technical jersey pants with Web stripe',
-  },
-  {
-    id: 'gucci-004',
-    name: 'Flora Print Georgette Dress',
-    brand: 'Gucci',
-    category: 'dresses',
-    price: 3200.00,
-    currency: 'USD',
-    imageUrl: '/clothing/gucci_dress.png',
-    textureUrl: '/clothing/gucci_dress.png',
-    isLuxury: true,
-    sizes: ['IT 38', 'IT 40', 'IT 42', 'IT 44'],
-    colors: ['Pink Flora'],
-    description: 'Flowing silk georgette dress with iconic Flora print',
-  },
-  {
-    id: 'gucci-005',
-    name: 'Leather Bomber with Patches',
-    brand: 'Gucci',
-    category: 'outerwear',
-    price: 5500.00,
-    currency: 'USD',
-    imageUrl: '/clothing/gucci_bomber.png',
-    textureUrl: '/clothing/gucci_bomber.png',
-    isLuxury: true,
-    sizes: ['IT 46', 'IT 48', 'IT 50', 'IT 52'],
-    colors: ['Black'],
-    description: 'Genuine leather bomber with embroidered patches',
   },
 
   // UNIQLO - Basic (5 items)
@@ -486,23 +397,7 @@ export const mockClothingItems: ClothingItem[] = [
     description: 'Comfortable athletic joggers',
   },
 
-  // ACCESSORIES - New Category
-  {
-    id: 'chanel-bag-001',
-    name: 'Classic Flap Bag',
-    brand: 'Chanel',
-    category: 'accessories',
-    subCategory: 'bag',
-    zIndex: 50,
-    price: 10200.00,
-    currency: 'USD',
-    imageUrl: '/accessories/chanel_bag.png',
-    textureUrl: '/accessories/chanel_bag.png',
-    isLuxury: true,
-    sizes: ['One Size'],
-    colors: ['Black', 'Beige'],
-    description: 'Iconic quilted leather handbag with chain strap',
-  },
+  // Supreme Hat
   {
     id: 'supreme-hat-001',
     name: 'Box Logo Camp Cap',
@@ -518,22 +413,6 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['Adjustable'],
     colors: ['Red', 'Black', 'Camo'],
     description: 'Cotton canvas camp cap with woven box logo',
-  },
-  {
-    id: 'tiffany-necklace-001',
-    name: 'T Smile Pendant',
-    brand: 'Tiffany',
-    category: 'accessories',
-    subCategory: 'jewelry',
-    zIndex: 35,
-    price: 1200.00,
-    currency: 'USD',
-    imageUrl: '/accessories/tiffany_necklace.png',
-    textureUrl: '/accessories/tiffany_necklace.png',
-    isLuxury: true,
-    sizes: ['One Size'],
-    colors: ['Gold', 'Silver'],
-    description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
   },
 ];
 
