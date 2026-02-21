@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -11,6 +12,7 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const { toggleSupport } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -71,6 +73,85 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Background
+      const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
+      gradient.addColorStop(0, '#0a0a0a');
+      gradient.addColorStop(1, '#1a1a1a');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 1080, 1920);
+
+      // Load Image
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = resultImage;
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      // Draw Image (Centered, Fit Width)
+      const scale = 1080 / img.width;
+      const h = img.height * scale;
+      const y = (1920 - h) / 2;
+
+      // Draw a subtle shadow/glow behind the image
+      ctx.shadowColor = '#007AFF';
+      ctx.shadowBlur = 50;
+      ctx.drawImage(img, 0, y, 1080, h);
+      ctx.shadowBlur = 0;
+
+      // Branding Overlay
+      const bottomGrad = ctx.createLinearGradient(0, 1920 - 400, 0, 1920);
+      bottomGrad.addColorStop(0, 'transparent');
+      bottomGrad.addColorStop(1, 'rgba(0,0,0,0.9)');
+      ctx.fillStyle = bottomGrad;
+      ctx.fillRect(0, 1920 - 400, 1080, 400);
+
+      // Text
+      ctx.textAlign = 'center';
+
+      // "S_FIT"
+      ctx.font = 'italic 900 80px Arial, sans-serif';
+      ctx.fillStyle = 'white';
+      ctx.fillText('S_FIT', 480, 1920 - 200);
+
+      // "NEO"
+      ctx.fillStyle = '#007AFF';
+      ctx.fillText('NEO', 640, 1920 - 200);
+
+      // Tagline
+      ctx.font = '30px Arial, sans-serif';
+      ctx.fillStyle = '#cccccc';
+      ctx.fillText('VIRTUAL FITTING EXPERIENCE', 540, 1920 - 140);
+
+      // Date
+      ctx.font = '24px Arial, sans-serif';
+      ctx.fillStyle = '#666666';
+      ctx.fillText(new Date().toLocaleDateString().toUpperCase(), 540, 1920 - 90);
+
+      // Download
+      const dataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `s_fit_story_${Date.now()}.png`;
+      link.href = dataUrl;
+      link.click();
+
+    } catch (e) {
+      console.error("Share generation failed", e);
+      alert("Could not generate story image. Ensure images are accessible.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
@@ -79,13 +160,22 @@ export default function RealLifeFitting() {
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+        <header className="mb-10 relative z-10 flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-black tracking-tighter italic">
+              S_FIT <span className="text-[#007AFF]">NEO</span>
+            </h1>
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+              Professional Virtual Fitting
+            </p>
+          </div>
+          <button
+            onClick={toggleSupport}
+            className="w-10 h-10 rounded-full border border-white/20 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+            title="Help & Support"
+          >
+            ?
+          </button>
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
@@ -158,6 +248,17 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Data Safety Badge */}
+          <div className="mt-6 flex items-center gap-3 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+            <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 text-lg">
+              🛡️
+            </div>
+            <div>
+              <p className="text-[10px] font-bold text-green-400 uppercase tracking-wider">Privacy Protected</p>
+              <p className="text-[10px] text-gray-400">Photos processed securely & deleted in 24h.</p>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -205,6 +306,13 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-[#E1306C] text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-[#C13584] transition-colors shadow-lg"
+              >
+                <span>📷</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
