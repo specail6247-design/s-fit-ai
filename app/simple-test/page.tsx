@@ -1,7 +1,5 @@
-'use client';
-
-import SFitAIProject from '@/components/SimpleTryOn';
+import SimpleTryOn from '@/components/SimpleTryOn';
 
 export default function SimpleTestPage() {
-  return <SFitAIProject />;
+  return <SimpleTryOn />;
 }
