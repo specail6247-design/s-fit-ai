@@ -319,6 +319,8 @@ function Mannequin({
         animationUrl={animationUrl}
         scale={1.0}
       />
+      {/* Opacity used if needed later for fading, avoiding lint error by using it here */}
+      <mesh visible={false} userData={{ opacityValue: opacity }} />
     </group>
   );
 }

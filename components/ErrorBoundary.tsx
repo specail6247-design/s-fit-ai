@@ -16,7 +16,9 @@ export class ErrorBoundary extends Component<Props, State> {
     hasError: false
   };
 
-  public static getDerivedStateFromError(_: Error): State {
+  public static getDerivedStateFromError(error: Error): State {
+    // Log the error to ensure the parameter is used and not just ignored with _
+    console.error("ErrorBoundary caught error during render:", error);
     return { hasError: true };
   }
 
