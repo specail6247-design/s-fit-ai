@@ -72,7 +72,7 @@ const SFitAIProject = () => {
             <h3>Garment</h3>
             <div style={styles.uploadBox}>
               <input type="file" onChange={(e) => handleFileUpload(e, setClothingImage)} />
-              {clothingImage && <img src={clothingImage} style={styles.preview} alt="Cloth" />}
+              {clothingImage && <img src={clothingImage} style={styles.preview} alt="Garment" />}
             </div>
           </div>
         </div>

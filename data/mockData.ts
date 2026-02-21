@@ -6,9 +6,9 @@ import { luxuryBrands, luxuryItems } from './luxuryProducts';
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Hermes';
-  category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
-  subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
+  brand: string;
+  category: string;
+  subCategory?: string;
   zIndex?: number;
   price: number;
   currency: string;
@@ -25,7 +25,7 @@ export interface Brand {
   name: string;
   logo: string;
   isLuxury: boolean;
-  tier: 'mass' | 'luxury' | 'basic';
+  tier: string;
 }
 
 // Brand Data
