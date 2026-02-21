@@ -20,3 +20,9 @@ https://nextjs.org/telemetry
  GET /luxury/fitting 200 in 125ms (compile: 10ms, render: 115ms)
  GET /luxury/fitting 200 in 247ms (compile: 24ms, render: 222ms)
  GET /luxury/fitting 200 in 112ms (compile: 9ms, render: 103ms)
+○ Compiling / ...
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET / 200 in 13.2s (compile: 12.7s, render: 437ms)
+ GET / 200 in 90ms (compile: 10ms, render: 80ms)
+ GET / 200 in 53ms (compile: 4ms, render: 49ms)
+ GET / 200 in 56ms (compile: 6ms, render: 51ms)
