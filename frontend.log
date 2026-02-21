@@ -1,0 +1,46 @@
+
+> s-fit-ai@0.1.0 dev
+> next dev --webpack
+
+▲ Next.js 16.1.4 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+
+✓ Starting...
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+✓ Ready in 2.3s
+○ Compiling /luxury/fitting ...
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /luxury/fitting 200 in 12.2s (compile: 11.7s, render: 494ms)
+ GET /luxury/fitting 200 in 123ms (compile: 8ms, render: 114ms)
+ GET /luxury/fitting 200 in 148ms (compile: 7ms, render: 140ms)
+○ Compiling / ...
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET / 200 in 19.7s (compile: 19.3s, render: 440ms)
+ GET / 200 in 81ms (compile: 8ms, render: 73ms)
+ GET / 200 in 175ms (compile: 14ms, render: 161ms)
+ GET / 200 in 180ms (compile: 17ms, render: 162ms)
+ GET / 200 in 132ms (compile: 38ms, render: 95ms)
+○ Compiling /luxury ...
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /luxury 200 in 4.3s (compile: 3.8s, render: 486ms)
+ GET / 200 in 250ms (compile: 41ms, render: 209ms)
+ GET / 200 in 89ms (compile: 7ms, render: 81ms)
+ GET /luxury 200 in 733ms (compile: 17ms, render: 717ms)
+ GET / 200 in 3.2s (compile: 104ms, render: 3.1s)
+ GET / 200 in 101ms (compile: 6ms, render: 95ms)
+ GET / 200 in 109ms (compile: 5ms, render: 104ms)
+ GET / 200 in 74ms (compile: 5ms, render: 69ms)
+ GET /luxury 200 in 89ms (compile: 8ms, render: 81ms)
+ GET / 200 in 63ms (compile: 5ms, render: 58ms)
+ GET / 200 in 63ms (compile: 4ms, render: 59ms)
+ GET / 200 in 53ms (compile: 4ms, render: 49ms)
+ GET /luxury 200 in 125ms (compile: 18ms, render: 107ms)
+ GET / 200 in 60ms (compile: 4ms, render: 56ms)
+ GET / 200 in 87ms (compile: 6ms, render: 82ms)
+ GET /luxury 200 in 160ms (compile: 26ms, render: 134ms)
+ GET / 200 in 131ms (compile: 4ms, render: 127ms)

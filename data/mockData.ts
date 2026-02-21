@@ -5,9 +5,9 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Cartier' | 'Hermes';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
-  subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
+  subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses' | 'belt';
   zIndex?: number;
   price: number;
   currency: string;
@@ -17,6 +17,7 @@ export interface ClothingItem {
   sizes: string[];
   colors: string[];
   description: string;
+  material?: string;
 }
 
 export interface Brand {
@@ -92,6 +93,20 @@ export const brands: Brand[] = [
     isLuxury: true,
     tier: 'luxury',
   },
+  {
+    id: 'cartier',
+    name: 'Cartier',
+    logo: 'https://placehold.co/100x100?text=CARTIER',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'hermes',
+    name: 'Hermes',
+    logo: 'https://placehold.co/100x100?text=HERMES',
+    isLuxury: true,
+    tier: 'luxury',
+  },
 ];
 
 // Mock Clothing Items with Real Product Images
@@ -110,6 +125,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy', 'Beige'],
     description: 'Relaxed fit blazer with structured shoulders',
+    material: 'Polyester Blend',
   },
   {
     id: 'zara-002',
@@ -124,6 +140,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'White', 'Camel'],
     description: 'Elegant wide leg trousers with pleats',
+    material: 'Polyester Viscose',
   },
   {
     id: 'zara-003',
@@ -138,6 +155,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L'],
     colors: ['Cream', 'Black', 'Sage'],
     description: 'Minimalist cropped sweater',
+    material: 'Cotton Blend',
   },
   {
     id: 'zara-004',
@@ -152,6 +170,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Champagne', 'Black', 'Burgundy'],
     description: 'Elegant satin dress with cowl neck',
+    material: 'Satin',
   },
   {
     id: 'zara-005',
@@ -166,6 +185,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     colors: ['Black', 'Brown'],
     description: 'Faux leather bomber with ribbed trim',
+    material: 'Faux Leather',
   },
 
   // GUCCI - Luxury (5 items with isLuxury: true)
@@ -182,6 +202,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 44', 'IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Beige/Ebony'],
     description: 'Iconic GG pattern wool blazer with silk lining',
+    material: 'Wool',
   },
   {
     id: 'gucci-002',
@@ -196,6 +217,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 38', 'IT 40', 'IT 42', 'IT 44', 'IT 46'],
     colors: ['Ivory', 'Black'],
     description: 'Pure silk blouse with signature horsebit print',
+    material: 'Silk',
   },
   {
     id: 'gucci-003',
@@ -210,6 +232,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy'],
     description: 'Technical jersey pants with Web stripe',
+    material: 'Technical Jersey',
   },
   {
     id: 'gucci-004',
@@ -224,6 +247,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 38', 'IT 40', 'IT 42', 'IT 44'],
     colors: ['Pink Flora'],
     description: 'Flowing silk georgette dress with iconic Flora print',
+    material: 'Silk Georgette',
   },
   {
     id: 'gucci-005',
@@ -238,6 +262,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Black'],
     description: 'Genuine leather bomber with embroidered patches',
+    material: 'Leather',
   },
 
   // UNIQLO - Basic (5 items)
@@ -254,6 +279,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['Black', 'Navy', 'Olive', 'Wine'],
     description: 'Lightweight, compact down jacket',
+    material: 'Nylon',
   },
   {
     id: 'uniqlo-002',
@@ -268,6 +294,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
     colors: ['White', 'Black', 'Gray', 'Navy', 'Olive'],
     description: 'Premium Supima cotton basic tee',
+    material: 'Supima Cotton',
   },
   {
     id: 'uniqlo-003',
@@ -282,6 +309,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['Black', 'Navy', 'Gray', 'Beige'],
     description: 'Easy care stretch ankle pants',
+    material: 'Polyester Blend',
   },
   {
     id: 'uniqlo-004',
@@ -296,6 +324,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['Black', 'Navy', 'Wine', 'Cream'],
     description: 'Soft merino wool blend crew neck',
+    material: 'Merino Wool',
   },
   {
     id: 'uniqlo-005',
@@ -310,6 +339,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy', 'Olive'],
     description: 'Comfortable everyday rayon dress',
+    material: 'Rayon',
   },
 
   // H&M - Mass Market (5 items)
@@ -326,6 +356,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['White', 'Light Blue', 'Black'],
     description: 'Classic slim fit dress shirt',
+    material: 'Cotton Blend',
   },
   {
     id: 'hm-002',
@@ -340,6 +371,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy', 'Gray'],
     description: 'Versatile regular fit blazer',
+    material: 'Polyester',
   },
   {
     id: 'hm-003',
@@ -354,6 +386,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['28', '30', '32', '34', '36'],
     colors: ['Dark Blue', 'Black', 'Light Blue'],
     description: 'Cotton blend slim fit jeans',
+    material: 'Denim',
   },
   {
     id: 'hm-004',
@@ -368,6 +401,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['White', 'Black', 'Beige'],
     description: 'Fitted ribbed tank top',
+    material: 'Cotton Rib',
   },
   {
     id: 'hm-005',
@@ -382,6 +416,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Floral', 'Red'],
     description: 'Elegant wrap dress with tie waist',
+    material: 'Viscose',
   },
 
   // COS - Premium Mass Market (2 items)
@@ -398,6 +433,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L'],
     colors: ['Black', 'Cream', 'Navy'],
     description: 'Minimalist wool blend top',
+    material: 'Wool',
   },
   {
     id: 'cos-002',
@@ -412,6 +448,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L'],
     colors: ['Black', 'Beige', 'Gray'],
     description: 'High-waisted wide-leg trousers',
+    material: 'Wool Blend',
   },
 
   // GAP - Basic (5 items)
@@ -428,6 +465,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['Gray', 'Navy', 'Black', 'Oatmeal'],
     description: 'Soft fleece pullover hoodie',
+    material: 'Cotton Fleece',
   },
   {
     id: 'gap-002',
@@ -442,6 +480,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['White', 'Blue', 'Pink'],
     description: 'Classic button-down oxford shirt',
+    material: 'Cotton Oxford',
   },
   {
     id: 'gap-003',
@@ -456,6 +495,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['White', 'Black', 'Navy', 'Gray'],
     description: 'Everyday essential cotton tee',
+    material: 'Cotton',
   },
   {
     id: 'gap-004',
@@ -470,6 +510,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['28', '30', '32', '34', '36', '38'],
     colors: ['Khaki', 'Navy', 'Black'],
     description: 'Straight fit modern khaki pants',
+    material: 'Cotton Twill',
   },
   {
     id: 'gap-005',
@@ -484,6 +525,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Gray', 'Navy'],
     description: 'Comfortable athletic joggers',
+    material: 'Performance Blend',
   },
 
   // ACCESSORIES - New Category
@@ -502,6 +544,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Black', 'Beige'],
     description: 'Iconic quilted leather handbag with chain strap',
+    material: 'Lambskin',
   },
   {
     id: 'supreme-hat-001',
@@ -518,6 +561,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['Adjustable'],
     colors: ['Red', 'Black', 'Camo'],
     description: 'Cotton canvas camp cap with woven box logo',
+    material: 'Cotton Canvas',
   },
   {
     id: 'tiffany-necklace-001',
@@ -534,6 +578,58 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+    material: '18k Gold',
+  },
+  {
+    id: 'chanel-scarf-001',
+    name: 'Silk Twill Scarf',
+    brand: 'Chanel',
+    category: 'accessories',
+    subCategory: 'scarf',
+    zIndex: 40,
+    price: 450.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x400.png?text=Chanel+Scarf',
+    textureUrl: 'https://placehold.co/400x400.png?text=Texture',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Multi'],
+    description: 'Hand-rolled silk twill scarf with floral print',
+    material: 'Silk',
+  },
+  {
+    id: 'cartier-ring-001',
+    name: 'Love Ring',
+    brand: 'Cartier',
+    category: 'accessories',
+    subCategory: 'jewelry',
+    zIndex: 35,
+    price: 1850.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x400.png?text=Cartier+Ring',
+    textureUrl: 'https://placehold.co/400x400.png?text=Texture',
+    isLuxury: true,
+    sizes: ['52', '54', '56'],
+    colors: ['Yellow Gold', 'Rose Gold', 'White Gold'],
+    description: 'Iconic screw motif, oval shape, and undeniable elegance',
+    material: 'Yellow Gold',
+  },
+  {
+    id: 'hermes-belt-001',
+    name: 'H Belt Buckle & Leather Strap',
+    brand: 'Hermes',
+    category: 'accessories',
+    subCategory: 'belt',
+    zIndex: 45,
+    price: 850.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x400.png?text=Hermes+Belt',
+    textureUrl: 'https://placehold.co/400x400.png?text=Texture',
+    isLuxury: true,
+    sizes: ['85', '90', '95'],
+    colors: ['Black/Gold'],
+    description: 'Reversible leather strap with gold-plated H buckle',
+    material: 'Box Calfskin',
   },
 ];
 
