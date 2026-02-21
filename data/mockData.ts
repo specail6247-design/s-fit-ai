@@ -17,6 +17,9 @@ export interface ClothingItem {
   sizes: string[];
   colors: string[];
   description: string;
+  stylingTip?: string;
+  locked?: boolean;
+  unlockDate?: string;
 }
 
 export interface Brand {
@@ -110,6 +113,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy', 'Beige'],
     description: 'Relaxed fit blazer with structured shoulders',
+    stylingTip: 'Pair with wide-leg trousers for a modern power suit look.',
   },
   {
     id: 'zara-002',
@@ -124,6 +128,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'White', 'Camel'],
     description: 'Elegant wide leg trousers with pleats',
+    stylingTip: 'Balance the volume with a fitted crop top or bodysuit.',
   },
   {
     id: 'zara-003',
@@ -138,6 +143,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L'],
     colors: ['Cream', 'Black', 'Sage'],
     description: 'Minimalist cropped sweater',
+    stylingTip: 'Ideal for layering over a crisp white shirt or wearing solo with high-waisted denim.',
   },
   {
     id: 'zara-004',
@@ -182,6 +188,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 44', 'IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Beige/Ebony'],
     description: 'Iconic GG pattern wool blazer with silk lining',
+    stylingTip: 'Layer over a silk blouse for a sophisticated office ensemble.',
   },
   {
     id: 'gucci-002',
@@ -196,6 +203,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 38', 'IT 40', 'IT 42', 'IT 44', 'IT 46'],
     colors: ['Ivory', 'Black'],
     description: 'Pure silk blouse with signature horsebit print',
+    stylingTip: 'Tuck into a high-waisted skirt to accentuate the waistline.',
   },
   {
     id: 'gucci-003',
@@ -210,6 +218,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy'],
     description: 'Technical jersey pants with Web stripe',
+    stylingTip: 'Pair with a crisp white tee and sneakers for a chic athleisure look.',
   },
   {
     id: 'gucci-004',
@@ -238,6 +247,9 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Black'],
     description: 'Genuine leather bomber with embroidered patches',
+    stylingTip: 'Combine with distressed denim for an edgy, urban vibe.',
+    locked: true,
+    unlockDate: new Date(Date.now() + 7200000).toISOString(), // 2 hours from now
   },
 
   // UNIQLO - Basic (5 items)

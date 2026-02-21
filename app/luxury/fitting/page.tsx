@@ -1,8 +1,8 @@
-import PhotoFitting from "@/components/PhotoFitting";
+import { FittingRoom } from "@/components/FittingRoom";
 import React from 'react';
 
 export default function LuxuryFittingPage() {
   return (
-    <PhotoFitting />
+    <FittingRoom />
   );
 }

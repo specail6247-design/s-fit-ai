@@ -68,6 +68,15 @@ interface StoreState {
   userStats: UserStats | null;
   setUserStats: (stats: UserStats) => void;
 
+  // Saved Looks (The Vault)
+  savedLooks: ClothingItem[];
+  saveLook: (item: ClothingItem) => void;
+  removeLook: (itemId: string) => void;
+
+  // Sensory Ambience
+  isAmbienceOn: boolean;
+  toggleAmbience: () => void;
+
   // Selfie Data (Vibe Check / Digital Twin)
   selfieData: SelfieData;
   setSelfieData: (data: Partial<SelfieData>) => void;
@@ -143,6 +152,22 @@ export const useStore = create<StoreState>()(
       // User Stats
       userStats: null,
       setUserStats: (stats) => set({ userStats: stats }),
+
+      // Saved Looks (The Vault)
+      savedLooks: [],
+      saveLook: (item) =>
+        set((state) => {
+          if (state.savedLooks.some((saved) => saved.id === item.id)) return state;
+          return { savedLooks: [...state.savedLooks, item] };
+        }),
+      removeLook: (itemId) =>
+        set((state) => ({
+          savedLooks: state.savedLooks.filter((item) => item.id !== itemId),
+        })),
+
+      // Sensory Ambience
+      isAmbienceOn: false,
+      toggleAmbience: () => set((state) => ({ isAmbienceOn: !state.isAmbienceOn })),
 
       // Selfie Data
       selfieData: {
@@ -257,6 +282,8 @@ export const useStore = create<StoreState>()(
         userStats: state.userStats,
         selectedAIModels: state.selectedAIModels,
         trainingData: state.trainingData,
+        savedLooks: state.savedLooks,
+        isAmbienceOn: state.isAmbienceOn,
       }),
     }
   )
