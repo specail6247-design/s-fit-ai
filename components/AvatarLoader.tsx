@@ -51,4 +51,4 @@ export function AvatarLoader({
 }
 
 // Preload handy RPM models
-useGLTF.preload('https://models.readyplayer.me/65a8dba831b23abb4f401bae.glb'); // Example
+useGLTF.preload('https://models.readyplayer.me/64f0263b8655b32115ba9269.glb'); // Example

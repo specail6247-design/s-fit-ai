@@ -32,7 +32,6 @@ import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
 import CinematicViewer from '@/components/ui/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
-import VaultDrawer from '@/components/VaultDrawer';
 
 // --- PHYSICS ENGINE (Ammo.js) ---
 
@@ -307,16 +306,17 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170
-}: { height?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
+  height = 170, opacity = 1.0
+}: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  // Animation URL removed to prevent 404
+  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
   
   return (
     <group scale={[scale, scale, scale]}>
       {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
-        url="https://models.readyplayer.me/65a8dba831b23abb4f401bae.glb"
+        url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb"
+        animationUrl={animationUrl}
         scale={1.0}
       />
     </group>
@@ -504,7 +504,7 @@ function Scene({
   const scale = height / 170;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
   let mannequinPosition: [number, number, number] = [0, -0.9, 0];
-  // Animation URL removed
+  const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
 
   const heatmapData = useMemo(() => {
     if (!showHeatmap || !poseAnalysis?.proportions || !selectedBrand || !selectedItem) return null;
@@ -532,13 +532,14 @@ function Scene({
         {(selectedMode === 'vibe-check' || selectedMode === 'digital-twin') ? (
           <AvatarLoader 
             url={selectedMode === 'vibe-check' 
-              ? "https://models.readyplayer.me/65a8dba831b23abb4f401bae.glb"
-              : "https://models.readyplayer.me/65a8dba831b23abb4f401bae.glb"
+              ? "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb"
+              : "https://models.readyplayer.me/64f0263b8655b32115ba9269.glb"
             }
+            animationUrl={animationUrl}
             scale={1.0}
           />
         ) : (
-          <Mannequin height={height} />
+          <Mannequin height={height} opacity={1.0} />
         )}
         
         {/* Fit Heatmap Visual Overlay */}
@@ -580,49 +581,17 @@ function ItemCard({
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
-
-  // Exclusive Access (Drops) Logic
-  const isLocked = !!(item.locked && item.unlockDate && new Date(item.unlockDate) > new Date());
-  const [timeLeft, setTimeLeft] = useState<string>('');
-
-  useEffect(() => {
-    if (!isLocked || !item.unlockDate) return;
-    const interval = setInterval(() => {
-      const now = new Date().getTime();
-      const distance = new Date(item.unlockDate!).getTime() - now;
-      if (distance < 0) {
-        clearInterval(interval);
-        setTimeLeft('');
-      } else {
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isLocked, item.unlockDate]);
-
   return (
     <motion.button
-      onClick={() => !isLocked && onSelect()}
-      disabled={isLocked}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start relative ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'} ${isLocked ? 'opacity-70 grayscale cursor-not-allowed' : ''}`}
-      whileHover={!isLocked ? { scale: 1.05 } : {}}
-      whileTap={!isLocked ? { scale: 0.95 } : {}}
+      onClick={onSelect}
+      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
     >
       <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
         <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
         {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
-
-        {/* Lock Overlay */}
-        {isLocked && (
-          <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white p-1">
-            <span className="text-xl">🔒</span>
-            <span className="text-[0.5rem] font-mono mt-1">{timeLeft}</span>
-          </div>
-        )}
       </div>
       <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
       <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
@@ -861,12 +830,10 @@ function AITryOnModal({
 export function FittingRoom() {
   const {
     userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
-    saveLook, isAmbienceOn, toggleAmbience
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
-  const [showVaultDrawer, setShowVaultDrawer] = useState(false);
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
   const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
   const [aiTryOnLoading, setAITryOnLoading] = useState(false);
@@ -875,18 +842,6 @@ export function FittingRoom() {
   const [isMacroView, setIsMacroView] = useState(false);
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [webglFailed, setWebglFailed] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
-
-  // Sensory Ambience Effect
-  useEffect(() => {
-    if (audioRef.current) {
-      if (isAmbienceOn) {
-        audioRef.current.play().catch(e => console.error("Audio play failed", e));
-      } else {
-        audioRef.current.pause();
-      }
-    }
-  }, [isAmbienceOn]);
   const [autoCycleEnabled, setAutoCycleEnabled] = useState(() => {
     if (typeof window !== 'undefined') {
       return window.localStorage.getItem('sfit-ai-auto-cycle') === 'true';
@@ -1045,9 +1000,6 @@ export function FittingRoom() {
             <button onClick={() => setShowHeatmap(!showHeatmap)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 🔥 Fit Heatmap
             </button>
-            <button onClick={toggleAmbience} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isAmbienceOn ? 'bg-purple-500 text-white border-purple-500 animate-pulse' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
-                {isAmbienceOn ? '🔊 Ambience ON' : 'mute Ambience'}
-            </button>
         </div>
 
         {/* Rotation hint */}
@@ -1059,20 +1011,8 @@ export function FittingRoom() {
         )}
 
         <div className="absolute top-4 left-4 flex gap-2 z-20">
-            <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors" aria-label="Share">
+            <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
                 <span>📤</span>
-            </button>
-            {currentItem && (
-              <button
-                onClick={() => { saveLook(currentItem); setShowVaultDrawer(true); }}
-                className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors text-lg"
-                aria-label="Save to Vault"
-              >
-                <span>💾</span>
-              </button>
-            )}
-            <button onClick={() => setShowVaultDrawer(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors text-xs font-bold uppercase tracking-wider px-3">
-                Vault
             </button>
             <motion.button onClick={() => setShowAITryOnModal(true)} 
                            className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
@@ -1138,12 +1078,6 @@ export function FittingRoom() {
                                 </li>
                             ))}
                         </ul>
-                        {currentItem.stylingTip && (
-                          <div className="mt-3 pt-2 border-t border-white/10">
-                             <p className="text-[9px] text-purple-300 font-bold uppercase tracking-wider mb-1">Stylist Tip</p>
-                             <p className="text-[9px] text-white italic">&quot;{currentItem.stylingTip}&quot;</p>
-                          </div>
-                        )}
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -1201,7 +1135,6 @@ export function FittingRoom() {
         recommendedSize={recommendedFit?.recommendedSize}
       />
       <CompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} picks={topPicks} onSelect={setSelectedItem} />
-      <VaultDrawer isOpen={showVaultDrawer} onClose={() => setShowVaultDrawer(false)} onSelect={setSelectedItem} />
       <AITryOnModal
         isOpen={showAITryOnModal}
         onClose={() => { setShowAITryOnModal(false); setAITryOnResult(null); }}
@@ -1215,8 +1148,6 @@ export function FittingRoom() {
         result={aiTryOnResult}
         onGenerateTryOn={handleGenerateAITryOn}
       />
-      {/* Sensory Ambience Audio */}
-      <audio ref={audioRef} loop src="/audio/ambience.mp3" className="hidden" />
     </div>
   );
 }
