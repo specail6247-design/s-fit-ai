@@ -582,7 +582,7 @@ function ItemCard({
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
 
   // Exclusive Access (Drops) Logic
-  const isLocked = item.locked && item.unlockDate && new Date(item.unlockDate) > new Date();
+  const isLocked = !!(item.locked && item.unlockDate && new Date(item.unlockDate) > new Date());
   const [timeLeft, setTimeLeft] = useState<string>('');
 
   useEffect(() => {
