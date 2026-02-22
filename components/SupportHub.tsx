@@ -12,12 +12,12 @@ const drawerVariants = {
   visible: {
     x: 0,
     opacity: 1,
-    transition: { type: 'spring', damping: 25, stiffness: 200 }
+    transition: { type: 'spring' as const, damping: 25, stiffness: 200 }
   },
   exit: {
     x: '100%',
     opacity: 0,
-    transition: { ease: 'easeInOut', duration: 0.3 }
+    transition: { ease: 'easeInOut' as const, duration: 0.3 }
   }
 };
 
