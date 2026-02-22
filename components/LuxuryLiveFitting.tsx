@@ -187,6 +187,7 @@ export default function LuxuryLiveFitting() {
                {/* Selected Item */}
               <div className="relative flex flex-col gap-4">
                 <div className="relative h-72 w-56 overflow-hidden rounded-sm border border-[#D4AF37] shadow-[0_0_40px_rgba(212,175,55,0.15)] bg-black/40">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjxY9ukq_0ezBp667eFIADjvwUjQD6k_aWyIwlge2wLlUgWbhdA1gtTzEhR229n3gi6b_q751PQ7AZTAuppJbH7LSBGieJ6fnaZgFR1Stfc5Xu61TKfxDAO6BI5AzhLLg-xBnLxCpaIgLHyINJ0_k6fmFBdGF200StfWVy9sEqOeGZALjLMC5sGzxvQxIsn5JAfLJ8cBVOAJGEvncLKFjP-ONwsQCxMvn1UIpnqJX8S_clsOsZ7opKl7E7mcblrM0jIJU1Odi6tn0"
                         className="size-full object-cover opacity-90"
@@ -207,6 +208,7 @@ export default function LuxuryLiveFitting() {
                   { name: "Moto Jacket", price: 1800, img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC4WsO7nAvYpKcBO57jVyp0YklJpX_1jakpJ8Q8DHKRMnTuFiuqdMOMc5T8jm5VHhZfC00BeK-6O6b2UzIyeGN8OTo4vEWkA4n4WIeBHpjd0E882pLWtMQsFmLD9SSzggRQOqIp_f1PDthmab_IDQQjIlLRLz7awqLtNNwL4AwmMdO1C6Awys7X4XI2eHXujG3PA6q0PWyWDWnKH4UeydNguGQ3QoDfXb_iFtnnamfha3oliMDvJNKh0ziNwdhpcFqMa37R2dXgBTA" },
               ].map((item, i) => (
                 <div key={i} className="group relative h-56 w-40 cursor-pointer overflow-hidden rounded-sm opacity-50 transition-all duration-700 hover:h-64 hover:opacity-100 border border-white/5 hover:border-[#D4AF37]/50">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                         src={item.img}
                         className="size-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0"
