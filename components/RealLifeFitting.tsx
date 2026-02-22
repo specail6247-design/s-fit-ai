@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -11,6 +12,7 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const { setLoginOpen, setSupportOpen } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -80,12 +82,31 @@ export default function RealLifeFitting() {
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
         <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-4xl font-black tracking-tighter italic">
+                S_FIT <span className="text-[#007AFF]">NEO</span>
+              </h1>
+              <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+                Professional Virtual Fitting
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setLoginOpen(true)}
+                className="px-3 py-1 bg-white/10 hover:bg-[#007AFF]/20 border border-white/20 hover:border-[#007AFF] rounded-full text-[10px] font-bold tracking-wider uppercase transition-colors"
+              >
+                Member Access
+              </button>
+              <button
+                onClick={() => setSupportOpen(true)}
+                className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#007AFF]/20 border border-white/20 hover:border-[#007AFF] flex items-center justify-center transition-colors text-xs"
+                aria-label="Support"
+              >
+                ?
+              </button>
+            </div>
+          </div>
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
