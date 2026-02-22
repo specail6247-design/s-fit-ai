@@ -110,6 +110,12 @@ interface StoreState {
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
 
+  // Vault
+  savedLooks: string[];
+  toggleSavedLook: (itemId: string) => void;
+  isVaultOpen: boolean;
+  setIsVaultOpen: (isOpen: boolean) => void;
+
   // Reset
   resetSession: () => void;
 }
@@ -235,6 +241,20 @@ export const useStore = create<StoreState>()(
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
 
+      // Vault
+      savedLooks: [],
+      toggleSavedLook: (itemId) =>
+        set((state) => {
+          const exists = state.savedLooks.includes(itemId);
+          return {
+            savedLooks: exists
+              ? state.savedLooks.filter((id) => id !== itemId)
+              : [...state.savedLooks, itemId],
+          };
+        }),
+      isVaultOpen: false,
+      setIsVaultOpen: (isOpen) => set({ isVaultOpen: isOpen }),
+
       // Reset Session
       resetSession: () =>
         set({
@@ -257,6 +277,7 @@ export const useStore = create<StoreState>()(
         userStats: state.userStats,
         selectedAIModels: state.selectedAIModels,
         trainingData: state.trainingData,
+        savedLooks: state.savedLooks,
       }),
     }
   )
