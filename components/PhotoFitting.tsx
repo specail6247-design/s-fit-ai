@@ -210,6 +210,7 @@ export default function PhotoFitting() {
                     className="relative aspect-[3/4] w-full rounded-xl overflow-hidden border-2 border-dashed border-white/20 hover:border-white/40 transition-colors cursor-pointer group"
                 >
                     {userPhoto ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img src={userPhoto} alt="User" className="w-full h-full object-cover" />
                     ) : (
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500 gap-2">
@@ -258,6 +259,7 @@ export default function PhotoFitting() {
                             onClick={() => setSelectedGarment(item)}
                             className={`relative aspect-[3/4] rounded-lg overflow-hidden cursor-pointer transition-all border ${selectedGarment?.id === item.id ? 'border-white ring-2 ring-white/20' : 'border-white/5 hover:border-white/20'}`}
                         >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
                             <div className="absolute bottom-0 inset-x-0 p-2 bg-gradient-to-t from-black/80 to-transparent">
                                 <p className="text-[10px] font-bold truncate">{item.name}</p>
@@ -313,6 +315,7 @@ export default function PhotoFitting() {
                             className={`w-full h-full overflow-hidden cursor-zoom-in relative ${isZoomed ? 'cursor-zoom-out' : ''}`}
                             onClick={() => setIsZoomed(!isZoomed)}
                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={resultImage}
                                 alt="Fitting Result"
