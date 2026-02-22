@@ -149,6 +149,7 @@ export function BrandSelector() {
           <button
             type="button"
             onClick={handleToggleAuto}
+            aria-label={autoSelectEnabled ? 'Switch to manual selection' : 'Use AI recommendation'}
             className="mt-3 text-[0.65rem] uppercase tracking-[0.2em] text-soft-gray hover:text-pure-white transition-colors"
           >
             {autoSelectEnabled ? 'Manual select' : 'Use AI pick'}
@@ -181,9 +182,11 @@ export function BrandSelector() {
             key={brand.id}
             variants={itemVariants}
             onClick={() => handleBrandSelect(brand.id)}
+            aria-pressed={selectedBrand === brand.id}
+            aria-label={`Select ${brand.name}, ${brand.tier} tier${brand.isLuxury ? ', luxury' : ''}`}
             className={`
               relative p-6 rounded-xl border transition-all duration-300
-              flex flex-col items-center justify-center gap-2
+              flex flex-col items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-lime
               ${
                 selectedBrand === brand.id
                   ? 'border-pure-white bg-charcoal'
