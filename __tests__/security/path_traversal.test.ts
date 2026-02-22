@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, it, expect, vi, beforeAll, afterAll, beforeEach } from 'vitest';
-import { localFileToDataUri } from '../../app/api/try-on/route';
+import { localFileToDataUri } from '../../lib/fileUtils';
 import * as fs from 'fs';
 import * as path from 'path';
 
