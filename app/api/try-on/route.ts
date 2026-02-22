@@ -8,11 +8,25 @@ export const runtime = 'nodejs';
 export const maxDuration = 120;
 
 // Helper: Convert local file to base64 data URI
-function localFileToDataUri(localPath: string): string | null {
+export function localFileToDataUri(localPath: string): string | null {
   try {
-    // Remove leading slash and resolve to public directory
-    const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
-    const absolutePath = path.join(process.cwd(), 'public', relativePath);
+    // SECURITY: Prevent path traversal
+    const cwd = process.cwd();
+    const publicDir = path.resolve(cwd, 'public');
+
+    // Remove leading slash to ensure path.resolve treats it as relative to publicDir
+    // Also handles backslashes for cross-platform safety
+    const normalizedLocalPath = localPath.replace(/^[\/\\]/, '');
+    const absolutePath = path.resolve(publicDir, normalizedLocalPath);
+
+    // Ensure the resolved path is still inside the public directory
+    const relative = path.relative(publicDir, absolutePath);
+    const isSafe = relative && !relative.startsWith('..') && !path.isAbsolute(relative);
+
+    if (!isSafe) {
+      console.error('Security violation: Access outside public directory denied:', absolutePath);
+      return null;
+    }
     
     console.log('Reading local file:', absolutePath);
     
