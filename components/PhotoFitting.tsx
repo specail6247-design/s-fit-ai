@@ -1,15 +1,30 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Space_Grotesk } from "next/font/google";
+import { useStore } from "@/store/useStore";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
+  const { setIsVaultOpen } = useStore();
   const [isChecked, setIsChecked] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (audioRef.current) {
+        audioRef.current.muted = isMuted;
+        if (!isMuted) {
+             audioRef.current.play().catch(e => console.log("Audio play failed:", e));
+        }
+    }
+  }, [isMuted]);
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
+      <audio ref={audioRef} loop src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" />
+
       {/* Top App Bar */}
       <div className="z-50 flex items-center justify-between bg-transparent p-4">
         <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
@@ -19,7 +34,19 @@ export default function PhotoFitting() {
           <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
-        <div className="flex w-12 items-center justify-end">
+        <div className="flex w-36 items-center justify-end gap-2">
+          <button
+            onClick={() => setIsVaultOpen(true)}
+            className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md hover:bg-white/10 transition-colors"
+          >
+            <span className="material-symbols-outlined">door_sliding</span>
+          </button>
+          <button
+            onClick={() => setIsMuted(!isMuted)}
+            className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md hover:bg-white/10 transition-colors"
+          >
+            <span className="material-symbols-outlined">{isMuted ? 'volume_off' : 'volume_up'}</span>
+          </button>
           <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
             <span className="material-symbols-outlined">info</span>
           </button>
@@ -116,6 +143,10 @@ export default function PhotoFitting() {
               <input className="invisible absolute" type="checkbox" />
             </label>
           </div>
+          <button className="glass-panel group flex items-center justify-center gap-2 rounded-xl p-4 text-white hover:bg-white/10 transition-colors" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
+              <span className="material-symbols-outlined">bookmark_border</span>
+              <span className="text-sm font-bold uppercase tracking-wider">Save Look to Vault</span>
+          </button>
         </div>
         <button className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-[#256af4] text-base font-bold text-white shadow-lg shadow-[#256af4]/20 transition-colors hover:bg-blue-600">
           <span className="material-symbols-outlined">check_circle</span>

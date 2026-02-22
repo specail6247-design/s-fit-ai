@@ -1,10 +1,42 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { getItemById } from '@/data/mockData';
+import { useStore } from '@/store/useStore';
 
-export default function LuxuryGarmentDetail() {
+export default function LuxuryGarmentDetail({ itemId = 'gucci-001' }: { itemId?: string }) {
+  const item = getItemById(itemId);
+  const { savedLooks, toggleSavedLook, setIsVaultOpen } = useStore();
+  const isSaved = item ? savedLooks.includes(item.id) : false;
+
+  const [timeLeft, setTimeLeft] = useState<string>('');
+
+  useEffect(() => {
+    if (item?.locked && item.unlockDate) {
+      const updateTimer = () => {
+        const now = new Date().getTime();
+        const unlock = new Date(item.unlockDate!).getTime();
+        const distance = unlock - now;
+
+        if (distance < 0) {
+          setTimeLeft('UNLOCKED');
+        } else {
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+        }
+      };
+
+      updateTimer();
+      const interval = setInterval(updateTimer, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [item]);
+
+  if (!item) return <div className="min-h-screen bg-black text-white flex items-center justify-center">Item not found</div>;
+
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -14,9 +46,18 @@ export default function LuxuryGarmentDetail() {
             <span className="material-symbols-outlined">arrow_back</span>
           </Link>
           <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center">S_FIT AI</h2>
-          <div className="flex w-10 items-center justify-end">
-            <button className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
-              <span className="material-symbols-outlined">share</span>
+          <div className="flex w-24 items-center justify-end gap-2">
+            <button
+                onClick={() => setIsVaultOpen(true)}
+                className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+            >
+              <span className="material-symbols-outlined">door_sliding</span>
+            </button>
+            <button
+                onClick={() => toggleSavedLook(item.id)}
+                className={`flex size-10 items-center justify-center rounded-full bg-white/10 transition-colors ${isSaved ? 'text-[#ecab13]' : 'text-white hover:bg-white/20'}`}
+            >
+              <span className="material-symbols-outlined">{isSaved ? 'bookmark' : 'bookmark_border'}</span>
             </button>
           </div>
         </div>
@@ -29,7 +70,7 @@ export default function LuxuryGarmentDetail() {
           <div 
             className="absolute inset-0 bg-cover bg-center" 
             style={{ 
-              backgroundImage: 'linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' 
+              backgroundImage: `linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%), url("${item.imageUrl}")`
             }}
           />
           
@@ -41,8 +82,8 @@ export default function LuxuryGarmentDetail() {
               <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">light_mode</span></button>
             </div>
             <div className="text-right">
-              <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mb-1">Authentic Render</p>
-              <h1 className="text-white text-3xl font-extralight leading-tight">Metallic Silk <br/><span className="font-bold">Evening Blazer</span></h1>
+              <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mb-1">{item.brand} Collection</p>
+              <h1 className="text-white text-3xl font-extralight leading-tight">{item.name}</h1>
             </div>
           </div>
         </div>
@@ -74,11 +115,21 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            {item.description}
           </p>
+
+          {item.stylingTip && (
+                <div className="mt-6 p-4 rounded-xl bg-[#ecab13]/10 border border-[#ecab13]/20">
+                    <div className="flex items-center gap-2 mb-2">
+                        <span className="material-symbols-outlined text-[#ecab13] text-sm">auto_awesome</span>
+                        <h3 className="text-[#ecab13] text-xs font-bold uppercase tracking-widest">AI Stylist Note</h3>
+                    </div>
+                    <p className="text-zinc-300 text-sm italic">&quot;{item.stylingTip}&quot;</p>
+                </div>
+          )}
           
           {/* Chips */}
-          <div className="flex gap-2 flex-wrap mb-8">
+          <div className="flex gap-2 flex-wrap mb-8 mt-6">
             <div className="flex h-8 items-center justify-center rounded-full border border-[#ecab13]/30 bg-[#ecab13]/10 px-4">
               <p className="text-[#ecab13] text-[11px] font-bold uppercase tracking-wider">Brushed Aluminum Finish</p>
             </div>
@@ -134,12 +185,23 @@ export default function LuxuryGarmentDetail() {
       <div className="fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex gap-4 items-center z-50">
         <div className="flex flex-col flex-1">
           <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
-          <p className="text-white text-xl font-bold">$2,850</p>
+          <p className="text-white text-xl font-bold">{item.currency === 'USD' ? '$' : item.currency}{item.price.toLocaleString()}</p>
         </div>
-        <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
-          <span className="material-symbols-outlined font-bold">person_add_alt</span>
-          <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
-        </Link>
+
+        {item.locked && timeLeft !== 'UNLOCKED' ? (
+                 <button disabled className="flex-[2] bg-zinc-800 text-zinc-500 h-14 rounded-xl flex items-center justify-center gap-3 cursor-not-allowed">
+                    <span className="material-symbols-outlined font-bold">lock</span>
+                    <div className="flex flex-col items-start">
+                        <span className="font-bold text-[10px] tracking-widest uppercase">Locked</span>
+                        <span className="font-mono text-xs text-white">{timeLeft}</span>
+                    </div>
+                 </button>
+            ) : (
+                <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
+                  <span className="material-symbols-outlined font-bold">person_add_alt</span>
+                  <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
+                </Link>
+        )}
       </div>
 
       <style jsx global>{`

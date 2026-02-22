@@ -17,6 +17,9 @@ export interface ClothingItem {
   sizes: string[];
   colors: string[];
   description: string;
+  stylingTip?: string;
+  locked?: boolean;
+  unlockDate?: string;
 }
 
 export interface Brand {
@@ -110,6 +113,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy', 'Beige'],
     description: 'Relaxed fit blazer with structured shoulders',
+    stylingTip: 'Pair with high-waisted trousers for a powerful silhouette.',
   },
   {
     id: 'zara-002',
@@ -124,6 +128,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'White', 'Camel'],
     description: 'Elegant wide leg trousers with pleats',
+    stylingTip: 'Tuck in a fitted top to accentuate the waistline.',
   },
   {
     id: 'zara-003',
@@ -182,6 +187,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 44', 'IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Beige/Ebony'],
     description: 'Iconic GG pattern wool blazer with silk lining',
+    stylingTip: 'Combine with matching trousers for a complete heritage look.',
   },
   {
     id: 'gucci-002',
@@ -196,6 +202,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 38', 'IT 40', 'IT 42', 'IT 44', 'IT 46'],
     colors: ['Ivory', 'Black'],
     description: 'Pure silk blouse with signature horsebit print',
+    stylingTip: 'Wear under a structured blazer to soften the look.',
   },
   {
     id: 'gucci-003',
@@ -224,6 +231,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 38', 'IT 40', 'IT 42', 'IT 44'],
     colors: ['Pink Flora'],
     description: 'Flowing silk georgette dress with iconic Flora print',
+    stylingTip: 'Accessorize with gold jewelry to highlight the warm tones.',
   },
   {
     id: 'gucci-005',
@@ -238,6 +246,9 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Black'],
     description: 'Genuine leather bomber with embroidered patches',
+    stylingTip: 'Layer over a hoodie for an urban luxury aesthetic.',
+    locked: true,
+    unlockDate: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // Unlocks in 2 hours
   },
 
   // UNIQLO - Basic (5 items)
