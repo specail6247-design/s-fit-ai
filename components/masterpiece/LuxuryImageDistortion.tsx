@@ -85,6 +85,7 @@ interface LuxuryImageDistortionProps {
   image: string;
   className?: string;
   aspectRatio?: number;
+  style?: React.CSSProperties;
 }
 
 const ImagePlane = ({ image, aspectRatio = 0.75 }: { image: string, aspectRatio?: number }) => {
@@ -123,9 +124,9 @@ const ImagePlane = ({ image, aspectRatio = 0.75 }: { image: string, aspectRatio?
   );
 };
 
-export default function LuxuryImageDistortion({ image, className, aspectRatio = 0.75 }: LuxuryImageDistortionProps) {
+export default function LuxuryImageDistortion({ image, className, aspectRatio = 0.75, style }: LuxuryImageDistortionProps) {
   return (
-    <div className={`relative w-full h-full overflow-hidden ${className}`}>
+    <div className={`relative w-full h-full overflow-hidden ${className}`} style={style}>
       <Canvas camera={{ position: [0, 0, 4], fov: 75 }}>
         <ImagePlane image={image} aspectRatio={aspectRatio} />
       </Canvas>
