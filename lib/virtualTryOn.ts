@@ -256,8 +256,108 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
   }
 }
 
-// Keep generateRunwayVideo as an alias for backward compatibility or internal use
-export const generateRunwayVideo = async (imageUrl: string) => {
+// Runway Gen-3 Alpha / Gen-4 Integration
+async function pollRunwayTask(taskId: string, apiKey: string): Promise<string | null> {
+  const runwayUrl = `https://api.runwayml.com/v1/tasks/${taskId}`;
+  const maxAttempts = 30; // 30 attempts * 2 seconds = 60 seconds timeout
+  const delay = 2000;
+
+  for (let i = 0; i < maxAttempts; i++) {
+    try {
+      const response = await fetch(runwayUrl, {
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'X-Runway-Version': '2024-09-13',
+        },
+      });
+
+      if (!response.ok) {
+        console.warn(`Runway polling error: ${response.status}`);
+        return null;
+      }
+
+      const data = await response.json();
+
+      if (data.status === 'SUCCEEDED') {
+        // Look for the output URL
+        if (data.output && Array.isArray(data.output) && data.output.length > 0) {
+            return data.output[0];
+        } else if (data.task?.output && Array.isArray(data.task.output)) {
+             return data.task.output[0];
+        }
+        return null;
+      } else if (data.status === 'FAILED') {
+        console.error('Runway task failed:', data.failureCode, data.failureReason);
+        return null;
+      }
+
+      // Still running, wait and retry
+      await new Promise(resolve => setTimeout(resolve, delay));
+    } catch (err) {
+      console.error('Runway polling exception:', err);
+      return null; // Stop polling on error
+    }
+  }
+
+  console.warn('Runway polling timed out.');
+  return null;
+}
+
+export async function generateRunwayVideo(imageUrl: string): Promise<string | null> {
+    const runwayKey = process.env.RUNWAY_API_KEY;
+    const runwayUrl = process.env.RUNWAY_API_URL || 'https://api.runwayml.com/v1/image_to_video';
+
+    if (runwayKey) {
+        console.log("Attempting Runway Gen-3/4 Video Generation...");
+        try {
+            const response = await fetch(runwayUrl, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${runwayKey}`,
+                    'Content-Type': 'application/json',
+                    'X-Runway-Version': '2024-09-13',
+                },
+                body: JSON.stringify({
+                    promptImage: imageUrl,
+                    model: 'gen3a_turbo',
+                    promptText: 'Cinematic slow motion fashion shoot, 4k, high detail, masterpiece',
+                    duration: 5,
+                    ratio: '1280:768'
+                })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.warn(`Runway API call failed: ${response.status} - ${errorText}`);
+                throw new Error(`Runway API error: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.id) {
+               console.log("Runway task started:", data.id);
+               // Start polling
+               const videoUrl = await pollRunwayTask(data.id, runwayKey);
+               if (videoUrl) {
+                 return videoUrl;
+               } else {
+                 console.warn("Runway polling failed or timed out. Falling back to SVD.");
+                 throw new Error("Polling failed");
+               }
+            } else if (data.url) {
+                // Direct response (unlikely for video but possible in some endpoints)
+                return data.url;
+            }
+
+        } catch (err) {
+            console.warn("Runway Gen-3 integration failed or keys invalid. Falling back to SVD.", err);
+        }
+    } else {
+        console.log("RUNWAY_API_KEY not found. Using SVD fallback.");
+    }
+
+    // Fallback to SVD (Replicate)
+    console.log("Using SVD (Replicate) Fallback for Video Generation");
     const res = await generateCinematicVideo(imageUrl);
-    return res.success ? res.videoUrl : null;
-};
+    return res.success && res.videoUrl ? res.videoUrl : null;
+}
