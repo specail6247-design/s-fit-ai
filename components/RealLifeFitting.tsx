@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -11,11 +12,82 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const { setShowPrivacyModal, setShowSupportHub } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  const generateStoryImage = async () => {
+    if (!resultImage) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Background
+    const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
+    gradient.addColorStop(0, '#0a0a0a');
+    gradient.addColorStop(1, '#111111');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 1080, 1920);
+
+    try {
+      // Image
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = resultImage;
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      // Calculate aspect ratio to fit within a safe area
+      // Max width 900, Max height 1400
+      const maxWidth = 980;
+      const maxHeight = 1400;
+      const scale = Math.min(maxWidth / img.width, maxHeight / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (1080 - w) / 2;
+      const y = (1920 - h) / 2; // Center vertically
+
+      // Draw a glow/shadow behind the image
+      ctx.shadowColor = '#007AFF';
+      ctx.shadowBlur = 40;
+      ctx.drawImage(img, x, y, w, h);
+      ctx.shadowBlur = 0;
+
+      // Branding Top
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold italic 80px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT NEO', 540, 200);
+
+      // Branding Bottom
+      ctx.font = '40px monospace';
+      ctx.fillStyle = '#007AFF';
+      ctx.fillText('AI GENERATED FITTING', 540, 1750);
+
+      ctx.font = '30px sans-serif';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.fillText('try.s-fit.ai', 540, 1820);
+
+      // Download
+      const dataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `s-fit-story-${Date.now()}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error("Failed to generate story image", err);
+      alert("Could not generate story image. Security restrictions may apply to this image.");
+    }
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -79,13 +151,22 @@ export default function RealLifeFitting() {
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+        <header className="mb-10 relative z-10 flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-black tracking-tighter italic">
+              S_FIT <span className="text-[#007AFF]">NEO</span>
+            </h1>
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+              Professional Virtual Fitting
+            </p>
+          </div>
+          <button
+            onClick={() => setShowSupportHub(true)}
+            className="w-8 h-8 rounded-full border border-white/10 hover:bg-white/10 flex items-center justify-center text-xs text-gray-400 hover:text-white transition-colors"
+            title="Support Hub"
+          >
+            ❓
+          </button>
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
@@ -158,6 +239,23 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Trust & Legal */}
+          <div className="mt-8 pt-6 border-t border-white/5 space-y-4">
+            <div className="flex items-center justify-center gap-2 opacity-60 hover:opacity-100 transition-opacity cursor-help" title="Your photos are processed securely and not shared">
+              <span className="text-green-500 text-sm">🔒</span>
+              <span className="text-[10px] text-gray-400 uppercase tracking-widest">Privacy Protected</span>
+            </div>
+
+            <div className="flex justify-center">
+              <button
+                onClick={() => setShowPrivacyModal(true)}
+                className="text-[10px] text-gray-600 hover:text-[#007AFF] transition-colors underline decoration-dotted underline-offset-4"
+              >
+                Privacy Policy & Terms
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -196,12 +294,22 @@ export default function RealLifeFitting() {
           >
             <div className="relative group">
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
-              <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
-              >
-                ✕ Close
-              </button>
+
+              <div className="absolute top-4 right-4 flex gap-2">
+                <button
+                  onClick={generateStoryImage}
+                  className="bg-black/60 backdrop-blur-md text-white rounded-full px-4 py-2 hover:bg-[#007AFF] transition-all transform hover:scale-105 text-xs font-bold flex items-center gap-2 border border-white/10"
+                >
+                  <span>📸</span> Share Story
+                </button>
+                <button
+                  onClick={() => setResultImage(null)}
+                  className="bg-black/60 backdrop-blur-md text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-500/80 transition-colors border border-white/10"
+                >
+                  ✕
+                </button>
+              </div>
+
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>

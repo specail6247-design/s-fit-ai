@@ -109,6 +109,12 @@ interface StoreState {
   // UI State
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
+  showPrivacyModal: boolean;
+  setShowPrivacyModal: (show: boolean) => void;
+  showSupportHub: boolean;
+  setShowSupportHub: (show: boolean) => void;
+  supportTab: 'guide' | 'qa' | 'issue' | 'caution';
+  setSupportTab: (tab: 'guide' | 'qa' | 'issue' | 'caution') => void;
 
   // Reset
   resetSession: () => void;
@@ -234,6 +240,12 @@ export const useStore = create<StoreState>()(
       // UI State
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
+      showPrivacyModal: false,
+      setShowPrivacyModal: (show) => set({ showPrivacyModal: show }),
+      showSupportHub: false,
+      setShowSupportHub: (show) => set({ showSupportHub: show }),
+      supportTab: 'guide',
+      setSupportTab: (tab) => set({ supportTab: tab }),
 
       // Reset Session
       resetSession: () =>
