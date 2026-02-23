@@ -1,13 +1,12 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Cinzel, Playfair_Display, Space_Grotesk } from "next/font/google";
-import { motion } from "framer-motion";
+import { Cinzel, Playfair_Display } from "next/font/google";
 import { mockClothingItems, ClothingItem } from "@/data/mockData";
 
 const cinzel = Cinzel({ subsets: ["latin"] });
 const playfair = Playfair_Display({ subsets: ["latin"] });
-const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function LuxuryLiveFitting() {
   const [userImage, setUserImage] = useState<string | null>(null);
