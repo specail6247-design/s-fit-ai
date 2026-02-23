@@ -1,16 +1,10 @@
-import { Cinzel, Space_Grotesk } from 'next/font/google'
+import { Manrope } from 'next/font/google'
 import React from 'react'
 
-const cinzel = Cinzel({
+const manrope = Manrope({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-cinzel',
-})
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-space-grotesk',
+  variable: '--font-manrope',
 })
 
 export default function LuxuryLayout({
@@ -19,7 +13,7 @@ export default function LuxuryLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className={`${cinzel.variable} ${spaceGrotesk.variable} font-sans`}>
+    <div className={manrope.className}>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
       <style dangerouslySetInnerHTML={{__html: `
         .material-symbols-outlined {
@@ -35,10 +29,6 @@ export default function LuxuryLayout({
           word-wrap: normal;
           direction: ltr;
           -webkit-font-smoothing: antialiased;
-        }
-        :root {
-          --font-cinzel: ${cinzel.style.fontFamily};
-          --font-space-grotesk: ${spaceGrotesk.style.fontFamily};
         }
       `}} />
       {children}
