@@ -110,6 +110,14 @@ interface StoreState {
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
 
+  // Global UI State (Phase 5)
+  isLoginOpen: boolean;
+  setIsLoginOpen: (isOpen: boolean) => void;
+  isSupportOpen: boolean;
+  setIsSupportOpen: (isOpen: boolean) => void;
+  activeSupportTab: 'guide' | 'caution' | 'qa';
+  setActiveSupportTab: (tab: 'guide' | 'caution' | 'qa') => void;
+
   // Reset
   resetSession: () => void;
 }
@@ -234,6 +242,14 @@ export const useStore = create<StoreState>()(
       // UI State
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
+
+      // Global UI State (Phase 5)
+      isLoginOpen: false,
+      setIsLoginOpen: (isOpen) => set({ isLoginOpen: isOpen }),
+      isSupportOpen: false,
+      setIsSupportOpen: (isOpen) => set({ isSupportOpen: isOpen }),
+      activeSupportTab: 'guide',
+      setActiveSupportTab: (tab) => set({ activeSupportTab: tab }),
 
       // Reset Session
       resetSession: () =>
