@@ -74,6 +74,7 @@ describe('localFileToDataUri', () => {
     const result = localFileToDataUri(validNested);
 
     expect(result).toBe('data:image/jpeg;base64,anBnLWRhdGE=');
+    expect(fs.existsSync).toHaveBeenCalledWith(absolutePath);
   });
 
   it('should handle paths with leading slash', () => {
@@ -86,5 +87,6 @@ describe('localFileToDataUri', () => {
     const result = localFileToDataUri(validPath);
 
     expect(result).toBe('data:image/png;base64,ZGF0YQ=='); // "data" base64 encoded
+    expect(fs.existsSync).toHaveBeenCalledWith(absolutePath);
   });
 });
