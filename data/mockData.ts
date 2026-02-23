@@ -2,30 +2,10 @@
 // 15 items: 5 Mass Market (ZARA), 5 Luxury (Gucci), 5 Basic (Uniqlo)
 // Updated with real product images
 
-export interface ClothingItem {
-  id: string;
-  name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
-  category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
-  subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
-  zIndex?: number;
-  price: number;
-  currency: string;
-  imageUrl: string;
-  textureUrl: string;
-  isLuxury: boolean;
-  sizes: string[];
-  colors: string[];
-  description: string;
-}
+import { luxuryProducts } from './luxuryProducts';
+import { ClothingItem, Brand } from './types';
 
-export interface Brand {
-  id: string;
-  name: string;
-  logo: string;
-  isLuxury: boolean;
-  tier: 'mass' | 'luxury' | 'basic';
-}
+export * from './types';
 
 // Brand Data
 export const brands: Brand[] = [
@@ -168,77 +148,8 @@ export const mockClothingItems: ClothingItem[] = [
     description: 'Faux leather bomber with ribbed trim',
   },
 
-  // GUCCI - Luxury (5 items with isLuxury: true)
-  {
-    id: 'gucci-001',
-    name: 'GG Jacquard Wool Blazer',
-    brand: 'Gucci',
-    category: 'outerwear',
-    price: 2890.00,
-    currency: 'USD',
-    imageUrl: '/clothing/gucci_blazer.png',
-    textureUrl: '/clothing/gucci_blazer.png',
-    isLuxury: true,
-    sizes: ['IT 44', 'IT 46', 'IT 48', 'IT 50', 'IT 52'],
-    colors: ['Beige/Ebony'],
-    description: 'Iconic GG pattern wool blazer with silk lining',
-  },
-  {
-    id: 'gucci-002',
-    name: 'Horsebit Silk Blouse',
-    brand: 'Gucci',
-    category: 'tops',
-    price: 1450.00,
-    currency: 'USD',
-    imageUrl: '/clothing/gucci_blouse.png',
-    textureUrl: '/clothing/gucci_blouse.png',
-    isLuxury: true,
-    sizes: ['IT 38', 'IT 40', 'IT 42', 'IT 44', 'IT 46'],
-    colors: ['Ivory', 'Black'],
-    description: 'Pure silk blouse with signature horsebit print',
-  },
-  {
-    id: 'gucci-003',
-    name: 'Web Stripe Track Pants',
-    brand: 'Gucci',
-    category: 'bottoms',
-    price: 980.00,
-    currency: 'USD',
-    imageUrl: '/clothing/gucci_pants.png',
-    textureUrl: '/clothing/gucci_pants.png',
-    isLuxury: true,
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    colors: ['Black', 'Navy'],
-    description: 'Technical jersey pants with Web stripe',
-  },
-  {
-    id: 'gucci-004',
-    name: 'Flora Print Georgette Dress',
-    brand: 'Gucci',
-    category: 'dresses',
-    price: 3200.00,
-    currency: 'USD',
-    imageUrl: '/clothing/gucci_dress.png',
-    textureUrl: '/clothing/gucci_dress.png',
-    isLuxury: true,
-    sizes: ['IT 38', 'IT 40', 'IT 42', 'IT 44'],
-    colors: ['Pink Flora'],
-    description: 'Flowing silk georgette dress with iconic Flora print',
-  },
-  {
-    id: 'gucci-005',
-    name: 'Leather Bomber with Patches',
-    brand: 'Gucci',
-    category: 'outerwear',
-    price: 5500.00,
-    currency: 'USD',
-    imageUrl: '/clothing/gucci_bomber.png',
-    textureUrl: '/clothing/gucci_bomber.png',
-    isLuxury: true,
-    sizes: ['IT 46', 'IT 48', 'IT 50', 'IT 52'],
-    colors: ['Black'],
-    description: 'Genuine leather bomber with embroidered patches',
-  },
+  // Insert Luxury Products
+  ...luxuryProducts,
 
   // UNIQLO - Basic (5 items)
   {
@@ -486,23 +397,7 @@ export const mockClothingItems: ClothingItem[] = [
     description: 'Comfortable athletic joggers',
   },
 
-  // ACCESSORIES - New Category
-  {
-    id: 'chanel-bag-001',
-    name: 'Classic Flap Bag',
-    brand: 'Chanel',
-    category: 'accessories',
-    subCategory: 'bag',
-    zIndex: 50,
-    price: 10200.00,
-    currency: 'USD',
-    imageUrl: '/accessories/chanel_bag.png',
-    textureUrl: '/accessories/chanel_bag.png',
-    isLuxury: true,
-    sizes: ['One Size'],
-    colors: ['Black', 'Beige'],
-    description: 'Iconic quilted leather handbag with chain strap',
-  },
+  // ACCESSORIES - Only Mass Market (Luxury moved to luxuryProducts)
   {
     id: 'supreme-hat-001',
     name: 'Box Logo Camp Cap',
@@ -518,22 +413,6 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['Adjustable'],
     colors: ['Red', 'Black', 'Camo'],
     description: 'Cotton canvas camp cap with woven box logo',
-  },
-  {
-    id: 'tiffany-necklace-001',
-    name: 'T Smile Pendant',
-    brand: 'Tiffany',
-    category: 'accessories',
-    subCategory: 'jewelry',
-    zIndex: 35,
-    price: 1200.00,
-    currency: 'USD',
-    imageUrl: '/accessories/tiffany_necklace.png',
-    textureUrl: '/accessories/tiffany_necklace.png',
-    isLuxury: true,
-    sizes: ['One Size'],
-    colors: ['Gold', 'Silver'],
-    description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
   },
 ];
 
