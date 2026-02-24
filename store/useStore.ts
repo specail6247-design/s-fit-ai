@@ -11,9 +11,6 @@ import { ClothingStyleAnalysis, SizeRecommendation } from '@/lib/visionService';
 export type FittingMode = 'vibe-check' | 'digital-twin' | 'easy-fit' | 'ar-fit' | 'training' | null;
 export type FittingModeKey = Exclude<FittingMode, null>;
 
-// Support Hub Tab Type
-export type SupportTab = 'guide' | 'qa' | 'issue' | 'caution';
-
 // Body Shape Types for Easy Fit
 export type BodyShape = 'rectangle' | 'hourglass' | 'pear' | 'apple' | 'inverted-triangle';
 
@@ -112,14 +109,6 @@ interface StoreState {
   // UI State
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
-
-  // Global Overlays
-  isPrivacyOpen: boolean;
-  setPrivacyOpen: (isOpen: boolean) => void;
-  isSupportOpen: boolean;
-  setSupportOpen: (isOpen: boolean) => void;
-  supportTab: SupportTab;
-  setSupportTab: (tab: SupportTab) => void;
 
   // Reset
   resetSession: () => void;
@@ -245,14 +234,6 @@ export const useStore = create<StoreState>()(
       // UI State
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
-
-      // Global Overlays
-      isPrivacyOpen: false,
-      setPrivacyOpen: (isOpen) => set({ isPrivacyOpen: isOpen }),
-      isSupportOpen: false,
-      setSupportOpen: (isOpen) => set({ isSupportOpen: isOpen }),
-      supportTab: 'guide',
-      setSupportTab: (tab) => set({ supportTab: tab }),
 
       // Reset Session
       resetSession: () =>
