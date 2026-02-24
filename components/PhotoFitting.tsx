@@ -1,26 +1,36 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Space_Grotesk } from "next/font/google";
+import { useRouter } from "next/navigation";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const router = useRouter();
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
       {/* Top App Bar */}
       <div className="z-50 flex items-center justify-between bg-transparent p-4">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          aria-label="Go back"
+          className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md cursor-pointer hover:bg-[#101622]/60 transition-colors"
+        >
           <span className="material-symbols-outlined">arrow_back_ios_new</span>
-        </div>
+        </button>
         <div className="flex flex-col items-center">
           <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
         <div className="flex w-12 items-center justify-end">
-          <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
+          <button
+            aria-label="Fitting Information"
+            className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md"
+          >
             <span className="material-symbols-outlined">info</span>
           </button>
         </div>
@@ -62,7 +72,12 @@ export default function PhotoFitting() {
 
       {/* Processing State (Overlay) */}
       <div className="absolute inset-x-0 top-1/2 z-30 -translate-y-1/2 px-6">
-        <div className="glass-panel mx-auto max-w-sm rounded-xl p-6 shadow-2xl" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
+        <div
+          role="status"
+          aria-live="polite"
+          className="glass-panel mx-auto max-w-sm rounded-xl p-6 shadow-2xl"
+          style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}
+        >
           <div className="flex flex-col gap-3">
             <div className="flex items-end justify-between gap-6">
               <div className="flex flex-col">
@@ -96,9 +111,15 @@ export default function PhotoFitting() {
                 <p className="text-[11px] font-normal leading-normal text-[#90a4cb]">Show tension areas on body</p>
               </div>
             </div>
-            <label className="relative flex h-[28px] w-[48px] cursor-pointer items-center rounded-full border-none bg-[#222f49] p-0.5 transition-all has-[:checked]:justify-end has-[:checked]:bg-[#256af4]">
+            <label className="relative flex h-[28px] w-[48px] cursor-pointer items-center rounded-full border-none bg-[#222f49] p-0.5 transition-all has-[:checked]:justify-end has-[:checked]:bg-[#256af4] focus-within:ring-2 focus-within:ring-[#256af4] focus-within:ring-offset-2 focus-within:ring-offset-[#101622]">
               <div className="h-full w-[24px] rounded-full bg-white shadow-lg"></div>
-              <input checked={isChecked} onChange={() => setIsChecked(!isChecked)} className="invisible absolute" type="checkbox" />
+              <input
+                checked={isChecked}
+                onChange={() => setIsChecked(!isChecked)}
+                className="sr-only"
+                type="checkbox"
+                aria-label="Toggle Fit Heatmap"
+              />
             </label>
           </div>
           <div className="glass-panel flex items-center justify-between rounded-xl p-4" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
@@ -111,9 +132,13 @@ export default function PhotoFitting() {
                 <p className="text-[11px] font-normal leading-normal text-[#90a4cb]">Simulate movement & weight</p>
               </div>
             </div>
-            <label className="relative flex h-[28px] w-[48px] cursor-pointer items-center rounded-full border-none bg-[#222f49] p-0.5 transition-all has-[:checked]:justify-end has-[:checked]:bg-[#256af4]">
+            <label className="relative flex h-[28px] w-[48px] cursor-pointer items-center rounded-full border-none bg-[#222f49] p-0.5 transition-all has-[:checked]:justify-end has-[:checked]:bg-[#256af4] focus-within:ring-2 focus-within:ring-[#256af4] focus-within:ring-offset-2 focus-within:ring-offset-[#101622]">
               <div className="h-full w-[24px] rounded-full bg-white shadow-lg"></div>
-              <input className="invisible absolute" type="checkbox" />
+              <input
+                className="sr-only"
+                type="checkbox"
+                aria-label="Toggle Fabric Physics"
+              />
             </label>
           </div>
         </div>
