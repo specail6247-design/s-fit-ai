@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, type Mock } from 'vitest';
 import PrivacyModal from '@/components/PrivacyModal';
 import SupportHub from '@/components/SupportHub';
 import { useStore } from '@/store/useStore';
@@ -11,7 +11,7 @@ vi.mock('@/store/useStore', () => ({
 
 describe('PrivacyModal', () => {
   it('renders nothing when isPrivacyOpen is false', () => {
-    (useStore as any).mockReturnValue({
+    (useStore as unknown as Mock).mockReturnValue({
       isPrivacyOpen: false,
       setPrivacyOpen: vi.fn(),
     });
@@ -20,7 +20,7 @@ describe('PrivacyModal', () => {
   });
 
   it('renders modal content when isPrivacyOpen is true', () => {
-    (useStore as any).mockReturnValue({
+    (useStore as unknown as Mock).mockReturnValue({
       isPrivacyOpen: true,
       setPrivacyOpen: vi.fn(),
     });
@@ -33,7 +33,7 @@ describe('PrivacyModal', () => {
 
 describe('SupportHub', () => {
   it('renders nothing when isSupportOpen is false', () => {
-    (useStore as any).mockReturnValue({
+    (useStore as unknown as Mock).mockReturnValue({
       isSupportOpen: false,
       supportTab: 'guide',
       setSupportOpen: vi.fn(),
@@ -44,7 +44,7 @@ describe('SupportHub', () => {
   });
 
   it('renders hub content when isSupportOpen is true', () => {
-    (useStore as any).mockReturnValue({
+    (useStore as unknown as Mock).mockReturnValue({
       isSupportOpen: true,
       supportTab: 'guide',
       setSupportOpen: vi.fn(),
@@ -58,7 +58,7 @@ describe('SupportHub', () => {
   });
 
   it('renders report form when tab is issue', () => {
-    (useStore as any).mockReturnValue({
+    (useStore as unknown as Mock).mockReturnValue({
       isSupportOpen: true,
       supportTab: 'issue', // Set tab to issue
       setSupportOpen: vi.fn(),

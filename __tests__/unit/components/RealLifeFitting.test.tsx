@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
 import RealLifeFitting from '@/components/RealLifeFitting';
 
 // Mock Three.js canvas components to avoid WebGL errors in happy-dom
@@ -46,8 +46,8 @@ describe('RealLifeFitting', () => {
 
     // Mock FileReader
     class MockFileReader {
-      onload: any = null;
-      readAsDataURL(file: any) {
+      onload: ({ target }: { target: { result: string } }) => void = () => {};
+      readAsDataURL() {
         setTimeout(() => {
            if (this.onload) {
              this.onload({ target: { result: 'data:image/png;base64,fakeimage' } });
@@ -55,7 +55,7 @@ describe('RealLifeFitting', () => {
         }, 0);
       }
     }
-    global.FileReader = MockFileReader as any;
+    global.FileReader = MockFileReader as unknown as typeof FileReader;
   });
 
   afterEach(() => {
@@ -102,7 +102,7 @@ describe('RealLifeFitting', () => {
 
   it('shows Share to Story button after successful generation', async () => {
     // Mock successful fetch response
-    (global.fetch as any).mockResolvedValue({
+    (global.fetch as Mock).mockResolvedValue({
       json: async () => ({ imageUrl: 'https://example.com/result.jpg' }),
     });
 
