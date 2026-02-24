@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
+import { useStore } from '@/store/useStore';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 // Dynamically import the 3D scene with SSR disabled
@@ -11,6 +12,8 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const setLoginOpen = useStore((state) => state.setLoginOpen);
+  const setSupportOpen = useStore((state) => state.setSupportOpen);
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -76,6 +79,23 @@ export default function RealLifeFitting() {
       
       {/* LEFT PANEL: CONTROLS */}
       <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
+        {/* Top Right Controls */}
+        <div className="absolute top-8 right-8 z-50 flex gap-6">
+          <button
+            onClick={() => setLoginOpen(true)}
+            className="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors flex items-center gap-2 group"
+          >
+            <span className="w-2 h-2 rounded-full bg-gray-500 group-hover:bg-[#D4AF37] transition-colors" />
+            Member
+          </button>
+          <button
+            onClick={() => setSupportOpen(true)}
+            className="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
+          >
+            Help
+          </button>
+        </div>
+
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
