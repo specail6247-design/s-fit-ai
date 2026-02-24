@@ -3,7 +3,6 @@
 import React, { useState, useRef } from "react";
 import { Space_Grotesk } from "next/font/google";
 import { getLuxuryItems, ClothingItem } from "@/data/mockData";
-import Image from "next/image";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
