@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, Suspense } from "react";
-import { Canvas, useFrame, useLoader, extend, ReactThreeFiber } from "@react-three/fiber";
+import { Canvas, useFrame, useLoader, extend } from "@react-three/fiber";
 import * as THREE from "three";
 import { shaderMaterial } from "@react-three/drei";
 
