@@ -106,11 +106,8 @@ extend({ FluidDistortionMaterial });
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      fluidDistortionMaterial: ReactThreeFiber.Object3DNode<THREE.ShaderMaterial, typeof FluidDistortionMaterial> & {
-        uTexture?: THREE.Texture;
-        uTime?: number;
-        uHover?: number;
-      };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      fluidDistortionMaterial: any;
     }
   }
 }

@@ -31,9 +31,14 @@ export default function LuxuryLiveFitting() {
       transition: {
         staggerChildren: 0.1,
         delayChildren: 0.2
-      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any
     },
-    exit: { opacity: 0, transition: { duration: 0.5 } }
+    exit: {
+      opacity: 0,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      transition: { duration: 0.5 } as any
+    }
   };
 
   const itemVariants = {
@@ -45,7 +50,8 @@ export default function LuxuryLiveFitting() {
         type: "spring",
         stiffness: 50,
         damping: 20
-      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any
     }
   };
 

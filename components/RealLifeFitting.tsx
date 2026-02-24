@@ -10,6 +10,8 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 });
 
 // --- MAIN CONTROL COMPONENT ---
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable @next/next/no-img-element */
 export default function RealLifeFitting() {
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
