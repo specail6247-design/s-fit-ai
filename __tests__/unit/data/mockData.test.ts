@@ -59,4 +59,16 @@ describe('Mock Data Helpers', () => {
       expect(item.category).toBe('tops');
     });
   });
+
+  it('should verify new fields: stylingTip and locked status', () => {
+    const gucci001 = getItemById('gucci-001');
+    expect(gucci001).toBeDefined();
+    expect(gucci001?.stylingTip).toBeDefined();
+
+    const gucci005 = getItemById('gucci-005');
+    expect(gucci005).toBeDefined();
+    expect(gucci005?.stylingTip).toBeDefined();
+    expect(gucci005?.locked).toBe(true);
+    expect(gucci005?.unlockDate).toBeDefined();
+  });
 });
