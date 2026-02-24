@@ -13,17 +13,17 @@ function localFileToDataUri(localPath: string): string | null {
     // Remove leading slash and resolve to public directory
     const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
     const absolutePath = path.join(process.cwd(), 'public', relativePath);
-    
+
     console.log('Reading local file:', absolutePath);
-    
+
     if (!fs.existsSync(absolutePath)) {
       console.error('File not found:', absolutePath);
       return null;
     }
-    
+
     const fileBuffer = fs.readFileSync(absolutePath);
     const base64 = fileBuffer.toString('base64');
-    
+
     // Determine MIME type from extension
     const ext = path.extname(localPath).toLowerCase();
     const mimeTypes: Record<string, string> = {
@@ -34,7 +34,7 @@ function localFileToDataUri(localPath: string): string | null {
       '.gif': 'image/gif'
     };
     const mimeType = mimeTypes[ext] || 'image/png';
-    
+
     return `data:${mimeType};base64,${base64}`;
   } catch (error) {
     console.error('Error reading local file:', error);
