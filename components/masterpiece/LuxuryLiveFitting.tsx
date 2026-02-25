@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useStore } from "@/store/useStore";
 import LuxuryImageDistortion from "./LuxuryImageDistortion";
 import { motion, AnimatePresence } from "framer-motion";

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useRef, useMemo } from 'react';
-import { Canvas, useFrame, extend, ThreeElements } from '@react-three/fiber';
+import React, { useRef } from 'react';
+import { Canvas, useFrame, extend } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { shaderMaterial } from '@react-three/drei';
@@ -103,7 +103,8 @@ extend({ FluidDistortionMaterial });
 // Add this type declaration to avoid TS errors
 declare module '@react-three/fiber' {
   interface ThreeElements {
-    fluidDistortionMaterial: any; // Using any to bypass strict type checking for the custom shader material
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fluidDistortionMaterial: any; // Using any as Object3DNode seems not exported or found in this version
   }
 }
 
@@ -113,6 +114,7 @@ interface SceneProps {
 }
 
 const Scene: React.FC<SceneProps> = ({ image, isHovered }) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const materialRef = useRef<any>(null);
   const texture = useTexture(image);
 
