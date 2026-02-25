@@ -248,7 +248,12 @@ export const useStore = create<StoreState>()(
 
       // Vault (Digital Wardrobe)
       savedLooks: [],
-      addToVault: (itemId) => set((state) => ({ savedLooks: [...state.savedLooks, itemId] })),
+      addToVault: (itemId) =>
+        set((state) => ({
+          savedLooks: state.savedLooks.includes(itemId)
+            ? state.savedLooks
+            : [...state.savedLooks, itemId],
+        })),
       removeFromVault: (itemId) => set((state) => ({ savedLooks: state.savedLooks.filter((id) => id !== itemId) })),
       isVaultOpen: false,
       setVaultOpen: (open) => set({ isVaultOpen: open }),
