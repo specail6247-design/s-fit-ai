@@ -1,3 +1,4 @@
+import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import PhotoFitting from '@/components/PhotoFitting';
@@ -30,27 +31,28 @@ vi.mock('lucide-react', () => ({
 // Mock Framer Motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, className, onClick, ...props }: any) => (
+    div: ({ children, className, onClick, ...props }: React.ComponentProps<'div'>) => (
       <div className={className} onClick={onClick} {...props}>{children}</div>
     ),
-    button: ({ children, className, onClick, ...props }: any) => (
+    button: ({ children, className, onClick, ...props }: React.ComponentProps<'button'>) => (
       <button className={className} onClick={onClick} {...props}>{children}</button>
     ),
-    img: ({ src, alt, className, ...props }: any) => (
+    img: ({ src, alt, className, ...props }: React.ComponentProps<'img'>) => (
+      // eslint-disable-next-line @next/next/no-img-element
       <img src={src} alt={alt} className={className} {...props} />
     ),
-    span: ({ children, className, ...props }: any) => (
+    span: ({ children, className, ...props }: React.ComponentProps<'span'>) => (
       <span className={className} {...props}>{children}</span>
     ),
   },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 // Mock useStore
 const mockSetIsAnalyzing = vi.fn();
 const mockSetIsFitting = vi.fn();
 vi.mock('@/store/useStore', () => ({
-  useStore: (selector: any) => {
+  useStore: (selector: (state: unknown) => unknown) => {
     const state = {
       isAnalyzing: false,
       isFitting: false,

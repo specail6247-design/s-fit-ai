@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+/* eslint-disable @next/next/no-img-element */
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Space_Grotesk } from "next/font/google";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAllItems, ClothingItem } from "@/data/mockData";
@@ -21,14 +22,14 @@ export default function PhotoFitting() {
   const imageRef = useRef<HTMLImageElement>(null);
 
   // Load luxury items
-  const luxuryItems = getAllItems().filter(i => i.isLuxury);
+  const luxuryItems = useMemo(() => getAllItems().filter(i => i.isLuxury), []);
 
   useEffect(() => {
     // Default selection
     if (luxuryItems.length > 0) {
       setSelectedGarment(luxuryItems[0]);
     }
-  }, []);
+  }, [luxuryItems]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
