@@ -1,21 +1,68 @@
-import { Manrope } from 'next/font/google'
-import React from 'react'
+"use client";
 
-const manrope = Manrope({
+import { Cinzel, Space_Grotesk } from 'next/font/google';
+import React, { useEffect } from 'react';
+import Lenis from 'lenis';
+import LuxuryCursor from '@/components/masterpiece/LuxuryCursor';
+
+const cinzel = Cinzel({
   subsets: ['latin'],
+  variable: '--font-cinzel',
   display: 'swap',
-  variable: '--font-manrope',
-})
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-space-grotesk',
+  display: 'swap',
+});
 
 export default function LuxuryLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  useEffect(() => {
+    const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    });
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+    };
+  }, []);
+
   return (
-    <div className={manrope.className}>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-      <style dangerouslySetInnerHTML={{__html: `
+    <div className={`${cinzel.variable} ${spaceGrotesk.variable}`}>
+       <style dangerouslySetInnerHTML={{__html: `
+        :root {
+          --font-serif: var(--font-cinzel);
+          --font-sans: var(--font-space-grotesk);
+        }
+        .font-serif {
+          font-family: var(--font-cinzel), serif !important;
+        }
+        .font-sans {
+          font-family: var(--font-space-grotesk), sans-serif !important;
+        }
+        body, html {
+          cursor: none !important;
+        }
+        a, button, input, textarea, select, [role="button"] {
+          cursor: none !important;
+        }
+      `}} />
+       <LuxuryCursor />
+       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+       <style dangerouslySetInnerHTML={{__html: `
         .material-symbols-outlined {
           font-family: 'Material Symbols Outlined';
           font-weight: normal;
