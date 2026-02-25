@@ -1,7 +1,6 @@
 "use client";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-namespace */
 
 import React, { useRef, Suspense } from "react";
 import { Canvas, useFrame, extend } from "@react-three/fiber";
@@ -53,11 +52,9 @@ const FluidDistortionMaterial = shaderMaterial(
 extend({ FluidDistortionMaterial });
 
 // Declare the JSX intrinsic element for TypeScript
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      fluidDistortionMaterial: any;
-    }
+declare module "@react-three/fiber" {
+  interface ThreeElements {
+    fluidDistortionMaterial: any;
   }
 }
 
@@ -88,8 +85,10 @@ function Scene({ imageUrl }: SceneProps) {
      }
   });
 
-  // Calculate aspect ratio
-  const aspect = texture.image ? texture.image.width / texture.image.height : 3/4;
+  // Safe access to image dimensions
+  const img = (texture as any).image;
+  const aspect = img && img.width && img.height ? img.width / img.height : 3/4;
+
   // Adjust plane size to maintain aspect ratio within a reasonable bound
   const width = 3;
   const height = width / aspect;
