@@ -109,16 +109,6 @@ interface StoreState {
   // UI State
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
-  isLoginOpen: boolean;
-  setLoginOpen: (show: boolean) => void;
-  isSupportOpen: boolean;
-  setSupportOpen: (show: boolean) => void;
-  supportTab: 'guide' | 'qa' | 'issue' | 'caution';
-  setSupportTab: (tab: 'guide' | 'qa' | 'issue' | 'caution') => void;
-  isPrivacyOpen: boolean;
-  setPrivacyOpen: (show: boolean) => void;
-  isVaultOpen: boolean;
-  setVaultOpen: (show: boolean) => void;
 
   // Reset
   resetSession: () => void;
@@ -244,16 +234,6 @@ export const useStore = create<StoreState>()(
       // UI State
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
-      isLoginOpen: false,
-      setLoginOpen: (show) => set({ isLoginOpen: show }),
-      isSupportOpen: false,
-      setSupportOpen: (show) => set({ isSupportOpen: show }),
-      supportTab: 'guide',
-      setSupportTab: (tab) => set({ supportTab: tab }),
-      isPrivacyOpen: false,
-      setPrivacyOpen: (show) => set({ isPrivacyOpen: show }),
-      isVaultOpen: false,
-      setVaultOpen: (show) => set({ isVaultOpen: show }),
 
       // Reset Session
       resetSession: () =>

@@ -1,17 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ModeSelector } from './ModeSelector';
-import { AuthButton } from './AuthButton';
 
 export function LandingPage() {
   return (
     <div className="min-h-screen bg-void-black text-pure-white overflow-hidden relative selection:bg-cyber-lime selection:text-black">
       
-      {/* Top Right Auth */}
-      <div className="absolute top-6 right-6 z-50">
-        <AuthButton />
-      </div>
-
       {/* Background Ambience */}
       <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-purple-900/10 to-transparent pointer-events-none" />
       <div className="absolute top-[-100px] right-[-100px] w-[600px] h-[600px] bg-cyber-lime/5 rounded-full blur-[120px] pointer-events-none" />
