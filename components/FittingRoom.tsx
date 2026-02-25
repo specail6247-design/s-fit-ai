@@ -142,7 +142,7 @@ function PhysicsProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     if (world) {
       world.stepSimulation(delta, 10);
     }
@@ -306,7 +306,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170
+  height = 170, opacity = 1.0
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
