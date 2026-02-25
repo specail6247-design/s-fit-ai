@@ -17,6 +17,9 @@ export interface ClothingItem {
   sizes: string[];
   colors: string[];
   description: string;
+  stylingTip?: string;
+  locked?: boolean;
+  unlockDate?: string; // ISO string
 }
 
 export interface Brand {
@@ -182,6 +185,24 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 44', 'IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Beige/Ebony'],
     description: 'Iconic GG pattern wool blazer with silk lining',
+    stylingTip: 'Pair with tailored black trousers and loafers for a sharp, modern silhouette.',
+  },
+  {
+    id: 'gucci-locked-001',
+    name: 'Cyber-Luxe Bomber',
+    brand: 'Gucci',
+    category: 'outerwear',
+    price: 8900.00,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/600x800/101010/D4AF37?text=LOCKED', // Placeholder for locked item
+    textureUrl: 'https://placehold.co/600x800/101010/D4AF37?text=LOCKED',
+    isLuxury: true,
+    sizes: ['IT 46', 'IT 48', 'IT 50'],
+    colors: ['Neon Black'],
+    description: 'Exclusive limited edition cyber-punk bomber jacket.',
+    stylingTip: 'Best worn with confidence and future-tech accessories.',
+    locked: true,
+    unlockDate: new Date(Date.now() + 7200000).toISOString(), // Unlocks in 2 hours
   },
   {
     id: 'gucci-002',
