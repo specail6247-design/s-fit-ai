@@ -1,16 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateCinematicVideo } from '@/lib/virtualTryOn';
 
-export const runtime = 'nodejs';
-export const maxDuration = 120;
-
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const { imageUrl } = await request.json();
+    const { imageUrl } = await req.json();
 
     if (!imageUrl) {
       return NextResponse.json(
-        { error: 'imageUrl is required' },
+        { success: false, error: 'Missing imageUrl' },
         { status: 400 }
       );
     }
@@ -18,14 +15,17 @@ export async function POST(request: NextRequest) {
     const result = await generateCinematicVideo(imageUrl);
 
     if (result.success) {
-      return NextResponse.json({ success: true, videoUrl: result.videoUrl });
+      return NextResponse.json(result);
     } else {
-      return NextResponse.json({ error: result.error }, { status: 500 });
+      return NextResponse.json(
+        { success: false, error: result.error || 'Failed to generate video' },
+        { status: 500 }
+      );
     }
   } catch (error) {
-    console.error('Cinematic Video API error:', error);
+    console.error('API Error:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { success: false, error: 'Internal server error' },
       { status: 500 }
     );
   }

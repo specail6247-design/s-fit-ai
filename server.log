@@ -12,31 +12,7 @@ This information is used to shape Next.js' roadmap and prioritize features.
 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
 https://nextjs.org/telemetry
 
-✓ Ready in 2s
-○ Compiling / ...
+✓ Ready in 1780ms
+○ Compiling /cinematic-demo ...
 ⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
- HEAD / 200 in 21.7s (compile: 20.1s, render: 1589ms)
-⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
- GET /luxury/fitting 200 in 2.2s (compile: 1859ms, render: 328ms)
-⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
- GET /accessories/gm_sunglasses.png 404 in 1548ms (compile: 1283ms, render: 265ms)
- GET /accessories/lv_speedy.png 404 in 1526ms (compile: 1260ms, render: 266ms)
- GET /clothing/ader_hoodie.png 404 in 1531ms (compile: 1264ms, render: 268ms)
- GET /luxury/fitting 200 in 76ms (compile: 19ms, render: 57ms)
-Reading local file: /app/public/clothing/gucci_blazer.png
-Converted local file to data URI, length: 1039730
-Calling Replicate with:
-- userPhoto type: data URI
-- garmentImage type: data URI
-- category: outerwear
-REPLICATE_API_TOKEN is not set
- POST /api/try-on 500 in 1041ms (compile: 994ms, render: 48ms)
-⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
- GET /luxury/fitting 200 in 292ms (compile: 74ms, render: 217ms)
- GET /clothing/ader_hoodie.png 404 in 199ms (compile: 48ms, render: 151ms)
- GET /accessories/lv_speedy.png 404 in 193ms (compile: 81ms, render: 111ms)
- GET /accessories/gm_sunglasses.png 404 in 192ms (compile: 76ms, render: 116ms)
- GET /luxury/fitting 200 in 203ms (compile: 24ms, render: 179ms)
- GET /luxury/fitting 200 in 62ms (compile: 7ms, render: 54ms)
- GET /luxury/fitting 200 in 51ms (compile: 8ms, render: 42ms)
- GET /luxury/fitting 200 in 89ms (compile: 13ms, render: 76ms)
+ GET /cinematic-demo 200 in 12.4s (compile: 12.0s, render: 401ms)
