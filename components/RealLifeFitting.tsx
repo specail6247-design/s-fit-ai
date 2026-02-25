@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -11,6 +12,7 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const { togglePrivacyModal, toggleSupportModal } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -24,6 +26,75 @@ export default function RealLifeFitting() {
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Background
+    const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
+    gradient.addColorStop(0, '#0a0a0a');
+    gradient.addColorStop(1, '#111111');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 1080, 1920);
+
+    // Load Result Image
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = resultImage;
+    await new Promise((resolve) => { img.onload = resolve; });
+
+    // Calculate Aspect Ratio to Fit/Cover
+    // We want the image to be prominent. Let's make it cover the center area.
+    const imgRatio = img.width / img.height;
+    // Target area: slightly padded from edges
+    const targetWidth = 1080;
+    const targetHeight = 1920;
+
+    // Draw Image (Cover style but contain if too wide)
+    let drawWidth = targetWidth;
+    let drawHeight = drawWidth / imgRatio;
+
+    if (drawHeight < targetHeight * 0.6) {
+        drawHeight = targetHeight * 0.6;
+        drawWidth = drawHeight * imgRatio;
+    }
+
+    const x = (targetWidth - drawWidth) / 2;
+    const y = (targetHeight - drawHeight) / 2;
+
+    ctx.drawImage(img, x, y, drawWidth, drawHeight);
+
+    // Branding Overlay
+    // S_FIT Logo Top
+    ctx.font = 'bold 80px sans-serif'; // Simple font fallback
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.fillText('S_FIT AI', 540, 150);
+
+    ctx.font = '30px monospace';
+    ctx.fillStyle = '#007AFF';
+    ctx.fillText('VIRTUAL FITTING ROOM', 540, 200);
+
+    // "TRY ON" Badge Bottom
+    ctx.fillStyle = '#007AFF';
+    ctx.fillRect(540 - 150, 1700, 300, 80);
+
+    ctx.font = 'bold 40px sans-serif';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('TRY IT ON', 540, 1755);
+
+    // Download
+    const link = document.createElement('a');
+    link.download = `s_fit_story_${Date.now()}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
   };
 
   const handleTryOn = async () => {
@@ -104,6 +175,11 @@ export default function RealLifeFitting() {
                 </div>
               </label>
             </div>
+            {/* Data Safety Badge */}
+            <div className="flex items-center gap-2 px-1 mt-1 opacity-70">
+               <span className="material-symbols-outlined text-[14px] text-green-500">shield_lock</span>
+               <p className="text-[10px] text-gray-400">Photos are processed securely and not shared.</p>
+            </div>
           </div>
 
           {/* Garment Input */}
@@ -158,6 +234,11 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-8 pt-6 border-t border-white/10 flex justify-between text-[10px] text-gray-500 font-mono">
+            <button onClick={() => togglePrivacyModal(true)} className="hover:text-white transition-colors">PRIVACY & TERMS</button>
+            <button onClick={() => toggleSupportModal(true)} className="hover:text-white transition-colors">SUPPORT HUB</button>
+          </div>
+
         </div>
       </div>
 
@@ -205,6 +286,15 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+              {/* Share to Story Button */}
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-[#E1306C] to-[#C13584] text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-2 border border-white/20"
+              >
+                <span className="material-symbols-outlined text-sm">ios_share</span>
+                Share to Story
+              </button>
             </div>
           </motion.div>
         )}
