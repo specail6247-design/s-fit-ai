@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateCinematicVideo } from '@/lib/virtualTryOn';
+import { upscaleImage } from '@/lib/virtualTryOn';
 
 export const runtime = 'nodejs';
 export const maxDuration = 120;
@@ -15,15 +15,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await generateCinematicVideo(imageUrl);
+    const upscaledUrl = await upscaleImage(imageUrl);
 
-    if (result.success) {
-      return NextResponse.json({ success: true, videoUrl: result.videoUrl });
+    if (upscaledUrl) {
+      return NextResponse.json({ success: true, imageUrl: upscaledUrl });
     } else {
-      return NextResponse.json({ error: result.error }, { status: 500 });
+      return NextResponse.json({ error: 'Upscaling failed' }, { status: 500 });
     }
   } catch (error) {
-    console.error('Cinematic Video API error:', error);
+    console.error('Upscale API error:', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }

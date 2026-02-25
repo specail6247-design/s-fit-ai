@@ -5,7 +5,7 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Gentle Monster' | 'Ader Error' | 'Louis Vuitton';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -89,6 +89,27 @@ export const brands: Brand[] = [
     id: 'tiffany',
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'gentle-monster',
+    name: 'Gentle Monster',
+    logo: 'https://placehold.co/100x100?text=GM',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'ader-error',
+    name: 'Ader Error',
+    logo: 'https://placehold.co/100x100?text=ADER',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'louis-vuitton',
+    name: 'Louis Vuitton',
+    logo: 'https://placehold.co/100x100?text=LV',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -534,6 +555,52 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+  },
+
+  // K-FASHION & LUXURY NEW ADDITIONS
+  {
+    id: 'gm-sunglasses-001',
+    name: 'Lilit 01',
+    brand: 'Gentle Monster',
+    category: 'accessories',
+    subCategory: 'glasses',
+    price: 269.00,
+    currency: 'USD',
+    imageUrl: '/accessories/gm_sunglasses.png',
+    textureUrl: '/accessories/gm_sunglasses.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Black', 'Brown'],
+    description: 'Square black sunglasses with signature metal details on temples',
+  },
+  {
+    id: 'ader-hoodie-001',
+    name: 'Logo Applique Hoodie',
+    brand: 'Ader Error',
+    category: 'tops',
+    price: 350.00,
+    currency: 'USD',
+    imageUrl: '/clothing/ader_hoodie.png',
+    textureUrl: '/clothing/ader_hoodie.png',
+    isLuxury: true,
+    sizes: ['A1', 'A2', 'A3'],
+    colors: ['Blue', 'Grey'],
+    description: 'Oversized hoodie with deconstructed design elements',
+  },
+  {
+    id: 'lv-bag-001',
+    name: 'Speedy Bandoulière 25',
+    brand: 'Louis Vuitton',
+    category: 'accessories',
+    subCategory: 'bag',
+    price: 1890.00,
+    currency: 'USD',
+    imageUrl: '/accessories/lv_speedy.png',
+    textureUrl: '/accessories/lv_speedy.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Monogram'],
+    description: 'The Speedy Bandoulière 25 in signature Monogram canvas',
   },
 ];
 
