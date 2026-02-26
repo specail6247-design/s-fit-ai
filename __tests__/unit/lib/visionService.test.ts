@@ -19,10 +19,7 @@ describe('Vision Service', () => {
       hipWidth: 0.5,
       torsoHeight: 0.5,
       legLength: 0.5,
-      overallRatio: 0.5,
-      waistWidth: 0.4,
-      armLength: 0.4,
-      shoulderSlope: 10
+      overallRatio: 0.5
     };
     const userHeight = 175; // cm
 
@@ -109,16 +106,9 @@ describe('Vision Service', () => {
 
     it('should prioritize matching colors (black/white)', () => {
         // Create a mock black item
-        const allItems = getAllItems();
-        const baseItem = allItems.find(i => i.category === 'tops') || allItems[0];
-        const blackItem: ClothingItem = {
-            ...baseItem,
-            colors: ['Black'],
-            category: 'tops' // Ensure literal type 'tops' is preserved
-        } as ClothingItem;
-
+        const blackItem = { ...getAllItems()[0], colors: ['Black'], category: 'tops' };
         const recommendations = getComplementaryItems(blackItem);
-        expect(recommendations.length).toBeGreaterThanOrEqual(0);
+        expect(recommendations.length).toBeGreaterThan(0);
     });
   });
 });

@@ -1,19 +1,10 @@
-'use client';
+import { Manrope } from 'next/font/google'
+import React from 'react'
 
-import { Cinzel, Space_Grotesk } from 'next/font/google'
-import React, { useEffect } from 'react'
-import Lenis from 'lenis'
-
-const cinzel = Cinzel({
+const manrope = Manrope({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-cinzel',
-})
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-space',
+  variable: '--font-manrope',
 })
 
 export default function LuxuryLayout({
@@ -21,25 +12,9 @@ export default function LuxuryLayout({
 }: {
   children: React.ReactNode
 }) {
-  useEffect(() => {
-    const lenis = new Lenis()
-
-    function raf(time: number) {
-      lenis.raf(time)
-      requestAnimationFrame(raf)
-    }
-
-    requestAnimationFrame(raf)
-
-    return () => {
-      lenis.destroy()
-    }
-  }, [])
-
   return (
-    <div className={`${cinzel.variable} ${spaceGrotesk.variable} font-sans`}>
-      {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=optional" />
+    <div className={manrope.className}>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
       <style dangerouslySetInnerHTML={{__html: `
         .material-symbols-outlined {
           font-family: 'Material Symbols Outlined';

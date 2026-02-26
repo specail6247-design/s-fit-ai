@@ -110,12 +110,6 @@ interface StoreState {
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
 
-  // Immersive State
-  isAnalyzing: boolean;
-  setAnalyzing: (status: boolean) => void;
-  isFitting: boolean;
-  setFitting: (status: boolean) => void;
-
   // Reset
   resetSession: () => void;
 }
@@ -240,12 +234,6 @@ export const useStore = create<StoreState>()(
       // UI State
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
-
-      // Immersive State
-      isAnalyzing: false,
-      setAnalyzing: (status) => set({ isAnalyzing: status }),
-      isFitting: false,
-      setFitting: (status) => set({ isFitting: status }),
 
       // Reset Session
       resetSession: () =>
