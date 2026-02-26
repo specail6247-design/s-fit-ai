@@ -29,7 +29,7 @@ export default function LuxuryGarmentDetail() {
         console.warn("API generation failed, falling back to cinematic demo mode:", result.error);
         throw new Error("Trigger fallback");
       }
-    } catch (e) {
+    } catch {
       console.log("Entering Cinematic Demo Mode...");
       // Fallback for demo if API fails or no token
       // Simulate 3s rendering time for "Cinematic Experience"
@@ -135,7 +135,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
