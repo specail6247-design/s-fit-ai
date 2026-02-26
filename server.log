@@ -13,3 +13,4 @@
  GET /spa/fitting 200 in 9.2s (compile: 8.8s, render: 416ms)
  GET /spa/fitting 200 in 88ms (compile: 10ms, render: 78ms)
  GET /spa/fitting 200 in 113ms (compile: 11ms, render: 102ms)
+⨯ Module not found: Error: /app/package.json (directory description file): Error: /app/package.json (directory description file): Error: /app/package.json (directory description file): Error: No file content
