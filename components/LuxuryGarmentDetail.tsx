@@ -1,10 +1,35 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import React from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { useStore } from '@/store/useStore';
+import { ClothingItem } from '@/data/mockData';
 
 export default function LuxuryGarmentDetail() {
+  const { addToVault, toggleVault } = useStore();
+
+  const currentProduct: ClothingItem = {
+    id: 'luxury-demo-001',
+    name: 'Metallic Silk Evening Blazer',
+    brand: 'Gucci',
+    category: 'outerwear',
+    price: 2850,
+    currency: 'USD',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E',
+    textureUrl: '',
+    isLuxury: true,
+    sizes: ['IT 38', 'IT 40', 'IT 42'],
+    colors: ['Metallic Silver'],
+    description: 'Engineered with S_FIT AI\'s proprietary light-refraction engine...',
+    stylingTip: "Pair with structured denim for a balanced silhouette."
+  };
+
+  const handleSaveLook = () => {
+    addToVault(currentProduct);
+    toggleVault();
+  };
+
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -14,7 +39,13 @@ export default function LuxuryGarmentDetail() {
             <span className="material-symbols-outlined">arrow_back</span>
           </Link>
           <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center">S_FIT AI</h2>
-          <div className="flex w-10 items-center justify-end">
+          <div className="flex items-center justify-end gap-2">
+            <button
+              onClick={handleSaveLook}
+              className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+            >
+              <span className="material-symbols-outlined">favorite_border</span>
+            </button>
             <button className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
               <span className="material-symbols-outlined">share</span>
             </button>
@@ -74,8 +105,14 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
+
+          {/* AI Stylist Note */}
+          <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-[#1a1a1a] to-[#222] border-l-2 border-[#ecab13]">
+            <p className="text-[#ecab13] text-[10px] font-bold uppercase tracking-widest mb-1">AI Stylist Note</p>
+            <p className="text-white text-xs italic">&quot;{currentProduct.stylingTip}&quot;</p>
+          </div>
           
           {/* Chips */}
           <div className="flex gap-2 flex-wrap mb-8">
@@ -126,6 +163,26 @@ export default function LuxuryGarmentDetail() {
           <div className="flex justify-between items-center py-2 border-t border-[#2d2d2d]/50">
             <span className="text-zinc-500 text-xs uppercase tracking-widest">Physics Mesh</span>
             <span className="text-white text-sm">12,400 Polygons</span>
+          </div>
+        </div>
+
+        {/* Exclusive Drop (Locked Item) */}
+        <div className="px-4 mb-8">
+           <div className="flex items-center justify-between mb-4">
+            <h2 className="text-white text-xs font-bold tracking-[0.2em] uppercase">Exclusive Drop</h2>
+            <span className="bg-red-500/20 text-red-500 text-[9px] font-bold px-2 py-1 rounded">LOCKED</span>
+          </div>
+          <div className="relative aspect-video rounded-xl overflow-hidden group">
+            <img
+              src="https://placehold.co/600x400/111/444?text=Exclusive+Drop"
+              alt="Exclusive Drop"
+              className="w-full h-full object-cover blur-sm opacity-50 group-hover:scale-105 transition-transform duration-700"
+            />
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+               <span className="material-symbols-outlined text-3xl mb-2 text-white/70">lock</span>
+               <p className="text-white font-mono font-bold tracking-widest text-lg">02:00:00</p>
+               <p className="text-white/50 text-[10px] uppercase tracking-wider mt-1">Available In</p>
+            </div>
           </div>
         </div>
       </main>
