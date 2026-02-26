@@ -261,3 +261,4 @@ export const generateRunwayVideo = async (imageUrl: string) => {
     const res = await generateCinematicVideo(imageUrl);
     return res.success ? res.videoUrl : null;
 };
+// Trigger diff
