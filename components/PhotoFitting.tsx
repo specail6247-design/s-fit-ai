@@ -2,11 +2,35 @@
 
 import React, { useState, useEffect } from "react";
 import { Space_Grotesk } from "next/font/google";
+import { useStore } from '@/store/useStore';
+import { ClothingItem } from '@/data/mockData';
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const { addToVault, toggleVault } = useStore();
+
+  const currentProduct: ClothingItem = {
+    id: 'luxury-demo-001',
+    name: 'Metallic Silk Evening Blazer',
+    brand: 'Gucci',
+    category: 'outerwear',
+    price: 2850,
+    currency: 'USD',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E',
+    textureUrl: '',
+    isLuxury: true,
+    sizes: ['IT 38', 'IT 40', 'IT 42'],
+    colors: ['Metallic Silver'],
+    description: 'Engineered with S_FIT AI\'s proprietary light-refraction engine...',
+    stylingTip: "Pair with structured denim for a balanced silhouette."
+  };
+
+  const handleSaveLook = () => {
+    addToVault(currentProduct);
+    toggleVault();
+  };
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
@@ -19,7 +43,13 @@ export default function PhotoFitting() {
           <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
-        <div className="flex w-12 items-center justify-end">
+        <div className="flex items-center justify-end gap-2">
+          <button
+            onClick={handleSaveLook}
+            className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md hover:bg-[#101622]/60 transition-colors"
+          >
+            <span className="material-symbols-outlined">favorite_border</span>
+          </button>
           <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
             <span className="material-symbols-outlined">info</span>
           </button>
@@ -56,6 +86,15 @@ export default function PhotoFitting() {
           <div className="glass-panel absolute right-4 top-24 rounded-lg p-3 text-right" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
             <p className="text-[10px] font-bold uppercase tracking-tighter text-[#90a4cb]">Mesh Density</p>
             <p className="mt-1 text-xs">42,000 Polygons</p>
+          </div>
+
+          {/* AI Stylist Note Overlay */}
+          <div className="glass-panel absolute right-4 top-48 rounded-lg p-3 max-w-[180px] text-right" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)", borderRight: "2px solid #ecab13" }}>
+             <div className="flex items-center justify-end gap-2 mb-1">
+               <span className="text-[9px] font-bold uppercase tracking-tighter text-[#ecab13]">AI Stylist</span>
+               <span className="material-symbols-outlined text-[10px] text-[#ecab13]">auto_awesome</span>
+             </div>
+             <p className="text-[10px] italic leading-relaxed text-gray-300">"{currentProduct.stylingTip}"</p>
           </div>
         </div>
       </div>
