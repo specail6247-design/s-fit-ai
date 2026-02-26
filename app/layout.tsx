@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { validateEnv } from "@/lib/env";
-import { GlobalOverlays } from "@/components/GlobalOverlays";
 import "./globals.css";
 
 // Validate environment variables on startup
@@ -48,7 +47,6 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-void-black text-pure-white`}
         suppressHydrationWarning
       >
-        <GlobalOverlays />
         {/* Grain Overlay for Premium Feel */}
         <div className="grain-overlay" aria-hidden="true" />
         {children}

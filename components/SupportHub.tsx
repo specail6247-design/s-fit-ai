@@ -3,20 +3,20 @@
 // S_FIT AI - Support Hub Component
 // Slide-out drawer for FAQ and Issue Reporting
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { useStore } from '@/store/useStore';
 import { useState } from 'react';
 
-const backdropVariants = {
+const backdropVariants: Variants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1 },
   exit: { opacity: 0 },
 };
 
-const drawerVariants = {
+const drawerVariants: Variants = {
   hidden: { x: '100%' },
   visible: {
-    x: 0,
+    x: '0%',
     transition: { type: 'spring', stiffness: 300, damping: 30 }
   },
   exit: {
