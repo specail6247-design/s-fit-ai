@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Space_Grotesk } from "next/font/google";
 import Image from "next/image";
 import { getLuxuryItems, ClothingItem } from "@/data/mockData";
@@ -8,16 +8,11 @@ import { getLuxuryItems, ClothingItem } from "@/data/mockData";
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function ARLiveFitting() {
-  const [luxuryItems, setLuxuryItems] = useState<ClothingItem[]>([]);
-  const [selectedItem, setSelectedItem] = useState<ClothingItem | null>(null);
-
-  useEffect(() => {
+  const [luxuryItems] = useState<ClothingItem[]>(getLuxuryItems);
+  const [selectedItem, setSelectedItem] = useState<ClothingItem | null>(() => {
     const items = getLuxuryItems();
-    setLuxuryItems(items);
-    if (items.length > 0) {
-      setSelectedItem(items[0]);
-    }
-  }, []);
+    return items.length > 0 ? items[0] : null;
+  });
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f6f7f8] text-white dark:bg-[#101922] ${spaceGrotesk.className}`}>
