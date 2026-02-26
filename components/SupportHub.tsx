@@ -195,7 +195,7 @@ export function SupportHub() {
                     >
                       <span className="material-symbols-outlined text-green-400 text-5xl mb-4">check_circle</span>
                       <h3 className="text-white font-bold text-lg">Report Sent!</h3>
-                      <p className="text-soft-gray text-sm mt-2">Thank you for your feedback. We'll look into it.</p>
+                      <p className="text-soft-gray text-sm mt-2">Thank you for your feedback. We&apos;ll look into it.</p>
                       <button
                         onClick={() => setSubmitSuccess(false)}
                         className="mt-6 text-xs text-green-400 hover:text-green-300 underline"

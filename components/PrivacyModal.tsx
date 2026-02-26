@@ -150,7 +150,7 @@ export function PrivacyModal() {
                     <h4 className="font-bold text-white mb-2">2. Beta Service</h4>
                     <p>
                       S_FIT AI is currently in Beta. You understand that the services may contain bugs, errors, and other problems.
-                      The service is provided "AS IS" and "AS AVAILABLE".
+                      The service is provided &quot;AS IS&quot; and &quot;AS AVAILABLE&quot;.
                     </p>
                   </section>
 
