@@ -12,15 +12,24 @@ function localFileToDataUri(localPath: string): string | null {
   try {
     // Remove leading slash and resolve to public directory
     const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
-    const absolutePath = path.join(process.cwd(), 'public', relativePath);
-    
+
+    const publicDir = path.resolve(process.cwd(), 'public');
+    const absolutePath = path.resolve(publicDir, relativePath);
+
+    // Security check: Ensure the path is strictly within the public directory
+    const relative = path.relative(publicDir, absolutePath);
+    if (!relative || relative.startsWith('..') || path.isAbsolute(relative)) {
+      console.error('Security Warning: Path traversal attempt detected:', absolutePath);
+      return null;
+    }
+
     console.log('Reading local file:', absolutePath);
-    
+
     if (!fs.existsSync(absolutePath)) {
       console.error('File not found:', absolutePath);
       return null;
     }
-    
+
     const fileBuffer = fs.readFileSync(absolutePath);
     const base64 = fileBuffer.toString('base64');
     
