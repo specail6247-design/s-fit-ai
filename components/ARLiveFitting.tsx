@@ -2,10 +2,13 @@
 
 import React from "react";
 import { Space_Grotesk } from "next/font/google";
+import { useStore } from "@/store/useStore";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function ARLiveFitting() {
+  const { setSupportOpen } = useStore();
+
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f6f7f8] text-white dark:bg-[#101922] ${spaceGrotesk.className}`}>
       {/* Main AR Viewport Container */}
@@ -36,8 +39,17 @@ export default function ARLiveFitting() {
             <div className="size-2 animate-pulse rounded-full bg-red-500"></div>
             <h2 className="text-sm font-bold tracking-widest uppercase text-white">Live Fit AI</h2>
           </div>
-          <div className="flex size-12 items-center justify-center rounded-full" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
-            <span className="material-symbols-outlined text-white">flash_on</span>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setSupportOpen(true)}
+              className="flex size-12 items-center justify-center rounded-full hover:bg-white/10 transition-colors"
+              style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}
+            >
+              <span className="material-symbols-outlined text-white">help</span>
+            </button>
+            <div className="flex size-12 items-center justify-center rounded-full" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+              <span className="material-symbols-outlined text-white">flash_on</span>
+            </div>
           </div>
         </div>
 
