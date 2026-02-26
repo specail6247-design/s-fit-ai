@@ -47,7 +47,7 @@ export function ModeSelector() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
-          className="mode-card group relative flex flex-col items-center text-center h-[400px] justify-between focus-visible:ring-2 focus-visible:ring-cyber-lime focus-visible:outline-none rounded-lg"
+          className="mode-card group relative flex flex-col items-center text-center h-[400px] justify-between focus-visible:ring-2 focus-visible:ring-cyber-lime focus-visible:outline-none rounded-lg w-full p-0 border-0 bg-transparent cursor-pointer appearance-none"
           onClick={() => handleSelect(mode.id)}
         >
           {/* Badge */}
