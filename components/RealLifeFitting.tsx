@@ -1,7 +1,9 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -11,6 +13,7 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const { setIsLoginOpen, setIsSupportOpen } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -76,6 +79,15 @@ export default function RealLifeFitting() {
       
       {/* LEFT PANEL: CONTROLS */}
       <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
+        {/* TOP RIGHT LOGIN BUTTON */}
+        <button
+           onClick={() => setIsLoginOpen(true)}
+           className="absolute top-8 right-8 text-[10px] font-bold tracking-widest uppercase text-white hover:text-[#007AFF] transition-colors flex items-center gap-2 z-50"
+        >
+           <span>Member Access</span>
+           <span className="w-2 h-2 rounded-full bg-[#007AFF] animate-pulse" />
+        </button>
+
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
@@ -209,6 +221,17 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      {/* Support Trigger - Floating Bottom Right */}
+      <button
+        onClick={() => setIsSupportOpen(true)}
+        className="fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 flex items-center justify-center text-white transition-all hover:scale-110 group"
+      >
+        <span className="text-xl">?</span>
+        <span className="absolute right-full mr-4 bg-black/80 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+          Need Help?
+        </span>
+      </button>
     </div>
   );
 }
