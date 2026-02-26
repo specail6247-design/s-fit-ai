@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Space_Grotesk } from "next/font/google";
 import { useStore } from '@/store/useStore';
 import { ClothingItem } from '@/data/mockData';
@@ -94,7 +94,7 @@ export default function PhotoFitting() {
                <span className="text-[9px] font-bold uppercase tracking-tighter text-[#ecab13]">AI Stylist</span>
                <span className="material-symbols-outlined text-[10px] text-[#ecab13]">auto_awesome</span>
              </div>
-             <p className="text-[10px] italic leading-relaxed text-gray-300">"{currentProduct.stylingTip}"</p>
+             <p className="text-[10px] italic leading-relaxed text-gray-300">&quot;{currentProduct.stylingTip}&quot;</p>
           </div>
         </div>
       </div>

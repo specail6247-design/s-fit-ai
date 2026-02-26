@@ -1,8 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import React from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import { useStore } from '@/store/useStore';
 import { ClothingItem } from '@/data/mockData';
 
@@ -105,13 +105,13 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
 
           {/* AI Stylist Note */}
           <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-[#1a1a1a] to-[#222] border-l-2 border-[#ecab13]">
             <p className="text-[#ecab13] text-[10px] font-bold uppercase tracking-widest mb-1">AI Stylist Note</p>
-            <p className="text-white text-xs italic">"{currentProduct.stylingTip}"</p>
+            <p className="text-white text-xs italic">&quot;{currentProduct.stylingTip}&quot;</p>
           </div>
           
           {/* Chips */}
@@ -175,6 +175,7 @@ export default function LuxuryGarmentDetail() {
           <div className="relative aspect-video rounded-xl overflow-hidden group">
             <img
               src="https://placehold.co/600x400/111/444?text=Exclusive+Drop"
+              alt="Exclusive Drop"
               className="w-full h-full object-cover blur-sm opacity-50 group-hover:scale-105 transition-transform duration-700"
             />
             <div className="absolute inset-0 flex flex-col items-center justify-center">

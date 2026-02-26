@@ -1,9 +1,9 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '@/store/useStore';
-import { ClothingItem } from '@/data/mockData';
 
 export default function TheVault() {
   const { savedLooks, isVaultOpen, toggleVault, removeFromVault } = useStore();
