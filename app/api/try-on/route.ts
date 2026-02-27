@@ -18,7 +18,8 @@ function localFileToDataUri(localPath: string): string | null {
     
     // Security check: ensure resolved path is within public directory
     const publicDir = path.join(process.cwd(), 'public');
-    if (!absolutePath.startsWith(publicDir)) {
+    // Normalize paths and ensure strict containment (prevent partial matches like /public-secrets)
+    if (!absolutePath.startsWith(publicDir + path.sep) && absolutePath !== publicDir) {
       console.error('Security Alert: Path traversal attempt blocked:', absolutePath);
       return null;
     }
