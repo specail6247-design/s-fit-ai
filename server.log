@@ -22,3 +22,6 @@ https://nextjs.org/telemetry
 ⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
  GET /luxury/garment/gucci-005 404 in 1790ms (compile: 1436ms, render: 354ms)
  GET /luxury 200 in 177ms (compile: 42ms, render: 135ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /luxury/garment/gucci-005 404 in 1627ms (compile: 1262ms, render: 365ms)
+ GET /luxury 200 in 193ms (compile: 46ms, render: 147ms)
