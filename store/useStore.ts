@@ -110,6 +110,17 @@ interface StoreState {
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
 
+  // The Vault (Digital Wardrobe)
+  savedLooks: ClothingItem[];
+  addToVault: (item: ClothingItem) => void;
+  removeFromVault: (itemId: string) => void;
+  isVaultOpen: boolean;
+  setVaultOpen: (isOpen: boolean) => void;
+
+  // Sensory Ambience
+  isAudioMuted: boolean;
+  toggleAudio: () => void;
+
   // Reset
   resetSession: () => void;
 }
@@ -235,6 +246,24 @@ export const useStore = create<StoreState>()(
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
 
+      // The Vault (Digital Wardrobe)
+      savedLooks: [],
+      addToVault: (item) => set((state) => {
+        if (state.savedLooks.some(i => i.id === item.id)) {
+          return state; // Duplicate check
+        }
+        return { savedLooks: [...state.savedLooks, item] };
+      }),
+      removeFromVault: (itemId) => set((state) => ({
+        savedLooks: state.savedLooks.filter((item) => item.id !== itemId)
+      })),
+      isVaultOpen: false,
+      setVaultOpen: (isOpen) => set({ isVaultOpen: isOpen }),
+
+      // Sensory Ambience
+      isAudioMuted: false,
+      toggleAudio: () => set((state) => ({ isAudioMuted: !state.isAudioMuted })),
+
       // Reset Session
       resetSession: () =>
         set({
@@ -257,6 +286,8 @@ export const useStore = create<StoreState>()(
         userStats: state.userStats,
         selectedAIModels: state.selectedAIModels,
         trainingData: state.trainingData,
+        savedLooks: state.savedLooks,
+        isAudioMuted: state.isAudioMuted,
       }),
     }
   )

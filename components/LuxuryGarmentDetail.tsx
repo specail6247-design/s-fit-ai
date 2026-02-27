@@ -1,10 +1,51 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useStore } from '@/store/useStore';
+import { mockClothingItems } from '@/data/mockData';
 
 export default function LuxuryGarmentDetail() {
+  const { setVaultOpen, addToVault } = useStore();
+  // For demo, we are showing the locked item 'gucci-005' by default or switching logic
+  // But strictly adhering to the file content provided, it seems hardcoded.
+  // I will enhance the existing structure to support dynamic data or at least the features requested.
+  // Since I don't see dynamic routing here, I'll assume this page displays a specific item.
+  // Let's use the locked item for demonstration if possible, or just add the logic.
+
+  // Finding the locked item to demo that feature
+  const lockedItem = mockClothingItems.find(i => i.isLocked);
+  const defaultItem = mockClothingItems.find(i => i.id === 'gucci-001') || mockClothingItems[5];
+
+  // Use a state to toggle between a standard item and a locked item for testing?
+  // Or better, just apply logic to the current view.
+  // The current view hardcodes "Metallic Silk Evening Blazer".
+  // I will wrap the hardcoded content with the new features logic.
+
+  const [timeLeft, setTimeLeft] = useState<string>('');
+
+  useEffect(() => {
+    if (lockedItem?.isLocked && lockedItem.unlockDate) {
+      const interval = setInterval(() => {
+        const now = new Date().getTime();
+        const unlockTime = new Date(lockedItem.unlockDate!).getTime();
+        const distance = unlockTime - now;
+
+        if (distance < 0) {
+          setTimeLeft('UNLOCKED');
+          clearInterval(interval);
+        } else {
+          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+        }
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [lockedItem]);
+
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -14,7 +55,13 @@ export default function LuxuryGarmentDetail() {
             <span className="material-symbols-outlined">arrow_back</span>
           </Link>
           <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center">S_FIT AI</h2>
-          <div className="flex w-10 items-center justify-end">
+          <div className="flex w-10 items-center justify-end gap-2">
+            <button
+              onClick={() => setVaultOpen(true)}
+              className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors relative"
+            >
+              <span className="material-symbols-outlined">checkroom</span>
+            </button>
             <button className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
               <span className="material-symbols-outlined">share</span>
             </button>
@@ -33,6 +80,16 @@ export default function LuxuryGarmentDetail() {
             }}
           />
           
+          {/* Locked Overlay */}
+          {lockedItem?.isLocked && (
+             <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] z-20 flex flex-col items-center justify-center">
+                <span className="material-symbols-outlined text-4xl text-[#ecab13] mb-2">lock_clock</span>
+                <p className="text-white font-bold uppercase tracking-[0.2em] text-sm">Exclusive Access</p>
+                <p className="text-[#ecab13] text-2xl font-mono mt-2">{timeLeft}</p>
+                <p className="text-zinc-400 text-xs mt-2 uppercase tracking-wider">Dropping Soon</p>
+             </div>
+          )}
+
           {/* 3D UI Overlays */}
           <div className="absolute bottom-6 left-4 right-4 flex justify-between items-end">
             <div className="bg-black/40 backdrop-blur-md rounded-lg p-2 flex flex-col gap-2 border border-white/10">
@@ -65,6 +122,26 @@ export default function LuxuryGarmentDetail() {
               <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Clearcoat</p>
             </div>
           </div>
+        </div>
+
+        {/* AI Stylist Note */}
+        <div className="px-4 mt-6">
+           <div className="bg-gradient-to-r from-[#1a1a1a] to-[#252525] border border-[#2d2d2d] rounded-xl p-4 relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-2 opacity-10">
+                 <span className="material-symbols-outlined text-4xl text-white">auto_awesome</span>
+              </div>
+              <div className="flex gap-3">
+                 <div className="size-8 rounded-full bg-[#ecab13]/20 flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-[#ecab13] text-sm">stylist</span>
+                 </div>
+                 <div>
+                    <h3 className="text-[#ecab13] text-[10px] font-bold uppercase tracking-widest mb-1">AI Stylist Note</h3>
+                    <p className="text-zinc-300 text-sm font-medium italic">
+                       &quot;{defaultItem?.stylingTip || "Pair this with structured denim for a balanced silhouette."}&quot;
+                    </p>
+                 </div>
+              </div>
+           </div>
         </div>
 
         {/* Material Science Description */}
@@ -136,10 +213,23 @@ export default function LuxuryGarmentDetail() {
           <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
           <p className="text-white text-xl font-bold">$2,850</p>
         </div>
-        <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
-          <span className="material-symbols-outlined font-bold">person_add_alt</span>
-          <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
-        </Link>
+        <button
+           onClick={() => defaultItem && addToVault(defaultItem)}
+           className="size-14 rounded-xl flex items-center justify-center bg-[#1a1a1a] border border-[#2d2d2d] text-zinc-400 hover:text-white hover:border-white transition-all"
+        >
+           <span className="material-symbols-outlined">bookmark_add</span>
+        </button>
+        {lockedItem?.isLocked ? (
+           <button disabled className="flex-[2] bg-zinc-800 text-zinc-500 h-14 rounded-xl flex items-center justify-center gap-3 cursor-not-allowed">
+              <span className="material-symbols-outlined">lock</span>
+              <span className="font-bold text-sm tracking-widest uppercase">Locked</span>
+           </button>
+        ) : (
+          <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
+            <span className="material-symbols-outlined font-bold">person_add_alt</span>
+            <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
+          </Link>
+        )}
       </div>
 
       <style jsx global>{`
