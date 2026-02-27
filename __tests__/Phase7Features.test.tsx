@@ -4,6 +4,7 @@ import { mockClothingItems } from '../data/mockData';
 
 // Mock persist middleware to avoid storage issues in tests
 vi.mock('zustand/middleware', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   persist: (config: any) => (set: any, get: any, api: any) => config(set, get, api),
 }));
 
