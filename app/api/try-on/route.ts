@@ -16,6 +16,14 @@ function localFileToDataUri(localPath: string): string | null {
     
     console.log('Reading local file:', absolutePath);
     
+    // Security check: ensure resolved path is within public directory
+    const publicDir = path.join(process.cwd(), 'public');
+    // Normalize paths and ensure strict containment (prevent partial matches like /public-secrets)
+    if (!absolutePath.startsWith(publicDir + path.sep) && absolutePath !== publicDir) {
+      console.error('Security Alert: Path traversal attempt blocked:', absolutePath);
+      return null;
+    }
+
     if (!fs.existsSync(absolutePath)) {
       console.error('File not found:', absolutePath);
       return null;
