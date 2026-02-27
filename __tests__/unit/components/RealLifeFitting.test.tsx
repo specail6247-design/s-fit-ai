@@ -32,15 +32,15 @@ describe('RealLifeFitting', () => {
   it('renders the Night City UI structure', () => {
     render(<RealLifeFitting />);
     
-    // Check for Main Header
-    expect(screen.getByText(/S_FIT/i)).toBeInTheDocument();
-    expect(screen.getByText(/NEO/i)).toBeInTheDocument();
+    // Check for Main Header (updated to M_FIT MASTERPIECE)
+    // Using a function matcher or finding by role is more robust when text is split
+    expect(screen.getByRole('heading', { name: /M_FIT/i })).toBeInTheDocument();
     
     // Check for Sections
-    expect(screen.getByText(/01. Identification/i)).toBeInTheDocument();
-    expect(screen.getByText(/02. Target Garment/i)).toBeInTheDocument();
+    expect(screen.getByText(/01. Identity Matrix/i)).toBeInTheDocument();
+    expect(screen.getByText(/02. Garment Source/i)).toBeInTheDocument();
     
     // Check for CTA
-    expect(screen.getByText(/TRY IT ON/i)).toBeInTheDocument();
+    expect(screen.getByText(/GENERATE MASTERPIECE/i)).toBeInTheDocument();
   });
 });
