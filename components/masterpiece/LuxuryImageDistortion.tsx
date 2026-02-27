@@ -85,7 +85,7 @@ declare module '@react-three/fiber' {
 
 const Scene = ({ imageUrl }: { imageUrl: string }) => {
   const texture = useTexture(imageUrl);
-  // @ts-ignore
+  // @ts-expect-error - Custom shader material type definition
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
   useFrame((state) => {
@@ -97,7 +97,7 @@ const Scene = ({ imageUrl }: { imageUrl: string }) => {
   return (
     <mesh>
       <planeGeometry args={[4, 5, 32, 32]} />
-      {/* @ts-ignore */}
+      {/* @ts-expect-error - Custom element not in JSX types */}
       <fluidDistortionMaterial ref={materialRef} uTexture={texture} transparent />
     </mesh>
   );
