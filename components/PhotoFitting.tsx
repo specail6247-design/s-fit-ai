@@ -6,6 +6,7 @@ import { Space_Grotesk } from "next/font/google";
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isChecked, setIsChecked] = useState(true);
 
   return (

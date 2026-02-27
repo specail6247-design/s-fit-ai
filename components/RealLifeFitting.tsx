@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { brands, mockClothingItems, ClothingItem } from '@/data/mockData';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { generateCinematicVideo } from '@/lib/virtualTryOn';
 
 // Dynamically import the 3D scene with SSR disabled

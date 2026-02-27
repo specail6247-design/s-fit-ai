@@ -5,7 +5,7 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Gentle Monster';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -92,13 +92,6 @@ export const brands: Brand[] = [
     isLuxury: true,
     tier: 'luxury',
   },
-  {
-    id: 'gentle_monster',
-    name: 'Gentle Monster',
-    logo: 'https://placehold.co/100x100?text=GM',
-    isLuxury: true,
-    tier: 'luxury',
-  }
 ];
 
 // Mock Clothing Items with Real Product Images
@@ -541,38 +534,6 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
-  },
-  {
-    id: 'gm-glasses-001',
-    name: 'Gentle Monster Lilit 01',
-    brand: 'Gentle Monster',
-    category: 'accessories',
-    subCategory: 'glasses',
-    zIndex: 60,
-    price: 280.00,
-    currency: 'USD',
-    imageUrl: '/accessories/gm_lilit_01.png',
-    textureUrl: '/accessories/gm_lilit_01.png',
-    isLuxury: true,
-    sizes: ['One Size'],
-    colors: ['Black'],
-    description: 'Square acetate frame with soft curves and signature metal details',
-  },
-  {
-    id: 'gm-glasses-002',
-    name: 'Gentle Monster Tam 01',
-    brand: 'Gentle Monster',
-    category: 'accessories',
-    subCategory: 'glasses',
-    zIndex: 60,
-    price: 320.00,
-    currency: 'USD',
-    imageUrl: '/accessories/gm_tam_01.png',
-    textureUrl: '/accessories/gm_tam_01.png',
-    isLuxury: true,
-    sizes: ['One Size'],
-    colors: ['Tortoise'],
-    description: 'Oversized cat-eye frame in acetate',
   },
 ];
 
