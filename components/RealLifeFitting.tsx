@@ -46,7 +46,7 @@ const CinematicPlayer = ({ videoUrl, posterUrl, onClose }: { videoUrl: string, p
 };
 
 // Share Modal Component
-const ShareModal = ({ isOpen, onClose, imageUrl }: { isOpen: boolean, onClose: () => void, imageUrl: string }) => {
+const ShareModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void, imageUrl: string }) => {
   if (!isOpen) return null;
 
   const handleShare = (platform: string) => {
@@ -238,7 +238,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {userImage ? <img src={userImage} className="w-full h-full object-cover" alt="User" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -264,7 +265,8 @@ export default function RealLifeFitting() {
                 <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
                 <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                   <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                    {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" alt="Garment" /> : <span className="text-2xl">👕</span>}
                   </div>
                   <div><div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div><div className="text-[10px] text-gray-500">High-res front view preferred</div></div>
                 </label>
@@ -278,6 +280,7 @@ export default function RealLifeFitting() {
               <div className="grid grid-cols-4 gap-2">
                 {brands.map((brand) => (
                   <button key={brand.id} onClick={() => setSelectedBrand(selectedBrand === brand.id ? '' : brand.id)} className={`aspect-square rounded-lg border flex flex-col items-center justify-center p-1 transition-all ${selectedBrand === brand.id ? 'border-[#007AFF] bg-[#007AFF]/20' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={brand.logo} alt={brand.name} className="w-8 h-8 rounded-full mb-1 opacity-80" />
                     <span className="text-[8px] font-bold text-center leading-tight truncate w-full">{brand.name}</span>
                   </button>
@@ -285,13 +288,14 @@ export default function RealLifeFitting() {
               </div>
               <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                 {['tops', 'bottoms', 'outerwear', 'dresses', 'accessories'].map((cat) => (
-                  <button key={cat} onClick={() => setSelectedCategory(cat as any)} className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase whitespace-nowrap border transition-all ${selectedCategory === cat ? 'bg-white text-black border-white' : 'bg-transparent text-gray-400 border-gray-600 hover:border-gray-400'}`}>{cat}</button>
+                  <button key={cat} onClick={() => setSelectedCategory(cat as ClothingItem['category'])} className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase whitespace-nowrap border transition-all ${selectedCategory === cat ? 'bg-white text-black border-white' : 'bg-transparent text-gray-400 border-gray-600 hover:border-gray-400'}`}>{cat}</button>
                 ))}
               </div>
               <div className="grid grid-cols-2 gap-3 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
                 {libraryItems.length > 0 ? (
                   libraryItems.map((item) => (
                     <button key={item.id} onClick={() => setSelectedLibraryItem(item)} className={`relative aspect-[3/4] rounded-xl border overflow-hidden group transition-all text-left ${selectedLibraryItem?.id === item.id ? 'border-[#007AFF] ring-2 ring-[#007AFF]/50' : 'border-white/10 hover:border-white/30'}`}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <div className="absolute inset-0 bg-gray-800"><img src={item.imageUrl} alt={item.name} className="w-full h-full object-contain p-2" /></div>
                       <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/90 to-transparent pt-8"><p className="text-[10px] font-bold text-white truncate">{item.name}</p><p className="text-[9px] text-gray-400">{item.brand}</p></div>
                       {item.isLuxury && <div className="absolute top-2 right-2 w-4 h-4 bg-[#ffd700] rounded-full flex items-center justify-center text-[8px] text-black font-bold shadow-lg">★</div>}
@@ -337,6 +341,7 @@ export default function RealLifeFitting() {
                   className="w-full h-full rounded-2xl overflow-hidden border border-white/20 shadow-2xl relative cursor-zoom-in"
                   onClick={() => setIsZoomed(!isZoomed)}
                 >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={resultImage}
                     alt="Masterpiece Fit"
