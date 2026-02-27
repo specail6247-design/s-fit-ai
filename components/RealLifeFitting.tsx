@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
@@ -92,8 +93,8 @@ export default function RealLifeFitting() {
           {/* User Photo Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
-            <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
-              <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
+            <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group focus-within:ring-2 focus-within:ring-[#007AFF] focus-within:ring-offset-2 focus-within:ring-offset-black">
+              <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="sr-only" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
                   {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
@@ -109,8 +110,8 @@ export default function RealLifeFitting() {
           {/* Garment Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">02. Target Garment</label>
-            <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
-              <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
+            <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group focus-within:ring-2 focus-within:ring-[#007AFF] focus-within:ring-offset-2 focus-within:ring-offset-black">
+              <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="sr-only" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
                   {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
@@ -143,19 +144,19 @@ export default function RealLifeFitting() {
           ) : (
             <button 
               onClick={handleTryOn}
-              className="w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
+              className="w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#007AFF]"
             >
               <span>⚡️</span> TRY IT ON
             </button>
           )}
           
           <div className="mt-4 flex gap-2">
-             <a href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
+             <Link href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                SPA Line
-             </a>
-             <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
+             </Link>
+             <Link href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                Luxury Line
-             </a>
+             </Link>
           </div>
 
         </div>
