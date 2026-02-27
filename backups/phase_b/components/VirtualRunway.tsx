@@ -31,7 +31,8 @@ const MOCK_COMMUNITY_FITS: CommunityFit[] = [
       textureUrl: '', 
       isLuxury: false, 
       sizes: [], 
-      currency: 'USD' 
+      currency: 'USD',
+      stylingTip: 'Perfect for layering.'
     },
     fitScore: 94,
     timestamp: '2m ago',
@@ -53,7 +54,8 @@ const MOCK_COMMUNITY_FITS: CommunityFit[] = [
       textureUrl: '', 
       isLuxury: true, 
       sizes: [], 
-      currency: 'USD' 
+      currency: 'USD',
+      stylingTip: 'Pair with minimal accessories.'
     },
     fitScore: 98,
     timestamp: '15m ago',
@@ -75,7 +77,8 @@ const MOCK_COMMUNITY_FITS: CommunityFit[] = [
       textureUrl: '', 
       isLuxury: false, 
       sizes: [], 
-      currency: 'USD' 
+      currency: 'USD',
+      stylingTip: 'A versatile essential.'
     },
     fitScore: 88,
     timestamp: '1h ago',
