@@ -584,11 +584,12 @@ function ItemCard({
   return (
     <motion.button
       onClick={onSelect}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
+      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start relative overflow-hidden ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
-      <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
+      {isSelected && <div className="absolute inset-0 luxury-shimmer pointer-events-none z-0 opacity-30" />}
+      <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden z-10" style={{ backgroundColor: primaryColor }}>
         <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
         {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
@@ -760,6 +761,10 @@ function AITryOnModal({
                               className="object-contain"
                               sizes="(max-width: 768px) 100vw, 400px"
                               unoptimized
+                              onError={(e) => {
+                                const target = e.currentTarget as HTMLImageElement;
+                                target.src = 'https://placehold.co/400x600?text=Preview+Error';
+                              }}
                             />
                             <button onClick={() => fileInputRef.current?.click()} className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-[9px] px-3 py-1 rounded-full group-hover:opacity-100 transition-opacity">Change Photo</button>
                         </div>
@@ -788,6 +793,10 @@ function AITryOnModal({
                                     className="object-cover"
                                     sizes="(max-width: 768px) 100vw, 420px"
                                     unoptimized
+                                    onError={(e) => {
+                                      const target = e.currentTarget as HTMLImageElement;
+                                      target.src = 'https://placehold.co/400x600?text=Result+Error';
+                                    }}
                                   />
                                   <div className="absolute top-2 right-2 bg-cyber-lime/90 text-void-black text-[10px] font-bold px-2 py-0.5 rounded">ULTRA-FIT</div>
                                 </div>
@@ -958,6 +967,10 @@ export function FittingRoom() {
                       className="object-contain drop-shadow-2xl"
                       sizes="(max-width: 768px) 60vw, 280px"
                       unoptimized
+                      onError={(e) => {
+                        const target = e.currentTarget as HTMLImageElement;
+                        target.src = 'https://placehold.co/300x400?text=Item+Error';
+                      }}
                     />
                   </div>
                 </div>
