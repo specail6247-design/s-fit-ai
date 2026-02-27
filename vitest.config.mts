@@ -17,8 +17,10 @@ export default defineConfig({
       '@': resolve(__dirname, './'),
     },
     // Fix for framer-motion in test environment
-    deps: {
-      inline: ['framer-motion'],
+    server: {
+      deps: {
+        inline: ['framer-motion'],
+      },
     },
   },
 })

@@ -23,7 +23,7 @@ const drawerVariants = {
       ease: 'easeInOut'
     }
   }
-};
+} as const;
 
 const backdropVariants = {
   hidden: { opacity: 0 },
