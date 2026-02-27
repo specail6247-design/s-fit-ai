@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef } from 'react';
-import { Canvas, useFrame, extend, ReactThreeFiber } from '@react-three/fiber';
+import { Canvas, useFrame, extend } from '@react-three/fiber';
 import { useTexture, shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -76,16 +76,14 @@ extend({ FluidDistortionMaterial });
 // Add type definition for the custom element
 declare module '@react-three/fiber' {
   interface ThreeElements {
-    fluidDistortionMaterial: ReactThreeFiber.Object3DNode<THREE.ShaderMaterial, typeof THREE.ShaderMaterial> & {
-      uTexture?: THREE.Texture | null;
-      uTime?: number;
-    };
+    // Using any to bypass complex type issues with Object3DNode export location
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fluidDistortionMaterial: any;
   }
 }
 
 const Scene = ({ imageUrl }: { imageUrl: string }) => {
   const texture = useTexture(imageUrl);
-  // @ts-expect-error - Custom shader material type definition
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
   useFrame((state) => {
@@ -97,7 +95,7 @@ const Scene = ({ imageUrl }: { imageUrl: string }) => {
   return (
     <mesh>
       <planeGeometry args={[4, 5, 32, 32]} />
-      {/* @ts-expect-error - Custom element not in JSX types */}
+      {/* @ts-expect-error - Custom element not fully typed in JSX */}
       <fluidDistortionMaterial ref={materialRef} uTexture={texture} transparent />
     </mesh>
   );

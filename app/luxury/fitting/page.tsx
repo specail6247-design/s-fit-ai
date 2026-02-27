@@ -1,10 +1,8 @@
-"use client";
-
-import LuxuryLiveFitting from "@/components/LuxuryLiveFitting";
+import PhotoFitting from "@/components/PhotoFitting";
 import React from 'react';
 
 export default function LuxuryFittingPage() {
   return (
-    <LuxuryLiveFitting />
+    <PhotoFitting />
   );
 }
