@@ -5,9 +5,21 @@ export async function POST(req: NextRequest) {
   try {
     const { imageUrl } = await req.json();
 
-    if (!imageUrl) {
+    if (!imageUrl || typeof imageUrl !== 'string') {
       return NextResponse.json(
-        { success: false, error: 'Missing imageUrl' },
+        { success: false, error: 'Missing or invalid imageUrl' },
+        { status: 400 }
+      );
+    }
+
+    // Security: Validate the URL to prevent SSRF or malicious inputs
+    const isHttpUrl = imageUrl.startsWith('http://') || imageUrl.startsWith('https://');
+    const isDataUri = imageUrl.startsWith('data:image/');
+
+    if (!isHttpUrl && !isDataUri) {
+      console.error('Security Warning: Invalid imageUrl format detected.');
+      return NextResponse.json(
+        { success: false, error: 'Invalid imageUrl format. Must be a valid HTTP(S) URL or image data URI.' },
         { status: 400 }
       );
     }

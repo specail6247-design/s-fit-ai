@@ -1,6 +1,6 @@
 ## Sentinel's Journal
 
-## 2024-03-01 - [Path Traversal in API Route]
-**Vulnerability:** Found a CRITICAL Path Traversal vulnerability in `app/api/try-on/route.ts` within the `localFileToDataUri` function. User-supplied input for `garmentImageUrl` was being used directly in `path.join(process.cwd(), 'public', relativePath)` without proper validation, allowing access to arbitrary files on the filesystem (e.g., `/../../../../etc/passwd`).
-**Learning:** Even when stripping the leading slash, `path.join` resolves `..` segments, which allows escaping the intended `public` directory.
-**Prevention:** Use `path.resolve` or `path.normalize` and verify that the resulting absolute path strictly starts with the intended base directory (e.g., `absolutePath.startsWith(path.join(process.cwd(), 'public') + path.sep)`).
+## 2024-03-01 - [SSRF / Input Validation in API Route]
+**Vulnerability:** Found a lack of URL validation in `app/api/cinematic-try-on/route.ts` where the `imageUrl` field is passed directly to the `generateCinematicVideo` process without verifying if the format is safe.
+**Learning:** Accepting unvalidated string inputs for image fetch URLs opens the door for SSRF or potentially injecting malicious file schemes (`file://`, `ftp://`).
+**Prevention:** Implement strict string prefix checks allowing only `http://`, `https://`, or `data:image/` formats before handing data off to processing or external requests.
