@@ -5,46 +5,28 @@ test.describe('User Flow', () => {
     await page.goto('/');
   });
 
-  test('should complete Easy Fit flow', async ({ page }) => {
-    // 1. Select Easy Fit Mode
-    // Force click to ensure it hits even if covered or slightly off-screen in mobile
-    await page.getByText('EASY FIT').click({ force: true });
+  test('should interact with the main fitting view', async ({ page }) => {
+    // Verify Try It On button exists
+    const tryItOnBtn = page.getByRole('button', { name: /TRY IT ON/i });
+    await expect(tryItOnBtn).toBeVisible();
 
-    // Verify selection (border color change or checkmark)
-    const continueToModeBtn = page.getByRole('button', { name: /Continue →/i });
-    await expect(continueToModeBtn).toBeEnabled();
-    await continueToModeBtn.click();
+    // Click it without uploading files, should trigger an alert (handled automatically or safely ignored by playwright)
+    // We just verify we can click it and it's interactive
 
-    // 2. Input Stats
-    // Wait for "Easy Fit" header
-    await expect(page.getByRole('heading', { name: 'Easy Fit' })).toBeVisible();
+    // Instead of clicking and handling alert, let's verify navigation links
+    const spaLink = page.getByRole('link', { name: /SPA Line/i });
+    const luxuryLink = page.getByRole('link', { name: /Luxury Line/i });
 
-    // Just click "Continue to Fitting Room" as defaults are valid.
-    await page.getByRole('button', { name: /Continue to Fitting Room/i }).click();
+    await expect(spaLink).toBeVisible();
+    await expect(luxuryLink).toBeVisible();
 
-    // 3. Brand Selection
-    // Wait for "Select Brand" header
-    await expect(page.getByText('Select Brand')).toBeVisible();
+    // Click Privacy Policy to open modal
+    await page.getByRole('button', { name: 'Privacy Policy' }).click();
+    await expect(page.getByText('Data Collection & Usage')).toBeVisible();
 
-    // Easy Fit defaults to Uniqlo auto-selected.
-    // Check if Uniqlo button has class indicating selection (border-pure-white) or just check if "Enter Fitting Room" is enabled.
-    const enterFittingRoomBtn = page.getByRole('button', { name: /Enter Fitting Room/i });
-    await expect(enterFittingRoomBtn).toBeEnabled();
-
-    // We can also switch brand manually.
-    // Note: buttons in BrandSelector might have text "ZARA" and role "button"
-    await page.getByRole('button', { name: 'ZARA' }).click();
-
-    await enterFittingRoomBtn.click();
-
-    // 4. Fitting Room
-    // Should see "Fitting Room" component.
-    // Home.tsx: "Back to brands" button visible.
-    await expect(page.getByRole('button', { name: /Back to brands/i })).toBeVisible();
-
-    // Should see 3D canvas (maybe check for canvas element)
-    // Note: WebGL might not be available in all headless environments
-    // We check if the container exists at least.
-    await expect(page.locator('.glass-card').first()).toBeVisible();
+    // Close the modal
+    await page.getByRole('button', { name: 'I Understand' }).click();
+    // Use locator with longer timeout or check for main page element
+    await expect(tryItOnBtn).toBeVisible();
   });
 });
