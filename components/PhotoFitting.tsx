@@ -2,11 +2,23 @@
 
 import React, { useState, useEffect } from "react";
 import { Space_Grotesk } from "next/font/google";
+import { useStore } from "@/store/useStore";
+import { mockClothingItems } from "@/data/mockData";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const [isLocked] = useState(true); // Phase 7 mock local state for Exclusive Access
+  const { addToVault, setVaultOpen } = useStore();
+
+  const handleSaveLook = () => {
+    const itemToSave = mockClothingItems.find(item => item.id === 'gucci-001');
+    if (itemToSave) {
+      addToVault(itemToSave);
+      setVaultOpen(true);
+    }
+  };
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
@@ -57,6 +69,15 @@ export default function PhotoFitting() {
             <p className="text-[10px] font-bold uppercase tracking-tighter text-[#90a4cb]">Mesh Density</p>
             <p className="mt-1 text-xs">42,000 Polygons</p>
           </div>
+
+          {/* AI Stylist Note */}
+          <div className="glass-panel absolute left-1/2 top-48 -translate-x-1/2 w-[90%] max-w-sm rounded-lg p-3 text-center z-20" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(37, 106, 244, 0.5)" }}>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#256af4] mb-1 flex items-center justify-center gap-1">
+              <span className="material-symbols-outlined text-[12px]">auto_awesome</span>
+              AI Stylist Note
+            </p>
+            <p className="text-xs text-[#90a4cb] italic font-medium">&quot;Pair this with structured denim for a balanced silhouette.&quot;</p>
+          </div>
         </div>
       </div>
 
@@ -83,7 +104,16 @@ export default function PhotoFitting() {
       <div className="mt-auto space-y-4 p-4 z-40">
         <div className="flex items-center justify-between px-2">
           <h3 className="text-sm font-bold leading-tight tracking-wider uppercase text-white">Fitting Controls</h3>
-          <span className="rounded bg-[#256af4]/20 px-2 py-0.5 text-[10px] text-[#256af4]">ADVANCED</span>
+          <div className="flex gap-2">
+            <button
+              onClick={handleSaveLook}
+              className="flex items-center gap-1 rounded border border-[#256af4] px-2 py-0.5 text-[10px] font-bold uppercase text-[#256af4] transition-colors hover:bg-[#256af4]/10"
+            >
+              <span className="material-symbols-outlined text-[12px]">bookmark</span>
+              Save Look
+            </button>
+            <span className="rounded bg-[#256af4]/20 px-2 py-0.5 text-[10px] font-bold text-[#256af4]">ADVANCED</span>
+          </div>
         </div>
         <div className="grid grid-cols-1 gap-3">
           <div className="glass-panel group flex items-center justify-between rounded-xl p-4" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
@@ -117,10 +147,17 @@ export default function PhotoFitting() {
             </label>
           </div>
         </div>
-        <button className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-[#256af4] text-base font-bold text-white shadow-lg shadow-[#256af4]/20 transition-colors hover:bg-blue-600">
-          <span className="material-symbols-outlined">check_circle</span>
-          Confirm & Proceed to Checkout
-        </button>
+        {isLocked ? (
+          <button disabled className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-[#222f49] text-base font-bold text-[#90a4cb] shadow-inner transition-colors border border-[#314368] cursor-not-allowed">
+            <span className="material-symbols-outlined">lock</span>
+            Locked: Available in 02:00:00
+          </button>
+        ) : (
+          <button className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-[#256af4] text-base font-bold text-white shadow-lg shadow-[#256af4]/20 transition-colors hover:bg-blue-600">
+            <span className="material-symbols-outlined">check_circle</span>
+            Confirm & Proceed to Checkout
+          </button>
+        )}
         <div className="h-4"></div>
       </div>
 
