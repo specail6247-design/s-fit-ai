@@ -110,6 +110,14 @@ interface StoreState {
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
 
+  // Phase 7: The Extra Mile
+  isAudioMuted: boolean;
+  setAudioMuted: (muted: boolean) => void;
+  isVaultOpen: boolean;
+  setVaultOpen: (open: boolean) => void;
+  savedLooks: ClothingItem[];
+  addToVault: (item: ClothingItem) => void;
+
   // Reset
   resetSession: () => void;
 }
@@ -234,6 +242,19 @@ export const useStore = create<StoreState>()(
       // UI State
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
+
+      // Phase 7: The Extra Mile
+      isAudioMuted: false,
+      setAudioMuted: (muted) => set({ isAudioMuted: muted }),
+      isVaultOpen: false,
+      setVaultOpen: (open) => set({ isVaultOpen: open }),
+      savedLooks: [],
+      addToVault: (item) => set((state) => {
+        if (state.savedLooks.some((look) => look.id === item.id)) {
+          return state;
+        }
+        return { savedLooks: [...state.savedLooks, item] };
+      }),
 
       // Reset Session
       resetSession: () =>
