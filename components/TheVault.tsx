@@ -60,6 +60,7 @@ export default function TheVault() {
                     >
                       <div className="w-20 h-24 shrink-0 rounded-lg bg-[#0a0f18] overflow-hidden relative">
                         {item.imageUrl && (
+                          // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={item.imageUrl}
                             alt={item.name}

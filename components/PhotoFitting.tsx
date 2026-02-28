@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Space_Grotesk } from "next/font/google";
 import { useStore } from "@/store/useStore";
 import { mockClothingItems } from "@/data/mockData";
