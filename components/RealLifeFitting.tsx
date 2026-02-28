@@ -93,10 +93,10 @@ export default function RealLifeFitting() {
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
-              <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
-              <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+              <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="peer sr-only" id="user-upload" aria-label="Upload User Photo" />
+              <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4 peer-focus:ring-2 peer-focus:ring-[#007AFF] peer-focus:ring-offset-2 peer-focus:ring-offset-black rounded-xl">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? <img src={userImage} alt="User photo preview" className="w-full h-full object-cover" /> : <span className="text-2xl" role="img" aria-label="User placeholder">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -110,10 +110,10 @@ export default function RealLifeFitting() {
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">02. Target Garment</label>
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
-              <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
-              <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
+              <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="peer sr-only" id="garment-upload" aria-label="Select Target Garment" />
+              <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4 peer-focus:ring-2 peer-focus:ring-[#007AFF] peer-focus:ring-offset-2 peer-focus:ring-offset-black rounded-xl">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? <img src={garmentImage} alt="Garment photo preview" className="w-full h-full object-cover" /> : <span className="text-2xl" role="img" aria-label="Garment placeholder">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -199,6 +199,7 @@ export default function RealLifeFitting() {
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                aria-label="Close generated result image"
               >
                 ✕ Close
               </button>
