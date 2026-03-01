@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +17,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const { setIsPrivacyOpen, setPrivacyActiveTab, setIsSupportOpen } = useStore();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -71,8 +74,65 @@ export default function RealLifeFitting() {
     }
   };
 
+  const shareToStory = async () => {
+    if (!resultImage || !canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Load images
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = resultImage;
+
+    await new Promise((resolve) => {
+      img.onload = resolve;
+    });
+
+    // 1080x1920 (9:16 aspect ratio for IG stories)
+    canvas.width = 1080;
+    canvas.height = 1920;
+
+    // Fill background
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw image (centered, cover style)
+    const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+    const x = (canvas.width / 2) - (img.width / 2) * scale;
+    const y = (canvas.height / 2) - (img.height / 2) * scale;
+    ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+
+    // Dark gradient overlay at bottom for text readability
+    const gradient = ctx.createLinearGradient(0, canvas.height - 400, 0, canvas.height);
+    gradient.addColorStop(0, 'rgba(0,0,0,0)');
+    gradient.addColorStop(1, 'rgba(0,0,0,0.8)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, canvas.height - 400, canvas.width, 400);
+
+    // Add S_FIT Branding
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 60px "Geist Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('S_FIT NEO', canvas.width / 2, canvas.height - 150);
+
+    ctx.fillStyle = '#007AFF';
+    ctx.font = '30px "Geist Mono", monospace';
+    ctx.fillText('VIRTUAL FITTING ROOM', canvas.width / 2, canvas.height - 100);
+
+    // Download
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    const link = document.createElement('a');
+    link.download = `sfit-story-${Date.now()}.jpg`;
+    link.href = dataUrl;
+    link.click();
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
+      {/* Hidden canvas for Story generation */}
+      <canvas ref={canvasRef} className="hidden" />
       
       {/* LEFT PANEL: CONTROLS */}
       <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
@@ -89,6 +149,15 @@ export default function RealLifeFitting() {
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
+          {/* Data Safety Badge */}
+          <div className="bg-[#007AFF]/10 border border-[#007AFF]/20 rounded-lg p-3 flex items-center gap-3">
+            <span className="text-xl" role="img" aria-label="shield">🛡️</span>
+            <div>
+              <p className="text-xs font-bold text-[#007AFF]">Data Safety Assured</p>
+              <p className="text-[10px] text-gray-400">Photos are processed securely and never shared.</p>
+            </div>
+          </div>
+
           {/* User Photo Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
@@ -159,6 +228,30 @@ export default function RealLifeFitting() {
           </div>
 
         </div>
+
+        {/* Footer Links */}
+        <div className="mt-8 flex justify-center gap-4 text-[10px] text-gray-500 uppercase tracking-widest border-t border-white/10 pt-4 relative z-10">
+          <button
+            onClick={() => { setPrivacyActiveTab('privacy'); setIsPrivacyOpen(true); }}
+            className="hover:text-white transition-colors"
+          >
+            Privacy
+          </button>
+          <span>|</span>
+          <button
+            onClick={() => { setPrivacyActiveTab('terms'); setIsPrivacyOpen(true); }}
+            className="hover:text-white transition-colors"
+          >
+            Terms
+          </button>
+          <span>|</span>
+          <button
+            onClick={() => setIsSupportOpen(true)}
+            className="hover:text-white transition-colors flex items-center gap-1"
+          >
+            Support
+          </button>
+        </div>
       </div>
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
@@ -205,6 +298,12 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={shareToStory}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] hover:opacity-90 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg transition-transform hover:scale-105 flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
