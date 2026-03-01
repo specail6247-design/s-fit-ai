@@ -1,0 +1,17 @@
+
+> s-fit-ai@0.1.0 dev /app
+> next dev --webpack
+
+⚠ Port 3000 is in use by an unknown process, using available port 3001 instead.
+▲ Next.js 16.1.4 (webpack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.0.2:3001
+
+✓ Starting...
+✓ Ready in 2s
+○ Compiling /luxury/fitting ...
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /luxury/fitting 200 in 9.9s (compile: 8.8s, render: 1101ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /luxury 200 in 1927ms (compile: 1630ms, render: 297ms)
+ GET /luxury 200 in 127ms (compile: 7ms, render: 120ms)
