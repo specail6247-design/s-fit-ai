@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateRunwayVideo, upscaleImage } from '@/lib/virtualTryOn';
 
+// Helper: Validate that a URL is safe to use as an external resource
+function isValidExternalUrl(url: string): boolean {
+  return url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:image/');
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -9,6 +14,13 @@ export async function POST(req: NextRequest) {
     if (!imageUrl) {
       return NextResponse.json(
         { success: false, error: 'Missing imageUrl' },
+        { status: 400 }
+      );
+    }
+
+    if (!isValidExternalUrl(imageUrl)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid imageUrl scheme' },
         { status: 400 }
       );
     }
