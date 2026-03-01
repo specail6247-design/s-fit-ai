@@ -279,6 +279,11 @@ body {
   animation: autoCycle 5s linear infinite;
 }
 
+/* Luxury Asset Curation */
+.luxury-grade {
+  filter: saturate(0.9) contrast(1.1);
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 640px) {
   :root {
