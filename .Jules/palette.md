@@ -1,0 +1,3 @@
+## 2026-03-02 - Missing ARIA labels on Material Symbols icon buttons
+**Learning:** Found a recurring pattern where icon-only buttons using Google Material Symbols `<span className="material-symbols-outlined">` lacked `aria-label` attributes. This renders them inaccessible to screen reader users, who will just hear the icon's ligature name (e.g., 'share') instead of a localized, context-aware action, or worse, just 'button' if not read properly.
+**Action:** When adding new icon-only buttons, always add a descriptive `aria-label` to the `<button>` element and add `aria-hidden="true"` to the `<span>` containing the icon ligature to hide the text from screen readers while preserving the visual icon.
