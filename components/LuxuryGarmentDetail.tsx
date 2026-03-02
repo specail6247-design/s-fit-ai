@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { LuxuryImageDistortion } from './masterpiece/LuxuryImageDistortion';
 
 export default function LuxuryGarmentDetail() {
   return (
@@ -13,7 +14,7 @@ export default function LuxuryGarmentDetail() {
           <Link href="/" className="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors">
             <span className="material-symbols-outlined">arrow_back</span>
           </Link>
-          <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center">S_FIT AI</h2>
+          <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center font-cinzel">S_FIT AI</h2>
           <div className="flex w-10 items-center justify-end">
             <button className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
               <span className="material-symbols-outlined">share</span>
@@ -26,12 +27,13 @@ export default function LuxuryGarmentDetail() {
       <main className="max-w-md mx-auto pt-16 pb-32">
         {/* 3D Interactive Viewport (Hero Image) */}
         <div className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900">
-          <div 
-            className="absolute inset-0 bg-cover bg-center" 
-            style={{ 
-              backgroundImage: 'linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' 
-            }}
-          />
+          <div className="absolute inset-0 z-0">
+            <LuxuryImageDistortion
+              imageUrl="https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E"
+              className="luxury-grade"
+            />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0a0a0a] pointer-events-none z-10" />
           
           {/* 3D UI Overlays */}
           <div className="absolute bottom-6 left-4 right-4 flex justify-between items-end">
@@ -42,7 +44,14 @@ export default function LuxuryGarmentDetail() {
             </div>
             <div className="text-right">
               <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mb-1">Authentic Render</p>
-              <h1 className="text-white text-3xl font-extralight leading-tight">Metallic Silk <br/><span className="font-bold">Evening Blazer</span></h1>
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="text-white text-3xl font-extralight leading-tight font-cinzel"
+              >
+                Metallic Silk <br/><span className="font-bold">Evening Blazer</span>
+              </motion.h1>
             </div>
           </div>
         </div>
@@ -73,9 +82,15 @@ export default function LuxuryGarmentDetail() {
             <h2 className="text-white text-xs font-bold tracking-[0.2em] uppercase">Material Science</h2>
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
-          <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
-          </p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="text-zinc-400 text-sm leading-relaxed mb-6 font-inter"
+          >
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+          </motion.p>
           
           {/* Chips */}
           <div className="flex gap-2 flex-wrap mb-8">
@@ -92,7 +107,13 @@ export default function LuxuryGarmentDetail() {
         </div>
 
         {/* Macro Gallery */}
-        <div className="mb-8">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mb-8"
+        >
           <div className="px-4 flex items-center justify-between mb-4">
             <h2 className="text-white text-xs font-bold tracking-[0.2em] uppercase">Detail Macro View</h2>
             <p className="text-zinc-500 text-xs">4K Textures</p>
@@ -111,10 +132,16 @@ export default function LuxuryGarmentDetail() {
               style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBqkn4HFnxWGVtmWbfYSHCV_0_Eix7IhuazsGoJhX_mZ0YSMRUig_BHDMoHIAapobfGWThLoMAvthdSMIT6zWhWTFp8GxOJe9a0NYtCwiUlYeJgFDX6uf47SweuwPSw0ifCVSal7eP6WDO1pyzOpMYk-TECLTV3Il19DmBV5p8acsIruMpV5hpoay7GQLfUQFZr1AMRddi5grhGdrPXb-TbjULkGcldw5FZg81mGVBmRGEfOT_KrdMTUPs9rPuDcgFxbGZ-rA_imkk")' }}
             />
           </div>
-        </div>
+        </motion.div>
 
         {/* Comparison Table */}
-        <div className="px-4 py-4 bg-[#1a1a1a]/30 border-y border-[#2d2d2d] mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="px-4 py-4 bg-[#1a1a1a]/30 border-y border-[#2d2d2d] mb-8"
+        >
           <div className="flex justify-between items-center py-2">
             <span className="text-zinc-500 text-xs uppercase tracking-widest">Weight</span>
             <span className="text-white text-sm">240 GSM</span>
@@ -127,7 +154,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-zinc-500 text-xs uppercase tracking-widest">Physics Mesh</span>
             <span className="text-white text-sm">12,400 Polygons</span>
           </div>
-        </div>
+        </motion.div>
       </main>
 
       {/* Bottom Action Bar */}
@@ -138,7 +165,7 @@ export default function LuxuryGarmentDetail() {
         </div>
         <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
           <span className="material-symbols-outlined font-bold">person_add_alt</span>
-          <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
+          <span className="font-bold text-sm tracking-widest uppercase font-space-grotesk">Try on Mannequin</span>
         </Link>
       </div>
 

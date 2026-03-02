@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { GoldCursor } from "@/components/ui/GoldCursor";
 import { validateEnv } from "@/lib/env";
 import "./globals.css";
 
@@ -47,6 +48,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-void-black text-pure-white`}
         suppressHydrationWarning
       >
+        <GoldCursor />
         {/* Grain Overlay for Premium Feel */}
         <div className="grain-overlay" aria-hidden="true" />
         {children}
