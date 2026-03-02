@@ -1,10 +1,37 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 
 export default function LuxuryGarmentDetail() {
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [origin, setOrigin] = useState({ x: '50%', y: '50%' });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (zoomLevel > 1) {
+      const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+      const x = ((e.clientX - left) / width) * 100;
+      const y = ((e.clientY - top) / height) * 100;
+      setOrigin({ x: `${x}%`, y: `${y}%` });
+    }
+  };
+
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setZoomLevel((prev) => {
+      const newZoom = prev + (e.deltaY > 0 ? -0.2 : 0.2);
+      return Math.min(Math.max(newZoom, 1), 4);
+    });
+  };
+
+  const handleExport = () => {
+    const mockVideoUrl = "https://pub-83c5db439b40468498f97946200806f7.r2.dev/sfit-cinematic-runway.mp4";
+    const a = document.createElement('a');
+    a.href = mockVideoUrl;
+    a.download = 's_fit_cinematic_4k.mp4';
+    a.click();
+  };
+
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -14,7 +41,10 @@ export default function LuxuryGarmentDetail() {
             <span className="material-symbols-outlined">arrow_back</span>
           </Link>
           <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center">S_FIT AI</h2>
-          <div className="flex w-10 items-center justify-end">
+          <div className="flex items-center justify-end gap-2">
+            <button onClick={handleExport} className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors" title="Share Cinematic 4K">
+              <span className="material-symbols-outlined">movie</span>
+            </button>
             <button className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
               <span className="material-symbols-outlined">share</span>
             </button>
@@ -25,11 +55,17 @@ export default function LuxuryGarmentDetail() {
       {/* Main Content Container (Mobile Optimized) */}
       <main className="max-w-md mx-auto pt-16 pb-32">
         {/* 3D Interactive Viewport (Hero Image) */}
-        <div className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900">
+        <div
+          className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900"
+          onMouseMove={handleMouseMove}
+          onWheel={handleWheel}
+        >
           <div 
-            className="absolute inset-0 bg-cover bg-center" 
+            className="absolute inset-0 bg-cover bg-center transition-transform duration-200 ease-out"
             style={{ 
-              backgroundImage: 'linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' 
+              backgroundImage: 'linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")',
+              transform: `scale(${zoomLevel})`,
+              transformOrigin: `${origin.x} ${origin.y}`
             }}
           />
           
@@ -74,7 +110,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}

@@ -9,6 +9,7 @@ export interface ClothingItem {
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
+  materialInteraction?: 'layer_under' | 'layer_over' | 'physics_heavy' | 'physics_light';
   price: number;
   currency: string;
   imageUrl: string;
@@ -494,6 +495,7 @@ export const mockClothingItems: ClothingItem[] = [
     category: 'accessories',
     subCategory: 'bag',
     zIndex: 50,
+    materialInteraction: 'layer_over',
     price: 10200.00,
     currency: 'USD',
     imageUrl: '/accessories/chanel_bag.png',
@@ -510,6 +512,7 @@ export const mockClothingItems: ClothingItem[] = [
     category: 'accessories',
     subCategory: 'hat',
     zIndex: 50,
+    materialInteraction: 'layer_over',
     price: 48.00,
     currency: 'USD',
     imageUrl: '/accessories/supreme_hat.png',
@@ -526,6 +529,7 @@ export const mockClothingItems: ClothingItem[] = [
     category: 'accessories',
     subCategory: 'jewelry',
     zIndex: 35,
+    materialInteraction: 'layer_under',
     price: 1200.00,
     currency: 'USD',
     imageUrl: '/accessories/tiffany_necklace.png',
