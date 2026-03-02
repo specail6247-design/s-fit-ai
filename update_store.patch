@@ -1,0 +1,28 @@
+--- store/useStore.ts
++++ store/useStore.ts
+@@ -102,6 +102,12 @@
+   showPremiumModal: boolean;
+   setShowPremiumModal: (show: boolean) => void;
+
++  isLoginOpen: boolean;
++  setIsLoginOpen: (show: boolean) => void;
++
++  isSupportOpen: boolean;
++  setIsSupportOpen: (show: boolean) => void;
++
+   // Reset
+   resetSession: () => void;
+ }
+@@ -213,6 +219,12 @@
+       showPremiumModal: false,
+       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
+
++      isLoginOpen: false,
++      setIsLoginOpen: (show) => set({ isLoginOpen: show }),
++
++      isSupportOpen: false,
++      setIsSupportOpen: (show) => set({ isSupportOpen: show }),
++
+       // Reset Session
+       resetSession: () =>
+         set({
