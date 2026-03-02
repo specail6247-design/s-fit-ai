@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
@@ -75,7 +76,11 @@ export default function RealLifeFitting() {
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
       {/* LEFT PANEL: CONTROLS */}
-      <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
+      <motion.div
+        animate={{ opacity: isProcessing ? 0 : 1 }}
+        transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+        className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative"
+      >
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
@@ -96,7 +101,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? <img src={userImage} alt="User Upload" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +118,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? <img src={garmentImage} alt="Garment Upload" className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -159,7 +164,7 @@ export default function RealLifeFitting() {
           </div>
 
         </div>
-      </div>
+      </motion.div>
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
