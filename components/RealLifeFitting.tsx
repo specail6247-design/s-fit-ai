@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +17,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  const { setIsPrivacyOpen, setPrivacyActiveTab, setIsSupportOpen } = useStore();
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -71,6 +74,76 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleShareToStory = () => {
+    if (!resultImage) return;
+
+    // Create a 1080x1920 canvas for Instagram Stories
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Set background
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Load and draw result image
+    const img = new Image();
+    img.crossOrigin = 'anonymous'; // Important for external URLs
+    img.onload = () => {
+      // Calculate aspect ratio to fit image beautifully
+      const imgRatio = img.width / img.height;
+      const canvasRatio = canvas.width / canvas.height;
+      let drawWidth, drawHeight, offsetX, offsetY;
+
+      if (imgRatio > canvasRatio) {
+        drawHeight = canvas.height * 0.7; // Leave room for branding
+        drawWidth = drawHeight * imgRatio;
+        offsetX = (canvas.width - drawWidth) / 2;
+        offsetY = (canvas.height - drawHeight) / 2;
+      } else {
+        drawWidth = canvas.width * 0.9; // Leave room for margins
+        drawHeight = drawWidth / imgRatio;
+        offsetX = (canvas.width - drawWidth) / 2;
+        offsetY = (canvas.height - drawHeight) / 2;
+      }
+
+      // Draw rounded rect mask for image
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(offsetX, offsetY, drawWidth, drawHeight, 40);
+      ctx.clip();
+      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+      ctx.restore();
+
+      // Draw Branding
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 60px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT AI', canvas.width / 2, 150);
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = '30px sans-serif';
+      ctx.fillText('VIRTUAL FITTING MASTERPIECE', canvas.width / 2, 210);
+
+      // Draw Footer
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.font = '24px sans-serif';
+      ctx.fillText('@s_fit.ai', canvas.width / 2, canvas.height - 100);
+
+      // Trigger download
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+      const link = document.createElement('a');
+      link.download = `s_fit_story_${Date.now()}.jpg`;
+      link.href = dataUrl;
+      link.click();
+    };
+
+    // In case of CORS issues with external mock URLs, convert to Data URL if possible or just use the src directly
+    img.src = resultImage;
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
@@ -124,8 +197,9 @@ export default function RealLifeFitting() {
           </div>
         </div>
 
-        {/* Action Button */}
-        <div className="mt-8 relative z-10">
+        {/* Footer Links & Actions */}
+        <div className="mt-8 relative z-10 space-y-4">
+          {/* Action Button */}
           {isProcessing ? (
             <div className="space-y-2">
               <div className="flex justify-between text-xs text-[#007AFF] font-mono">
@@ -158,6 +232,27 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Legal & Support Links */}
+          <div className="flex justify-center gap-6 pt-4 border-t border-white/10 text-[10px] text-gray-500 uppercase tracking-widest">
+             <button
+               onClick={() => { setPrivacyActiveTab('privacy'); setIsPrivacyOpen(true); }}
+               className="hover:text-white transition-colors"
+             >
+               Privacy
+             </button>
+             <button
+               onClick={() => { setPrivacyActiveTab('terms'); setIsPrivacyOpen(true); }}
+               className="hover:text-white transition-colors"
+             >
+               Terms
+             </button>
+             <button
+               onClick={() => setIsSupportOpen(true)}
+               className="hover:text-white transition-colors flex items-center gap-1"
+             >
+               <span className="text-[#007AFF]">●</span> Support
+             </button>
+          </div>
         </div>
       </div>
 
@@ -205,6 +300,16 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              {/* Share to Story Button */}
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-[#007AFF] hover:bg-[#005bb5] text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-lg transform hover:scale-105"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+                Share to Story
+              </button>
             </div>
           </motion.div>
         )}
