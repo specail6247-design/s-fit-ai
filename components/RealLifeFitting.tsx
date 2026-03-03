@@ -42,13 +42,13 @@ export default function RealLifeFitting() {
 
     try {
       // API call to our backend (which calls Replicate/Fashn.ai)
-      const res = await fetch('/api/try-on', {
+      const res = await fetch('/api/try-on/masterpiece', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userPhotoUrl: userImage,
           garmentImageUrl: garmentImage,
-          category: 'tops' // Default for demo
+          category: 'upper_body' // Default for demo
         })
       });
       const data = await res.json();
@@ -58,6 +58,10 @@ export default function RealLifeFitting() {
       
       if (data.imageUrl) {
         setResultImage(data.imageUrl);
+        if (data.videoUrl) {
+          console.log("Received video URL:", data.videoUrl);
+          sessionStorage.setItem('masterpieceVideoUrl', data.videoUrl);
+        }
       } else {
         throw new Error(data.error || "Try-On Failed");
       }
@@ -66,6 +70,7 @@ export default function RealLifeFitting() {
       console.error(err);
       console.log("Using demo mode fallback");
       setResultImage("https://pub-83c5db439b40468498f97946200806f7.r2.dev/mock-result-sfit.png"); // Fallback
+      sessionStorage.setItem('masterpieceVideoUrl', '/tokyo-walk.mp4');
     } finally {
       setIsProcessing(false);
     }

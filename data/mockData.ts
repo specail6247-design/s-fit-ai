@@ -17,6 +17,9 @@ export interface ClothingItem {
   sizes: string[];
   colors: string[];
   description: string;
+  materialInteraction?: string;
+  stylingTip?: string;
+  isLocked?: boolean;
 }
 
 export interface Brand {
@@ -518,6 +521,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['Adjustable'],
     colors: ['Red', 'Black', 'Camo'],
     description: 'Cotton canvas camp cap with woven box logo',
+    materialInteraction: 'Rests lightly on headwear or hair styles.',
   },
   {
     id: 'tiffany-necklace-001',
@@ -534,6 +538,9 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+    materialInteraction: 'Drapes heavily over collarbones; interacts dynamically with high-neck or silk blouses.',
+    isLocked: true,
+    stylingTip: 'A perfect statement piece over a minimalist black silk top.'
   },
 ];
 

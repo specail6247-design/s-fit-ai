@@ -2,9 +2,19 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { HyperZoomImage } from '@/components/HyperZoomImage';
 
 export default function LuxuryGarmentDetail() {
+  const handleCinematicShare = () => {
+    // Generate an anchor to download the masterpiece video
+    const videoUrl = typeof window !== 'undefined' ? sessionStorage.getItem('masterpieceVideoUrl') : null;
+    const a = document.createElement('a');
+    a.href = videoUrl || "/tokyo-walk.mp4"; // Mock video fallback if missing
+    a.download = "masterpiece-fit-4k.mp4";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -15,8 +25,12 @@ export default function LuxuryGarmentDetail() {
           </Link>
           <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center">S_FIT AI</h2>
           <div className="flex w-10 items-center justify-end">
-            <button className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
-              <span className="material-symbols-outlined">share</span>
+            <button
+              onClick={handleCinematicShare}
+              className="flex size-10 items-center justify-center rounded-full bg-[#ecab13]/10 text-[#ecab13] hover:bg-[#ecab13]/20 transition-colors border border-[#ecab13]/30 shadow-[0_0_15px_rgba(236,171,19,0.3)]"
+              aria-label="Cinematic Share"
+            >
+              <span className="material-symbols-outlined" aria-hidden="true">movie</span>
             </button>
           </div>
         </div>
@@ -25,13 +39,15 @@ export default function LuxuryGarmentDetail() {
       {/* Main Content Container (Mobile Optimized) */}
       <main className="max-w-md mx-auto pt-16 pb-32">
         {/* 3D Interactive Viewport (Hero Image) */}
-        <div className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900">
-          <div 
-            className="absolute inset-0 bg-cover bg-center" 
-            style={{ 
-              backgroundImage: 'linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' 
-            }}
-          />
+        <div className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900 group">
+          <div className="absolute inset-0 z-0">
+            <HyperZoomImage
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E"
+              alt="Metallic Silk Evening Blazer"
+            />
+          </div>
+
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent pointer-events-none z-10 opacity-100 group-hover:opacity-0 transition-opacity duration-300" />
           
           {/* 3D UI Overlays */}
           <div className="absolute bottom-6 left-4 right-4 flex justify-between items-end">
@@ -74,7 +90,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
