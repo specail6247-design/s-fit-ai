@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateRunwayVideo, upscaleImage } from '@/lib/virtualTryOn';
+import { isValidExternalUrl } from '@/lib/security';
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,6 +10,13 @@ export async function POST(req: NextRequest) {
     if (!imageUrl) {
       return NextResponse.json(
         { success: false, error: 'Missing imageUrl' },
+        { status: 400 }
+      );
+    }
+
+    if (!isValidExternalUrl(imageUrl)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid imageUrl provided. Must be http, https, or data:image/.' },
         { status: 400 }
       );
     }
