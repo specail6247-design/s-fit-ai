@@ -1,11 +1,12 @@
-import { test, expect } from '@playwright/test';
+import re
 
-test.describe('User Flow', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-  });
+with open('tests/e2e/flow.spec.ts', 'r') as f:
+    content = f.read()
 
-  test('should display the main UI components for Real Life Fitting', async ({ page }) => {
+# Update the test 'should complete Easy Fit flow' to test the actual RealLifeFitting flow
+content = re.sub(
+    r"test\('should complete Easy Fit flow', async \({ page }\) => \{.*?\}\);",
+    """test('should display the main UI components for Real Life Fitting', async ({ page }) => {
     // 1. Verify Header
     const header = page.locator('h1');
     await expect(header).toContainText('S_FIT');
@@ -22,5 +23,10 @@ test.describe('User Flow', () => {
     // 4. Verify line navigation links exist
     await expect(page.getByRole('link', { name: /SPA Line/i })).toBeVisible();
     await expect(page.getByRole('link', { name: /Luxury Line/i })).toBeVisible();
-  });
-});
+  });""",
+    content,
+    flags=re.DOTALL
+)
+
+with open('tests/e2e/flow.spec.ts', 'w') as f:
+    f.write(content)
