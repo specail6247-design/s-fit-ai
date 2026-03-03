@@ -106,6 +106,17 @@ interface StoreState {
   isPremium: boolean;
   setPremium: (status: boolean) => void;
 
+  // The Vault (Saved Looks)
+  savedLooks: ClothingItem[];
+  isVaultOpen: boolean;
+  toggleVault: (isOpen?: boolean) => void;
+  saveLook: (item: ClothingItem) => void;
+  removeLook: (itemId: string) => void;
+
+  // Audio State
+  isAudioMuted: boolean;
+  toggleAudio: () => void;
+
   // UI State
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
@@ -227,6 +238,25 @@ export const useStore = create<StoreState>()(
         return Math.max(0, DAILY_LIMIT - dailyUsage.count);
       },
 
+      // The Vault
+      savedLooks: [],
+      isVaultOpen: false,
+      toggleVault: (isOpen) =>
+        set((state) => ({ isVaultOpen: isOpen !== undefined ? isOpen : !state.isVaultOpen })),
+      saveLook: (item) =>
+        set((state) => {
+          if (state.savedLooks.find(look => look.id === item.id)) return state;
+          return { savedLooks: [...state.savedLooks, item] };
+        }),
+      removeLook: (itemId) =>
+        set((state) => ({
+          savedLooks: state.savedLooks.filter(look => look.id !== itemId)
+        })),
+
+      // Audio State
+      isAudioMuted: true, // Muted by default to avoid startling users
+      toggleAudio: () => set((state) => ({ isAudioMuted: !state.isAudioMuted })),
+
       // Premium Status
       isPremium: false,
       setPremium: (status) => set({ isPremium: status }),
@@ -257,6 +287,8 @@ export const useStore = create<StoreState>()(
         userStats: state.userStats,
         selectedAIModels: state.selectedAIModels,
         trainingData: state.trainingData,
+        savedLooks: state.savedLooks,
+        isAudioMuted: state.isAudioMuted,
       }),
     }
   )
