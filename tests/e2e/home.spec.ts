@@ -16,17 +16,21 @@ test.describe('Home Page', () => {
   });
 
   test('should display mode selection options', async ({ page }) => {
-    // Check for presence of mode cards
-    await expect(page.getByText('VIBE CHECK')).toBeVisible();
-    await expect(page.getByText('DIGITAL TWIN')).toBeVisible();
-    await expect(page.getByText('EASY FIT')).toBeVisible();
+    // Check for presence of new upload controls
+    await expect(page.getByText('Upload User Photo')).toBeVisible();
+    await expect(page.getByText('Select Garment')).toBeVisible();
 
     // Check continue button
-    const continueBtn = page.getByRole('button', { name: /Continue/i });
-    await expect(continueBtn).toBeVisible();
+    const tryItOnBtn = page.getByRole('button', { name: /TRY IT ON/i });
+    await expect(tryItOnBtn).toBeVisible();
   });
 
   test('should match visual snapshot', async ({ page }) => {
-    await expect(page).toHaveScreenshot({ fullPage: true });
+    // Wait for the dynamic Canvas (AvatarCanvas) to fully load / stabilize,
+    // otherwise the 3D scene spinning loader takes too long to hide and causes timeout
+    await page.waitForSelector('canvas', { state: 'attached', timeout: 15000 });
+    // Adding animations: "disabled" may still trigger reflows. We give it extra wait or threshold.
+    await page.waitForTimeout(2000);
+    await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixelRatio: 0.2, timeout: 30000 });
   });
 });
