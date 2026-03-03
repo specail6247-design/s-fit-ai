@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateVirtualTryOn } from '@/lib/virtualTryOn';
+import { isValidExternalUrl } from '@/lib/security';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -8,11 +9,20 @@ export const runtime = 'nodejs';
 export const maxDuration = 120;
 
 // Helper: Convert local file to base64 data URI
-function localFileToDataUri(localPath: string): string | null {
+async function localFileToDataUri(localPath: string): Promise<string | null> {
   try {
     // Remove leading slash and resolve to public directory
     const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
-    const absolutePath = path.join(process.cwd(), 'public', relativePath);
+
+    // Prevent Path Traversal
+    const publicDir = path.resolve(process.cwd(), 'public');
+    const absolutePath = path.resolve(publicDir, relativePath);
+
+    // Validate path is strictly within public directory boundary
+    if (!absolutePath.startsWith(publicDir + path.sep) && absolutePath !== publicDir) {
+      console.error('Invalid path access attempt:', absolutePath);
+      return null;
+    }
     
     console.log('Reading local file:', absolutePath);
     
@@ -21,7 +31,8 @@ function localFileToDataUri(localPath: string): string | null {
       return null;
     }
     
-    const fileBuffer = fs.readFileSync(absolutePath);
+    // Use fs.promises.readFile to avoid event loop blocking
+    const fileBuffer = await fs.promises.readFile(absolutePath);
     const base64 = fileBuffer.toString('base64');
     
     // Determine MIME type from extension
@@ -56,18 +67,21 @@ export async function POST(request: NextRequest) {
 
     // Process User Photo - Keep as data URI string for Replicate
     const userPhotoInput: string = userPhotoUrl;
+    if (!isValidExternalUrl(userPhotoInput)) {
+      return NextResponse.json(
+        { error: 'Invalid userPhotoUrl provided. Must be http, https, or data:image/.' },
+        { status: 400 }
+      );
+    }
     // Replicate accepts data URIs directly
 
     // Process Garment Image
     let garmentImageInput: string = garmentImageUrl;
 
     if (typeof garmentImageUrl === 'string') {
-      if (garmentImageUrl.startsWith('data:')) {
-        // Already a data URI - use as is
-        garmentImageInput = garmentImageUrl;
-      } else if (garmentImageUrl.startsWith('/')) {
+      if (garmentImageUrl.startsWith('/')) {
         // Local file in public directory - convert to base64 data URI
-        const dataUri = localFileToDataUri(garmentImageUrl);
+        const dataUri = await localFileToDataUri(garmentImageUrl);
         if (!dataUri) {
           return NextResponse.json(
             { error: `Failed to read local image: ${garmentImageUrl}` },
@@ -76,9 +90,14 @@ export async function POST(request: NextRequest) {
         }
         garmentImageInput = dataUri;
         console.log('Converted local file to data URI, length:', dataUri.length);
-      } else if (garmentImageUrl.startsWith('http://') || garmentImageUrl.startsWith('https://')) {
-        // External URL - Replicate can fetch this directly
+      } else if (isValidExternalUrl(garmentImageUrl)) {
+        // Safe external URL or data URI
         garmentImageInput = garmentImageUrl;
+      } else {
+        return NextResponse.json(
+          { error: 'Invalid garmentImageUrl provided. Must be a valid local path, http, https, or data:image/.' },
+          { status: 400 }
+        );
       }
     }
 
