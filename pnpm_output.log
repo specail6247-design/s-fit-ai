@@ -1,0 +1,1093 @@
+
+> s-fit-ai@0.1.0 dev /app
+> next dev --webpack
+
+▲ Next.js 16.1.4 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+
+✓ Starting...
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+✓ Ready in 1807ms
+○ Compiling /luxury ...
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /luxury 200 in 13.7s (compile: 13.0s, render: 735ms)
+⨯ ./app/globals.css
+Error: You forgot to add 'mini-css-extract-plugin' plugin (i.e. `{ plugins: [new MiniCssExtractPlugin()] }`), please read https://github.com/webpack-contrib/mini-css-extract-plugin#getting-started
+Import trace for requested module:
+./app/globals.css
+○ Compiling / ...
+⨯ ./app/globals.css
+Error: You forgot to add 'mini-css-extract-plugin' plugin (i.e. `{ plugins: [new MiniCssExtractPlugin()] }`), please read https://github.com/webpack-contrib/mini-css-extract-plugin#getting-started
+Import trace for requested module:
+./app/globals.css
+⨯ ./app/globals.css
+Error: You forgot to add 'mini-css-extract-plugin' plugin (i.e. `{ plugins: [new MiniCssExtractPlugin()] }`), please read https://github.com/webpack-contrib/mini-css-extract-plugin#getting-started
+Import trace for requested module:
+./app/globals.css
+ GET / 500 in 55s (compile: 55s, render: 363ms)
+ GET / 500 in 32ms (compile: 13ms, render: 19ms)
+ GET / 500 in 31ms (compile: 16ms, render: 14ms)
+ GET / 500 in 32ms (compile: 10ms, render: 22ms)
+ GET / 500 in 27ms (compile: 11ms, render: 16ms)
+ GET / 500 in 20ms (compile: 8ms, render: 12ms)
+ GET / 500 in 21ms (compile: 7ms, render: 14ms)
+ GET / 500 in 25ms (compile: 8ms, render: 16ms)
+ GET / 500 in 45ms (compile: 19ms, render: 26ms)
+ GET / 500 in 22ms (compile: 7ms, render: 15ms)
+ GET / 500 in 19ms (compile: 7ms, render: 12ms)
+ GET / 500 in 17ms (compile: 6ms, render: 11ms)
+ GET / 500 in 17ms (compile: 6ms, render: 11ms)
+ GET / 500 in 31ms (compile: 18ms, render: 13ms)
+⨯ Error: ENOENT: no such file or directory, open '/app/.next/dev/routes-manifest.json'
+    at ignore-listed frames {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/app/.next/dev/routes-manifest.json'
+}
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+Error: ENOENT: no such file or directory, open '/app/.next/dev/routes-manifest.json'
+    at ignore-listed frames {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/app/.next/dev/routes-manifest.json'
+}
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 296ms (compile: 254ms, render: 42ms)
+ GET / 500 in 296ms (compile: 254ms, render: 42ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 96ms (compile: 71ms, render: 25ms)
+ GET / 500 in 96ms (compile: 71ms, render: 25ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 90ms (compile: 62ms, render: 28ms)
+ GET / 500 in 91ms (compile: 62ms, render: 29ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 89ms (compile: 66ms, render: 23ms)
+ GET / 500 in 89ms (compile: 66ms, render: 23ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 89ms (compile: 66ms, render: 23ms)
+ GET / 500 in 90ms (compile: 66ms, render: 23ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 91ms (compile: 67ms, render: 24ms)
+ GET / 500 in 91ms (compile: 67ms, render: 24ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 98ms (compile: 74ms, render: 24ms)
+ GET / 500 in 99ms (compile: 74ms, render: 25ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 96ms (compile: 73ms, render: 23ms)
+ GET / 500 in 96ms (compile: 73ms, render: 23ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 95ms (compile: 68ms, render: 27ms)
+ GET / 500 in 95ms (compile: 68ms, render: 27ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 89ms (compile: 66ms, render: 23ms)
+ GET / 500 in 89ms (compile: 66ms, render: 23ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 91ms (compile: 58ms, render: 33ms)
+ GET / 500 in 91ms (compile: 58ms, render: 33ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 84ms (compile: 60ms, render: 24ms)
+ GET / 500 in 84ms (compile: 60ms, render: 24ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 85ms (compile: 61ms, render: 24ms)
+ GET / 500 in 85ms (compile: 61ms, render: 24ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 93ms (compile: 69ms, render: 23ms)
+ GET / 500 in 93ms (compile: 69ms, render: 23ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 96ms (compile: 73ms, render: 23ms)
+ GET / 500 in 96ms (compile: 73ms, render: 23ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 94ms (compile: 71ms, render: 24ms)
+ GET / 500 in 94ms (compile: 71ms, render: 24ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 94ms (compile: 69ms, render: 25ms)
+ GET / 500 in 94ms (compile: 69ms, render: 25ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 91ms (compile: 67ms, render: 24ms)
+ GET / 500 in 91ms (compile: 67ms, render: 24ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 95ms (compile: 64ms, render: 31ms)
+ GET / 500 in 95ms (compile: 64ms, render: 31ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 84ms (compile: 60ms, render: 23ms)
+ GET / 500 in 84ms (compile: 60ms, render: 23ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 86ms (compile: 62ms, render: 23ms)
+ GET / 500 in 86ms (compile: 62ms, render: 23ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 98ms (compile: 74ms, render: 25ms)
+ GET / 500 in 98ms (compile: 74ms, render: 25ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 104ms (compile: 78ms, render: 26ms)
+ GET / 500 in 104ms (compile: 78ms, render: 26ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 92ms (compile: 68ms, render: 24ms)
+ GET / 500 in 92ms (compile: 68ms, render: 24ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 92ms (compile: 69ms, render: 24ms)
+ GET / 500 in 92ms (compile: 69ms, render: 24ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 90ms (compile: 59ms, render: 31ms)
+ GET / 500 in 90ms (compile: 59ms, render: 31ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 93ms (compile: 68ms, render: 25ms)
+ GET / 500 in 93ms (compile: 68ms, render: 26ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 92ms (compile: 66ms, render: 26ms)
+ GET / 500 in 92ms (compile: 66ms, render: 26ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 131ms (compile: 103ms, render: 29ms)
+ GET / 500 in 132ms (compile: 103ms, render: 29ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 104ms (compile: 77ms, render: 26ms)
+ GET / 500 in 104ms (compile: 77ms, render: 26ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 162ms (compile: 119ms, render: 43ms)
+ GET / 500 in 162ms (compile: 119ms, render: 43ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 95ms (compile: 71ms, render: 24ms)
+ GET / 500 in 96ms (compile: 71ms, render: 24ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 103ms (compile: 78ms, render: 26ms)
+ GET / 500 in 104ms (compile: 78ms, render: 26ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 99ms (compile: 66ms, render: 33ms)
+ GET / 500 in 99ms (compile: 66ms, render: 33ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 89ms (compile: 65ms, render: 24ms)
+ GET / 500 in 89ms (compile: 65ms, render: 24ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 90ms (compile: 64ms, render: 25ms)
+ GET / 500 in 90ms (compile: 64ms, render: 25ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 105ms (compile: 79ms, render: 25ms)
+ GET / 500 in 105ms (compile: 79ms, render: 25ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 93ms (compile: 69ms, render: 25ms)
+ GET / 500 in 93ms (compile: 69ms, render: 25ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 92ms (compile: 68ms, render: 23ms)
+ GET / 500 in 92ms (compile: 68ms, render: 23ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 94ms (compile: 69ms, render: 24ms)
+ GET / 500 in 94ms (compile: 69ms, render: 24ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 90ms (compile: 66ms, render: 24ms)
+ GET / 500 in 90ms (compile: 66ms, render: 24ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 110ms (compile: 72ms, render: 39ms)
+ GET / 500 in 111ms (compile: 72ms, render: 39ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 135ms (compile: 106ms, render: 29ms)
+ GET / 500 in 135ms (compile: 106ms, render: 29ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 82ms (compile: 59ms, render: 23ms)
+ GET / 500 in 82ms (compile: 59ms, render: 23ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 93ms (compile: 71ms, render: 23ms)
+ GET / 500 in 93ms (compile: 71ms, render: 23ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 92ms (compile: 68ms, render: 24ms)
+ GET / 500 in 92ms (compile: 68ms, render: 24ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 88ms (compile: 66ms, render: 22ms)
+ GET / 500 in 88ms (compile: 66ms, render: 22ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 87ms (compile: 65ms, render: 22ms)
+ GET / 500 in 88ms (compile: 65ms, render: 22ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 87ms (compile: 63ms, render: 23ms)
+ GET / 500 in 87ms (compile: 63ms, render: 24ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 85ms (compile: 58ms, render: 28ms)
+ GET / 500 in 86ms (compile: 58ms, render: 28ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 83ms (compile: 59ms, render: 24ms)
+ GET / 500 in 83ms (compile: 59ms, render: 24ms)
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+⨯ TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+TypeError: Cannot read properties of undefined (reading '/_app')
+    at ignore-listed frames
+ GET / 500 in 85ms (compile: 61ms, render: 24ms)
+ GET / 500 in 85ms (compile: 61ms, render: 24ms)
+ ELIFECYCLE  Command failed.
+[?25h

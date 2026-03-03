@@ -1,10 +1,34 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { useStore } from '@/store/useStore';
+import { getItemById } from '@/data/mockData';
 
 export default function LuxuryGarmentDetail() {
+  const { toggleVault, saveLook, savedLooks } = useStore();
+  const [timeLeft, setTimeLeft] = useState(7200); // 2 hours in seconds
+
+  // Use Gucci bomber as an example of a locked item
+  const item = getItemById('gucci-005');
+  const isSaved = item ? savedLooks.some(look => look.id === item.id) : false;
+
+  useEffect(() => {
+    if (item?.isLocked && timeLeft > 0) {
+      const timerId = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(timerId);
+    }
+  }, [timeLeft, item?.isLocked]);
+
+  const formatTime = (seconds: number) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -14,7 +38,15 @@ export default function LuxuryGarmentDetail() {
             <span className="material-symbols-outlined">arrow_back</span>
           </Link>
           <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center">S_FIT AI</h2>
-          <div className="flex w-10 items-center justify-end">
+          <div className="flex w-10 items-center justify-end gap-2">
+            <button onClick={() => toggleVault()} className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors relative">
+              <span className="material-symbols-outlined">inventory_2</span>
+              {savedLooks.length > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#ecab13] text-[9px] font-bold text-black">
+                  {savedLooks.length}
+                </span>
+              )}
+            </button>
             <button className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
               <span className="material-symbols-outlined">share</span>
             </button>
@@ -41,8 +73,8 @@ export default function LuxuryGarmentDetail() {
               <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">light_mode</span></button>
             </div>
             <div className="text-right">
-              <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mb-1">Authentic Render</p>
-              <h1 className="text-white text-3xl font-extralight leading-tight">Metallic Silk <br/><span className="font-bold">Evening Blazer</span></h1>
+              <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mb-1">{item?.brand || 'Authentic Render'}</p>
+              <h1 className="text-white text-3xl font-extralight leading-tight">{item?.name || 'Metallic Silk Evening Blazer'}</h1>
             </div>
           </div>
         </div>
@@ -67,6 +99,19 @@ export default function LuxuryGarmentDetail() {
           </div>
         </div>
 
+        {/* Styling Tip Note */}
+        {item?.stylingTip && (
+          <div className="mt-8 px-4">
+            <div className="flex gap-4 bg-[#1a1a1a]/60 backdrop-blur-xl border border-[#ecab13]/30 p-4 rounded-xl items-start">
+              <span className="material-symbols-outlined text-[#ecab13]">auto_awesome</span>
+              <div className="flex-1">
+                <h3 className="text-[#ecab13] text-xs font-bold tracking-widest uppercase mb-1">AI Stylist Note</h3>
+                <p className="text-zinc-300 text-sm italic">&quot;{item.stylingTip}&quot;</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Material Science Description */}
         <div className="mt-8 px-4">
           <div className="flex items-center justify-between mb-4">
@@ -74,7 +119,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            {item?.description || "Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting."}
           </p>
           
           {/* Chips */}
@@ -132,14 +177,34 @@ export default function LuxuryGarmentDetail() {
 
       {/* Bottom Action Bar */}
       <div className="fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex gap-4 items-center z-50">
-        <div className="flex flex-col flex-1">
+        <div className="flex flex-col">
           <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
-          <p className="text-white text-xl font-bold">$2,850</p>
+          <p className="text-white text-xl font-bold">${item?.price.toLocaleString() || '2,850'}</p>
         </div>
-        <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
-          <span className="material-symbols-outlined font-bold">person_add_alt</span>
-          <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
-        </Link>
+
+        <div className="flex flex-1 gap-2 pl-2">
+          {/* Save Look Button */}
+          <button
+            onClick={() => { if (item && !isSaved) saveLook(item); toggleVault(true); }}
+            className={`flex-1 h-14 rounded-xl flex items-center justify-center gap-2 border transition-all ${isSaved ? 'bg-white/10 border-white/20 text-white cursor-default' : 'bg-transparent border-[#ecab13]/50 text-[#ecab13] hover:bg-[#ecab13]/10'}`}
+          >
+            <span className="material-symbols-outlined text-sm">{isSaved ? 'bookmark_added' : 'bookmark_add'}</span>
+            <span className="font-bold text-[10px] tracking-widest uppercase">{isSaved ? 'Saved' : 'Save Look'}</span>
+          </button>
+
+          {/* Try On / Locked Button */}
+          {item?.isLocked ? (
+            <div className="flex-[1.5] bg-[#1a1a1a] border border-[#2d2d2d] text-zinc-500 h-14 rounded-xl flex flex-col items-center justify-center gap-1 cursor-not-allowed">
+              <span className="material-symbols-outlined text-sm">lock</span>
+              <span className="font-bold text-[9px] tracking-widest uppercase">Available in {formatTime(timeLeft)}</span>
+            </div>
+          ) : (
+            <Link href="/luxury/fitting" className="flex-[1.5] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
+              <span className="material-symbols-outlined font-bold text-sm">person_add_alt</span>
+              <span className="font-bold text-[10px] tracking-widest uppercase">Try On</span>
+            </Link>
+          )}
+        </div>
       </div>
 
       <style jsx global>{`
