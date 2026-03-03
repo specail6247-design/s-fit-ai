@@ -16,3 +16,7 @@ https://nextjs.org/telemetry
 ○ Compiling /luxury/fitting ...
 ⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
  GET /luxury/fitting 200 in 24.5s (compile: 23.4s, render: 1195ms)
+⨯ ./app/globals.css
+Error: You forgot to add 'mini-css-extract-plugin' plugin (i.e. `{ plugins: [new MiniCssExtractPlugin()] }`), please read https://github.com/webpack-contrib/mini-css-extract-plugin#getting-started
+Import trace for requested module:
+./app/globals.css
