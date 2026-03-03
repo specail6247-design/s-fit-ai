@@ -96,7 +96,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl" role="img" aria-label="User placeholder">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +113,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl" role="img" aria-label="Garment placeholder">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -145,7 +145,7 @@ export default function RealLifeFitting() {
               onClick={handleTryOn}
               className="w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
             >
-              <span>⚡️</span> TRY IT ON
+              <span aria-hidden="true">⚡️</span> TRY IT ON
             </button>
           )}
           
@@ -173,7 +173,7 @@ export default function RealLifeFitting() {
         <div className="absolute inset-0 z-10">
           <ErrorBoundary fallback={
             <div className="absolute inset-0 flex flex-col items-center justify-center text-white/50 space-y-4">
-              <span className="text-4xl opacity-50">🤖</span>
+              <span className="text-4xl opacity-50" role="img" aria-label="Error robot icon">🤖</span>
               <p className="text-xs font-mono">3D VISUALIZATION UNAVAILABLE</p>
               <button 
                 onClick={() => window.location.reload()}
@@ -200,7 +200,7 @@ export default function RealLifeFitting() {
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
               >
-                ✕ Close
+                <span aria-hidden="true">✕</span> Close
               </button>
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
