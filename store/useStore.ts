@@ -110,6 +110,26 @@ interface StoreState {
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
 
+  // Global Overlays
+  isLoginOpen: boolean;
+  setLoginOpen: (show: boolean) => void;
+  isSupportOpen: boolean;
+  setSupportOpen: (show: boolean) => void;
+  isPrivacyOpen: boolean;
+  setPrivacyOpen: (show: boolean) => void;
+  isVaultOpen: boolean;
+  setVaultOpen: (show: boolean) => void;
+  privacyActiveTab: 'privacy' | 'terms';
+  setPrivacyActiveTab: (tab: 'privacy' | 'terms') => void;
+
+  // Global Flags
+  isAudioMuted: boolean;
+  setAudioMuted: (muted: boolean) => void;
+  isAnalyzing: boolean;
+  setAnalyzing: (analyzing: boolean) => void;
+  isFitting: boolean;
+  setFitting: (fitting: boolean) => void;
+
   // Reset
   resetSession: () => void;
 }
@@ -234,6 +254,26 @@ export const useStore = create<StoreState>()(
       // UI State
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
+
+      // Global Overlays
+      isLoginOpen: false,
+      setLoginOpen: (show) => set({ isLoginOpen: show }),
+      isSupportOpen: false,
+      setSupportOpen: (show) => set({ isSupportOpen: show }),
+      isPrivacyOpen: false,
+      setPrivacyOpen: (show) => set({ isPrivacyOpen: show }),
+      isVaultOpen: false,
+      setVaultOpen: (show) => set({ isVaultOpen: show }),
+      privacyActiveTab: 'privacy',
+      setPrivacyActiveTab: (tab) => set({ privacyActiveTab: tab }),
+
+      // Global Flags
+      isAudioMuted: false,
+      setAudioMuted: (muted) => set({ isAudioMuted: muted }),
+      isAnalyzing: false,
+      setAnalyzing: (analyzing) => set({ isAnalyzing: analyzing }),
+      isFitting: false,
+      setFitting: (fitting) => set({ isFitting: fitting }),
 
       // Reset Session
       resetSession: () =>
