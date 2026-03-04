@@ -99,7 +99,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {userImage ? <img src={userImage} alt="User Photo" className="w-full h-full object-cover" /> : <span className="text-2xl" role="img" aria-label="user profile placeholder">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -116,7 +117,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {garmentImage ? <img src={garmentImage} alt="Target Garment" className="w-full h-full object-cover" /> : <span className="text-2xl" role="img" aria-label="garment placeholder">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -201,7 +203,8 @@ export default function RealLifeFitting() {
               {resultVideo ? (
                   <video src={resultVideo} autoPlay loop muted playsInline className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               ) : (
-                  <img src={resultImage!} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img src={resultImage!} alt="Try-On Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               )}
               <button 
                 onClick={() => {
