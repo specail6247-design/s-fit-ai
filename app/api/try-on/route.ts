@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateVirtualTryOn } from '@/lib/virtualTryOn';
+import { isValidExternalUrl } from '@/lib/security';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -54,6 +55,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!isValidExternalUrl(userPhotoUrl) && !userPhotoUrl.startsWith('/')) {
+        return NextResponse.json(
+            { error: 'Invalid userPhotoUrl' },
+            { status: 400 }
+        );
+    }
+
     // Process User Photo - Keep as data URI string for Replicate
     const userPhotoInput: string = userPhotoUrl;
     // Replicate accepts data URIs directly
@@ -76,9 +84,14 @@ export async function POST(request: NextRequest) {
         }
         garmentImageInput = dataUri;
         console.log('Converted local file to data URI, length:', dataUri.length);
-      } else if (garmentImageUrl.startsWith('http://') || garmentImageUrl.startsWith('https://')) {
+      } else if (isValidExternalUrl(garmentImageUrl)) {
         // External URL - Replicate can fetch this directly
         garmentImageInput = garmentImageUrl;
+      } else {
+        return NextResponse.json(
+            { error: 'Invalid garmentImageUrl' },
+            { status: 400 }
+        );
       }
     }
 
