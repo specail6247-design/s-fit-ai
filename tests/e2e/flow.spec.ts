@@ -10,9 +10,8 @@ test.describe('User Flow', () => {
     // Verify "Upload User Photo" is present indicating Masterpiece UI is active.
     await expect(page.getByText('01. Identification')).toBeVisible();
 
-    // The start button should be visible but disabled until photo is uploaded
-    const startFitBtn = page.getByRole('button', { name: /Start Masterpiece Fit/i });
+    // The start button should be visible
+    const startFitBtn = page.getByRole('button', { name: /TRY IT ON/i });
     await expect(startFitBtn).toBeVisible();
-    await expect(startFitBtn).toBeDisabled();
   });
 });

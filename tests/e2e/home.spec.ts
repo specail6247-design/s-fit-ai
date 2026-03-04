@@ -21,7 +21,7 @@ test.describe('Home Page', () => {
     await expect(page.getByText('Upload User Photo')).toBeVisible();
 
     // Check upload button area
-    const uploadArea = page.getByText('Click to upload full body photo');
+    const uploadArea = page.getByText('Supports JPG, PNG (Max 5MB)');
     await expect(uploadArea).toBeVisible();
   });
 
