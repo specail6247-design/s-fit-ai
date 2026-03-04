@@ -13,8 +13,12 @@ export interface ClothingItem {
   currency: string;
   imageUrl: string;
   textureUrl: string;
+
   isLuxury: boolean;
+  isLocked?: boolean;
+  stylingTip?: string;
   sizes: string[];
+
   colors: string[];
   description: string;
 }
@@ -106,8 +110,11 @@ export const mockClothingItems: ClothingItem[] = [
     currency: 'USD',
     imageUrl: '/clothing/zara_blazer.png',
     textureUrl: '/clothing/zara_blazer.png',
+
     isLuxury: false,
+    stylingTip: "Layer over a fitted turtleneck to emphasize the structured shoulders.",
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
+
     colors: ['Black', 'Navy', 'Beige'],
     description: 'Relaxed fit blazer with structured shoulders',
   },
@@ -178,8 +185,12 @@ export const mockClothingItems: ClothingItem[] = [
     currency: 'USD',
     imageUrl: '/clothing/gucci_blazer.png',
     textureUrl: '/clothing/gucci_blazer.png',
+
     isLuxury: true,
+    isLocked: true,
+    stylingTip: "Pair this statement blazer with structured denim for a balanced, modern silhouette.",
     sizes: ['IT 44', 'IT 46', 'IT 48', 'IT 50', 'IT 52'],
+
     colors: ['Beige/Ebony'],
     description: 'Iconic GG pattern wool blazer with silk lining',
   },

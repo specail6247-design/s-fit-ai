@@ -1,5 +1,7 @@
 import { Manrope } from 'next/font/google'
 import React from 'react'
+import AmbientAudio from '@/components/AmbientAudio'
+import TheVault from '@/components/TheVault'
 
 const manrope = Manrope({
   subsets: ['latin'],
@@ -14,7 +16,8 @@ export default function LuxuryLayout({
 }) {
   return (
     <div className={manrope.className}>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+      {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=optional" />
       <style dangerouslySetInnerHTML={{__html: `
         .material-symbols-outlined {
           font-family: 'Material Symbols Outlined';
@@ -31,6 +34,8 @@ export default function LuxuryLayout({
           -webkit-font-smoothing: antialiased;
         }
       `}} />
+            <AmbientAudio />
+      <TheVault />
       {children}
     </div>
   )
