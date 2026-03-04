@@ -110,6 +110,17 @@ interface StoreState {
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
 
+  // Global Audio State
+  isAudioMuted: boolean;
+  setIsAudioMuted: (muted: boolean) => void;
+
+  // The Vault (Digital Wardrobe) State
+  savedLooks: ClothingItem[];
+  saveLook: (item: ClothingItem) => void;
+  removeLook: (itemId: string) => void;
+  isVaultOpen: boolean;
+  setVaultOpen: (open: boolean) => void;
+
   // Reset
   resetSession: () => void;
 }
@@ -235,6 +246,26 @@ export const useStore = create<StoreState>()(
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
 
+      // Global Audio State
+      isAudioMuted: false,
+      setIsAudioMuted: (muted) => set({ isAudioMuted: muted }),
+
+      // The Vault (Digital Wardrobe) State
+      savedLooks: [],
+      saveLook: (item) =>
+        set((state) => {
+          if (!state.savedLooks.find((look) => look.id === item.id)) {
+            return { savedLooks: [...state.savedLooks, item] };
+          }
+          return state;
+        }),
+      removeLook: (itemId) =>
+        set((state) => ({
+          savedLooks: state.savedLooks.filter((look) => look.id !== itemId),
+        })),
+      isVaultOpen: false,
+      setVaultOpen: (open) => set({ isVaultOpen: open }),
+
       // Reset Session
       resetSession: () =>
         set({
@@ -251,12 +282,16 @@ export const useStore = create<StoreState>()(
     }),
     {
       name: 's-fit-ai-storage',
+
       partialize: (state) => ({
         dailyUsage: state.dailyUsage,
         isPremium: state.isPremium,
         userStats: state.userStats,
         selectedAIModels: state.selectedAIModels,
         trainingData: state.trainingData,
+        savedLooks: state.savedLooks,
+        isAudioMuted: state.isAudioMuted,
+
       }),
     }
   )

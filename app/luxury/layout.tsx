@@ -1,5 +1,7 @@
 import { Manrope } from 'next/font/google'
 import React from 'react'
+import AmbientAudio from '@/components/AmbientAudio'
+import TheVault from '@/components/TheVault'
 
 const manrope = Manrope({
   subsets: ['latin'],
@@ -31,6 +33,8 @@ export default function LuxuryLayout({
           -webkit-font-smoothing: antialiased;
         }
       `}} />
+            <AmbientAudio />
+      <TheVault />
       {children}
     </div>
   )
