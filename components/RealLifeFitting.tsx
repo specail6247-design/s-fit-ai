@@ -15,6 +15,7 @@ export default function RealLifeFitting() {
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
+  const [resultVideo, setResultVideo] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
@@ -41,8 +42,8 @@ export default function RealLifeFitting() {
     }, 500);
 
     try {
-      // API call to our backend (which calls Replicate/Fashn.ai)
-      const res = await fetch('/api/try-on', {
+      // API call to our masterpiece orchestration endpoint
+      const res = await fetch('/api/try-on/masterpiece', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -56,7 +57,9 @@ export default function RealLifeFitting() {
       clearInterval(interval);
       setProgress(100);
       
-      if (data.imageUrl) {
+      if (data.videoUrl) {
+        setResultVideo(data.videoUrl);
+      } else if (data.imageUrl) {
         setResultImage(data.imageUrl);
       } else {
         throw new Error(data.error || "Try-On Failed");
@@ -65,7 +68,7 @@ export default function RealLifeFitting() {
       clearInterval(interval);
       console.error(err);
       console.log("Using demo mode fallback");
-      setResultImage("https://pub-83c5db439b40468498f97946200806f7.r2.dev/mock-result-sfit.png"); // Fallback
+      setResultVideo("https://pub-83c5db439b40468498f97946200806f7.r2.dev/mock-cinematic-runway.mp4"); // Fallback
     } finally {
       setIsProcessing(false);
     }
@@ -188,16 +191,23 @@ export default function RealLifeFitting() {
         </div>
 
         {/* Result Overlay (If success) */}
-        {resultImage && !isProcessing && (
+        {(resultImage || resultVideo) && !isProcessing && (
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              {resultVideo ? (
+                  <video src={resultVideo} autoPlay loop muted playsInline className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              ) : (
+                  <img src={resultImage!} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              )}
               <button 
-                onClick={() => setResultImage(null)} 
+                onClick={() => {
+                  setResultImage(null);
+                  setResultVideo(null);
+                }}
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
               >
                 ✕ Close
