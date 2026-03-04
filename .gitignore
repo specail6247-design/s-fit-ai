@@ -42,3 +42,7 @@ next-env.d.ts
 client_secret_*.json
 
 /net-commander
+playwright-report/
+coverage/
+test-results/
+playwright/.cache/
