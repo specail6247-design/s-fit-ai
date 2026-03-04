@@ -59,6 +59,7 @@ export const ShareStoryModal: React.FC<ShareStoryModalProps> = ({ isOpen, onClos
 
               {/* Main Image */}
               {imageUrl ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
                 <img
                   src={imageUrl}
                   alt="Fit Result"
