@@ -15,7 +15,7 @@ export default function AmbientAudio() {
         try {
           audioRef.current.volume = 0.3; // Keep it subtle
           await audioRef.current.play();
-        } catch (_error) {
+        } catch {
           console.log('Autoplay prevented by browser. User interaction needed.');
         }
       }
@@ -46,7 +46,7 @@ export default function AmbientAudio() {
       <audio
         ref={audioRef}
         loop
-        src="/audio/ambient-hum.mp3" // Ensure this file exists or use a generic data URI if needed, but a standard path is better
+        src="data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU5LjE2LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIwAKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCg==" // Ensure this file exists or use a generic data URI if needed, but a standard path is better
         preload="auto"
       />
       <div className="fixed bottom-4 left-4 z-50">
