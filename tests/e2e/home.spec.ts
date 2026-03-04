@@ -15,18 +15,19 @@ test.describe('Home Page', () => {
     await expect(heroHeading).toContainText('FIT');
   });
 
-  test('should display mode selection options', async ({ page }) => {
-    // Check for presence of mode cards
-    await expect(page.getByText('VIBE CHECK')).toBeVisible();
-    await expect(page.getByText('DIGITAL TWIN')).toBeVisible();
-    await expect(page.getByText('EASY FIT')).toBeVisible();
+  test('should display masterpiece identification step', async ({ page }) => {
+    // Check for presence of the Masterpiece flow
+    await expect(page.getByText('01. Identification')).toBeVisible();
+    await expect(page.getByText('Upload User Photo')).toBeVisible();
 
-    // Check continue button
-    const continueBtn = page.getByRole('button', { name: /Continue/i });
-    await expect(continueBtn).toBeVisible();
+    // Check upload button area
+    const uploadArea = page.getByText('Click to upload full body photo');
+    await expect(uploadArea).toBeVisible();
   });
 
   test('should match visual snapshot', async ({ page }) => {
+    // We update the snapshots by passing fullPage.
+    // Ensure all CSS animations are disabled by Playwright (handled automatically via `toHaveScreenshot`).
     await expect(page).toHaveScreenshot({ fullPage: true });
   });
 });

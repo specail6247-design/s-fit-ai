@@ -309,6 +309,8 @@ function Mannequin({
   height = 170, opacity = 1.0 
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _opacity = opacity;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
   
   return (
