@@ -110,6 +110,32 @@ interface StoreState {
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
 
+  // Overlays
+  isLoginOpen: boolean;
+  setLoginOpen: (show: boolean) => void;
+  isSupportOpen: boolean;
+  setSupportOpen: (show: boolean) => void;
+  isPrivacyOpen: boolean;
+  setPrivacyOpen: (show: boolean) => void;
+  privacyActiveTab: 'terms' | 'privacy';
+  setPrivacyActiveTab: (tab: 'terms' | 'privacy') => void;
+  isVaultOpen: boolean;
+  setVaultOpen: (show: boolean) => void;
+
+  // Audio State
+  isAudioMuted: boolean;
+  setAudioMuted: (muted: boolean) => void;
+
+  // App Flow
+  isAnalyzing: boolean;
+  setAnalyzing: (analyzing: boolean) => void;
+  isFitting: boolean;
+  setFitting: (fitting: boolean) => void;
+
+  // Vault
+  savedLooks: unknown[]; // Or a specific type if defined
+  addSavedLook: (look: unknown) => void;
+
   // Reset
   resetSession: () => void;
 }
@@ -234,6 +260,32 @@ export const useStore = create<StoreState>()(
       // UI State
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
+
+      // Overlays
+      isLoginOpen: false,
+      setLoginOpen: (show) => set({ isLoginOpen: show }),
+      isSupportOpen: false,
+      setSupportOpen: (show) => set({ isSupportOpen: show }),
+      isPrivacyOpen: false,
+      setPrivacyOpen: (show) => set({ isPrivacyOpen: show }),
+      privacyActiveTab: 'terms',
+      setPrivacyActiveTab: (tab) => set({ privacyActiveTab: tab }),
+      isVaultOpen: false,
+      setVaultOpen: (show) => set({ isVaultOpen: show }),
+
+      // Audio State
+      isAudioMuted: true,
+      setAudioMuted: (muted) => set({ isAudioMuted: muted }),
+
+      // App Flow
+      isAnalyzing: false,
+      setAnalyzing: (analyzing) => set({ isAnalyzing: analyzing }),
+      isFitting: false,
+      setFitting: (fitting) => set({ isFitting: fitting }),
+
+      // Vault
+      savedLooks: [],
+      addSavedLook: (look) => set((state) => ({ savedLooks: [...state.savedLooks, look] })),
 
       // Reset Session
       resetSession: () =>
