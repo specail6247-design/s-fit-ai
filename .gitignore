@@ -12,6 +12,12 @@
 
 # testing
 /coverage
+/playwright-report
+/test-results
+playwright/.cache
+
+# package manager
+pnpm-lock.yaml
 
 # next.js
 /.next/
