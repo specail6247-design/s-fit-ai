@@ -42,3 +42,10 @@ next-env.d.ts
 client_secret_*.json
 
 /net-commander
+
+# python backend
+__pycache__/
+
+# Playwright testing artifacts
+playwright-report/
+test-results/
