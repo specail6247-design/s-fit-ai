@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
+import PrivacyModal from './modals/PrivacyModal';
+import SupportHub from './modals/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -11,6 +14,10 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const setIsSupportOpen = useStore((state) => state.setIsSupportOpen);
+  const setIsPrivacyOpen = useStore((state) => state.setIsPrivacyOpen);
+  const setPrivacyActiveTab = useStore((state) => state.setPrivacyActiveTab);
+
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -23,6 +30,80 @@ export default function RealLifeFitting() {
       const reader = new FileReader();
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Instagram Story dimensions (1080x1920)
+      canvas.width = 1080;
+      canvas.height = 1920;
+
+      // Fill background
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Load result image
+      const img = new Image();
+      img.crossOrigin = 'anonymous'; // Important for CORS if image is hosted
+      img.src = resultImage;
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      // Calculate scaling to fit image nicely in center, leaving room for branding
+      const scale = Math.min((canvas.width * 0.9) / img.width, (canvas.height * 0.7) / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (canvas.width - w) / 2;
+      const y = (canvas.height - h) / 2;
+
+      // Draw image
+      ctx.drawImage(img, x, y, w, h);
+
+      // Add branding / Logo
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 60px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT NEO', canvas.width / 2, y - 60);
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = '40px sans-serif';
+      ctx.fillText('AI Virtual Try-On', canvas.width / 2, y + h + 80);
+
+      // Generate Data URL
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+
+      // Try native Web Share API first
+      if (navigator.share) {
+        // Convert base64 to File object for sharing
+        const response = await fetch(dataUrl);
+        const blob = await response.blob();
+        const file = new File([blob], 'sfit-story.jpg', { type: 'image/jpeg' });
+
+        await navigator.share({
+          files: [file],
+          title: 'My S_FIT AI Look',
+          text: 'Check out my virtual try-on with S_FIT AI!',
+        });
+      } else {
+        // Fallback to download
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = 'sfit-story.jpg';
+        a.click();
+      }
+    } catch (error) {
+      console.error('Error sharing to story:', error);
+      alert('Failed to share to story. Please try again.');
     }
   };
 
@@ -158,8 +239,23 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Footer Links */}
+          <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-between text-[10px] text-gray-500 uppercase tracking-widest">
+            <div className="flex gap-4">
+              <button onClick={() => { setPrivacyActiveTab('privacy'); setIsPrivacyOpen(true); }} className="hover:text-white transition-colors">Privacy</button>
+              <button onClick={() => { setPrivacyActiveTab('terms'); setIsPrivacyOpen(true); }} className="hover:text-white transition-colors">Terms</button>
+            </div>
+            <button onClick={() => setIsSupportOpen(true)} className="flex items-center gap-1 hover:text-white transition-colors">
+              <span className="material-symbols-outlined text-[14px]" aria-hidden="true">help</span>
+              Support
+            </button>
+          </div>
+
         </div>
       </div>
+
+      <PrivacyModal />
+      <SupportHub />
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
@@ -205,6 +301,13 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F56040] text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-sm" aria-hidden="true">photo_camera</span>
+                Share to Story
+              </button>
             </div>
           </motion.div>
         )}
