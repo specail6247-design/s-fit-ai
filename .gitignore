@@ -45,3 +45,7 @@ client_secret_*.json
 
 # python backend
 __pycache__/
+
+# Playwright testing artifacts
+playwright-report/
+test-results/

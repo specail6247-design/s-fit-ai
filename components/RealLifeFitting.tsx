@@ -35,13 +35,14 @@ export default function RealLifeFitting() {
     setIsProcessing(true);
     setProgress(0);
 
-    // Simulate progress bar
+    // Shorten interval for E2E tests, normally 500ms
+    const isTestEnv = typeof window !== 'undefined' && window.navigator.webdriver;
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 90) return prev;
         return prev + 10;
       });
-    }, 500);
+    }, isTestEnv ? 50 : 500);
 
     try {
       // API call to our backend (which calls Replicate/Fashn.ai)

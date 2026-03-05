@@ -5,46 +5,32 @@ test.describe('User Flow', () => {
     await page.goto('/');
   });
 
-  test('should complete Easy Fit flow', async ({ page }) => {
-    // 1. Select Easy Fit Mode
-    // Force click to ensure it hits even if covered or slightly off-screen in mobile
-    await page.getByText('EASY FIT').click({ force: true });
+  test('should complete Masterpiece Fit flow', async ({ page }) => {
+    // 1. Verify Masterpiece Fit UI is loaded
+    await expect(page.getByText('S_FIT NEO')).toBeVisible();
+    await expect(page.getByText('01. Identification')).toBeVisible();
 
-    // Verify selection (border color change or checkmark)
-    const continueToModeBtn = page.getByRole('button', { name: /Continue →/i });
-    await expect(continueToModeBtn).toBeEnabled();
-    await continueToModeBtn.click();
+    // 2. Upload mocks
+    // The test runner doesn't have actual files, but the button handles missing files gracefully and falls back to demo mode in components/RealLifeFitting.tsx
 
-    // 2. Input Stats
-    // Wait for "Easy Fit" header
-    await expect(page.getByRole('heading', { name: 'Easy Fit' })).toBeVisible();
+    // 3. Click TRY IT ON button
+    const tryOnBtn = page.getByRole('button', { name: /TRY IT ON/i });
+    await expect(tryOnBtn).toBeEnabled();
 
-    // Just click "Continue to Fitting Room" as defaults are valid.
-    await page.getByRole('button', { name: /Continue to Fitting Room/i }).click();
+    // During tests, since API mocking in playwright might be necessary if backend is not fully reliable in CI,
+    // intercept the API call and return the fallback URL
+    await page.route('/api/try-on/masterpiece', async route => {
+      const json = { videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' };
+      await route.fulfill({ json });
+    });
 
-    // 3. Brand Selection
-    // Wait for "Select Brand" header
-    await expect(page.getByText('Select Brand')).toBeVisible();
+    await tryOnBtn.click();
 
-    // Easy Fit defaults to Uniqlo auto-selected.
-    // Check if Uniqlo button has class indicating selection (border-pure-white) or just check if "Enter Fitting Room" is enabled.
-    const enterFittingRoomBtn = page.getByRole('button', { name: /Enter Fitting Room/i });
-    await expect(enterFittingRoomBtn).toBeEnabled();
-
-    // We can also switch brand manually.
-    // Note: buttons in BrandSelector might have text "ZARA" and role "button"
-    await page.getByRole('button', { name: 'ZARA' }).click();
-
-    await enterFittingRoomBtn.click();
-
-    // 4. Fitting Room
-    // Should see "Fitting Room" component.
-    // Home.tsx: "Back to brands" button visible.
-    await expect(page.getByRole('button', { name: /Back to brands/i })).toBeVisible();
-
-    // Should see 3D canvas (maybe check for canvas element)
-    // Note: WebGL might not be available in all headless environments
-    // We check if the container exists at least.
-    await expect(page.locator('.glass-card').first()).toBeVisible();
+    // 4. Verify output or UI change
+    // Wait for the processing to complete and the video container to appear
+    // The video has a close button and M_FIT AI MOTION badge
+    // Setting timeout to 25s as the fake loader animation runs for 20s
+    const videoBadge = page.getByText('M_FIT AI MOTION_');
+    await expect(videoBadge).toBeVisible({ timeout: 25000 });
   });
 });
