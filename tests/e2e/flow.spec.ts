@@ -5,46 +5,43 @@ test.describe('User Flow', () => {
     await page.goto('/');
   });
 
-  test('should complete Easy Fit flow', async ({ page }) => {
-    // 1. Select Easy Fit Mode
-    // Force click to ensure it hits even if covered or slightly off-screen in mobile
-    await page.getByText('EASY FIT').click({ force: true });
+  test('should trigger Masterpiece Try On alert when files are missing', async ({ page }) => {
+    // Check for Masterpiece UI elements
+    await expect(page.getByText('01. Identification')).toBeVisible();
+    await expect(page.getByText('02. Target Garment')).toBeVisible();
 
-    // Verify selection (border color change or checkmark)
-    const continueToModeBtn = page.getByRole('button', { name: /Continue →/i });
-    await expect(continueToModeBtn).toBeEnabled();
-    await continueToModeBtn.click();
+    // Wait for page to fully load
+    await page.waitForLoadState('networkidle');
 
-    // 2. Input Stats
-    // Wait for "Easy Fit" header
-    await expect(page.getByRole('heading', { name: 'Easy Fit' })).toBeVisible();
+    // Click "TRY IT ON" button
+    const tryOnBtn = page.getByRole('button', { name: /TRY IT ON/i });
+    await expect(tryOnBtn).toBeVisible();
 
-    // Just click "Continue to Fitting Room" as defaults are valid.
-    await page.getByRole('button', { name: /Continue to Fitting Room/i }).click();
+    // Set up dialog handler to catch the alert
+    let dialogMessage = '';
+    page.on('dialog', async dialog => {
+      dialogMessage = dialog.message();
+      await dialog.accept();
+    });
 
-    // 3. Brand Selection
-    // Wait for "Select Brand" header
-    await expect(page.getByText('Select Brand')).toBeVisible();
+    await tryOnBtn.click();
 
-    // Easy Fit defaults to Uniqlo auto-selected.
-    // Check if Uniqlo button has class indicating selection (border-pure-white) or just check if "Enter Fitting Room" is enabled.
-    const enterFittingRoomBtn = page.getByRole('button', { name: /Enter Fitting Room/i });
-    await expect(enterFittingRoomBtn).toBeEnabled();
+    // Wait a brief moment for the alert to trigger
+    await page.waitForTimeout(500);
 
-    // We can also switch brand manually.
-    // Note: buttons in BrandSelector might have text "ZARA" and role "button"
-    await page.getByRole('button', { name: 'ZARA' }).click();
+    // Verify the alert was triggered with the correct message
+    expect(dialogMessage).toContain('Please upload both User Photo and Garment');
+  });
 
-    await enterFittingRoomBtn.click();
+  test('should navigate to SPA Line and Luxury Line', async ({ page }) => {
+    // Check SPA Line link
+    const spaLink = page.getByRole('link', { name: /SPA Line/i });
+    await expect(spaLink).toBeVisible();
+    await expect(spaLink).toHaveAttribute('href', '/spa');
 
-    // 4. Fitting Room
-    // Should see "Fitting Room" component.
-    // Home.tsx: "Back to brands" button visible.
-    await expect(page.getByRole('button', { name: /Back to brands/i })).toBeVisible();
-
-    // Should see 3D canvas (maybe check for canvas element)
-    // Note: WebGL might not be available in all headless environments
-    // We check if the container exists at least.
-    await expect(page.locator('.glass-card').first()).toBeVisible();
+    // Check Luxury Line link
+    const luxuryLink = page.getByRole('link', { name: /Luxury Line/i });
+    await expect(luxuryLink).toBeVisible();
+    await expect(luxuryLink).toHaveAttribute('href', '/luxury');
   });
 });
