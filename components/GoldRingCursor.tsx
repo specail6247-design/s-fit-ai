@@ -22,6 +22,8 @@ export default function GoldRingCursor() {
       }
     };
 
+    let animationFrame: number;
+
     const animateRing = () => {
       // Lerp for smooth trailing ring
       ringX += (mouseX - ringX) * 0.15;
@@ -31,11 +33,11 @@ export default function GoldRingCursor() {
         cursorRef.current.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
       }
 
-      requestAnimationFrame(animateRing);
+      animationFrame = requestAnimationFrame(animateRing);
     };
 
     window.addEventListener("mousemove", onMouseMove);
-    const animationFrame = requestAnimationFrame(animateRing);
+    animationFrame = requestAnimationFrame(animateRing);
 
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
