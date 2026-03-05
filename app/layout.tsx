@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Cinzel } from "next/font/google";
 import { validateEnv } from "@/lib/env";
 import "./globals.css";
+import { LoginModal } from "@/components/modals/LoginModal";
+import { SupportHub } from "@/components/modals/SupportHub";
 
 // Validate environment variables on startup
 validateEnv();
@@ -13,6 +15,11 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
   subsets: ["latin"],
 });
 
@@ -44,12 +51,14 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-void-black text-pure-white`}
+        className={`${geistSans.variable} ${geistMono.variable} ${cinzel.variable} antialiased bg-void-black text-pure-white`}
         suppressHydrationWarning
       >
         {/* Grain Overlay for Premium Feel */}
         <div className="grain-overlay" aria-hidden="true" />
         {children}
+        <LoginModal />
+        <SupportHub />
       </body>
     </html>
   );
