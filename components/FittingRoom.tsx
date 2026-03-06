@@ -306,7 +306,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
@@ -677,7 +677,7 @@ function CompareModal({ isOpen, onClose, picks, onSelect }: CompareModalProps) {
       <motion.div className="relative glass-card p-6 max-w-md w-full max-h-[80vh] overflow-y-auto" initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}>
         <div className="flex justify-between items-center mb-6">
           <div><h3 className="text-lg font-bold">Compare AI Picks</h3><p className="text-[10px] text-soft-gray">Ranked by your unique body signals</p></div>
-          <button onClick={onClose} className="text-soft-gray hover:text-white">✕</button>
+          <button aria-label="Close" onClick={onClose} className="text-soft-gray hover:text-white">✕</button>
         </div>
         <div className="space-y-4">
           {picks.map((pick, idx) => (
@@ -740,7 +740,7 @@ function AITryOnModal({
                         <h3 className="text-xl font-bold text-pure-white flex items-center gap-2"><span className="animate-pulse">✨</span> Masterpiece Try-On</h3>
                         <p className="text-xs text-soft-gray mt-1">Hollywood-grade virtual fitting engine</p>
                     </div>
-                    <button onClick={onClose} className="text-soft-gray hover:text-white text-2xl">✕</button>
+                    <button aria-label="Close" onClick={onClose} className="text-soft-gray hover:text-white text-2xl">✕</button>
                 </div>
 
                 <div className="space-y-6">
@@ -1044,7 +1044,7 @@ export function FittingRoom() {
                  <button onClick={() => setAutoCycleEnabled(!autoCycleEnabled)} className={`text-[0.55rem] uppercase ${autoCycleEnabled ? 'text-cyber-lime' : 'text-soft-gray'}`}>
                     {autoCycleEnabled ? 'Auto On' : 'Auto Off'}
                  </button>
-                 <button onClick={() => setMiniBarCollapsed(true)} className="text-[0.55rem] text-soft-gray ml-1">✕</button>
+                 <button aria-label="Close" onClick={() => setMiniBarCollapsed(true)} className="text-[0.55rem] text-soft-gray ml-1">✕</button>
                  {autoCycleEnabled && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyber-lime/30"><div className="h-full bg-cyber-lime auto-cycle-bar" /></div>}
               </div>
             )}

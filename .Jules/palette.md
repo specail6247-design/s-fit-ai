@@ -1,0 +1,3 @@
+## 2024-05-24 - Icon-only buttons lack ARIA labels
+**Learning:** Across various components (like VibeCheckMode, DigitalTwinMode, AuthButton, FittingRoom), the UI relies heavily on icon-only buttons (e.g., '✕') for critical actions like closing modals and previews. Without `aria-label` attributes, these buttons present a significant accessibility barrier as screen readers announce them generically or simply read the character, which does not convey the action.
+**Action:** Always add an `aria-label` to buttons that do not have visible text. For standard actions like closing, use standard labels like "Close" or "Close preview" to provide clear context for assistive technologies.
