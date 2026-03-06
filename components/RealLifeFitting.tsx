@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +17,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isSharing, setIsSharing] = useState(false);
+  const { setSupportOpen, setPrivacyOpen, setPrivacyActiveTab } = useStore();
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -23,6 +26,114 @@ export default function RealLifeFitting() {
       const reader = new FileReader();
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+    setIsSharing(true);
+
+    try {
+      // 1. Create offscreen canvas 1080x1920 (IG Story Size)
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error("Could not get canvas context");
+
+      // 2. Draw branded background
+      ctx.fillStyle = '#0a0a0a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Add a gradient overlay
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, '#007AFF22'); // faint blue top
+      gradient.addColorStop(1, '#0a0a0a');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 3. Load result image
+      const img = new Image();
+      img.crossOrigin = 'anonymous'; // Important for external URLs
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = resultImage;
+      });
+
+      // 4. Calculate aspect ratio to fit image into center of canvas
+      const imgAspect = img.width / img.height;
+      const canvasAspect = canvas.width / canvas.height;
+      let drawWidth, drawHeight;
+
+      if (imgAspect > canvasAspect) {
+        // Image is wider than canvas ratio
+        drawWidth = canvas.width - 160; // 80px padding
+        drawHeight = drawWidth / imgAspect;
+      } else {
+        // Image is taller
+        drawHeight = canvas.height - 400; // Leave room for header/footer
+        drawWidth = drawHeight * imgAspect;
+      }
+
+      const drawX = (canvas.width - drawWidth) / 2;
+      const drawY = (canvas.height - drawHeight) / 2;
+
+      // Draw image with rounded corners effect (simulated via clipping)
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(drawX, drawY, drawWidth, drawHeight, 40);
+      ctx.clip();
+      ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+      ctx.restore();
+
+      // 5. Draw S_FIT AI Branding
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 60px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT AI', canvas.width / 2, drawY - 80);
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = 'bold 30px monospace';
+      ctx.fillText('VIRTUAL FITTING_NEO', canvas.width / 2, drawY - 30);
+
+      // Footer
+      ctx.fillStyle = '#888888';
+      ctx.font = '30px sans-serif';
+      ctx.fillText('Try it on yourself at sfit.ai', canvas.width / 2, drawY + drawHeight + 100);
+
+      // 6. Export to blob
+      const blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob(resolve, 'image/jpeg', 0.9)
+      );
+
+      if (!blob) throw new Error("Failed to generate image blob");
+
+      // 7. Share or Download
+      const file = new File([blob], 'sfit-story.jpg', { type: 'image/jpeg' });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'My S_FIT AI Try-On',
+          text: 'Check out my virtual fitting on S_FIT AI! ⚡️',
+        });
+      } else {
+        // Fallback: Download
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'sfit-story.jpg';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      console.error("Share failed:", err);
+      alert("Failed to share image. Please try again.");
+    } finally {
+      setIsSharing(false);
     }
   };
 
@@ -159,6 +270,29 @@ export default function RealLifeFitting() {
           </div>
 
         </div>
+
+        {/* Footer Links */}
+        <div className="mt-auto pt-8 flex gap-4 text-xs text-gray-500 justify-center">
+          <button
+            onClick={() => { setPrivacyActiveTab('privacy'); setPrivacyOpen(true); }}
+            className="hover:text-white transition-colors"
+          >
+            Privacy
+          </button>
+          <button
+            onClick={() => { setPrivacyActiveTab('terms'); setPrivacyOpen(true); }}
+            className="hover:text-white transition-colors"
+          >
+            Terms
+          </button>
+          <button
+            onClick={() => setSupportOpen(true)}
+            className="hover:text-white transition-colors flex items-center gap-1"
+          >
+            <span className="material-symbols-outlined text-[14px]">support_agent</span>
+            Support
+          </button>
+        </div>
       </div>
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
@@ -205,6 +339,22 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+              {/* Share to Story Button */}
+              <button
+                onClick={handleShareToStory}
+                disabled={isSharing}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-[#007AFF] to-[#005bb5] hover:from-[#005bb5] hover:to-[#004488] text-white px-4 py-2 rounded-xl text-sm font-bold shadow-[0_0_15px_rgba(0,122,255,0.4)] transition-all transform hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSharing ? (
+                  <span className="animate-pulse">GENERATING...</span>
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined text-sm">auto_awesome</span>
+                    SHARE TO STORY
+                  </>
+                )}
+              </button>
             </div>
           </motion.div>
         )}
