@@ -108,10 +108,26 @@ interface StoreState {
 
   // UI State
   showPremiumModal: boolean;
-  setShowPremiumModal: (show: boolean) => void;
-
-  // Reset
+  setShowPremiumModal: (show: boolean) => void;  // Reset
   resetSession: () => void;
+
+  // Flow States
+  isAnalyzing: boolean;
+  setIsAnalyzing: (analyzing: boolean) => void;
+  isFitting: boolean;
+  setIsFitting: (fitting: boolean) => void;
+
+  // The Vault
+  savedLooks: ClothingItem[];
+  saveLook: (item: ClothingItem) => void;
+  removeLook: (itemId: string) => void;
+  isVaultOpen: boolean;
+  setIsVaultOpen: (isOpen: boolean) => void;
+
+  // Ambient Audio
+  isAudioMuted: boolean;
+  setIsAudioMuted: (isMuted: boolean) => void;
+
 }
 
 const DAILY_LIMIT = 5;
@@ -233,9 +249,7 @@ export const useStore = create<StoreState>()(
 
       // UI State
       showPremiumModal: false,
-      setShowPremiumModal: (show) => set({ showPremiumModal: show }),
-
-      // Reset Session
+      setShowPremiumModal: (show) => set({ showPremiumModal: show }),      // Reset Session
       resetSession: () =>
         set({
           selectedMode: null,
@@ -247,16 +261,44 @@ export const useStore = create<StoreState>()(
           sizeRecommendation: null,
           selectedBrand: null,
           selectedItem: null,
+          isAnalyzing: false,
+          isFitting: false,
         }),
+
+      // Flow States
+      isAnalyzing: false,
+      setIsAnalyzing: (analyzing) => set({ isAnalyzing: analyzing }),
+      isFitting: false,
+      setIsFitting: (fitting) => set({ isFitting: fitting }),
+
+      // The Vault
+      savedLooks: [],
+      saveLook: (item) =>
+        set((state) => {
+          if (state.savedLooks.find((look) => look.id === item.id)) return state;
+          return { savedLooks: [...state.savedLooks, item] };
+        }),
+      removeLook: (itemId) =>
+        set((state) => ({
+          savedLooks: state.savedLooks.filter((look) => look.id !== itemId),
+        })),
+      isVaultOpen: false,
+      setIsVaultOpen: (isOpen) => set({ isVaultOpen: isOpen }),
+
+      // Ambient Audio
+      isAudioMuted: true,
+      setIsAudioMuted: (isMuted) => set({ isAudioMuted: isMuted }),
+
     }),
     {
-      name: 's-fit-ai-storage',
-      partialize: (state) => ({
+      name: 's-fit-ai-storage',      partialize: (state) => ({
         dailyUsage: state.dailyUsage,
         isPremium: state.isPremium,
         userStats: state.userStats,
         selectedAIModels: state.selectedAIModels,
         trainingData: state.trainingData,
+        savedLooks: state.savedLooks,
+        isAudioMuted: state.isAudioMuted,
       }),
     }
   )
