@@ -28,6 +28,8 @@
   /* Typography */
   --font-display: "Geist", -apple-system, sans-serif;
   --font-mono: "Geist Mono", monospace;
+  --font-cinzel: "Cinzel", serif;
+  --font-space-grotesk: "Space Grotesk", sans-serif;
 
   /* Transitions */
   --transition-fast: 150ms ease;
@@ -49,6 +51,17 @@
   --color-border-dark: #2d2d2d;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-cinzel: var(--font-cinzel);
+  --font-space-grotesk: var(--font-space-grotesk);
+}
+
+/* Typography Classes */
+.font-cinzel {
+  font-family: var(--font-cinzel);
+}
+
+.font-space-grotesk {
+  font-family: var(--font-space-grotesk);
 }
 
 /* Base Styles */
