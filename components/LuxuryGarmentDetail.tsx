@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useStore } from '@/store/useStore';
-import { getItemById } from '@/data/mockData';
+import { getItemById, ClothingItem } from '@/data/mockData';
 
 
 
