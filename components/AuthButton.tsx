@@ -98,6 +98,7 @@ export function AuthButton() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
           <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
             <button
+              aria-label="Close modal"
               onClick={() => setShowModal(false)}
               className="absolute top-4 right-4 text-soft-gray hover:text-white"
             >

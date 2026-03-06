@@ -262,6 +262,7 @@ export function DigitalTwinMode({ onComplete }: DigitalTwinModeProps) {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-void-black/60 to-transparent" />
               <button
+                aria-label="Close preview"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (step === 'face') {
