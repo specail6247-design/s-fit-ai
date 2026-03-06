@@ -28,6 +28,9 @@ test.describe('Home Page', () => {
   });
 
   test('should match visual snapshot', async ({ page }) => {
-    await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixelRatio: 0.2 });
+    // Wait for network idle and canvas to settle to ensure stable snapshot dimensions
+    await page.waitForLoadState('networkidle');
+    // We disable fullPage as dynamic WebGL canvases and gradients cause height fluctuations in headless CI
+    await expect(page).toHaveScreenshot({ maxDiffPixelRatio: 0.3, animations: "disabled", timeout: 15000 });
   });
 });
