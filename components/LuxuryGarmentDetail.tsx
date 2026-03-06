@@ -1,10 +1,45 @@
+
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { useStore } from '@/store/useStore';
+import { getItemById, ClothingItem } from '@/data/mockData';
+
+
 
 export default function LuxuryGarmentDetail() {
+  const { setIsVaultOpen, saveLook, savedLooks } = useStore();
+  const [timeLeft, setTimeLeft] = useState('02:00:00');
+
+  // Update countdown
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        let [hours, minutes, seconds] = prev.split(':').map(Number);
+        if (seconds > 0) seconds--;
+        else if (minutes > 0) { minutes--; seconds = 59; }
+        else if (hours > 0) { hours--; minutes = 59; seconds = 59; }
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Use a locked item for demo purposes if available, or fallback
+  const item = getItemById('chanel-bag-001') || {
+    id: 'chanel-bag-001',
+    name: 'Evening Blazer',
+    brand: 'S_FIT AI',
+    price: 2850,
+    currency: 'USD',
+    isLocked: true,
+    stylingTip: 'Pair this with structured denim for a balanced silhouette.',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E'
+  };
+
+  const isSaved = savedLooks.some(look => look.id === item.id);
+
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -14,9 +49,21 @@ export default function LuxuryGarmentDetail() {
             <span className="material-symbols-outlined">arrow_back</span>
           </Link>
           <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center">S_FIT AI</h2>
-          <div className="flex w-10 items-center justify-end">
-            <button className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
-              <span className="material-symbols-outlined">share</span>
+          <div className="flex w-20 items-center justify-end gap-2">
+            <button
+              onClick={() => saveLook((item as unknown) as ClothingItem)}
+              className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors relative"
+            >
+              <span className={`material-symbols-outlined ${isSaved ? 'text-cyber-lime' : ''}`}>{isSaved ? 'bookmark' : 'bookmark_border'}</span>
+            </button>
+            <button
+              onClick={() => setIsVaultOpen(true)}
+              className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+            >
+              <span className="material-symbols-outlined">wardrobe</span>
+              {savedLooks.length > 0 && (
+                <span className="absolute top-0 right-0 size-3 bg-cyber-lime rounded-full border border-black"></span>
+              )}
             </button>
           </div>
         </div>
@@ -67,6 +114,17 @@ export default function LuxuryGarmentDetail() {
           </div>
         </div>
 
+        {/* AI Stylist Note */}
+        {item.stylingTip && (
+          <div className="px-4 py-6 bg-cyber-lime/5 border-y border-cyber-lime/20 mb-8 flex gap-4 items-start">
+            <span className="material-symbols-outlined text-cyber-lime mt-1">auto_awesome</span>
+            <div>
+              <h3 className="text-cyber-lime text-xs font-bold tracking-[0.2em] uppercase mb-1">AI Stylist Note</h3>
+              <p className="text-zinc-300 text-sm leading-relaxed">{item.stylingTip}</p>
+            </div>
+          </div>
+        )}
+
         {/* Material Science Description */}
         <div className="mt-8 px-4">
           <div className="flex items-center justify-between mb-4">
@@ -74,7 +132,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
@@ -134,12 +192,25 @@ export default function LuxuryGarmentDetail() {
       <div className="fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex gap-4 items-center z-50">
         <div className="flex flex-col flex-1">
           <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
-          <p className="text-white text-xl font-bold">$2,850</p>
+          <p className="text-white text-xl font-bold">
+            {new Intl.NumberFormat('en-US', { style: 'currency', currency: item.currency || 'USD' }).format(item.price || 2850)}
+          </p>
         </div>
-        <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
-          <span className="material-symbols-outlined font-bold">person_add_alt</span>
-          <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
-        </Link>
+
+        {item.isLocked ? (
+          <button disabled className="flex-[2] bg-zinc-800 text-zinc-400 h-14 rounded-xl flex items-center justify-center gap-3 shadow-none border border-zinc-700 opacity-80 cursor-not-allowed">
+            <span className="material-symbols-outlined font-bold text-lg">lock</span>
+            <div className="flex flex-col items-start leading-none">
+              <span className="font-bold text-xs tracking-widest uppercase">Available in</span>
+              <span className="text-[10px] tracking-wider text-zinc-500">{timeLeft}</span>
+            </div>
+          </button>
+        ) : (
+          <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
+            <span className="material-symbols-outlined font-bold">person_add_alt</span>
+            <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
+          </Link>
+        )}
       </div>
 
       <style jsx global>{`

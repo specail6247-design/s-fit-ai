@@ -4,6 +4,8 @@
 
 export interface ClothingItem {
   id: string;
+  stylingTip?: string;
+  isLocked?: boolean;
   name: string;
   brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
@@ -21,6 +23,8 @@ export interface ClothingItem {
 
 export interface Brand {
   id: string;
+  stylingTip?: string;
+  isLocked?: boolean;
   name: string;
   logo: string;
   isLuxury: boolean;
@@ -502,6 +506,8 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Black', 'Beige'],
     description: 'Iconic quilted leather handbag with chain strap',
+    isLocked: true,
+    stylingTip: 'Wear crossbody with an oversized blazer for effortless contrast.',
   },
   {
     id: 'supreme-hat-001',
@@ -534,6 +540,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+    stylingTip: 'Layer with longer, delicate gold chains to frame the décolletage.',
   },
 ];
 
