@@ -132,8 +132,6 @@ const FluidDistortion = ({ imageUrl }: FluidDistortionProps) => {
   // just pass aspect ratio to shader to fix UVs. Since Next.js has standard <img> fallback we'll
   // adjust plane scaling. But for now, we'll scale the mesh.
   // For a camera at [0,0,1], ortho height is ~1.15. Let's just adjust plane size:
-  const planeWidth = aspectRatio > 1 ? 2 : 2 * aspectRatio;
-  const planeHeight = aspectRatio > 1 ? 2 / aspectRatio : 2;
 
   // Let's use scale to fill the 2x2 area if needed, or just let it match the aspect ratio.
   // If we just use args={[2, 2 / aspectRatio]}, it will keep ratio.
