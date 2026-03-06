@@ -11,6 +11,8 @@ import { ClothingStyleAnalysis, SizeRecommendation } from '@/lib/visionService';
 export type FittingMode = 'vibe-check' | 'digital-twin' | 'easy-fit' | 'ar-fit' | 'training' | null;
 export type FittingModeKey = Exclude<FittingMode, null>;
 
+export type PrivacyTab = 'data' | 'cookies' | 'terms';
+
 // Body Shape Types for Easy Fit
 export type BodyShape = 'rectangle' | 'hourglass' | 'pear' | 'apple' | 'inverted-triangle';
 
@@ -95,6 +97,35 @@ interface StoreState {
   setSelectedBrand: (brandId: string | null) => void;
   selectedItem: ClothingItem | null;
   setSelectedItem: (item: ClothingItem | null) => void;
+
+  // UI Overlays
+  isLoginOpen: boolean;
+  setLoginOpen: (isOpen: boolean) => void;
+  isSupportOpen: boolean;
+  setSupportOpen: (isOpen: boolean) => void;
+  isPrivacyOpen: boolean;
+  setPrivacyOpen: (isOpen: boolean) => void;
+  isVaultOpen: boolean;
+  setVaultOpen: (isOpen: boolean) => void;
+
+  // Modal-Specific State
+  privacyActiveTab: PrivacyTab;
+  setPrivacyActiveTab: (tab: PrivacyTab) => void;
+
+  // Audio State
+  isAudioMuted: boolean;
+  setAudioMuted: (isMuted: boolean) => void;
+
+  // Application Flow States
+  isAnalyzing: boolean;
+  setAnalyzing: (isAnalyzing: boolean) => void;
+  isFitting: boolean;
+  setFitting: (isFitting: boolean) => void;
+
+  // Saved Looks (Vault)
+  savedLooks: Array<{ id: string; url: string; date: string }>;
+  addSavedLook: (look: { id: string; url: string; date: string }) => void;
+  removeSavedLook: (id: string) => void;
 
   // Daily Usage (Freemium)
   dailyUsage: DailyUsage;
@@ -185,6 +216,35 @@ export const useStore = create<StoreState>()(
       setSelectedBrand: (brandId) => set({ selectedBrand: brandId }),
       selectedItem: null,
       setSelectedItem: (item) => set({ selectedItem: item }),
+
+      // UI Overlays
+      isLoginOpen: false,
+      setLoginOpen: (isOpen) => set({ isLoginOpen: isOpen }),
+      isSupportOpen: false,
+      setSupportOpen: (isOpen) => set({ isSupportOpen: isOpen }),
+      isPrivacyOpen: false,
+      setPrivacyOpen: (isOpen) => set({ isPrivacyOpen: isOpen }),
+      isVaultOpen: false,
+      setVaultOpen: (isOpen) => set({ isVaultOpen: isOpen }),
+
+      // Modal-Specific State
+      privacyActiveTab: 'data',
+      setPrivacyActiveTab: (tab) => set({ privacyActiveTab: tab }),
+
+      // Audio State
+      isAudioMuted: false,
+      setAudioMuted: (isMuted) => set({ isAudioMuted: isMuted }),
+
+      // Application Flow States
+      isAnalyzing: false,
+      setAnalyzing: (isAnalyzing) => set({ isAnalyzing }),
+      isFitting: false,
+      setFitting: (isFitting) => set({ isFitting }),
+
+      // Saved Looks
+      savedLooks: [],
+      addSavedLook: (look) => set((state) => ({ savedLooks: [...state.savedLooks, look] })),
+      removeSavedLook: (id) => set((state) => ({ savedLooks: state.savedLooks.filter(l => l.id !== id) })),
 
       // Daily Usage
       dailyUsage: {
