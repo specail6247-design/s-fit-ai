@@ -8,20 +8,29 @@ export const runtime = 'nodejs';
 export const maxDuration = 120;
 
 // Helper: Convert local file to base64 data URI
-function localFileToDataUri(localPath: string): string | null {
+async function localFileToDataUri(localPath: string): Promise<string | null> {
   try {
     // Remove leading slash and resolve to public directory
     const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
-    const absolutePath = path.join(process.cwd(), 'public', relativePath);
+    const publicDir = path.join(process.cwd(), 'public');
+    const absolutePath = path.resolve(publicDir, relativePath);
+
+    // Prevent path traversal vulnerabilities by ensuring the path is within the public directory
+    if (!absolutePath.startsWith(publicDir + path.sep) && absolutePath !== publicDir) {
+      console.error('Security Error: Path traversal attempt detected:', localPath);
+      return null;
+    }
     
     console.log('Reading local file:', absolutePath);
     
-    if (!fs.existsSync(absolutePath)) {
+    try {
+      await fs.promises.access(absolutePath);
+    } catch {
       console.error('File not found:', absolutePath);
       return null;
     }
     
-    const fileBuffer = fs.readFileSync(absolutePath);
+    const fileBuffer = await fs.promises.readFile(absolutePath);
     const base64 = fileBuffer.toString('base64');
     
     // Determine MIME type from extension
@@ -67,7 +76,7 @@ export async function POST(request: NextRequest) {
         garmentImageInput = garmentImageUrl;
       } else if (garmentImageUrl.startsWith('/')) {
         // Local file in public directory - convert to base64 data URI
-        const dataUri = localFileToDataUri(garmentImageUrl);
+        const dataUri = await localFileToDataUri(garmentImageUrl);
         if (!dataUri) {
           return NextResponse.json(
             { error: `Failed to read local image: ${garmentImageUrl}` },
