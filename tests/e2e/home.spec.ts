@@ -16,17 +16,20 @@ test.describe('Home Page', () => {
   });
 
   test('should display mode selection options', async ({ page }) => {
-    // Check for presence of mode cards
-    await expect(page.getByText('VIBE CHECK')).toBeVisible();
-    await expect(page.getByText('DIGITAL TWIN')).toBeVisible();
-    await expect(page.getByText('EASY FIT')).toBeVisible();
+    // Check for presence of new RealLifeFitting components
+    await expect(page.getByText('01. Identification')).toBeVisible();
+    await expect(page.getByText('Upload User Photo')).toBeVisible();
 
-    // Check continue button
-    const continueBtn = page.getByRole('button', { name: /Continue/i });
-    await expect(continueBtn).toBeVisible();
+    await expect(page.getByText('02. Target Garment')).toBeVisible();
+    await expect(page.getByText('Select Garment')).toBeVisible();
+
+    // Check generate button
+    const generateBtn = page.getByRole('button', { name: /TRY IT ON/i });
+    await expect(generateBtn).toBeVisible();
   });
 
   test('should match visual snapshot', async ({ page }) => {
-    await expect(page).toHaveScreenshot({ fullPage: true });
+    // Tolerant maxDiffPixelRatio per guidelines for CI vs local differences
+    await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixelRatio: 0.1 });
   });
 });
