@@ -110,6 +110,17 @@ interface StoreState {
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
 
+  // The Vault (Phase 7)
+  savedItems: ClothingItem[];
+  isVaultOpen: boolean;
+  addSavedItem: (item: ClothingItem) => void;
+  removeSavedItem: (itemId: string) => void;
+  setVaultOpen: (isOpen: boolean) => void;
+
+  // Sensory Ambience (Phase 7)
+  isAudioMuted: boolean;
+  toggleAudioMuted: () => void;
+
   // Reset
   resetSession: () => void;
 }
@@ -235,6 +246,24 @@ export const useStore = create<StoreState>()(
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
 
+      // The Vault (Phase 7)
+      savedItems: [],
+      isVaultOpen: false,
+      addSavedItem: (item) => set((state) => {
+        if (!state.savedItems.find(i => i.id === item.id)) {
+          return { savedItems: [...state.savedItems, item] };
+        }
+        return state;
+      }),
+      removeSavedItem: (itemId) => set((state) => ({
+        savedItems: state.savedItems.filter(i => i.id !== itemId)
+      })),
+      setVaultOpen: (isOpen) => set({ isVaultOpen: isOpen }),
+
+      // Sensory Ambience (Phase 7)
+      isAudioMuted: false, // Default unmuted, ambient audio plays when fitting/luxury modes are active
+      toggleAudioMuted: () => set((state) => ({ isAudioMuted: !state.isAudioMuted })),
+
       // Reset Session
       resetSession: () =>
         set({
@@ -256,6 +285,8 @@ export const useStore = create<StoreState>()(
         isPremium: state.isPremium,
         userStats: state.userStats,
         selectedAIModels: state.selectedAIModels,
+        savedItems: state.savedItems,
+        isAudioMuted: state.isAudioMuted,
         trainingData: state.trainingData,
       }),
     }

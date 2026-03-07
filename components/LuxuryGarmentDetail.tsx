@@ -1,10 +1,55 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { useStore } from '@/store/useStore';
+import { ClothingItem } from '@/data/mockData';
 
 export default function LuxuryGarmentDetail() {
+  const { selectedItem, addSavedItem, setVaultOpen } = useStore();
+  const [timeLeft, setTimeLeft] = useState('02:00:00');
+
+  useEffect(() => {
+    // We run the timer regardless of selectedItem.isLocked so the fallback works too
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        const [hours, minutes, seconds] = prev.split(':').map(Number);
+        const totalSeconds = hours * 3600 + minutes * 60 + seconds - 1;
+        if (totalSeconds <= 0) return '00:00:00';
+        const h = Math.floor(totalSeconds / 3600);
+        const m = Math.floor((totalSeconds % 3600) / 60);
+        const s = totalSeconds % 60;
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleSaveLook = () => {
+    if (selectedItem) {
+      addSavedItem(selectedItem);
+      setVaultOpen(true);
+    }
+  };
+
+  // For the standalone page if no item is selected, we provide a fallback UI
+  // (in a real app this might redirect or fetch default luxury data)
+  const item = selectedItem || {
+    id: 'fallback',
+    name: 'Evening Blazer',
+    brand: 'Gucci',
+    category: 'outerwear' as const,
+    price: 2850,
+    currency: 'USD',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E',
+    textureUrl: '',
+    isLuxury: true,
+    sizes: [],
+    colors: [],
+    description: 'Engineered with proprietary light-refraction engine.',
+    stylingTip: 'Pair with structured denim for a balanced silhouette.',
+    isLocked: true,
+  } as ClothingItem;
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -14,7 +59,10 @@ export default function LuxuryGarmentDetail() {
             <span className="material-symbols-outlined">arrow_back</span>
           </Link>
           <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center">S_FIT AI</h2>
-          <div className="flex w-10 items-center justify-end">
+          <div className="flex items-center justify-end">
+            <button onClick={handleSaveLook} className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors mr-2" aria-label="Save Look">
+              <span className="material-symbols-outlined">bookmark</span>
+            </button>
             <button className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
               <span className="material-symbols-outlined">share</span>
             </button>
@@ -29,7 +77,7 @@ export default function LuxuryGarmentDetail() {
           <div 
             className="absolute inset-0 bg-cover bg-center" 
             style={{ 
-              backgroundImage: 'linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' 
+              backgroundImage: `linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%), url("${item.imageUrl}")`
             }}
           />
           
@@ -42,9 +90,33 @@ export default function LuxuryGarmentDetail() {
             </div>
             <div className="text-right">
               <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mb-1">Authentic Render</p>
-              <h1 className="text-white text-3xl font-extralight leading-tight">Metallic Silk <br/><span className="font-bold">Evening Blazer</span></h1>
+              <h1 className="text-white text-3xl font-extralight leading-tight">{item.brand} <br/><span className="font-bold">{item.name}</span></h1>
             </div>
           </div>
+        </div>
+
+        {/* Exclusive Access & AI Stylist Note */}
+        <div className="px-4 mt-6 flex flex-col gap-4 relative z-10">
+          {item.isLocked && (
+            <div className="bg-[#1a1a1a] border border-[#ecab13]/30 rounded-xl p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-[#ecab13]">lock</span>
+                <div>
+                  <p className="text-[#ecab13] text-xs font-bold tracking-widest uppercase">Exclusive Access</p>
+                  <p className="text-white text-sm">Available in <span className="font-mono">{timeLeft}</span></p>
+                </div>
+              </div>
+            </div>
+          )}
+          {item.stylingTip && (
+            <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="material-symbols-outlined text-zinc-400 text-sm">auto_awesome</span>
+                <p className="text-white text-xs font-bold tracking-[0.2em] uppercase">AI Stylist Note</p>
+              </div>
+              <p className="text-zinc-400 text-sm italic">&quot;{item.stylingTip}&quot;</p>
+            </div>
+          )}
         </div>
 
         {/* Material Stats */}
@@ -74,7 +146,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
@@ -134,7 +206,12 @@ export default function LuxuryGarmentDetail() {
       <div className="fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex gap-4 items-center z-50">
         <div className="flex flex-col flex-1">
           <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
-          <p className="text-white text-xl font-bold">$2,850</p>
+          <p className="text-white text-xl font-bold">
+            {new Intl.NumberFormat('en-US', {
+              style: 'currency',
+              currency: item.currency || 'USD',
+            }).format(item.price || 0)}
+          </p>
         </div>
         <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
           <span className="material-symbols-outlined font-bold">person_add_alt</span>

@@ -1,5 +1,5 @@
 
-> s-fit-ai@0.1.0 dev
+> s-fit-ai@0.1.0 dev /app
 > next dev --webpack
 
 ▲ Next.js 16.1.4 (webpack)
@@ -12,7 +12,16 @@ This information is used to shape Next.js' roadmap and prioritize features.
 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
 https://nextjs.org/telemetry
 
-✓ Ready in 1780ms
-○ Compiling /cinematic-demo ...
+✓ Ready in 1802ms
+○ Compiling /luxury ...
 ⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
- GET /cinematic-demo 200 in 12.4s (compile: 12.0s, render: 401ms)
+ GET /luxury 200 in 10.5s (compile: 8.9s, render: 1566ms)
+○ Compiling /_not-found ...
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /$%7Bitem.imageUrl%7D 404 in 4.5s (compile: 4.2s, render: 298ms)
+ GET /luxury 200 in 89ms (compile: 32ms, render: 57ms)
+ GET /luxury 200 in 176ms (compile: 16ms, render: 161ms)
+ GET /$%7Bitem.imageUrl%7D 404 in 89ms (compile: 21ms, render: 68ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /luxury 200 in 386ms (compile: 119ms, render: 266ms)
+ GET /luxury 200 in 141ms (compile: 13ms, render: 128ms)
