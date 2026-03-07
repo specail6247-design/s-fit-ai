@@ -1,0 +1,3 @@
+## 2025-03-07 - Inaccessible Material Symbols
+**Learning:** The application makes heavy use of Google Material Symbols within `<span>` tags for icon-only buttons (e.g., `zoom_in`, `arrow_back`). By default, screen readers read the literal text content of these spans instead of a meaningful action, creating a confusing and poor experience for visually impaired users.
+**Action:** When adding or updating icon-only buttons that use Material Symbols (or similar font-based icons), always add a descriptive `aria-label` to the interactive element (`<button>`, `<a>`, `<Link>`) and explicitly set `aria-hidden="true"` on the internal icon element to prevent the raw icon name from being announced.
