@@ -145,7 +145,8 @@ export default function RealLifeFitting() {
           ) : (
             <button 
               onClick={handleTryOn}
-              className="w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
+              disabled={!userImage || !garmentImage}
+              className={`w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 ${(!userImage || !garmentImage) ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               <span>⚡️</span> TRY IT ON
             </button>
