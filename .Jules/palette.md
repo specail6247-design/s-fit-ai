@@ -1,0 +1,3 @@
+## 2024-05-24 - The Vault and Ambient Audio
+**Learning:** Adding a subtle, mute-able background hum (white noise or soft synth) that plays when in "Immersive Fitting State" enhances the sensory ambience. Furthermore, adding an exclusive access countdown timer for locked items creates a sense of FOMO. "The Vault" drawer provides a clean way to "Save Look" allowing luxury shoppers to compare.
+**Action:** Created `AmbientAudio.tsx` using base64 audio and a mute toggle, created `TheVault.tsx` as a Framer Motion drawer, and updated `LuxuryGarmentDetail.tsx` to include "AI Stylist Note", "Exclusive Access" countdown, and a "Save Look" button.
