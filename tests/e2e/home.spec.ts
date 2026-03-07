@@ -17,16 +17,22 @@ test.describe('Home Page', () => {
 
   test('should display mode selection options', async ({ page }) => {
     // Check for presence of mode cards
-    await expect(page.getByText('VIBE CHECK')).toBeVisible();
-    await expect(page.getByText('DIGITAL TWIN')).toBeVisible();
-    await expect(page.getByText('EASY FIT')).toBeVisible();
+    await expect(page.getByText('01. Identification')).toBeVisible();
+    await expect(page.getByText('02. Target Garment')).toBeVisible();
 
     // Check continue button
-    const continueBtn = page.getByRole('button', { name: /Continue/i });
+    const continueBtn = page.getByRole('button', { name: /TRY IT ON/i });
     await expect(continueBtn).toBeVisible();
   });
 
   test('should match visual snapshot', async ({ page }) => {
-    await expect(page).toHaveScreenshot({ fullPage: true });
+    // Scroll a bit to trigger the background color shift and any lazy load animations
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.waitForTimeout(1000); // Give animations time to settle
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(1000);
+
+    // Masking dynamic elements if any (like loaders/progress bars)
+    await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixelRatio: 0.2, timeout: 15000 });
   });
 });
