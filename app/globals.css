@@ -47,8 +47,13 @@
   --color-gold-primary: #ecab13;
   --color-surface-dark: #1a1a1a;
   --color-border-dark: #2d2d2d;
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-space-grotesk, var(--font-geist-sans));
+  --font-cinzel: var(--font-cinzel, "Cinzel");
   --font-mono: var(--font-geist-mono);
+}
+
+.font-cinzel {
+  font-family: var(--font-cinzel), serif;
 }
 
 /* Base Styles */
