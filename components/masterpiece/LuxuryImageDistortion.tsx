@@ -88,8 +88,12 @@ const DistortionMesh: React.FC<DistortionMaterialProps> = ({ imageUrl, isHovered
 
   // Preserve aspect ratio
   const aspect = useMemo(() => {
-    if (!texture) return 1;
-    return texture.image.width / texture.image.height;
+    if (!texture || !texture.image) return 1;
+    const img = texture.image as HTMLImageElement;
+    if (img.width && img.height) {
+      return img.width / img.height;
+    }
+    return 1;
   }, [texture]);
 
   // Use lerping for smooth hover transitions
