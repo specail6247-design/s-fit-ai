@@ -17,6 +17,9 @@ export interface ClothingItem {
   sizes: string[];
   colors: string[];
   description: string;
+  materialInteraction?: string;
+  stylingTip?: string;
+  isLocked?: boolean;
 }
 
 export interface Brand {
@@ -182,6 +185,9 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 44', 'IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Beige/Ebony'],
     description: 'Iconic GG pattern wool blazer with silk lining',
+    materialInteraction: 'Holds rigid structure. Heavy accessories like bags will sit cleanly over the shoulder without creasing the fabric.',
+    stylingTip: 'Drape over the shoulders for a relaxed look, or button up with a silk blouse underneath.',
+    isLocked: false,
   },
   {
     id: 'gucci-002',
@@ -502,6 +508,9 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Black', 'Beige'],
     description: 'Iconic quilted leather handbag with chain strap',
+    materialInteraction: 'Rests smoothly over structured fabrics like wool and denim. The chain strap causes slight draping adjustments on softer silks.',
+    stylingTip: 'Drape the chain over a structured blazer or wear crossbody over a silk slip dress for contrast.',
+    isLocked: true,
   },
   {
     id: 'supreme-hat-001',
@@ -534,6 +543,9 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+    materialInteraction: 'Lays elegantly on bare skin or over fine knits. May get caught in loose weaves or chunky sweaters.',
+    stylingTip: 'Pair with a deep V-neck blouse or a simple crew-neck tee to let the pendant shine.',
+    isLocked: false,
   },
 ];
 

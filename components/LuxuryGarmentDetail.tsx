@@ -1,10 +1,73 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 
 export default function LuxuryGarmentDetail() {
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [isVideoLoading, setIsVideoLoading] = useState(false);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+
+  const generateCinematicVideo = async () => {
+    setIsVideoLoading(true);
+    try {
+      const res = await fetch('/api/runway-motion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E',
+          upscale: true
+        })
+      });
+      const data = await res.json();
+      if (data.success && data.videoUrl) {
+        setVideoUrl(data.videoUrl);
+      } else {
+        console.error("Video generation failed", data.error);
+        alert("Failed to generate cinematic motion. Please try again.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error triggering generation.");
+    } finally {
+      setIsVideoLoading(false);
+    }
+  };
+  const [zoomStyle, setZoomStyle] = useState({ transformOrigin: 'center center', transform: 'scale(1)' });
+  const imageRef = useRef<HTMLDivElement>(null);
+  const requestRef = useRef<number>(0);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isZoomed || !imageRef.current) return;
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+    if (requestRef.current) cancelAnimationFrame(requestRef.current);
+
+    requestRef.current = requestAnimationFrame(() => {
+      setZoomStyle({
+        transformOrigin: `${x}% ${y}%`,
+        transform: 'scale(2.5)' // Hyper-zoom scale
+      });
+    });
+  }, [isZoomed]);
+
+  const handleMouseEnter = () => setIsZoomed(true);
+
+  const handleMouseLeave = () => {
+    setIsZoomed(false);
+    if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    setZoomStyle({ transformOrigin: 'center center', transform: 'scale(1)' });
+  };
+
+  useEffect(() => {
+    return () => {
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -25,11 +88,18 @@ export default function LuxuryGarmentDetail() {
       {/* Main Content Container (Mobile Optimized) */}
       <main className="max-w-md mx-auto pt-16 pb-32">
         {/* 3D Interactive Viewport (Hero Image) */}
-        <div className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900">
+        <div
+          className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900 cursor-crosshair"
+          onMouseMove={handleMouseMove}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
           <div 
-            className="absolute inset-0 bg-cover bg-center" 
+            ref={imageRef}
+            className="absolute inset-0 bg-cover transition-transform duration-75 ease-out"
             style={{ 
-              backgroundImage: 'linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' 
+              backgroundImage: 'linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")',
+              ...zoomStyle
             }}
           />
           
@@ -74,8 +144,13 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
+          <div className="bg-[#1a1a1a]/50 border border-[#2d2d2d] rounded-lg p-4 mb-6">
+            <h3 className="text-white text-[10px] font-bold tracking-widest uppercase mb-2">AI Stylist Notes</h3>
+            <p className="text-zinc-400 text-xs italic mb-2">Holds rigid structure. Heavy accessories like bags will sit cleanly over the shoulder without creasing the fabric.</p>
+            <p className="text-[#ecab13] text-xs">Styling Tip: Drape over the shoulders for a relaxed look, or button up with a silk blouse underneath.</p>
+          </div>
           
           {/* Chips */}
           <div className="flex gap-2 flex-wrap mb-8">
@@ -127,6 +202,44 @@ export default function LuxuryGarmentDetail() {
             <span className="text-zinc-500 text-xs uppercase tracking-widest">Physics Mesh</span>
             <span className="text-white text-sm">12,400 Polygons</span>
           </div>
+        </div>
+
+        {/* Cinematic Motion Section */}
+        <div className="px-4 mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-white text-xs font-bold tracking-[0.2em] uppercase">Cinematic Experience</h2>
+            <span className="text-[#ecab13] material-symbols-outlined">movie</span>
+          </div>
+          {!videoUrl ? (
+            <button
+              onClick={generateCinematicVideo}
+              disabled={isVideoLoading}
+              className="w-full h-14 rounded-xl bg-[#1a1a1a] border border-[#ecab13]/50 text-[#ecab13] flex items-center justify-center gap-3 hover:bg-[#ecab13]/10 transition-colors"
+            >
+              {isVideoLoading ? (
+                 <div className="w-5 h-5 border-2 border-[#ecab13]/30 border-t-[#ecab13] rounded-full animate-spin" />
+              ) : (
+                <>
+                  <span className="material-symbols-outlined">movie_creation</span>
+                  <span className="font-bold text-xs tracking-widest uppercase">Generate Motion (4K)</span>
+                </>
+              )}
+            </button>
+          ) : (
+            <div className="flex flex-col gap-4">
+              <div className="relative aspect-[9/16] rounded-xl overflow-hidden bg-black shadow-2xl border border-[#2d2d2d]">
+                <video src={videoUrl} controls loop autoPlay muted className="w-full h-full object-cover" />
+              </div>
+              <a
+                href={videoUrl}
+                download="cinematic_tryon_4k.mp4"
+                className="w-full h-14 rounded-xl bg-white text-black flex items-center justify-center gap-3 hover:bg-zinc-200 transition-colors shadow-lg"
+              >
+                <span className="material-symbols-outlined">download</span>
+                <span className="font-bold text-xs tracking-widest uppercase">Export 4K Video</span>
+              </a>
+            </div>
+          )}
         </div>
       </main>
 
