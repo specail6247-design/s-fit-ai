@@ -1,0 +1,4 @@
+## 2026-03-07 - Path Traversal & SSRF in API Routes
+**Vulnerability:** Path traversal existed in `app/api/try-on/route.ts` via `localPath.slice(1)` and `path.join`, allowing users to read arbitrary server files. Also, external image inputs (SSRF vectors) across `try-on`, `cinematic-try-on`, and `runway-motion` API routes lacked protocol validation.
+**Learning:** Next.js API routes that handle local file paths must strictly resolve paths and verify they belong to the intended public directory. External URLs fetched by third-party APIs (like Replicate) must be validated to prevent SSRF.
+**Prevention:** Use `path.resolve` and check `absolutePath.startsWith(publicDir + path.sep)` for file paths. Introduce a centralized `isValidExternalUrl` utility in `lib/security.ts` to enforce `http://`, `https://`, or `data:image/` protocols for external inputs.
