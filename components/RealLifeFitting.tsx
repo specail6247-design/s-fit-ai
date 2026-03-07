@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -11,6 +12,7 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const { setSupportHubOpen, setPrivacyModalOpen } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -106,6 +108,14 @@ export default function RealLifeFitting() {
             </div>
           </div>
 
+          {/* Data Safety Badge */}
+          <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+            <span className="text-green-500">🔒</span>
+            <p className="text-[10px] text-green-500/90 font-mono">
+              Photos are processed securely and not shared.
+            </p>
+          </div>
+
           {/* Garment Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">02. Target Garment</label>
@@ -158,6 +168,16 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Trust & Legal Links */}
+          <div className="mt-6 flex justify-center gap-4 text-xs text-gray-500 font-mono">
+            <button onClick={() => setSupportHubOpen(true)} className="hover:text-white transition-colors">
+              [SUPPORT HUB]
+            </button>
+            <button onClick={() => setPrivacyModalOpen(true)} className="hover:text-white transition-colors">
+              [PRIVACY & TERMS]
+            </button>
+          </div>
+
         </div>
       </div>
 
@@ -195,16 +215,79 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              <img id="fitting-result-image" src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
               >
                 ✕ Close
               </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
-                AI GENERATED_
+              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30 flex gap-2 items-center">
+                <span>AI GENERATED_</span>
               </div>
+
+              {/* Share to Story Button */}
+              <button
+                onClick={() => {
+                  const canvas = document.createElement('canvas');
+                  canvas.width = 1080;
+                  canvas.height = 1920;
+                  const ctx = canvas.getContext('2d');
+                  if (!ctx) return;
+
+                  // Draw gradient background
+                  const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
+                  gradient.addColorStop(0, '#0a0a0a');
+                  gradient.addColorStop(1, '#1a1a1a');
+                  ctx.fillStyle = gradient;
+                  ctx.fillRect(0, 0, 1080, 1920);
+
+                  // Draw Image
+                  const img = document.getElementById('fitting-result-image') as HTMLImageElement;
+                  if (img) {
+                    const scale = Math.min(1000 / img.naturalWidth, 1400 / img.naturalHeight);
+                    const w = img.naturalWidth * scale;
+                    const h = img.naturalHeight * scale;
+                    const x = (1080 - w) / 2;
+                    const y = (1920 - h) / 2 - 50; // Shifted up slightly for footer
+                    ctx.drawImage(img, x, y, w, h);
+                  }
+
+                  // Draw Header/Footer Branding
+                  ctx.fillStyle = '#ffffff';
+                  ctx.font = 'bold 60px sans-serif';
+                  ctx.textAlign = 'center';
+                  ctx.fillText('S_FIT NEO', 540, 150);
+
+                  ctx.fillStyle = '#007AFF';
+                  ctx.font = '40px monospace';
+                  ctx.fillText('AI VIRTUAL TRY-ON', 540, 1800);
+
+                  // Export and Share
+                  canvas.toBlob((blob) => {
+                    if (!blob) return;
+                    const file = new File([blob], 'sfit-story.png', { type: 'image/png' });
+                    if (navigator.share && navigator.canShare({ files: [file] })) {
+                      navigator.share({
+                        files: [file],
+                        title: 'My S_FIT Style',
+                        text: 'Check out my new look generated by S_FIT AI!',
+                      }).catch(console.error);
+                    } else {
+                      // Fallback to download
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = 'sfit-story.png';
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }
+                  }, 'image/png');
+                }}
+                className="absolute bottom-4 right-4 bg-[#007AFF] text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-[#005bb5] transition-all flex items-center gap-2 shadow-lg"
+              >
+                <span>📸</span> SHARE TO STORY
+              </button>
             </div>
           </motion.div>
         )}
