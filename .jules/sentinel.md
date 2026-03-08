@@ -1,0 +1,4 @@
+## 2024-05-01 - Path Traversal Vulnerability in localFileToDataUri
+**Vulnerability:** The API handler for virtual try-on used user input to construct file paths for local images using `path.join(process.cwd(), 'public', relativePath)` without verifying that the resolved path actually stayed within the public directory.
+**Learning:** This is a classic path traversal risk (e.g. `../../.env`). `path.join` does not guarantee the final path stays within a parent directory because relative segments like `..` can traverse up.
+**Prevention:** To prevent path traversal vulnerabilities in Next.js API routes when handling local file paths, always use `path.resolve` to get the absolute path and strictly verify that it starts with the intended base directory (e.g., `absolutePath.startsWith(publicDir + path.sep)`) before performing asynchronous file I/O.
