@@ -1,0 +1,3 @@
+## 2024-05-16 - Accessible Google Material Symbols
+**Learning:** Google Material Symbols are implemented as text strings inside a `<span>` element (e.g., `<span className="material-symbols-outlined">zoom_in</span>`). Without intervention, screen readers will announce this literal text ("zoom in", "arrow back"), which provides a poor user experience, especially for icon-only interactive elements.
+**Action:** When using Material Symbols in icon-only buttons or links, always add a descriptive `aria-label` to the parent interactive element (`<button>`, `<Link>`, `<a>`) and strictly apply `aria-hidden="true"` to the `<span>` containing the icon text to prevent the raw string from being announced.
