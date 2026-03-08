@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -11,6 +12,7 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const { setShowPrivacyTermsModal, setShowSupportHub } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -91,7 +93,13 @@ export default function RealLifeFitting() {
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
           {/* User Photo Input */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
+              <div className="flex items-center gap-1 bg-white/5 px-2 py-1 rounded-full border border-white/10" title="Photos are processed securely and not shared.">
+                <span className="text-[10px]">🔒</span>
+                <span className="text-[8px] text-white/70 uppercase tracking-widest">Safe Data</span>
+              </div>
+            </div>
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
@@ -159,6 +167,12 @@ export default function RealLifeFitting() {
           </div>
 
         </div>
+
+        {/* Footer Links */}
+        <div className="absolute bottom-8 left-8 right-8 flex justify-between text-[10px] text-white/40 uppercase tracking-widest z-10">
+          <button onClick={() => setShowPrivacyTermsModal(true)} className="hover:text-white transition-colors">Privacy & Terms</button>
+          <button onClick={() => setShowSupportHub(true)} className="hover:text-white transition-colors">Support / Report Issue</button>
+        </div>
       </div>
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
@@ -205,6 +219,68 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={() => {
+                  const canvas = document.createElement('canvas');
+                  canvas.width = 1080;
+                  canvas.height = 1920;
+                  const ctx = canvas.getContext('2d');
+                  if (!ctx) return;
+
+                  // Background
+                  ctx.fillStyle = '#050505';
+                  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                  const img = new Image();
+                  img.crossOrigin = "anonymous";
+                  img.onload = () => {
+                    // Draw image centered
+                    const scale = Math.min(1000 / img.width, 1600 / img.height);
+                    const w = img.width * scale;
+                    const h = img.height * scale;
+                    const x = (canvas.width - w) / 2;
+                    const y = (canvas.height - h) / 2;
+
+                    ctx.drawImage(img, x, y, w, h);
+
+                    // Draw Brand/Logo
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = 'bold 60px "Geist Sans", sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('S_FIT NEO', canvas.width / 2, 120);
+
+                    ctx.fillStyle = '#007AFF';
+                    ctx.font = '40px monospace';
+                    ctx.fillText('VIRTUAL FITTING RESULT', canvas.width / 2, 180);
+
+                    try {
+                      canvas.toBlob(async (blob) => {
+                        if (!blob) return;
+                        const file = new File([blob], 'sfit-story.png', { type: 'image/png' });
+                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                          await navigator.share({
+                            files: [file],
+                            title: 'My S_FIT Try-On',
+                          });
+                        } else {
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = 'sfit-story.png';
+                          a.click();
+                          URL.revokeObjectURL(url);
+                        }
+                      }, 'image/png');
+                    } catch (e) {
+                      console.error('Sharing failed', e);
+                    }
+                  };
+                  img.src = resultImage;
+                }}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg hover:opacity-90 transition-opacity flex items-center gap-2"
+              >
+                <span>📸</span> SHARE TO STORY
+              </button>
             </div>
           </motion.div>
         )}
