@@ -10,14 +10,14 @@ import { useStore } from '@/store/useStore';
 const drawerVariants = {
   hidden: { x: '100%', opacity: 0 },
   visible: {
-    x: 0,
+    x: '0%',
     opacity: 1,
-    transition: { type: 'spring', damping: 25, stiffness: 200 },
+    transition: { type: 'spring' as const, damping: 25, stiffness: 200 },
   },
   exit: {
     x: '100%',
     opacity: 0,
-    transition: { type: 'spring', damping: 25, stiffness: 200 },
+    transition: { type: 'spring' as const, damping: 25, stiffness: 200 },
   },
 };
 
@@ -37,6 +37,7 @@ export function SupportHub() {
   const { showSupportHub, setShowSupportHub } = useStore();
   const [activeTab, setActiveTab] = useState<'guide' | 'caution' | 'faq'>('guide');
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [guideStepIndex, setGuideStepIndex] = useState(0);
 
   return (
     <AnimatePresence>
@@ -102,24 +103,64 @@ export function SupportHub() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="space-y-8"
+                    className="space-y-6 flex flex-col items-center justify-center"
                   >
-                    <div className="text-center mb-6">
+                    <div className="text-center mb-4">
                       <p className="text-soft-gray text-sm font-mono tracking-wide">
                         3 STEPS TO YOUR PERFECT FIT
                       </p>
                     </div>
-                    {guideSteps.map((step, index) => (
-                      <div key={index} className="flex gap-4 items-start">
-                        <div className="w-8 h-8 rounded-full border border-cyber-lime flex items-center justify-center text-cyber-lime text-xs font-bold shrink-0">
-                          {index + 1}
+
+                    <div className="relative w-full overflow-hidden flex flex-col items-center">
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={guideStepIndex}
+                          initial={{ opacity: 0, x: 50 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -50 }}
+                          transition={{ duration: 0.3 }}
+                          className="flex flex-col items-center text-center p-6 bg-pure-white/5 border border-pure-white/10 rounded-xl w-full min-h-[200px] justify-center"
+                        >
+                          <div className="w-12 h-12 mb-4 rounded-full border-2 border-cyber-lime flex items-center justify-center text-cyber-lime text-lg font-bold shrink-0">
+                            {guideStepIndex + 1}
+                          </div>
+                          <h3 className="font-bold text-pure-white text-lg tracking-wider mb-2">
+                            {guideSteps[guideStepIndex].title}
+                          </h3>
+                          <p className="text-sm text-soft-gray leading-relaxed">
+                            {guideSteps[guideStepIndex].desc}
+                          </p>
+                        </motion.div>
+                      </AnimatePresence>
+
+                      {/* Carousel Controls */}
+                      <div className="flex justify-between w-full mt-6 px-4">
+                        <button
+                          onClick={() => setGuideStepIndex((prev) => (prev > 0 ? prev - 1 : guideSteps.length - 1))}
+                          className="text-soft-gray hover:text-pure-white transition-colors"
+                          aria-label="Previous step"
+                        >
+                          <span className="material-symbols-outlined text-3xl">chevron_left</span>
+                        </button>
+                        <div className="flex gap-2 items-center">
+                          {guideSteps.map((_, i) => (
+                            <div
+                              key={i}
+                              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                                i === guideStepIndex ? 'bg-cyber-lime w-4' : 'bg-pure-white/20'
+                              }`}
+                            />
+                          ))}
                         </div>
-                        <div>
-                          <h3 className="font-bold text-pure-white tracking-wider mb-1">{step.title}</h3>
-                          <p className="text-sm text-soft-gray leading-relaxed">{step.desc}</p>
-                        </div>
+                        <button
+                          onClick={() => setGuideStepIndex((prev) => (prev < guideSteps.length - 1 ? prev + 1 : 0))}
+                          className="text-soft-gray hover:text-pure-white transition-colors"
+                          aria-label="Next step"
+                        >
+                          <span className="material-symbols-outlined text-3xl">chevron_right</span>
+                        </button>
                       </div>
-                    ))}
+                    </div>
                   </motion.div>
                 )}
 
