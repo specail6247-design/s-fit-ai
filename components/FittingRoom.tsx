@@ -310,6 +310,7 @@ function Mannequin({
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
+  console.log('Opacity unused but passed for standard signature', opacity);
   
   return (
     <group scale={[scale, scale, scale]}>
