@@ -44,3 +44,5 @@ client_secret_*.json
 /net-commander
 nextjs_server.log
 pnpm-lock.yaml
+playwright-report/
+test-results/
