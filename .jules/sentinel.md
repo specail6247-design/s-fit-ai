@@ -1,0 +1,4 @@
+## 2024-05-20 - Path Traversal Vulnerability in API Route
+**Vulnerability:** The API route `app/api/try-on/route.ts` used `path.join(process.cwd(), 'public', relativePath)` to construct an absolute file path. Since `relativePath` was not sanitized and could contain `../` sequences, an attacker could traverse out of the intended directory (e.g. `../../../../etc/passwd`) to read arbitrary files via the server process.
+**Learning:** Using `path.join` with unsanitized user inputs for file I/O operations exposes the application to path traversal vulnerabilities.
+**Prevention:** To prevent path traversal, always resolve paths with `path.resolve`, and verify that the resulting absolute path starts with the intended base directory using `.startsWith(baseDir + path.sep)` before performing file I/O operations.
