@@ -110,6 +110,12 @@ interface StoreState {
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
 
+  // Trust & Growth Phase 6
+  showPrivacyModal: boolean;
+  setShowPrivacyModal: (show: boolean) => void;
+  showSupportHub: boolean;
+  setShowSupportHub: (show: boolean) => void;
+
   // Reset
   resetSession: () => void;
 }
@@ -234,6 +240,12 @@ export const useStore = create<StoreState>()(
       // UI State
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
+
+      // Trust & Growth Phase 6
+      showPrivacyModal: false,
+      setShowPrivacyModal: (show) => set({ showPrivacyModal: show }),
+      showSupportHub: false,
+      setShowSupportHub: (show) => set({ showSupportHub: show }),
 
       // Reset Session
       resetSession: () =>
