@@ -68,9 +68,10 @@ export function LoginModal() {
       if (error) throw error;
 
       setMessage({ type: 'success', text: 'Magic link sent! Check your email.' });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login error:', error);
-      setMessage({ type: 'error', text: error.message || 'Failed to send magic link.' });
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send magic link.';
+      setMessage({ type: 'error', text: errorMessage });
     } finally {
       setIsSubmitting(false);
     }
