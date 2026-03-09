@@ -7,9 +7,26 @@ const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const [isMuted, setIsMuted] = useState(false); // start unmuted
+  const [audioStarted, setAudioStarted] = useState(false);
+
+  // A very subtle low-frequency hum as base64 to avoid committing dummy files
+  const base64Audio = "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU5LjI3LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAOAAADeAABAgMGBwkLDhASFRgZHB8iJSgqLS8xNDc6PD9BQ0ZJS01QUVRXWlxfYmRnaWxvcXN2eXx/gYOGiYuOkZSXmJueoKKlqKqtr7G0t7q8v8HDxsjKzc/S1Nfa3N/h5OXo6u3w8vT3+fv9/v8AAAAATGF2YzU5LjM3AAAAAAAAAAAAAAAAJAAAAAAAAAAAAN4AAAAAAAAAAAAAAA//OUAAAAAAAAAAAAAAAAAAAAAABwAAAAAAAAAAAAAAHAAAAAAA//OUAAAAAAAAAAAAAAAAAAAAAABwAAAAAAAAAAAAAAHAAAAAAA//OUAAAAAAAAAAAAAAAAAAAAAABwAAAAAAAAAAAAAAHAAAAAAA";
+
+  useEffect(() => {
+    // Only attempt to start audio after user interaction or if browser allows
+    const initAudio = () => setAudioStarted(true);
+    document.addEventListener('click', initAudio, { once: true });
+    return () => document.removeEventListener('click', initAudio);
+  }, []);
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
+      {/* Ambience Audio */}
+      {audioStarted && (
+        <audio loop autoPlay muted={isMuted} src={base64Audio} />
+      )}
+
       {/* Top App Bar */}
       <div className="z-50 flex items-center justify-between bg-transparent p-4">
         <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
@@ -19,9 +36,15 @@ export default function PhotoFitting() {
           <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
-        <div className="flex w-12 items-center justify-end">
-          <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
-            <span className="material-symbols-outlined">info</span>
+        <div className="flex items-center justify-end gap-2">
+          <button
+            onClick={() => setIsMuted(!isMuted)}
+            className="flex size-10 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors"
+          >
+            <span className="material-symbols-outlined text-sm">{isMuted ? 'volume_off' : 'volume_up'}</span>
+          </button>
+          <button className="flex size-10 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors">
+            <span className="material-symbols-outlined text-sm">info</span>
           </button>
         </div>
       </div>

@@ -5,46 +5,62 @@ test.describe('User Flow', () => {
     await page.goto('/');
   });
 
-  test('should complete Easy Fit flow', async ({ page }) => {
-    // 1. Select Easy Fit Mode
-    // Force click to ensure it hits even if covered or slightly off-screen in mobile
-    await page.getByText('EASY FIT').click({ force: true });
+  test('should complete RealLifeFitting try-on flow', async ({ page }) => {
+    // Navigate to RealLifeFitting mode UI
+    await expect(page.getByText('01. Identification')).toBeVisible();
 
-    // Verify selection (border color change or checkmark)
-    const continueToModeBtn = page.getByRole('button', { name: /Continue →/i });
-    await expect(continueToModeBtn).toBeEnabled();
-    await continueToModeBtn.click();
+    // In Playwright tests for file inputs, use setInputFiles
+    // Mock user image buffer
+    const userImageBuffer = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+      'base64'
+    );
+    await page.locator('#user-upload').setInputFiles({
+      name: 'user.png',
+      mimeType: 'image/png',
+      buffer: userImageBuffer
+    });
 
-    // 2. Input Stats
-    // Wait for "Easy Fit" header
-    await expect(page.getByRole('heading', { name: 'Easy Fit' })).toBeVisible();
+    // Mock garment image buffer
+    const garmentImageBuffer = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
+      'base64'
+    );
+    await page.locator('#garment-upload').setInputFiles({
+      name: 'garment.png',
+      mimeType: 'image/png',
+      buffer: garmentImageBuffer
+    });
 
-    // Just click "Continue to Fitting Room" as defaults are valid.
-    await page.getByRole('button', { name: /Continue to Fitting Room/i }).click();
+    // 2. Execute Try On
+    // Intercept the API call to avoid using real backend credits during tests
+    await page.route('/api/try-on', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          imageUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
+        }),
+      });
+    });
 
-    // 3. Brand Selection
-    // Wait for "Select Brand" header
-    await expect(page.getByText('Select Brand')).toBeVisible();
+    // Click Try It On
+    const tryOnBtn = page.getByRole('button', { name: /TRY IT ON/i });
+    await expect(tryOnBtn).toBeVisible();
 
-    // Easy Fit defaults to Uniqlo auto-selected.
-    // Check if Uniqlo button has class indicating selection (border-pure-white) or just check if "Enter Fitting Room" is enabled.
-    const enterFittingRoomBtn = page.getByRole('button', { name: /Enter Fitting Room/i });
-    await expect(enterFittingRoomBtn).toBeEnabled();
+    // In test environment, the simulated 10-second processing bar might take a while or fail visual asserts,
+    // but we can just click and expect the result overlay to eventually appear.
+    await tryOnBtn.click();
 
-    // We can also switch brand manually.
-    // Note: buttons in BrandSelector might have text "ZARA" and role "button"
-    await page.getByRole('button', { name: 'ZARA' }).click();
+    // Verify Result Overlay
+    await expect(page.getByText('AI GENERATED_')).toBeVisible({ timeout: 15000 });
 
-    await enterFittingRoomBtn.click();
+    // Check close button
+    const closeBtn = page.getByRole('button', { name: /✕ Close/i });
+    await expect(closeBtn).toBeVisible();
+    await closeBtn.click();
 
-    // 4. Fitting Room
-    // Should see "Fitting Room" component.
-    // Home.tsx: "Back to brands" button visible.
-    await expect(page.getByRole('button', { name: /Back to brands/i })).toBeVisible();
-
-    // Should see 3D canvas (maybe check for canvas element)
-    // Note: WebGL might not be available in all headless environments
-    // We check if the container exists at least.
-    await expect(page.locator('.glass-card').first()).toBeVisible();
+    // Ensure it's closed
+    await expect(page.getByText('AI GENERATED_')).not.toBeVisible();
   });
 });

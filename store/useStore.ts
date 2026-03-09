@@ -106,6 +106,13 @@ interface StoreState {
   isPremium: boolean;
   setPremium: (status: boolean) => void;
 
+  // Vault (Digital Wardrobe)
+  vaultItems: ClothingItem[];
+  addToVault: (item: ClothingItem) => void;
+  removeFromVault: (id: string) => void;
+  isVaultOpen: boolean;
+  setVaultOpen: (isOpen: boolean) => void;
+
   // UI State
   showPremiumModal: boolean;
   setShowPremiumModal: (show: boolean) => void;
@@ -231,6 +238,20 @@ export const useStore = create<StoreState>()(
       isPremium: false,
       setPremium: (status) => set({ isPremium: status }),
 
+      // Vault (Digital Wardrobe)
+      vaultItems: [],
+      addToVault: (item) => set((state) => {
+        if (!state.vaultItems.find(i => i.id === item.id)) {
+          return { vaultItems: [...state.vaultItems, item] };
+        }
+        return state;
+      }),
+      removeFromVault: (id) => set((state) => ({
+        vaultItems: state.vaultItems.filter(item => item.id !== id)
+      })),
+      isVaultOpen: false,
+      setVaultOpen: (isOpen) => set({ isVaultOpen: isOpen }),
+
       // UI State
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
@@ -257,6 +278,7 @@ export const useStore = create<StoreState>()(
         userStats: state.userStats,
         selectedAIModels: state.selectedAIModels,
         trainingData: state.trainingData,
+        vaultItems: state.vaultItems,
       }),
     }
   )
