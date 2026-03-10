@@ -5,46 +5,64 @@ test.describe('User Flow', () => {
     await page.goto('/');
   });
 
-  test('should complete Easy Fit flow', async ({ page }) => {
-    // 1. Select Easy Fit Mode
-    // Force click to ensure it hits even if covered or slightly off-screen in mobile
-    await page.getByText('EASY FIT').click({ force: true });
+  test('should complete Real Life Fitting flow', async ({ page }) => {
+    // 1. Verify Home UI elements
+    await expect(page.getByText('01. Identification')).toBeVisible();
+    await expect(page.getByText('02. Target Garment')).toBeVisible();
 
-    // Verify selection (border color change or checkmark)
-    const continueToModeBtn = page.getByRole('button', { name: /Continue →/i });
-    await expect(continueToModeBtn).toBeEnabled();
-    await continueToModeBtn.click();
+    // 2. We mock the API call in playwright so it doesn't really call the backend
+    await page.route('/api/try-on', async (route) => {
+      await route.fulfill({
+        status: 200,
+        json: {
+          imageUrl: 'https://pub-83c5db439b40468498f97946200806f7.r2.dev/mock-result-sfit.png',
+        },
+      });
+    });
 
-    // 2. Input Stats
-    // Wait for "Easy Fit" header
-    await expect(page.getByRole('heading', { name: 'Easy Fit' })).toBeVisible();
+    // 3. We can't easily click standard file inputs and expect success without buffer,
+    // so we will bypass it by injecting a mock image directly or just relying on the try on button alerting first.
+    page.on('dialog', dialog => dialog.accept()); // Accept the alert("Please upload both User Photo and Garment.")
 
-    // Just click "Continue to Fitting Room" as defaults are valid.
-    await page.getByRole('button', { name: /Continue to Fitting Room/i }).click();
+    const tryItOnBtn = page.getByRole('button', { name: /TRY IT ON/i });
+    await expect(tryItOnBtn).toBeVisible();
 
-    // 3. Brand Selection
-    // Wait for "Select Brand" header
-    await expect(page.getByText('Select Brand')).toBeVisible();
+    // We set dummy values to the input using Playwright's setInputFiles for actual tests,
+    // but here we just test that the button exists and triggers an alert if empty.
+    await tryItOnBtn.click();
 
-    // Easy Fit defaults to Uniqlo auto-selected.
-    // Check if Uniqlo button has class indicating selection (border-pure-white) or just check if "Enter Fitting Room" is enabled.
-    const enterFittingRoomBtn = page.getByRole('button', { name: /Enter Fitting Room/i });
-    await expect(enterFittingRoomBtn).toBeEnabled();
+    // If we want to fully test the success flow, we can manually trigger the state change
+    // or upload a small dummy file.
 
-    // We can also switch brand manually.
-    // Note: buttons in BrandSelector might have text "ZARA" and role "button"
-    await page.getByRole('button', { name: 'ZARA' }).click();
+    // For now, let's inject a dummy base64 string into the file inputs to trigger the success state
+    const dummyImage = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
 
-    await enterFittingRoomBtn.click();
+    await page.locator('input#user-upload').setInputFiles({
+      name: 'user.png',
+      mimeType: 'image/png',
+      buffer: dummyImage,
+    });
 
-    // 4. Fitting Room
-    // Should see "Fitting Room" component.
-    // Home.tsx: "Back to brands" button visible.
-    await expect(page.getByRole('button', { name: /Back to brands/i })).toBeVisible();
+    await page.locator('input#garment-upload').setInputFiles({
+      name: 'garment.png',
+      mimeType: 'image/png',
+      buffer: dummyImage,
+    });
 
-    // Should see 3D canvas (maybe check for canvas element)
-    // Note: WebGL might not be available in all headless environments
-    // We check if the container exists at least.
-    await expect(page.locator('.glass-card').first()).toBeVisible();
+    // Now click the button again, it should pass the alert check and trigger the loading state
+    await tryItOnBtn.click();
+
+    // Wait for the result overlay to appear
+    await expect(page.getByText('AI GENERATED_')).waitFor({ state: 'visible' });
+
+    // Check if the result image is visible
+    const resultImage = page.locator('img[alt="Result"]');
+    await expect(resultImage).toBeVisible();
+
+    // Close the overlay
+    await page.getByRole('button', { name: /Close/i }).click();
+
+    // Verify it's closed
+    await expect(page.getByText('AI GENERATED_')).not.toBeVisible();
   });
 });
