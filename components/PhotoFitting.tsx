@@ -12,16 +12,16 @@ export default function PhotoFitting() {
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
       {/* Top App Bar */}
       <div className="z-50 flex items-center justify-between bg-transparent p-4">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
-          <span className="material-symbols-outlined">arrow_back_ios_new</span>
-        </div>
+        <button aria-label="Go Back" className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
+          <span aria-hidden="true" className="material-symbols-outlined">arrow_back_ios_new</span>
+        </button>
         <div className="flex flex-col items-center">
           <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
         <div className="flex w-12 items-center justify-end">
-          <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
-            <span className="material-symbols-outlined">info</span>
+          <button aria-label="Information" className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
+            <span aria-hidden="true" className="material-symbols-outlined">info</span>
           </button>
         </div>
       </div>
