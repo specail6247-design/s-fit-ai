@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +17,11 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isSharing, setIsSharing] = useState(false);
+
+  // Zustand store actions for modals
+  const setPrivacyModalOpen = useStore((state) => state.setPrivacyModalOpen);
+  const setSupportHubOpen = useStore((state) => state.setSupportHubOpen);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -71,6 +77,82 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+    setIsSharing(true);
+
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Canvas context not available');
+
+      // Draw background
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Load image
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = resultImage;
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      // Calculate object-fit contain
+      const imgRatio = img.width / img.height;
+      const canvasRatio = canvas.width / canvas.height;
+      let drawWidth, drawHeight, offsetX, offsetY;
+
+      if (imgRatio > canvasRatio) {
+        drawWidth = canvas.width;
+        drawHeight = canvas.width / imgRatio;
+        offsetX = 0;
+        offsetY = (canvas.height - drawHeight) / 2;
+      } else {
+        drawWidth = canvas.height * imgRatio;
+        drawHeight = canvas.height;
+        offsetX = (canvas.width - drawWidth) / 2;
+        offsetY = 0;
+      }
+
+      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+
+      // Add branding
+      ctx.fillStyle = '#007AFF';
+      ctx.font = 'bold 60px "Helvetica Neue", Helvetica, Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT AI', canvas.width / 2, 100);
+
+      // Export
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+
+      if (navigator.share) {
+        // Attempt native share if available (mobile)
+        const blob = await (await fetch(dataUrl)).blob();
+        const file = new File([blob], 'sfit-story.jpg', { type: 'image/jpeg' });
+        await navigator.share({
+          title: 'My S_FIT AI Try-On',
+          files: [file]
+        });
+      } else {
+        // Fallback to download
+        const link = document.createElement('a');
+        link.download = 'sfit-story.jpg';
+        link.href = dataUrl;
+        link.click();
+      }
+    } catch (err) {
+      console.error('Failed to share to story:', err);
+      alert('Could not generate story image. Please try again.');
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
@@ -103,6 +185,15 @@ export default function RealLifeFitting() {
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
                 </div>
               </label>
+            </div>
+          </div>
+
+          {/* Data Safety Badge */}
+          <div className="bg-[#007AFF]/10 border border-[#007AFF]/20 rounded-xl p-4 flex items-start gap-4 mb-4">
+            <span className="text-2xl mt-1">🛡️</span>
+            <div>
+              <p className="text-sm font-bold text-[#007AFF] uppercase tracking-widest">Safe Data</p>
+              <p className="text-[10px] text-gray-400 leading-relaxed mt-1">Photos are processed securely and not shared. Images are strictly used to generate your fitting result.</p>
             </div>
           </div>
 
@@ -158,6 +249,23 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Trust & Help Footer */}
+          <div className="mt-12 flex items-center justify-center gap-6 border-t border-white/10 pt-6">
+            <button
+              onClick={() => setPrivacyModalOpen(true)}
+              className="text-[10px] text-gray-500 hover:text-white transition-colors uppercase tracking-widest"
+            >
+              Privacy & Terms
+            </button>
+            <span className="text-gray-800">•</span>
+            <button
+              onClick={() => setSupportHubOpen(true)}
+              className="text-[10px] text-gray-500 hover:text-white transition-colors uppercase tracking-widest"
+            >
+              Support Hub
+            </button>
+          </div>
+
         </div>
       </div>
 
@@ -205,6 +313,13 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                disabled={isSharing}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-lg transition-transform transform hover:scale-105 disabled:opacity-50 disabled:scale-100 flex items-center gap-2 uppercase tracking-widest"
+              >
+                {isSharing ? 'GENERATING...' : '📸 SHARE TO STORY'}
+              </button>
             </div>
           </motion.div>
         )}
