@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useStore } from '@/store/useStore';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -11,6 +12,7 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const { setIsLoginModalOpen, setIsSupportHubOpen } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -72,8 +74,25 @@ export default function RealLifeFitting() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
-      
+    <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden relative">
+
+      {/* TOP RIGHT NAVIGATION */}
+      <div className="absolute top-6 right-8 flex items-center gap-4 z-50">
+        <button
+          onClick={() => setIsSupportHubOpen(true)}
+          className="text-gray-400 hover:text-white transition-colors p-2"
+          aria-label="Support Hub"
+        >
+          <span className="material-symbols-outlined text-2xl" aria-hidden="true">help</span>
+        </button>
+        <button
+          onClick={() => setIsLoginModalOpen(true)}
+          className="bg-white/10 hover:bg-white/20 text-white text-xs font-bold uppercase tracking-widest py-2 px-6 rounded-full border border-white/20 transition-all"
+        >
+          Member Access
+        </button>
+      </div>
+
       {/* LEFT PANEL: CONTROLS */}
       <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
         {/* Background Ambience */}
@@ -96,7 +115,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  { /* eslint-disable-next-line @next/next/no-img-element */ }
+                  {userImage ? <img src={userImage} alt="user" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +133,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  { /* eslint-disable-next-line @next/next/no-img-element */ }
+                  {garmentImage ? <img src={garmentImage} alt="garment" className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -195,6 +216,7 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
+              { /* eslint-disable-next-line @next/next/no-img-element */ }
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
