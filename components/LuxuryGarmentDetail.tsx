@@ -2,9 +2,71 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { useStore } from '@/store/useStore';
+import { ClothingItem } from '@/data/mockData';
 
 export default function LuxuryGarmentDetail() {
+  const { addToVault, setVaultOpen, vaultItems } = useStore();
+  const [timeLeft, setTimeLeft] = useState<string>('');
+  // We use this to capture the initial mount time for the countdown
+  const mountTimeRef = React.useRef<number | null>(null);
+
+  // Mock item for demo
+  const mockItem: ClothingItem = {
+    id: 'gucci-001',
+    name: 'GG Jacquard Wool Blazer',
+    brand: 'Gucci',
+    category: 'outerwear',
+    price: 2890.00,
+    currency: 'USD',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E',
+    textureUrl: '',
+    isLuxury: true,
+    sizes: ['IT 44', 'IT 46', 'IT 48', 'IT 50', 'IT 52'],
+    colors: ['Beige/Ebony'],
+    description: 'Iconic GG pattern wool blazer with silk lining',
+    isLocked: true,
+    stylingTip: 'Let the blazer be the statement piece by pairing it with an all-black ensemble.',
+  };
+
+  useEffect(() => {
+    if (!mockItem.isLocked) return;
+
+    // Set mount time only once per component lifecycle
+    if (!mountTimeRef.current) {
+        mountTimeRef.current = Date.now();
+    }
+    const unlockTimeMs = mountTimeRef.current + 2 * 60 * 60 * 1000;
+
+    const calculateTimeLeft = () => {
+      const difference = unlockTimeMs - Date.now();
+
+      if (difference <= 0) {
+        setTimeLeft('00:00:00');
+        return;
+      }
+
+      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((difference / 1000 / 60) % 60);
+      const seconds = Math.floor((difference / 1000) % 60);
+
+      setTimeLeft(
+        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+      );
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
+
+    return () => clearInterval(timer);
+  }, [mockItem.isLocked]);
+
+  const handleSaveLook = () => {
+    addToVault(mockItem);
+    setVaultOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -14,9 +76,20 @@ export default function LuxuryGarmentDetail() {
             <span className="material-symbols-outlined">arrow_back</span>
           </Link>
           <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center">S_FIT AI</h2>
-          <div className="flex w-10 items-center justify-end">
+          <div className="flex w-auto items-center justify-end gap-2">
+            <button
+              onClick={() => setVaultOpen(true)}
+              className="relative flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+            >
+              <span className="material-symbols-outlined text-xl">inventory_2</span>
+              {vaultItems.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-[#ecab13] text-black text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                  {vaultItems.length}
+                </span>
+              )}
+            </button>
             <button className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
-              <span className="material-symbols-outlined">share</span>
+              <span className="material-symbols-outlined text-xl">share</span>
             </button>
           </div>
         </div>
@@ -36,9 +109,15 @@ export default function LuxuryGarmentDetail() {
           {/* 3D UI Overlays */}
           <div className="absolute bottom-6 left-4 right-4 flex justify-between items-end">
             <div className="bg-black/40 backdrop-blur-md rounded-lg p-2 flex flex-col gap-2 border border-white/10">
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">zoom_in</span></button>
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">360</span></button>
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">light_mode</span></button>
+              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded transition-colors"><span className="material-symbols-outlined text-sm">zoom_in</span></button>
+              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded transition-colors"><span className="material-symbols-outlined text-sm">360</span></button>
+              <button
+                onClick={handleSaveLook}
+                className="size-8 flex items-center justify-center text-[#ecab13] hover:bg-[#ecab13]/20 rounded transition-colors"
+                title="Save Look to Vault"
+              >
+                <span className="material-symbols-outlined text-sm">bookmark_add</span>
+              </button>
             </div>
             <div className="text-right">
               <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mb-1">Authentic Render</p>
@@ -47,8 +126,21 @@ export default function LuxuryGarmentDetail() {
           </div>
         </div>
 
+        {/* AI Stylist Note */}
+        {mockItem.stylingTip && (
+          <div className="px-4 -mt-4 relative z-10 mb-4">
+            <div className="bg-[#1a1a1a]/60 backdrop-blur-xl border border-[#ecab13]/30 p-4 rounded-xl flex items-start gap-3">
+              <span className="material-symbols-outlined text-[#ecab13] mt-0.5">auto_awesome</span>
+              <div>
+                <p className="text-[#ecab13] text-[10px] font-bold uppercase tracking-widest mb-1">AI Stylist Note</p>
+                <p className="text-white text-sm leading-relaxed">{mockItem.stylingTip}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Material Stats */}
-        <div className="px-4 -mt-4 relative z-10">
+        <div className="px-4 relative z-10">
           <div className="flex flex-wrap gap-3 bg-[#1a1a1a]/60 backdrop-blur-xl border border-[#2d2d2d] p-4 rounded-xl">
             <div className="flex min-w-[80px] flex-1 flex-col gap-1 items-center text-center">
               <p className="text-[#ecab13] text-xl font-bold leading-tight">99.8%</p>
@@ -74,7 +166,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
@@ -136,10 +228,20 @@ export default function LuxuryGarmentDetail() {
           <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
           <p className="text-white text-xl font-bold">$2,850</p>
         </div>
-        <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
-          <span className="material-symbols-outlined font-bold">person_add_alt</span>
-          <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
-        </Link>
+
+        {mockItem.isLocked && timeLeft !== '00:00:00' ? (
+          <div className="flex-[2] bg-[#1a1a1a] border border-[#ecab13]/30 text-[#ecab13] h-14 rounded-xl flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-[#ecab13]/5 animate-pulse"></div>
+            <span className="text-[10px] font-bold tracking-widest uppercase mb-0.5">Available In</span>
+            <span className="font-mono font-bold text-lg tracking-wider">{timeLeft}</span>
+            <span className="material-symbols-outlined absolute right-4 opacity-30">lock</span>
+          </div>
+        ) : (
+          <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
+            <span className="material-symbols-outlined font-bold">person_add_alt</span>
+            <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
+          </Link>
+        )}
       </div>
 
       <style jsx global>{`
