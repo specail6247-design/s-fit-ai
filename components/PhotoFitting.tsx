@@ -52,8 +52,8 @@ export default function PhotoFitting() {
       <audio
         ref={audioRef}
         loop
-        // A subtle, low-frequency drone/hum (white noise base64 encoded for simplicity)
-        src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA="
+        // A subtle, low-frequency drone/hum
+        src="https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=ambient-piano-amp-strings-10711.mp3"
       />
 
       {/* Main Viewport (Photo Fitting Canvas) */}

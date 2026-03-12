@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useStore } from '@/store/useStore';
 import { ClothingItem } from '@/data/mockData';
@@ -10,6 +9,8 @@ import { ClothingItem } from '@/data/mockData';
 export default function LuxuryGarmentDetail() {
   const { addToVault, setVaultOpen, vaultItems } = useStore();
   const [timeLeft, setTimeLeft] = useState<string>('');
+  // We use this to capture the initial mount time for the countdown
+  const mountTimeRef = React.useRef<number | null>(null);
 
   // Mock item for demo
   const mockItem: ClothingItem = {
@@ -26,14 +27,20 @@ export default function LuxuryGarmentDetail() {
     colors: ['Beige/Ebony'],
     description: 'Iconic GG pattern wool blazer with silk lining',
     isLocked: true,
-    unlockDate: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+    stylingTip: 'Let the blazer be the statement piece by pairing it with an all-black ensemble.',
   };
 
   useEffect(() => {
-    if (!mockItem.isLocked || !mockItem.unlockDate) return;
+    if (!mockItem.isLocked) return;
+
+    // Set mount time only once per component lifecycle
+    if (!mountTimeRef.current) {
+        mountTimeRef.current = Date.now();
+    }
+    const unlockTimeMs = mountTimeRef.current + 2 * 60 * 60 * 1000;
 
     const calculateTimeLeft = () => {
-      const difference = new Date(mockItem.unlockDate!).getTime() - new Date().getTime();
+      const difference = unlockTimeMs - Date.now();
 
       if (difference <= 0) {
         setTimeLeft('00:00:00');
@@ -53,7 +60,7 @@ export default function LuxuryGarmentDetail() {
     const timer = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(timer);
-  }, [mockItem.isLocked, mockItem.unlockDate]);
+  }, [mockItem.isLocked]);
 
   const handleSaveLook = () => {
     addToVault(mockItem);
@@ -120,15 +127,17 @@ export default function LuxuryGarmentDetail() {
         </div>
 
         {/* AI Stylist Note */}
-        <div className="px-4 -mt-4 relative z-10 mb-4">
-          <div className="bg-[#1a1a1a]/60 backdrop-blur-xl border border-[#ecab13]/30 p-4 rounded-xl flex items-start gap-3">
-            <span className="material-symbols-outlined text-[#ecab13] mt-0.5">auto_awesome</span>
-            <div>
-              <p className="text-[#ecab13] text-[10px] font-bold uppercase tracking-widest mb-1">AI Stylist Note</p>
-              <p className="text-white text-sm leading-relaxed">Let the blazer be the statement piece by pairing it with an all-black ensemble.</p>
+        {mockItem.stylingTip && (
+          <div className="px-4 -mt-4 relative z-10 mb-4">
+            <div className="bg-[#1a1a1a]/60 backdrop-blur-xl border border-[#ecab13]/30 p-4 rounded-xl flex items-start gap-3">
+              <span className="material-symbols-outlined text-[#ecab13] mt-0.5">auto_awesome</span>
+              <div>
+                <p className="text-[#ecab13] text-[10px] font-bold uppercase tracking-widest mb-1">AI Stylist Note</p>
+                <p className="text-white text-sm leading-relaxed">{mockItem.stylingTip}</p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Material Stats */}
         <div className="px-4 relative z-10">
@@ -157,7 +166,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
