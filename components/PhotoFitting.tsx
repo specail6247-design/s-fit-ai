@@ -1,12 +1,25 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Space_Grotesk } from "next/font/google";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isMuted) {
+        audioRef.current.pause();
+      } else {
+        // Play requires user interaction usually, but let's try playing
+        audioRef.current.play().catch(e => console.error("Audio play failed:", e));
+      }
+    }
+  }, [isMuted]);
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
@@ -19,12 +32,29 @@ export default function PhotoFitting() {
           <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
-        <div className="flex w-12 items-center justify-end">
-          <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
-            <span className="material-symbols-outlined">info</span>
+        <div className="flex w-auto items-center justify-end gap-2">
+          <button
+            onClick={() => setIsMuted(!isMuted)}
+            className="flex size-10 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md hover:bg-[#101622]/60 transition-colors"
+            title={isMuted ? "Unmute Ambient Sound" : "Mute Ambient Sound"}
+          >
+            <span className="material-symbols-outlined text-[20px]">
+              {isMuted ? 'volume_off' : 'volume_up'}
+            </span>
+          </button>
+          <button className="flex size-10 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md hover:bg-[#101622]/60 transition-colors">
+            <span className="material-symbols-outlined text-[20px]">info</span>
           </button>
         </div>
       </div>
+
+      {/* Background Audio */}
+      <audio
+        ref={audioRef}
+        loop
+        // A subtle, low-frequency drone/hum (white noise base64 encoded for simplicity)
+        src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA="
+      />
 
       {/* Main Viewport (Photo Fitting Canvas) */}
       <div className="absolute inset-0 z-0">
