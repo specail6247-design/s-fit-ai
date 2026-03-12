@@ -8,30 +8,20 @@ export const runtime = 'nodejs';
 export const maxDuration = 120;
 
 // Helper: Convert local file to base64 data URI
-async function localFileToDataUri(localPath: string): Promise<string | null> {
+function localFileToDataUri(localPath: string): string | null {
   try {
-    // Remove leading slash and resolve to public directory securely
+    // Remove leading slash and resolve to public directory
     const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
-    const publicDir = path.resolve(process.cwd(), 'public');
-    const absolutePath = path.resolve(publicDir, relativePath);
-
-    // Security check: Ensure the resolved path is within the public directory
-    // This prevents path traversal vulnerabilities like "/../../etc/passwd"
-    if (!absolutePath.startsWith(publicDir + path.sep)) {
-      console.error('Security alert: Attempted path traversal outside public directory:', absolutePath);
-      return null;
-    }
+    const absolutePath = path.join(process.cwd(), 'public', relativePath);
     
     console.log('Reading local file:', absolutePath);
     
-    try {
-      await fs.promises.access(absolutePath);
-    } catch {
+    if (!fs.existsSync(absolutePath)) {
       console.error('File not found:', absolutePath);
       return null;
     }
     
-    const fileBuffer = await fs.promises.readFile(absolutePath);
+    const fileBuffer = fs.readFileSync(absolutePath);
     const base64 = fileBuffer.toString('base64');
     
     // Determine MIME type from extension
@@ -77,7 +67,7 @@ export async function POST(request: NextRequest) {
         garmentImageInput = garmentImageUrl;
       } else if (garmentImageUrl.startsWith('/')) {
         // Local file in public directory - convert to base64 data URI
-        const dataUri = await localFileToDataUri(garmentImageUrl);
+        const dataUri = localFileToDataUri(garmentImageUrl);
         if (!dataUri) {
           return NextResponse.json(
             { error: `Failed to read local image: ${garmentImageUrl}` },
