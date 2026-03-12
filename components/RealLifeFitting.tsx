@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { AuthButton } from '@/components/AuthButton';
 import { useStore } from '@/store/useStore';
 
 // Dynamically import the 3D scene with SSR disabled
@@ -13,6 +12,7 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const { setIsLoginModalOpen, setIsSupportHubOpen } = useStore();
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -73,24 +73,28 @@ export default function RealLifeFitting() {
     }
   };
 
-  const setSupportHubOpen = useStore((state) => state.setSupportHubOpen);
-
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
-      
+    <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden relative">
+
+      {/* TOP RIGHT NAVIGATION */}
+      <div className="absolute top-6 right-8 flex items-center gap-4 z-50">
+        <button
+          onClick={() => setIsSupportHubOpen(true)}
+          className="text-gray-400 hover:text-white transition-colors p-2"
+          aria-label="Support Hub"
+        >
+          <span className="material-symbols-outlined text-2xl" aria-hidden="true">help</span>
+        </button>
+        <button
+          onClick={() => setIsLoginModalOpen(true)}
+          className="bg-white/10 hover:bg-white/20 text-white text-xs font-bold uppercase tracking-widest py-2 px-6 rounded-full border border-white/20 transition-all"
+        >
+          Member Access
+        </button>
+      </div>
+
       {/* LEFT PANEL: CONTROLS */}
       <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
-        <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
-           <AuthButton />
-           <button
-             onClick={() => setSupportHubOpen(true)}
-             className="bg-white/10 hover:bg-white/20 text-white w-8 h-8 rounded-full flex items-center justify-center transition-colors border border-white/10"
-             aria-label="Support Hub"
-           >
-             ?
-           </button>
-        </div>
-
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
@@ -112,7 +116,7 @@ export default function RealLifeFitting() {
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
                   { /* eslint-disable-next-line @next/next/no-img-element */ }
-                  {userImage ? <img src={userImage} alt="User photo preview" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? <img src={userImage} alt="user" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -130,7 +134,7 @@ export default function RealLifeFitting() {
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
                   { /* eslint-disable-next-line @next/next/no-img-element */ }
-                  {garmentImage ? <img src={garmentImage} alt="Garment photo preview" className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? <img src={garmentImage} alt="garment" className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>

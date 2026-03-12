@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { validateEnv } from "@/lib/env";
-import { ModalProvider } from "@/components/modals/ModalProvider";
+import ModalProvider from "@/components/modals/ModalProvider";
 import "./globals.css";
 
 // Validate environment variables on startup

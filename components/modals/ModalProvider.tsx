@@ -1,15 +1,16 @@
 'use client';
 
-import { LoginModal } from './LoginModal';
-import { SupportHub } from './SupportHub';
-import { PremiumModal } from '../PremiumModal'; // Existing modal
+import React from 'react';
+import LoginModal from './LoginModal';
+import SupportHub from './SupportHub';
+import { PremiumModal } from '../PremiumModal';
 
-export function ModalProvider() {
+export default function ModalProvider() {
   return (
     <>
-      <PremiumModal />
       <LoginModal />
       <SupportHub />
+      <PremiumModal />
     </>
   );
 }
