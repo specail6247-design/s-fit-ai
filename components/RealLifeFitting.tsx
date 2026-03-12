@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { AuthButton } from '@/components/AuthButton';
+import { useStore } from '@/store/useStore';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -71,11 +73,24 @@ export default function RealLifeFitting() {
     }
   };
 
+  const setSupportHubOpen = useStore((state) => state.setSupportHubOpen);
+
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
       {/* LEFT PANEL: CONTROLS */}
       <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
+        <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
+           <AuthButton />
+           <button
+             onClick={() => setSupportHubOpen(true)}
+             className="bg-white/10 hover:bg-white/20 text-white w-8 h-8 rounded-full flex items-center justify-center transition-colors border border-white/10"
+             aria-label="Support Hub"
+           >
+             ?
+           </button>
+        </div>
+
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
