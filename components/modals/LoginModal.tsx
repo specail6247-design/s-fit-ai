@@ -12,8 +12,6 @@ export default function LoginModal() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  if (!isLoginModalOpen) return null;
-
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -35,13 +33,14 @@ export default function LoginModal() {
 
   return (
     <AnimatePresence>
-      <motion.div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      >
+      {isLoginModalOpen && (
         <motion.div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <motion.div
           className="bg-black border border-white/20 p-8 rounded-2xl w-[400px] shadow-[0_0_50px_rgba(255,255,255,0.1)] relative"
           initial={{ scale: 0.9, y: 20 }}
           animate={{ scale: 1, y: 0 }}
@@ -90,11 +89,12 @@ export default function LoginModal() {
             </button>
           </form>
 
-          <p className="text-center text-xs text-gray-500 mt-6 tracking-wide">
-            Exclusive access for S_FIT Neo members.
-          </p>
+            <p className="text-center text-xs text-gray-500 mt-6 tracking-wide">
+              Exclusive access for S_FIT Neo members.
+            </p>
+          </motion.div>
         </motion.div>
-      </motion.div>
+      )}
     </AnimatePresence>
   );
 }

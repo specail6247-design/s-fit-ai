@@ -15,37 +15,32 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Install pnpm
-      uses: pnpm/action-setup@v2
-      with:
-        version: 10
-
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: 20
-        cache: 'pnpm'
+        cache: 'npm'
 
     - name: Install Dependencies
-      run: pnpm install
+      run: npm ci
 
     - name: Lint
-      run: pnpm lint
+      run: npm run lint
 
     - name: Type Check
-      run: pnpm exec tsc --noEmit
+      run: npx tsc --noEmit
 
     - name: Unit Tests
       run: npx vitest run --coverage
 
     - name: Build
-      run: pnpm build
+      run: npm run build
 
     - name: Install Playwright Browsers
-      run: pnpm exec playwright install --with-deps
+      run: npx playwright install --with-deps
 
     - name: E2E Tests
-      run: pnpm exec playwright test
+      run: npx playwright test
       env:
         CI: true
 

@@ -38,20 +38,19 @@ export default function SupportHub() {
   const [activeStep, setActiveStep] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  if (!isSupportHubOpen) return null;
-
   return (
     <AnimatePresence>
-      <motion.div
-        className="fixed inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-sm"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) setIsSupportHubOpen(false);
-        }}
-      >
+      {isSupportHubOpen && (
         <motion.div
+          className="fixed inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsSupportHubOpen(false);
+          }}
+        >
+          <motion.div
           className="w-full max-w-md h-full bg-black border-l border-white/10 p-6 flex flex-col shadow-2xl overflow-y-auto"
           initial={{ x: '100%' }}
           animate={{ x: 0 }}
@@ -136,11 +135,12 @@ export default function SupportHub() {
                     </AnimatePresence>
                   </div>
                 ))}
-              </div>
-            </section>
-          </div>
+                </div>
+              </section>
+            </div>
+          </motion.div>
         </motion.div>
-      </motion.div>
+      )}
     </AnimatePresence>
   );
 }
