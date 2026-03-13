@@ -25,6 +25,8 @@ export interface Brand {
   logo: string;
   isLuxury: boolean;
   tier: 'mass' | 'luxury' | 'basic';
+  bannerImage?: string;
+  description?: string;
 }
 
 // Brand Data
@@ -42,6 +44,8 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=GUCCI',
     isLuxury: true,
     tier: 'luxury',
+    bannerImage: 'https://images.unsplash.com/photo-1558717738-0b9fbb9b6864?auto=format&fit=crop&q=80&w=2000',
+    description: 'Italian luxury house renowned for eclectic, contemporary, and romantic fashion.',
   },
   {
     id: 'uniqlo',
@@ -77,6 +81,8 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=CHANEL',
     isLuxury: true,
     tier: 'luxury',
+    bannerImage: 'https://images.unsplash.com/photo-1549439602-43ebca2327af?auto=format&fit=crop&q=80&w=2000',
+    description: 'French luxury fashion house, specializing in haute couture and ready-to-wear clothes.',
   },
   {
     id: 'supreme',
