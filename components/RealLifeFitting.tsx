@@ -1,7 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { FabricType } from '@/components/masterpiece/types';
+import CinematicViewer from '@/components/ui/CinematicViewer';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +19,10 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
+  const [videoError, setVideoError] = useState('');
+  const [selectedFabric, setSelectedFabric] = useState<FabricType>('silk');
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -26,11 +33,38 @@ export default function RealLifeFitting() {
     }
   };
 
+
+  const handleGenerateVideo = async () => {
+    if (!resultImage) return;
+    setIsGeneratingVideo(true);
+    setVideoError('');
+    try {
+      const response = await fetch('/api/cinematic-try-on', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: resultImage }),
+      });
+      const data = await response.json();
+      if (data.success && data.videoUrl) {
+        setVideoUrl(data.videoUrl);
+      } else {
+        setVideoError(data.error || 'Failed to generate video.');
+      }
+    } catch (err) {
+      console.error(err);
+      setVideoError('An error occurred while generating the video.');
+    } finally {
+      setIsGeneratingVideo(false);
+    }
+  };
+
   const handleTryOn = async () => {
     if (!userImage || !garmentImage) return alert("Please upload both User Photo and Garment.");
     
     setIsProcessing(true);
     setProgress(0);
+    setVideoUrl(null);
+    setVideoError('');
 
     // Simulate progress bar
     const interval = setInterval(() => {
@@ -96,7 +130,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? <img src={userImage} className="w-full h-full object-cover" alt="User" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -107,19 +141,38 @@ export default function RealLifeFitting() {
           </div>
 
           {/* Garment Input */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-[#007AFF] uppercase">02. Target Garment</label>
-            <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
-              <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
-              <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
-                </div>
-                <div>
-                  <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
-                  <div className="text-[10px] text-gray-500">Front view preferred</div>
-                </div>
-              </label>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-[#007AFF] uppercase">02. Target Garment</label>
+              <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
+                <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
+                <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
+                  <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                    {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" alt="Garment" /> : <span className="text-2xl">👕</span>}
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
+                    <div className="text-[10px] text-gray-500">Front view preferred</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-[#007AFF] uppercase">03. Material / Fabric</label>
+              <select
+                value={selectedFabric}
+                onChange={(e) => setSelectedFabric(e.target.value as FabricType)}
+                className="w-full border border-white/20 bg-black/40 rounded-xl p-4 text-sm font-bold text-gray-300 hover:border-[#007AFF] hover:text-white transition-colors focus:outline-none appearance-none"
+              >
+                <option value="silk">Silk - Micro-fiber Shimmer</option>
+                <option value="denim">Denim - Heavy Texture</option>
+                <option value="wool">Wool - Soft & Matte</option>
+                <option value="cotton">Cotton - Everyday Standard</option>
+                <option value="leather">Leather - Glossy Finish</option>
+                <option value="velvet">Velvet - Deep Sheen</option>
+                <option value="sequin">Sequin - High Reflectivity</option>
+              </select>
             </div>
           </div>
         </div>
@@ -183,7 +236,7 @@ export default function RealLifeFitting() {
               </button>
             </div>
           }>
-            <AvatarCanvas />
+            <AvatarCanvas fabricType={selectedFabric} />
           </ErrorBoundary>
         </div>
 
@@ -192,20 +245,50 @@ export default function RealLifeFitting() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl flex flex-col items-center gap-4"
           >
             <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              {videoUrl ? (
+                <div className="w-auto h-[70vh] rounded-xl overflow-hidden shadow-2xl relative">
+                  <CinematicViewer videoUrl={videoUrl} posterUrl={resultImage} className="h-full" />
+                </div>
+              ) : (
+                <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              )}
               <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                onClick={() => { setResultImage(null); setVideoUrl(null); }}
+                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors z-30"
               >
                 ✕ Close
               </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
-                AI GENERATED_
-              </div>
+              {!videoUrl && (
+                <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
+                  AI GENERATED_
+                </div>
+              )}
             </div>
+
+            {!videoUrl && (
+              <button
+                onClick={handleGenerateVideo}
+                disabled={isGeneratingVideo}
+                className={`w-full py-3 rounded-xl font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-2 ${
+                  isGeneratingVideo
+                    ? 'bg-white/10 text-white/50 cursor-not-allowed'
+                    : 'bg-white text-black hover:bg-gray-200 shadow-[0_0_20px_rgba(255,255,255,0.3)]'
+                }`}
+              >
+                {isGeneratingVideo ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/50 border-t-transparent rounded-full animate-spin" />
+                    RENDERING VIDEO...
+                  </>
+                ) : (
+                  <>🎬 GENERATE CINEMATIC CLIP</>
+                )}
+              </button>
+            )}
+            {videoError && <p className="text-red-400 text-xs">{videoError}</p>}
           </motion.div>
         )}
       </div>
