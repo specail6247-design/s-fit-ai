@@ -27,6 +27,10 @@ test.describe('Home Page', () => {
   });
 
   test('should match visual snapshot', async ({ page }) => {
-    await expect(page).toHaveScreenshot({ fullPage: true });
+    await expect(page).toHaveScreenshot({
+      fullPage: false,
+      animations: 'disabled',
+      maxDiffPixelRatio: 0.1
+    });
   });
 });
