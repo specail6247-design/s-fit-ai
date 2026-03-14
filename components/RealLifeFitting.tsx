@@ -159,7 +159,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-[#1a1a1a] rounded-lg flex items-center justify-center overflow-hidden border border-[#2d2d2d]">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover saturate-[0.9] contrast-[1.1]" /> : <span className="text-2xl opacity-50">👤</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {userImage ? <img src={userImage} alt="User Digital Twin" className="w-full h-full object-cover saturate-[0.9] contrast-[1.1]" /> : <span className="text-2xl opacity-50">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300 transition-colors">Digital Twin Photo</div>
@@ -179,7 +180,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-[#1a1a1a] rounded-lg flex items-center justify-center overflow-hidden border border-[#2d2d2d]">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover saturate-[0.9] contrast-[1.1]" /> : <span className="text-2xl opacity-50">👕</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {garmentImage ? <img src={garmentImage} alt="Target Garment" className="w-full h-full object-cover saturate-[0.9] contrast-[1.1]" /> : <span className="text-2xl opacity-50">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300 transition-colors">Select Garment</div>
@@ -262,6 +264,7 @@ export default function RealLifeFitting() {
               {resultVideo && !hyperZoom ? (
                 <CinematicViewer videoUrl={resultVideo} posterUrl={upscaledImage || resultImage!} className="h-full" />
               ) : (
+                /* eslint-disable-next-line @next/next/no-img-element */
                 <img
                   src={upscaledImage || resultImage!}
                   alt="Result"
