@@ -57,6 +57,25 @@ export default function CinematicViewer({ videoUrl, posterUrl, className = '' }:
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
+  // Cinematic Share
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'My Masterpiece Fit',
+          text: 'Check out my Hollywood-style virtual try-on!',
+          url: videoUrl, // Sharing the video directly if possible, or link to app
+        });
+      } else {
+        // Fallback: Copy to clipboard
+        await navigator.clipboard.writeText(videoUrl);
+        alert('Video link copied to clipboard!');
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
+  };
+
   // Auto-play when ready
   useEffect(() => {
     if (videoRef.current) {
@@ -124,6 +143,18 @@ export default function CinematicViewer({ videoUrl, posterUrl, className = '' }:
              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
           )}
           <span>CINEMATIC MODE</span>
+        </button>
+
+        <button
+          onClick={handleShare}
+          className="text-white hover:text-white/80 transition-colors p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20"
+          aria-label="Share Cinematic Clip"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+            <polyline points="16 6 12 2 8 6"></polyline>
+            <line x1="12" y1="2" x2="12" y2="15"></line>
+          </svg>
         </button>
       </motion.div>
 

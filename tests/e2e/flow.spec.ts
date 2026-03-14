@@ -5,46 +5,54 @@ test.describe('User Flow', () => {
     await page.goto('/');
   });
 
-  test('should complete Easy Fit flow', async ({ page }) => {
-    // 1. Select Easy Fit Mode
-    // Force click to ensure it hits even if covered or slightly off-screen in mobile
-    await page.getByText('EASY FIT').click({ force: true });
+  test('should complete Masterpiece Fit flow', async ({ page }) => {
+    // Check for M_FIT specific header
+    await expect(page.locator('h1')).toContainText('M_FIT');
 
-    // Verify selection (border color change or checkmark)
-    const continueToModeBtn = page.getByRole('button', { name: /Continue →/i });
-    await expect(continueToModeBtn).toBeEnabled();
-    await continueToModeBtn.click();
+    // Select 'K-Fashion' Tier
+    await page.getByRole('button', { name: 'k fashion' }).click({ force: true });
 
-    // 2. Input Stats
-    // Wait for "Easy Fit" header
-    await expect(page.getByRole('heading', { name: 'Easy Fit' })).toBeVisible();
+    // Select 'dresses' Layer
+    await page.getByRole('button', { name: 'dresses' }).click({ force: true });
 
-    // Just click "Continue to Fitting Room" as defaults are valid.
-    await page.getByRole('button', { name: /Continue to Fitting Room/i }).click();
+    // Create a dummy image buffer for upload tests
+    const dummyImageBuffer = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+      'base64'
+    );
 
-    // 3. Brand Selection
-    // Wait for "Select Brand" header
-    await expect(page.getByText('Select Brand')).toBeVisible();
+    // 1. Identification (User Photo)
+    const userPhotoInput = page.locator('input[id="user-upload"]');
+    await userPhotoInput.setInputFiles({
+      name: 'user.png',
+      mimeType: 'image/png',
+      buffer: dummyImageBuffer,
+    });
 
-    // Easy Fit defaults to Uniqlo auto-selected.
-    // Check if Uniqlo button has class indicating selection (border-pure-white) or just check if "Enter Fitting Room" is enabled.
-    const enterFittingRoomBtn = page.getByRole('button', { name: /Enter Fitting Room/i });
-    await expect(enterFittingRoomBtn).toBeEnabled();
+    // 2. Target Garment
+    const garmentPhotoInput = page.locator('input[id="garment-upload"]');
+    await garmentPhotoInput.setInputFiles({
+      name: 'garment.png',
+      mimeType: 'image/png',
+      buffer: dummyImageBuffer,
+    });
 
-    // We can also switch brand manually.
-    // Note: buttons in BrandSelector might have text "ZARA" and role "button"
-    await page.getByRole('button', { name: 'ZARA' }).click();
+    // 3. Generate Masterpiece
+    const generateBtn = page.getByRole('button', { name: /Generate Masterpiece/i });
+    await expect(generateBtn).toBeEnabled();
+    await generateBtn.click({ force: true });
 
-    await enterFittingRoomBtn.click();
+    // Wait for the AI GENERATED_ badge indicating the result overlay is attached
+    const aiBadge = page.getByText('AI GENERATED_');
+    await aiBadge.waitFor({ state: 'attached', timeout: 15000 }).catch(() => {});
 
-    // 4. Fitting Room
-    // Should see "Fitting Room" component.
-    // Home.tsx: "Back to brands" button visible.
-    await expect(page.getByRole('button', { name: /Back to brands/i })).toBeVisible();
+    // Verify it's either attached or visible depending on animation state
+    await expect(aiBadge).toBeAttached();
 
-    // Should see 3D canvas (maybe check for canvas element)
-    // Note: WebGL might not be available in all headless environments
-    // We check if the container exists at least.
-    await expect(page.locator('.glass-card').first()).toBeVisible();
+    // Close the result
+    const closeBtn = page.getByRole('button', { name: 'Close' });
+    if (await closeBtn.isVisible()) {
+       await closeBtn.click({ force: true });
+    }
   });
 });

@@ -26,7 +26,11 @@ export async function POST(req: NextRequest) {
     const videoUrl = await generateRunwayVideo(processedImageUrl);
 
     if (videoUrl) {
-      return NextResponse.json({ success: true, videoUrl });
+      return NextResponse.json({
+        success: true,
+        videoUrl,
+        upscaledImageUrl: upscale ? processedImageUrl : undefined
+      });
     } else {
       return NextResponse.json(
         { success: false, error: 'Failed to generate video' },
