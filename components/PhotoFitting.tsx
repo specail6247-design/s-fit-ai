@@ -12,16 +12,16 @@ export default function PhotoFitting() {
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
       {/* Top App Bar */}
       <div className="z-50 flex items-center justify-between bg-transparent p-4">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
-          <span className="material-symbols-outlined">arrow_back_ios_new</span>
-        </div>
+        <button aria-label="Go back" className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
+          <span className="material-symbols-outlined" aria-hidden="true">arrow_back_ios_new</span>
+        </button>
         <div className="flex flex-col items-center">
           <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
         <div className="flex w-12 items-center justify-end">
-          <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
-            <span className="material-symbols-outlined">info</span>
+          <button aria-label="More information" className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
+            <span className="material-symbols-outlined" aria-hidden="true">info</span>
           </button>
         </div>
       </div>
@@ -118,7 +118,7 @@ export default function PhotoFitting() {
           </div>
         </div>
         <button className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-[#256af4] text-base font-bold text-white shadow-lg shadow-[#256af4]/20 transition-colors hover:bg-blue-600">
-          <span className="material-symbols-outlined">check_circle</span>
+          <span className="material-symbols-outlined" aria-hidden="true">check_circle</span>
           Confirm & Proceed to Checkout
         </button>
         <div className="h-4"></div>
