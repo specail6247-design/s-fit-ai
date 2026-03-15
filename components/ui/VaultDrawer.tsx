@@ -56,6 +56,7 @@ export default function VaultDrawer() {
                     <div key={item.id} className="bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#2d2d2d] flex flex-col group">
                       <div className="relative aspect-[4/3] w-full bg-zinc-900">
                         {/* Use object-cover with top position to show garment nicely */}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={item.imageUrl}
                           alt={item.name}
