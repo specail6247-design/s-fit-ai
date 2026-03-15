@@ -1,0 +1,4 @@
+## 2024-05-24 - [Path Traversal in API Route]
+**Vulnerability:** Path traversal vulnerability in `app/api/try-on/route.ts`. The `localFileToDataUri` function constructed file paths using `path.join(process.cwd(), 'public', userProvidedPath)` without verifying that the resulting absolute path remained within the `public` directory. This allowed reading arbitrary files (e.g., `.env`) by passing paths like `/../.env`.
+**Learning:** `path.join` and `path.resolve` resolve `..` segments. When handling user-provided file paths, it's not enough to prepend a base directory. The final resolved absolute path must be validated against the allowed base directory.
+**Prevention:** Always use `path.resolve` to determine the final absolute path, and then explicitly verify that it starts with the intended base directory (e.g., `if (!absolutePath.startsWith(baseDir + path.sep))`).
