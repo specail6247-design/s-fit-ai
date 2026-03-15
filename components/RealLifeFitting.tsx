@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import SupportHub from '@/components/modals/SupportHub';
+import { AuthButton } from '@/components/AuthButton';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,7 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -76,6 +79,10 @@ export default function RealLifeFitting() {
       
       {/* LEFT PANEL: CONTROLS */}
       <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
+        {/* Auth Button at Top Left */}
+        <div className="absolute top-8 right-8 z-20">
+          <AuthButton />
+        </div>
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
@@ -91,11 +98,17 @@ export default function RealLifeFitting() {
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
           {/* User Photo Input */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
+            <div className="flex justify-between items-end">
+              <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
+              <div className="text-[10px] text-gray-500 flex items-center gap-1 bg-[#007AFF]/10 px-2 py-0.5 rounded border border-[#007AFF]/20">
+                <span className="text-[10px]">🔒</span> Safe Data: Photos are processed securely and not shared.
+              </div>
+            </div>
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
                   {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
@@ -113,6 +126,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
                   {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
@@ -163,6 +177,20 @@ export default function RealLifeFitting() {
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
+        {/* Support Hub Trigger */}
+        <button
+          onClick={() => setIsSupportOpen(true)}
+          className="absolute bottom-8 right-8 z-30 w-12 h-12 bg-black/60 border border-white/20 rounded-full flex items-center justify-center hover:bg-[#007AFF] hover:border-[#007AFF] hover:scale-110 transition-all text-white/70 hover:text-white shadow-lg backdrop-blur-md group"
+          aria-label="Help and Support"
+        >
+          <span className="text-xl font-serif italic">?</span>
+          <span className="absolute right-14 bg-black/80 px-3 py-1.5 rounded-md text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity border border-white/10 pointer-events-none">
+            Support & Guide
+          </span>
+        </button>
+
+        <SupportHub isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
+
         {/* Background Image (Night City Vibe) */}
         <div className="absolute inset-0 opacity-40 z-0">
            {/* Placeholder for Night City HDRI background visual */}
@@ -195,6 +223,7 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
