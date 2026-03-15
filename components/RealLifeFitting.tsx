@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import SupportHub from '@/components/modals/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +17,7 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -91,7 +93,12 @@ export default function RealLifeFitting() {
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
           {/* User Photo Input */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
+            <div className="flex justify-between items-end">
+              <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
+              <div className="text-[10px] text-gray-500 flex items-center gap-1 bg-[#007AFF]/10 px-2 py-0.5 rounded border border-[#007AFF]/20">
+                <span className="text-[10px]">🔒</span> Safe Data: Photos are processed securely and not shared.
+              </div>
+            </div>
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
@@ -163,6 +170,20 @@ export default function RealLifeFitting() {
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
+        {/* Support Hub Trigger */}
+        <button
+          onClick={() => setIsSupportOpen(true)}
+          className="absolute bottom-8 right-8 z-30 w-12 h-12 bg-black/60 border border-white/20 rounded-full flex items-center justify-center hover:bg-[#007AFF] hover:border-[#007AFF] hover:scale-110 transition-all text-white/70 hover:text-white shadow-lg backdrop-blur-md group"
+          aria-label="Help and Support"
+        >
+          <span className="text-xl font-serif italic">?</span>
+          <span className="absolute right-14 bg-black/80 px-3 py-1.5 rounded-md text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity border border-white/10 pointer-events-none">
+            Support & Guide
+          </span>
+        </button>
+
+        <SupportHub isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
+
         {/* Background Image (Night City Vibe) */}
         <div className="absolute inset-0 opacity-40 z-0">
            {/* Placeholder for Night City HDRI background visual */}
