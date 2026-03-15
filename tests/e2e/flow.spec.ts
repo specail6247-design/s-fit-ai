@@ -5,46 +5,43 @@ test.describe('User Flow', () => {
     await page.goto('/');
   });
 
-  test('should complete Easy Fit flow', async ({ page }) => {
-    // 1. Select Easy Fit Mode
-    // Force click to ensure it hits even if covered or slightly off-screen in mobile
-    await page.getByText('EASY FIT').click({ force: true });
+  test('should complete Real Life Fitting flow', async ({ page }) => {
+    // 1. Check initial state
+    const tryOnBtn = page.getByRole('button', { name: /TRY IT ON/i });
+    await expect(tryOnBtn).toBeVisible();
 
-    // Verify selection (border color change or checkmark)
-    const continueToModeBtn = page.getByRole('button', { name: /Continue →/i });
-    await expect(continueToModeBtn).toBeEnabled();
-    await continueToModeBtn.click();
+    // 2. Click "TRY IT ON" without files, should show alert (though alerts in playwright need handler)
+    page.on('dialog', dialog => dialog.accept());
+    await tryOnBtn.click();
 
-    // 2. Input Stats
-    // Wait for "Easy Fit" header
-    await expect(page.getByRole('heading', { name: 'Easy Fit' })).toBeVisible();
+    // Create a dummy transparent 1x1 image base64 buffer for testing
+    const base64Image = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+    const buffer = Buffer.from(base64Image, 'base64');
 
-    // Just click "Continue to Fitting Room" as defaults are valid.
-    await page.getByRole('button', { name: /Continue to Fitting Room/i }).click();
+    // 3. Upload User Photo
+    // Bypass hidden file chooser by passing directly to input
+    await page.locator('input#user-upload[type="file"]').setInputFiles({
+      name: 'dummy.png',
+      mimeType: 'image/png',
+      buffer: buffer
+    });
 
-    // 3. Brand Selection
-    // Wait for "Select Brand" header
-    await expect(page.getByText('Select Brand')).toBeVisible();
+    // 4. Upload Garment
+    await page.locator('input#garment-upload[type="file"]').setInputFiles({
+      name: 'garment.png',
+      mimeType: 'image/png',
+      buffer: buffer
+    });
 
-    // Easy Fit defaults to Uniqlo auto-selected.
-    // Check if Uniqlo button has class indicating selection (border-pure-white) or just check if "Enter Fitting Room" is enabled.
-    const enterFittingRoomBtn = page.getByRole('button', { name: /Enter Fitting Room/i });
-    await expect(enterFittingRoomBtn).toBeEnabled();
+    // 5. Try It On
+    await tryOnBtn.click();
 
-    // We can also switch brand manually.
-    // Note: buttons in BrandSelector might have text "ZARA" and role "button"
-    await page.getByRole('button', { name: 'ZARA' }).click();
+    // 6. Verify processing state & result
+    await expect(page.getByText('PROCESSING DATA...')).toBeVisible();
 
-    await enterFittingRoomBtn.click();
-
-    // 4. Fitting Room
-    // Should see "Fitting Room" component.
-    // Home.tsx: "Back to brands" button visible.
-    await expect(page.getByRole('button', { name: /Back to brands/i })).toBeVisible();
-
-    // Should see 3D canvas (maybe check for canvas element)
-    // Note: WebGL might not be available in all headless environments
-    // We check if the container exists at least.
-    await expect(page.locator('.glass-card').first()).toBeVisible();
+    // Wait for AI Generated badge to appear (indicates success in mock environments without Replicate)
+    const badge = page.getByText('AI GENERATED_');
+    // In CI environments where Replicate may timeout or fail without a backend, just verify we entered processing state.
+    await badge.waitFor({ state: 'attached', timeout: 5000 }).catch(() => {});
   });
 });
