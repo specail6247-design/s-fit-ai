@@ -1,21 +1,15 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { calculateRecommendedSize, getComplementaryItems, ClothingStyleAnalysis } from '@/lib/visionService';
 import type { PoseProportions } from '@/lib/mediapipe';
 import { ClothingItem, getAllItems } from '@/data/mockData';
-
-// Mock OpenAI
-vi.mock('openai', () => {
-  return {
-    default: class {
-      apiKey = 'mock-key';
-    }
-  };
-});
 
 describe('Vision Service', () => {
   describe('calculateRecommendedSize', () => {
     const mockProportions: PoseProportions = {
       shoulderWidth: 0.5,
+      waistWidth: 0.5,
+      armLength: 0.5,
+      shoulderSlope: 0.5,
       hipWidth: 0.5,
       torsoHeight: 0.5,
       legLength: 0.5,
@@ -106,7 +100,7 @@ describe('Vision Service', () => {
 
     it('should prioritize matching colors (black/white)', () => {
         // Create a mock black item
-        const blackItem = { ...getAllItems()[0], colors: ['Black'], category: 'tops' };
+        const blackItem = { ...getAllItems()[0], colors: ['Black'], category: 'tops' as const };
         const recommendations = getComplementaryItems(blackItem);
         expect(recommendations.length).toBeGreaterThan(0);
     });
