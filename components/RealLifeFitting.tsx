@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import CinematicViewer from '@/components/ui/CinematicViewer';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -15,7 +16,9 @@ export default function RealLifeFitting() {
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
+  const [resultVideo, setResultVideo] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [progressText, setProgressText] = useState("PROCESSING DATA...");
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -31,18 +34,19 @@ export default function RealLifeFitting() {
     
     setIsProcessing(true);
     setProgress(0);
+    setProgressText("DRAPING GARMENT (IDM-VTON)...");
 
-    // Simulate progress bar
+    // Simulate progress bar for the first phase
     const interval = setInterval(() => {
       setProgress((prev) => {
-        if (prev >= 90) return prev;
-        return prev + 10;
+        if (prev >= 45) return prev;
+        return prev + 5;
       });
     }, 500);
 
     try {
-      // API call to our backend (which calls Replicate/Fashn.ai)
-      const res = await fetch('/api/try-on', {
+      // Step 1: IDM-VTON (Dressing)
+      const tryOnRes = await fetch('/api/try-on', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -51,16 +55,39 @@ export default function RealLifeFitting() {
           category: 'tops' // Default for demo
         })
       });
-      const data = await res.json();
+      const tryOnData = await tryOnRes.json();
       
+      if (!tryOnData.imageUrl) {
+        throw new Error(tryOnData.error || "Try-On Failed");
+      }
+
+      // Set intermediate result so the user sees the image
+      setResultImage(tryOnData.imageUrl);
+
+      // Start phase 2
+      setProgress(50);
+      setProgressText("SYNTHESIZING MOTION & TEXTURES...");
+
+      // Step 2: Cinematic Motion & Upscale
+      const motionRes = await fetch('/api/runway-motion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageUrl: tryOnData.imageUrl,
+          upscale: true
+        })
+      });
+      const motionData = await motionRes.json();
+
       clearInterval(interval);
       setProgress(100);
-      
-      if (data.imageUrl) {
-        setResultImage(data.imageUrl);
+
+      if (motionData.success && motionData.videoUrl) {
+        setResultVideo(motionData.videoUrl);
       } else {
-        throw new Error(data.error || "Try-On Failed");
+        console.error("Cinematic motion failed, showing image only.", motionData.error);
       }
+
     } catch (err) {
       clearInterval(interval);
       console.error(err);
@@ -68,6 +95,7 @@ export default function RealLifeFitting() {
       setResultImage("https://pub-83c5db439b40468498f97946200806f7.r2.dev/mock-result-sfit.png"); // Fallback
     } finally {
       setIsProcessing(false);
+      setProgressText("PROCESSING DATA...");
     }
   };
 
@@ -96,11 +124,16 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
                   {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
+                  <div className="text-[10px] text-[#007AFF] font-bold mt-1 bg-[#007AFF]/10 inline-block px-1.5 py-0.5 rounded border border-[#007AFF]/20 flex items-center gap-1">
+                     <span className="material-symbols-outlined text-[10px]">shield</span>
+                     Safe Data: Photos are processed securely and not shared.
+                  </div>
                 </div>
               </label>
             </div>
@@ -113,6 +146,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
                   {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
@@ -129,7 +163,7 @@ export default function RealLifeFitting() {
           {isProcessing ? (
             <div className="space-y-2">
               <div className="flex justify-between text-xs text-[#007AFF] font-mono">
-                <span>PROCESSING DATA...</span>
+                <span>{progressText}</span>
                 <span>{progress}%</span>
               </div>
               <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
@@ -188,23 +222,42 @@ export default function RealLifeFitting() {
         </div>
 
         {/* Result Overlay (If success) */}
-        {resultImage && !isProcessing && (
+        {(resultImage || resultVideo) && !isProcessing && (
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              {resultVideo ? (
+                <div className="h-[70vh] aspect-[9/16]">
+                  <CinematicViewer videoUrl={resultVideo} posterUrl={resultImage || undefined} className="w-full h-full rounded-xl" />
+                </div>
+              ) : (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={resultImage!} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              )}
+
               <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                onClick={() => {
+                  setResultImage(null);
+                  setResultVideo(null);
+                }}
+                className="absolute top-4 right-4 z-30 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
               >
                 ✕ Close
               </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
-                AI GENERATED_
+              <div className="absolute bottom-4 left-4 z-30 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30 flex flex-col gap-1">
+                <span>AI GENERATED_</span>
+                {resultVideo && <span className="text-white">CINEMATIC MODE</span>}
               </div>
+
+              {resultVideo && (
+                <button className="absolute bottom-4 right-4 z-30 bg-[#007AFF] text-white px-4 py-2 rounded-lg text-xs font-bold shadow-[0_0_15px_rgba(0,122,255,0.5)] flex items-center gap-2 hover:bg-[#005bb5] transition-colors">
+                  <span className="material-symbols-outlined text-sm">share</span>
+                  Cinematic Share
+                </button>
+              )}
             </div>
           </motion.div>
         )}
