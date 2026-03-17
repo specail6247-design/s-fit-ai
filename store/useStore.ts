@@ -90,6 +90,13 @@ interface StoreState {
   sizeRecommendation: SizeRecommendation | null;
   setSizeRecommendation: (rec: SizeRecommendation | null) => void;
 
+  // Vault (Digital Wardrobe)
+  vaultItems: ClothingItem[];
+  isVaultOpen: boolean;
+  addToVault: (item: ClothingItem) => void;
+  removeFromVault: (id: string) => void;
+  setVaultOpen: (isOpen: boolean) => void;
+
   // Selected Brand & Item
   selectedBrand: string | null;
   setSelectedBrand: (brandId: string | null) => void;
@@ -180,6 +187,22 @@ export const useStore = create<StoreState>()(
       sizeRecommendation: null,
       setSizeRecommendation: (rec) => set({ sizeRecommendation: rec }),
 
+      // Vault
+      vaultItems: [],
+      isVaultOpen: false,
+      addToVault: (item) =>
+        set((state) => {
+          if (!state.vaultItems.find((i) => i.id === item.id)) {
+            return { vaultItems: [...state.vaultItems, item] };
+          }
+          return state;
+        }),
+      removeFromVault: (id) =>
+        set((state) => ({
+          vaultItems: state.vaultItems.filter((i) => i.id !== id),
+        })),
+      setVaultOpen: (isOpen) => set({ isVaultOpen: isOpen }),
+
       // Selected Brand & Item
       selectedBrand: null,
       setSelectedBrand: (brandId) => set({ selectedBrand: brandId }),
@@ -256,6 +279,7 @@ export const useStore = create<StoreState>()(
         isPremium: state.isPremium,
         userStats: state.userStats,
         selectedAIModels: state.selectedAIModels,
+        vaultItems: state.vaultItems,
         trainingData: state.trainingData,
       }),
     }

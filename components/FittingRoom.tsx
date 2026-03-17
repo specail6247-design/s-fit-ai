@@ -25,6 +25,8 @@ import {
 } from '@/lib/visionService';
 import * as THREE from 'three';
 import { AvatarLoader } from './AvatarLoader';
+import { SensoryAmbience } from './SensoryAmbience';
+import { VaultDrawer } from './VaultDrawer';
 
 // Masterpiece Components
 import { FabricMaterial } from './masterpiece/FabricMaterial';
@@ -575,27 +577,65 @@ interface ItemCardProps {
   onSelect: () => void;
   isRecommended?: boolean;
   fitScore: number;
+  onSaveLook?: (item: ClothingItem) => void;
 }
 
 function ItemCard({
-  item, isSelected, onSelect, isRecommended, fitScore
+  item, isSelected, onSelect, isRecommended, fitScore, onSaveLook
 }: ItemCardProps) {
+
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
+
+  // Exclusive Access Drop Logic
+  const isLocked = item.lockedUntil && new Date(item.lockedUntil) > new Date();
+
+  const handleSelect = () => {
+    if (!isLocked) onSelect();
+  };
+
   return (
     <motion.button
-      onClick={onSelect}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      onClick={handleSelect}
+      className={`flex-shrink-0 w-32 p-3 rounded-xl border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'} ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+      whileHover={{ scale: isLocked ? 1 : 1.05 }}
+      whileTap={{ scale: isLocked ? 1 : 0.95 }}
     >
       <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
-        <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
-        {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
+        <span className="text-3xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+        {item.isLuxury && <div className="absolute top-0 right-0 w-5 h-5 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.6rem]">✦</span></div>}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
       </div>
-      <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
-      <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
-      <p className="text-[0.55rem] text-cyber-lime">Fit {fitScore}%</p>
+      <p className="text-[0.7rem] text-pure-white truncate font-bold">{item.name}</p>
+      <div className="flex justify-between items-center mt-1">
+         <p className="text-[0.65rem] text-soft-gray">${item.price}</p>
+         <p className="text-[0.65rem] text-cyber-lime font-bold">Fit {fitScore}%</p>
+      </div>
+
+      {isLocked && (
+        <div className="mt-2 text-center bg-red-500/20 border border-red-500/30 rounded p-1">
+          <p className="text-[8px] font-bold text-red-400 uppercase tracking-widest">Locked Drop</p>
+          <p className="text-[9px] text-soft-gray font-mono mt-0.5">{new Date(item.lockedUntil!).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+        </div>
+      )}
+
+      {isSelected && !isLocked && (
+         <div className="mt-3 pt-3 border-t border-white/10 flex flex-col gap-2">
+            {item.stylingTip && (
+               <div className="bg-white/5 p-2 rounded">
+                  <span className="text-[8px] text-cyber-lime uppercase tracking-widest font-bold block mb-1">AI Stylist Note</span>
+                  <p className="text-[9px] text-soft-gray leading-snug">{item.stylingTip}</p>
+               </div>
+            )}
+            {onSaveLook && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onSaveLook(item); }}
+                className="w-full py-1.5 bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold rounded flex items-center justify-center gap-1 transition-colors"
+              >
+                <span>🔒</span> Save Look
+              </button>
+            )}
+         </div>
+      )}
     </motion.button>
   );
 }
@@ -842,6 +882,8 @@ export function FittingRoom() {
   const [isMacroView, setIsMacroView] = useState(false);
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [webglFailed, setWebglFailed] = useState(false);
+  const { addToVault, setVaultOpen } = useStore();
+  const [isAudioMuted, setIsAudioMuted] = useState(false);
   const [autoCycleEnabled, setAutoCycleEnabled] = useState(() => {
     if (typeof window !== 'undefined') {
       return window.localStorage.getItem('sfit-ai-auto-cycle') === 'true';
@@ -933,6 +975,8 @@ export function FittingRoom() {
 
   return (
     <div className="w-full h-full flex flex-col bg-void-black text-pure-white">
+      <SensoryAmbience isPlaying={!isAudioMuted} volume={0.1} />
+      <VaultDrawer />
       <div className="flex-1 relative min-h-[350px]">
         {webglFailed ? (
           /* 2D Fallback View */
@@ -997,6 +1041,9 @@ export function FittingRoom() {
             <button onClick={() => setIsMacroView(!isMacroView)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMacroView ? 'bg-white text-black border-white' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 🔍 Macro View
             </button>
+            <button onClick={() => setIsAudioMuted(!isAudioMuted)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${!isAudioMuted ? 'bg-[#007AFF]/20 text-[#007AFF] border-[#007AFF]/50' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                {!isAudioMuted ? '🔊 Ambience ON' : '🔇 Ambience OFF'}
+            </button>
             <button onClick={() => setShowHeatmap(!showHeatmap)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 🔥 Fit Heatmap
             </button>
@@ -1011,6 +1058,9 @@ export function FittingRoom() {
         )}
 
         <div className="absolute top-4 left-4 flex gap-2 z-20">
+            <button onClick={() => setVaultOpen(true)} className="bg-charcoal/60 backdrop-blur-md px-3 py-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors flex items-center gap-1 text-sm font-bold shadow-lg">
+                <span>🔒</span> Vault
+            </button>
             <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
                 <span>📤</span>
             </button>
@@ -1097,6 +1147,7 @@ export function FittingRoom() {
                     isSelected={currentItem?.id === item.id} 
                     onSelect={() => setSelectedItem(item)}
                     fitScore={fitScore + (item.isLuxury ? 5 : 0)}
+                    onSaveLook={addToVault}
                 />
             ))}
         </div>
