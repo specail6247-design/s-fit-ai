@@ -25,8 +25,9 @@ export function SupportHub({ isOpen, onClose }: SupportHubProps) {
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
+        <React.Fragment key="support-hub-backdrop">
           <motion.div
+            key="backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -34,6 +35,7 @@ export function SupportHub({ isOpen, onClose }: SupportHubProps) {
             className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
           />
           <motion.div
+            key="drawer"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -174,7 +176,7 @@ export function SupportHub({ isOpen, onClose }: SupportHubProps) {
 
             </div>
           </motion.div>
-        </>
+        </React.Fragment>
       )}
     </AnimatePresence>
   );
