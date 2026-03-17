@@ -1,5 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
+// Mock next/font/google before importing the component
+vi.mock('next/font/google', () => ({
+  Playfair_Display: () => ({ className: 'mock-playfair' })
+}));
+
 import RealLifeFitting from '@/components/RealLifeFitting';
 
 // Mock Three.js canvas components to avoid WebGL errors in happy-dom

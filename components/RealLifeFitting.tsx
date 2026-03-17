@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { mockClothingItems } from '@/data/mockData';
+import { Playfair_Display } from 'next/font/google';
+
+const playfair = Playfair_Display({ subsets: ['latin'] });
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -13,8 +17,11 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 export default function RealLifeFitting() {
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
+  const [selectedAccessory, setSelectedAccessory] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
+  const [resultVideo, setResultVideo] = useState<string | null>(null);
+  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
   const [progress, setProgress] = useState(0);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
@@ -23,6 +30,51 @@ export default function RealLifeFitting() {
       const reader = new FileReader();
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleGenerateVideo = async () => {
+    if (!resultImage) return;
+
+    setIsGeneratingVideo(true);
+    try {
+      const res = await fetch('/api/cinematic-try-on', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: resultImage })
+      });
+      const data = await res.json();
+
+      if (data.success && data.videoUrl) {
+        setResultVideo(data.videoUrl);
+      } else {
+        throw new Error(data.error || "Video Generation Failed");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to generate cinematic video.");
+    } finally {
+      setIsGeneratingVideo(false);
+    }
+  };
+
+  const handleShare = async () => {
+    const mediaUrl = resultVideo || resultImage;
+    if (!mediaUrl) return;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'S_FIT NEO - Cinematic Try-On',
+          text: 'Check out my virtual fitting!',
+          url: mediaUrl
+        });
+      } catch (err) {
+        console.error('Share failed', err);
+      }
+    } else {
+      // Fallback
+      window.open(mediaUrl, '_blank');
     }
   };
 
@@ -41,6 +93,8 @@ export default function RealLifeFitting() {
     }, 500);
 
     try {
+      const accessoryDesc = selectedAccessory ? mockClothingItems.find(item => item.id === selectedAccessory)?.description : undefined;
+
       // API call to our backend (which calls Replicate/Fashn.ai)
       const res = await fetch('/api/try-on', {
         method: 'POST',
@@ -48,7 +102,8 @@ export default function RealLifeFitting() {
         body: JSON.stringify({
           userPhotoUrl: userImage,
           garmentImageUrl: garmentImage,
-          category: 'tops' // Default for demo
+          category: 'tops', // Default for demo
+          garmentDescription: accessoryDesc
         })
       });
       const data = await res.json();
@@ -80,7 +135,7 @@ export default function RealLifeFitting() {
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
         <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
+          <h1 className={`text-4xl font-black tracking-tighter italic ${playfair.className}`}>
             S_FIT <span className="text-[#007AFF]">NEO</span>
           </h1>
           <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
@@ -122,6 +177,26 @@ export default function RealLifeFitting() {
               </label>
             </div>
           </div>
+
+          {/* Accessory Input */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-[#007AFF] uppercase">03. Accessory Layer (Optional)</label>
+            <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
+              <select
+                value={selectedAccessory}
+                onChange={(e) => setSelectedAccessory(e.target.value)}
+                className="w-full bg-transparent text-sm font-bold text-gray-300 group-hover:text-white focus:outline-none appearance-none cursor-pointer"
+              >
+                <option value="" className="bg-gray-900 text-gray-300">None</option>
+                {mockClothingItems.filter(item => item.category === 'accessories').map((item) => (
+                  <option key={item.id} value={item.id} className="bg-gray-900 text-white">
+                    {item.brand} - {item.name}
+                  </option>
+                ))}
+              </select>
+              <div className="text-[10px] text-gray-500 mt-2">Enhances material interaction and aesthetic</div>
+            </div>
+          </div>
         </div>
 
         {/* Action Button */}
@@ -158,6 +233,13 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-6 flex items-center justify-center gap-2 px-4 py-2 bg-gray-900/50 rounded-lg border border-gray-800">
+            <span className="text-green-400 text-lg">🛡️</span>
+            <p className="text-[10px] text-gray-400 font-mono tracking-tight text-center">
+              Safe Data: Photos are processed securely and not shared.
+            </p>
+          </div>
+
         </div>
       </div>
 
@@ -191,20 +273,54 @@ export default function RealLifeFitting() {
         {resultImage && !isProcessing && (
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
+            animate={{ opacity: 1, scale: 1, transition: { duration: 0.7, ease: "easeOut" } }}
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl flex flex-col items-center gap-4"
           >
             <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              {resultVideo ? (
+                <video autoPlay loop muted playsInline src={resultVideo} className="w-auto h-[65vh] rounded-xl object-contain shadow-2xl" />
+              ) : (
+                <img src={resultImage} alt="Result" className="w-auto h-[65vh] rounded-xl object-contain shadow-2xl" />
+              )}
               <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                onClick={() => {
+                  setResultImage(null);
+                  setResultVideo(null);
+                }}
+                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors z-30"
               >
                 ✕ Close
               </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
+              <div className="absolute bottom-4 left-4 text-[#0a0a0a] bg-[#ecab13] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#ecab13]/30 z-30 shadow-[0_0_10px_rgba(236,171,19,0.3)]">
                 AI GENERATED_
               </div>
+            </div>
+
+            {/* Action Buttons for Result */}
+            <div className="flex w-full gap-2 px-2 pb-2">
+              <button
+                onClick={handleGenerateVideo}
+                disabled={isGeneratingVideo || !!resultVideo}
+                className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+                  isGeneratingVideo || resultVideo
+                    ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                    : 'bg-[#ecab13] hover:bg-[#c48a0a] text-[#0a0a0a] shadow-[0_0_15px_rgba(236,171,19,0.3)]'
+                }`}
+              >
+                {isGeneratingVideo ? (
+                  <span className="animate-pulse">SYNTHESIZING MOTION...</span>
+                ) : resultVideo ? (
+                  <span>MOTION APPLIED</span>
+                ) : (
+                  <><span>🎬</span> GENERATE CINEMATIC MOTION</>
+                )}
+              </button>
+              <button
+                onClick={handleShare}
+                className="flex-[0.5] py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-xs font-bold text-white flex items-center justify-center gap-2 transition-colors"
+              >
+                <span>🔗</span> SHARE
+              </button>
             </div>
           </motion.div>
         )}
