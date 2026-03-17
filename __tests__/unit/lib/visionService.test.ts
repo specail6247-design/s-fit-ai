@@ -19,10 +19,10 @@ describe('Vision Service', () => {
       hipWidth: 0.5,
       torsoHeight: 0.5,
       legLength: 0.5,
-      overallRatio: 0.5,
-      waistWidth: 0.5,
-      armLength: 0.5,
-      shoulderSlope: 0.5
+      overallRatio: 1.6,
+      waistWidth: 0.32,
+      armLength: 0.4,
+      shoulderSlope: 15
     };
     const userHeight = 175; // cm
 
