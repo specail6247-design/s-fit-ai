@@ -28,7 +28,7 @@ export default function RealLifeFitting() {
 
   const handleTryOn = async () => {
     if (!userImage || !garmentImage) return alert("Please upload both User Photo and Garment.");
-    
+
     setIsProcessing(true);
     setProgress(0);
 
