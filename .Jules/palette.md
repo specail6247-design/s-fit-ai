@@ -1,0 +1,3 @@
+## 2024-05-24 - File Input Keyboard Accessibility and Proactive Validation
+**Learning:** Hiding native file inputs with `display: none` or `hidden` completely removes them from the accessibility tree and prevents keyboard navigation. Additionally, using native `alert()` for form validation is a jarring experience that disrupts user flow.
+**Action:** Always use `.sr-only` utility classes to visually hide native file inputs while keeping them focusable. Use `focus-within` on their custom visual wrapper (e.g., the label) to display focus rings. Replace reactive native alerts with proactive validation by disabling submit buttons (and styling them accordingly) until all required conditions are met.
