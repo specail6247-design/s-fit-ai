@@ -42,3 +42,7 @@ next-env.d.ts
 client_secret_*.json
 
 /net-commander
+server.log
+dev.log
+playwright-report/
+test-results/
