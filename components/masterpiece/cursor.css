@@ -1,0 +1,5 @@
+@media (min-width: 768px) {
+  body, a, button, [data-luxury-hover] {
+    cursor: none !important;
+  }
+}

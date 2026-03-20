@@ -1,21 +1,26 @@
 'use client';
 
-import React from 'react';
+import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { Canvas } from '@react-three/fiber';
+import LuxuryImageDistortion from './masterpiece/LuxuryImageDistortion';
+import StaggeredText from './masterpiece/StaggeredText';
 
 export default function LuxuryGarmentDetail() {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
       <div className="fixed top-0 z-50 w-full bg-[#f8f7f6]/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md">
         <div className="flex items-center p-4 justify-between max-w-md mx-auto">
-          <Link href="/" className="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors">
+          <Link href="/" data-luxury-hover className="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors">
             <span className="material-symbols-outlined">arrow_back</span>
           </Link>
-          <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center">S_FIT AI</h2>
+          <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center font-cinzel">S_FIT AI</h2>
           <div className="flex w-10 items-center justify-end">
-            <button className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
+            <button data-luxury-hover className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors active:scale-95 duration-200">
               <span className="material-symbols-outlined">share</span>
             </button>
           </div>
@@ -25,24 +30,51 @@ export default function LuxuryGarmentDetail() {
       {/* Main Content Container (Mobile Optimized) */}
       <main className="max-w-md mx-auto pt-16 pb-32">
         {/* 3D Interactive Viewport (Hero Image) */}
-        <div className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900">
+        <div
+          className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <div className="absolute inset-0 z-0">
+            <Suspense fallback={<div className="w-full h-full bg-zinc-900 flex items-center justify-center"><div className="w-8 h-8 border-2 border-[#ecab13] border-t-transparent rounded-full animate-spin"></div></div>}>
+              <Canvas camera={{ position: [0, 0, 1] }}>
+                <LuxuryImageDistortion
+                  imageUrl="https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E"
+                  isHovered={isHovered}
+                />
+              </Canvas>
+            </Suspense>
+          </div>
+
           <div 
-            className="absolute inset-0 bg-cover bg-center" 
+            className="absolute inset-0 bg-cover bg-center z-10 pointer-events-none"
             style={{ 
-              backgroundImage: 'linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' 
+              backgroundImage: 'linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%)'
             }}
           />
           
           {/* 3D UI Overlays */}
-          <div className="absolute bottom-6 left-4 right-4 flex justify-between items-end">
+          <div className="absolute bottom-6 left-4 right-4 flex justify-between items-end z-20">
             <div className="bg-black/40 backdrop-blur-md rounded-lg p-2 flex flex-col gap-2 border border-white/10">
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">zoom_in</span></button>
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">360</span></button>
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">light_mode</span></button>
+              <button data-luxury-hover className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded active:scale-95 duration-200 relative overflow-hidden group">
+                <span className="absolute inset-0 bg-white/20 scale-0 group-active:scale-100 rounded-full transition-transform duration-300 opacity-0 group-active:opacity-100"></span>
+                <span className="material-symbols-outlined text-sm relative z-10">zoom_in</span>
+              </button>
+              <button data-luxury-hover className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded active:scale-95 duration-200 relative overflow-hidden group">
+                <span className="absolute inset-0 bg-white/20 scale-0 group-active:scale-100 rounded-full transition-transform duration-300 opacity-0 group-active:opacity-100"></span>
+                <span className="material-symbols-outlined text-sm relative z-10">360</span>
+              </button>
+              <button data-luxury-hover className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded active:scale-95 duration-200 relative overflow-hidden group">
+                <span className="absolute inset-0 bg-white/20 scale-0 group-active:scale-100 rounded-full transition-transform duration-300 opacity-0 group-active:opacity-100"></span>
+                <span className="material-symbols-outlined text-sm relative z-10">light_mode</span>
+              </button>
             </div>
             <div className="text-right">
               <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mb-1">Authentic Render</p>
-              <h1 className="text-white text-3xl font-extralight leading-tight">Metallic Silk <br/><span className="font-bold">Evening Blazer</span></h1>
+              <h1 className="text-white text-3xl font-extralight leading-tight font-cinzel">
+                <StaggeredText text="Metallic Silk" delay={0.2} /><br/>
+                <span className="font-bold"><StaggeredText text="Evening Blazer" delay={0.4} /></span>
+              </h1>
             </div>
           </div>
         </div>
@@ -51,17 +83,17 @@ export default function LuxuryGarmentDetail() {
         <div className="px-4 -mt-4 relative z-10">
           <div className="flex flex-wrap gap-3 bg-[#1a1a1a]/60 backdrop-blur-xl border border-[#2d2d2d] p-4 rounded-xl">
             <div className="flex min-w-[80px] flex-1 flex-col gap-1 items-center text-center">
-              <p className="text-[#ecab13] text-xl font-bold leading-tight">99.8%</p>
+              <p className="text-[#ecab13] text-xl font-bold leading-tight font-cinzel">99.8%</p>
               <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Realism</p>
             </div>
             <div className="w-px h-10 bg-[#2d2d2d] self-center"></div>
             <div className="flex min-w-[80px] flex-1 flex-col gap-1 items-center text-center">
-              <p className="text-white text-xl font-bold leading-tight">High</p>
+              <p className="text-white text-xl font-bold leading-tight font-cinzel">High</p>
               <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Metalness</p>
             </div>
             <div className="w-px h-10 bg-[#2d2d2d] self-center"></div>
             <div className="flex min-w-[80px] flex-1 flex-col gap-1 items-center text-center">
-              <p className="text-white text-xl font-bold leading-tight">0.85</p>
+              <p className="text-white text-xl font-bold leading-tight font-cinzel">0.85</p>
               <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Clearcoat</p>
             </div>
           </div>
@@ -70,11 +102,11 @@ export default function LuxuryGarmentDetail() {
         {/* Material Science Description */}
         <div className="mt-8 px-4">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-white text-xs font-bold tracking-[0.2em] uppercase">Material Science</h2>
+            <h2 className="text-white text-xs font-bold tracking-[0.2em] uppercase font-cinzel">Material Science</h2>
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
-          <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+          <p className="text-zinc-400 text-sm leading-relaxed mb-6 font-sans">
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
@@ -94,7 +126,7 @@ export default function LuxuryGarmentDetail() {
         {/* Macro Gallery */}
         <div className="mb-8">
           <div className="px-4 flex items-center justify-between mb-4">
-            <h2 className="text-white text-xs font-bold tracking-[0.2em] uppercase">Detail Macro View</h2>
+            <h2 className="text-white text-xs font-bold tracking-[0.2em] uppercase font-cinzel">Detail Macro View</h2>
             <p className="text-zinc-500 text-xs">4K Textures</p>
           </div>
           <div className="flex gap-4 overflow-x-auto px-4 no-scrollbar pb-2">
@@ -134,11 +166,12 @@ export default function LuxuryGarmentDetail() {
       <div className="fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex gap-4 items-center z-50">
         <div className="flex flex-col flex-1">
           <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
-          <p className="text-white text-xl font-bold">$2,850</p>
+          <p className="text-white text-xl font-bold font-cinzel">$2,850</p>
         </div>
-        <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
-          <span className="material-symbols-outlined font-bold">person_add_alt</span>
-          <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
+        <Link data-luxury-hover href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200 relative overflow-hidden group">
+          <span className="absolute inset-0 bg-white/20 scale-0 group-active:scale-100 rounded-full transition-transform duration-300 opacity-0 group-active:opacity-100"></span>
+          <span className="material-symbols-outlined font-bold relative z-10">person_add_alt</span>
+          <span className="font-bold text-sm tracking-widest uppercase relative z-10 font-sans">Try on Mannequin</span>
         </Link>
       </div>
 
