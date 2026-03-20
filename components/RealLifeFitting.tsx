@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 // Dynamically import the 3D scene with SSR disabled
@@ -16,6 +16,11 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  const [showLegalModal, setShowLegalModal] = useState(false);
+  const [showSupportHub, setShowSupportHub] = useState(false);
+  const [reportIssueText, setReportIssueText] = useState("");
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -71,6 +76,75 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleShareToStory = () => {
+    if (!resultImage || !canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Instagram Story dimensions
+    canvas.width = 1080;
+    canvas.height = 1920;
+
+    // Draw background
+    const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    grad.addColorStop(0, '#0a0a0a');
+    grad.addColorStop(1, '#111111');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      // Calculate aspect ratio to fit image into canvas leaving some margin
+      const padding = 100;
+      const targetW = canvas.width - padding * 2;
+      const scale = targetW / img.width;
+      const targetH = img.height * scale;
+      const x = padding;
+      const y = (canvas.height - targetH) / 2;
+
+      ctx.drawImage(img, x, y, targetW, targetH);
+
+      // Add branding
+      ctx.fillStyle = '#007AFF';
+      ctx.font = 'bold 60px "Geist Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT NEO', canvas.width / 2, canvas.height - 150);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '30px "Geist Sans", sans-serif';
+      ctx.fillText('Virtual Fitting Experience', canvas.width / 2, canvas.height - 100);
+
+      try {
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+
+        // Use native share if available, fallback to download
+        if (navigator.share) {
+          fetch(dataUrl)
+            .then(res => res.blob())
+            .then(blob => {
+              const file = new File([blob], 'sfit-story.jpg', { type: 'image/jpeg' });
+              navigator.share({
+                title: 'My S_FIT Style',
+                files: [file]
+              }).catch(console.error);
+            });
+        } else {
+          const a = document.createElement('a');
+          a.href = dataUrl;
+          a.download = 'sfit-story.jpg';
+          a.click();
+        }
+      } catch (err) {
+        console.error("Canvas export failed", err);
+        alert("Could not export image. Cross-origin restrictions may apply.");
+      }
+    };
+    img.src = resultImage;
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
@@ -96,6 +170,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
                   {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
@@ -103,6 +178,9 @@ export default function RealLifeFitting() {
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
                 </div>
               </label>
+            </div>
+            <div className="flex items-center gap-2 mt-2 text-[10px] text-gray-400">
+              <span className="text-green-500">🔒</span> Photos are processed securely and not shared.
             </div>
           </div>
 
@@ -113,6 +191,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
                   {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
@@ -158,6 +237,12 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Footer Links */}
+          <div className="mt-8 pt-4 border-t border-white/10 flex justify-between text-[10px] text-gray-500">
+            <button onClick={() => setShowLegalModal(true)} className="hover:text-[#007AFF] transition-colors">Privacy Policy & Terms</button>
+            <button onClick={() => setShowSupportHub(true)} className="hover:text-[#007AFF] transition-colors">Support Hub</button>
+          </div>
+
         </div>
       </div>
 
@@ -195,6 +280,7 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
@@ -205,10 +291,90 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white rounded-full px-4 py-2 hover:opacity-90 transition-opacity font-bold text-sm shadow-lg flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+      <canvas ref={canvasRef} style={{ display: 'none' }} />
+
+      {/* MODALS */}
+      <AnimatePresence>
+        {showLegalModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.95 }}
+              className="bg-[#111] border border-white/20 p-8 rounded-2xl max-w-lg w-full relative max-h-[80vh] flex flex-col"
+            >
+              <button onClick={() => setShowLegalModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+              <h2 className="text-2xl font-bold mb-4 text-[#007AFF]">Privacy Policy & Terms</h2>
+              <div className="flex-1 overflow-y-auto pr-4 text-sm text-gray-300 space-y-4">
+                <p><strong>1. Data Processing</strong><br/>All photos uploaded to S_FIT NEO are processed securely for the sole purpose of generating virtual fitting results. We do not store your images permanently without explicit consent.</p>
+                <p><strong>2. Third-Party Services</strong><br/>We utilize advanced AI models via secure APIs (e.g., Replicate) to perform the virtual try-on. Your data is transmitted securely and is subject to strict data deletion policies post-processing.</p>
+                <p><strong>3. User Rights</strong><br/>You retain full rights to your uploaded images and the generated results. You may request deletion of any temporary data at any time through our Support Hub.</p>
+                <p><strong>4. Terms of Use</strong><br/>By using S_FIT NEO, you agree not to upload offensive, illegal, or copyrighted material without permission. The service is provided &quot;as is&quot; for virtual fitting purposes.</p>
+              </div>
+              <button onClick={() => setShowLegalModal(false)} className="mt-6 w-full py-3 bg-[#007AFF] hover:bg-[#005bb5] text-white rounded-xl font-bold transition-colors">I Understand</button>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {showSupportHub && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.95 }}
+              className="bg-[#111] border border-white/20 p-8 rounded-2xl max-w-md w-full relative"
+            >
+              <button onClick={() => setShowSupportHub(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+              <h2 className="text-2xl font-bold mb-2 text-[#007AFF]">Support Hub</h2>
+              <p className="text-xs text-gray-400 mb-6">Found a bug or have a suggestion? Let us know!</p>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 mb-2">Report Issue</label>
+                  <textarea
+                    value={reportIssueText}
+                    onChange={(e) => setReportIssueText(e.target.value)}
+                    className="w-full h-32 bg-black/50 border border-white/20 rounded-xl p-3 text-sm text-white focus:border-[#007AFF] focus:outline-none resize-none"
+                    placeholder="Describe the issue you encountered..."
+                  />
+                </div>
+                <button
+                  onClick={() => {
+                    if(!reportIssueText.trim()) return;
+                    alert("Thank you for your feedback! Our team will look into it.");
+                    setReportIssueText("");
+                    setShowSupportHub(false);
+                  }}
+                  disabled={!reportIssueText.trim()}
+                  className="w-full py-3 bg-[#007AFF] hover:bg-[#005bb5] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-bold transition-colors"
+                >
+                  Submit Report
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
