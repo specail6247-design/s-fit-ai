@@ -17,6 +17,11 @@ export default function RealLifeFitting() {
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
 
+  // Phase 7 Features
+  const [savedLooks, setSavedLooks] = useState<string[]>([]);
+  const [isVaultOpen, setIsVaultOpen] = useState(false);
+  const [isAudioMuted, setIsAudioMuted] = useState(true);
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -73,19 +78,47 @@ export default function RealLifeFitting() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
+      { }
       
+      {/* Sensory Ambience (Audio) */}
+      <audio
+        src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+        autoPlay={!isAudioMuted}
+        loop
+        muted={isAudioMuted}
+        className="hidden"
+      />
+
       {/* LEFT PANEL: CONTROLS */}
       <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+        <header className="mb-10 relative z-10 flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-black tracking-tighter italic">
+              S_FIT <span className="text-[#007AFF]">NEO</span>
+            </h1>
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+              Professional Virtual Fitting
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setIsAudioMuted(!isAudioMuted)}
+              className="p-2 border border-white/20 hover:bg-white/10 rounded-full transition-colors text-xs"
+              title={isAudioMuted ? "Unmute Ambience" : "Mute Ambience"}
+            >
+              {isAudioMuted ? "🔇" : "🔊"}
+            </button>
+            <button
+              onClick={() => setIsVaultOpen(true)}
+              className="p-2 border border-[#007AFF]/50 hover:bg-[#007AFF]/20 rounded-full transition-colors text-xs text-[#007AFF] font-bold shadow-[0_0_10px_rgba(0,122,255,0.2)]"
+              title="Open The Vault"
+            >
+              Vault ({savedLooks.length})
+            </button>
+          </div>
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
@@ -96,6 +129,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
                   {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
@@ -113,6 +147,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
                   {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
@@ -158,6 +193,21 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Exclusive Access (Drops) */}
+          <div className="mt-8 p-4 border border-red-500/30 bg-red-500/10 rounded-xl flex items-center justify-between group cursor-not-allowed">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl opacity-50">🔒</span>
+              <div>
+                <div className="text-xs font-bold text-red-400 uppercase tracking-widest">Supreme x Louis Vuitton</div>
+                <div className="text-[10px] text-red-400/70">Exclusive Drop</div>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-xs font-mono font-bold text-red-400 tracking-widest">02:00:00</div>
+              <div className="text-[8px] text-red-400/50 uppercase">Until Unlock</div>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -195,6 +245,7 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
@@ -206,9 +257,82 @@ export default function RealLifeFitting() {
                 AI GENERATED_
               </div>
             </div>
+
+            {/* Action Bar (Styling Tip & Vault) */}
+            <div className="mt-4 bg-black/40 backdrop-blur-md p-4 rounded-xl border border-white/10 flex flex-col gap-3">
+              <div className="flex items-start gap-2 text-sm text-gray-300">
+                <span className="text-[#007AFF]">💡</span>
+                <div>
+                  <span className="font-bold text-white text-xs uppercase tracking-widest mb-1 block">AI Stylist Note</span>
+                  <span className="italic">&quot;Pair this with structured denim for a balanced silhouette.&quot;</span>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  if (resultImage && !savedLooks.includes(resultImage)) {
+                    setSavedLooks([...savedLooks, resultImage]);
+                  }
+                }}
+                className="w-full py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-xs font-bold tracking-widest uppercase transition-colors flex items-center justify-center gap-2"
+              >
+                <span>📥</span> Save Look to Vault
+              </button>
+            </div>
           </motion.div>
         )}
       </div>
+
+      {/* The Vault Drawer (Modal) */}
+      {isVaultOpen && (
+        <div className="absolute inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-sm">
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            className="w-96 h-full bg-[#0a0a0a] border-l border-white/10 p-6 flex flex-col shadow-2xl"
+          >
+            <div className="flex justify-between items-center mb-8 pb-4 border-b border-white/10">
+              <div>
+                <h2 className="text-2xl font-black italic tracking-tighter">THE VAULT</h2>
+                <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-1">Your Digital Wardrobe</p>
+              </div>
+              <button
+                onClick={() => setIsVaultOpen(false)}
+                className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto pr-2 space-y-4">
+              {savedLooks.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-center text-gray-500 space-y-2">
+                  <span className="text-4xl opacity-50">🗄️</span>
+                  <p className="text-sm font-bold uppercase tracking-widest">Vault is Empty</p>
+                  <p className="text-xs">Save looks to build your collection.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-4">
+                  {savedLooks.map((src, index) => (
+                    <div key={index} className="relative group rounded-lg overflow-hidden border border-white/10 aspect-[3/4] bg-black/50">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={src} alt={`Saved look ${index + 1}`} className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <button
+                          onClick={() => setSavedLooks(savedLooks.filter((_, i) => i !== index))}
+                          className="text-xs font-bold text-red-400 bg-red-500/20 px-3 py-1 rounded border border-red-500/30"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
