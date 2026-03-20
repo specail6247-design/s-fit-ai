@@ -1,0 +1,283 @@
+
+> s-fit-ai@0.1.0 dev /app
+> next dev --webpack
+
+▲ Next.js 16.1.4 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+
+✓ Starting...
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+✓ Ready in 1949ms
+○ Compiling / ...
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+⚠️ Invalid or missing Supabase URL. Using mock connection for development.
+ GET / 200 in 26.2s (compile: 25.3s, render: 874ms)
+ GET / 200 in 80ms (compile: 10ms, render: 70ms)
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'alt'
+     ,-[/app/components/RealLifeFitting.tsx:118:1]
+ 115 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 116 |                   {userImage ? (
+ 117 |                     {/* eslint-disable-next-line @next/next/no-img-element */}
+ 118 |                     <img alt="User Photo" src={userImage} className="w-full h-full object-cover" />
+     :                          ^^^
+ 119 |                   ) : <span className="text-2xl">👤</span>}
+ 120 |                 </div>
+ 121 |                 <div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'alt'
+     ,-[/app/components/RealLifeFitting.tsx:118:1]
+ 115 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 116 |                   {userImage ? (
+ 117 |                     {/* eslint-disable-next-line @next/next/no-img-element */}
+ 118 |                     <img alt="User Photo" src={userImage} className="w-full h-full object-cover" />
+     :                          ^^^
+ 119 |                   ) : <span className="text-2xl">👤</span>}
+ 120 |                 </div>
+ 121 |                 <div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'alt'
+     ,-[/app/components/RealLifeFitting.tsx:118:1]
+ 115 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 116 |                   {userImage ? (
+ 117 |                     {/* eslint-disable-next-line @next/next/no-img-element */}
+ 118 |                     <img alt="User Photo" src={userImage} className="w-full h-full object-cover" />
+     :                          ^^^
+ 119 |                   ) : <span className="text-2xl">👤</span>}
+ 120 |                 </div>
+ 121 |                 <div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'alt'
+     ,-[/app/components/RealLifeFitting.tsx:118:1]
+ 115 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 116 |                   {userImage ? (
+ 117 |                     {/* eslint-disable-next-line @next/next/no-img-element */}
+ 118 |                     <img alt="User Photo" src={userImage} className="w-full h-full object-cover" />
+     :                          ^^^
+ 119 |                   ) : <span className="text-2xl">👤</span>}
+ 120 |                 </div>
+ 121 |                 <div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'alt'
+     ,-[/app/components/RealLifeFitting.tsx:140:1]
+ 137 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 138 |                   {garmentImage ? (
+ 139 |                     {/* eslint-disable-next-line @next/next/no-img-element */}
+ 140 |                     <img alt="Target Garment" src={garmentImage} className="w-full h-full object-cover" />
+     :                          ^^^
+ 141 |                   ) : <span className="text-2xl">👕</span>}
+ 142 |                 </div>
+ 143 |                 <div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+⚠️ Invalid or missing Supabase URL. Using mock connection for development.
+ GET / 200 in 3.7s (compile: 1907ms, render: 1751ms)
+ GET / 200 in 114ms (compile: 10ms, render: 104ms)
+ GET / 200 in 535ms (compile: 18ms, render: 517ms)
+ GET / 200 in 540ms (compile: 11ms, render: 529ms)
+ GET / 200 in 173ms (compile: 14ms, render: 160ms)
+ GET / 200 in 77ms (compile: 8ms, render: 69ms)
+ GET / 200 in 289ms (compile: 8ms, render: 281ms)
+ GET / 200 in 78ms (compile: 7ms, render: 71ms)
+ GET / 200 in 142ms (compile: 27ms, render: 115ms)
+ GET / 200 in 132ms (compile: 16ms, render: 116ms)
+ GET / 200 in 178ms (compile: 28ms, render: 150ms)
+ GET / 200 in 144ms (compile: 4ms, render: 140ms)
+ GET / 200 in 63ms (compile: 4ms, render: 59ms)
+ GET / 200 in 62ms (compile: 7ms, render: 55ms)
+ GET / 200 in 74ms (compile: 6ms, render: 69ms)
+ GET / 200 in 79ms (compile: 8ms, render: 72ms)
+ GET / 200 in 78ms (compile: 6ms, render: 72ms)
+ GET / 200 in 280ms (compile: 164ms, render: 115ms)
+ GET / 200 in 109ms (compile: 34ms, render: 75ms)
+ GET / 200 in 229ms (compile: 5ms, render: 224ms)
+ GET / 200 in 247ms (compile: 18ms, render: 229ms)
+ GET / 200 in 681ms (compile: 6ms, render: 674ms)
+○ Compiling /api/try-on ...
+Calling Replicate with:
+- userPhoto type: data URI
+- garmentImage type: data URI
+- category: tops
+REPLICATE_API_TOKEN is not set
+ POST /api/try-on 500 in 7.1s (compile: 7.0s, render: 162ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+⚠️ Invalid or missing Supabase URL. Using mock connection for development.
+ GET / 200 in 1148ms (compile: 141ms, render: 1006ms)
+ GET / 200 in 378ms (compile: 74ms, render: 304ms)
+ GET / 200 in 373ms (compile: 37ms, render: 336ms)
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET / 200 in 51ms (compile: 4ms, render: 47ms)
+ GET / 200 in 93ms (compile: 10ms, render: 83ms)
+Calling Replicate with:
+- userPhoto type: data URI
+- garmentImage type: data URI
+- category: tops
+REPLICATE_API_TOKEN is not set
+ POST /api/try-on 500 in 52ms (compile: 21ms, render: 31ms)
+ GET / 200 in 96ms (compile: 6ms, render: 90ms)
+ GET / 200 in 60ms (compile: 3ms, render: 57ms)
+ GET / 200 in 51ms (compile: 4ms, render: 47ms)
+Calling Replicate with:
+- userPhoto type: data URI
+- garmentImage type: data URI
+- category: tops
+REPLICATE_API_TOKEN is not set
+ POST /api/try-on 500 in 12ms (compile: 4ms, render: 8ms)
+ GET / 200 in 92ms (compile: 5ms, render: 87ms)
+ GET / 200 in 89ms (compile: 13ms, render: 76ms)
+ GET / 200 in 101ms (compile: 13ms, render: 88ms)
+ GET / 200 in 127ms (compile: 17ms, render: 109ms)
+Calling Replicate with:
+- userPhoto type: data URI
+- garmentImage type: data URI
+- category: tops
+REPLICATE_API_TOKEN is not set
+ POST /api/try-on 500 in 21ms (compile: 10ms, render: 10ms)
+ GET / 200 in 86ms (compile: 7ms, render: 79ms)
+ GET / 200 in 54ms (compile: 5ms, render: 49ms)
+ GET / 200 in 73ms (compile: 5ms, render: 68ms)
+ GET / 200 in 67ms (compile: 10ms, render: 57ms)
+ GET / 200 in 129ms (compile: 18ms, render: 111ms)
+Calling Replicate with:
+- userPhoto type: data URI
+- garmentImage type: data URI
+- category: tops
+REPLICATE_API_TOKEN is not set
+ POST /api/try-on 500 in 33ms (compile: 14ms, render: 19ms)
+ GET / 200 in 65ms (compile: 9ms, render: 57ms)
+ GET / 200 in 150ms (compile: 14ms, render: 135ms)
+ GET / 200 in 151ms (compile: 92ms, render: 58ms)
+ GET / 200 in 73ms (compile: 19ms, render: 54ms)
+ GET / 200 in 78ms (compile: 5ms, render: 74ms)
+ GET / 200 in 134ms (compile: 10ms, render: 124ms)
+Calling Replicate with:
+- userPhoto type: data URI
+- garmentImage type: data URI
+- category: tops
+REPLICATE_API_TOKEN is not set
+ POST /api/try-on 500 in 29ms (compile: 4ms, render: 25ms)
+Calling Replicate with:
+- userPhoto type: data URI
+- garmentImage type: data URI
+- category: tops
+REPLICATE_API_TOKEN is not set
+ POST /api/try-on 500 in 12ms (compile: 3ms, render: 9ms)
+ GET / 200 in 641ms (compile: 31ms, render: 610ms)
+ GET / 200 in 60ms (compile: 7ms, render: 52ms)
+Calling Replicate with:
+- userPhoto type: data URI
+- garmentImage type: data URI
+- category: tops
+REPLICATE_API_TOKEN is not set
+ POST /api/try-on 500 in 20ms (compile: 9ms, render: 11ms)
+Calling Replicate with:
+- userPhoto type: data URI
+- garmentImage type: data URI
+- category: tops
+REPLICATE_API_TOKEN is not set
+ POST /api/try-on 500 in 20ms (compile: 12ms, render: 8ms)
+ GET / 200 in 55ms (compile: 4ms, render: 51ms)
+Calling Replicate with:
+- userPhoto type: data URI
+- garmentImage type: data URI
+- category: tops
+REPLICATE_API_TOKEN is not set
+ POST /api/try-on 500 in 10ms (compile: 3ms, render: 7ms)
+ GET / 200 in 212ms (compile: 128ms, render: 85ms)
+ GET / 200 in 122ms (compile: 44ms, render: 77ms)
+ GET / 200 in 116ms (compile: 4ms, render: 112ms)
+ GET / 200 in 92ms (compile: 6ms, render: 87ms)
+ GET / 200 in 97ms (compile: 6ms, render: 91ms)
+Calling Replicate with:
+- userPhoto type: data URI
+- garmentImage type: data URI
+- category: tops
+REPLICATE_API_TOKEN is not set
+ POST /api/try-on 500 in 19ms (compile: 4ms, render: 15ms)
+ GET / 200 in 61ms (compile: 3ms, render: 58ms)
+ GET / 200 in 51ms (compile: 6ms, render: 45ms)
+ GET / 200 in 68ms (compile: 4ms, render: 63ms)
+Calling Replicate with:
+- userPhoto type: data URI
+- garmentImage type: data URI
+- category: tops
+REPLICATE_API_TOKEN is not set
+ POST /api/try-on 500 in 23ms (compile: 10ms, render: 12ms)
+ GET / 200 in 63ms (compile: 14ms, render: 49ms)
+ GET / 200 in 48ms (compile: 4ms, render: 45ms)
+ GET / 200 in 82ms (compile: 7ms, render: 75ms)
+ GET / 200 in 71ms (compile: 7ms, render: 64ms)
+ GET / 200 in 100ms (compile: 12ms, render: 88ms)
+ GET / 200 in 53ms (compile: 3ms, render: 50ms)
+ GET / 200 in 54ms (compile: 5ms, render: 48ms)
+Calling Replicate with:
+- userPhoto type: data URI
+- garmentImage type: data URI
+- category: tops
+REPLICATE_API_TOKEN is not set
+ POST /api/try-on 500 in 35ms (compile: 8ms, render: 28ms)
+ GET / 200 in 94ms (compile: 9ms, render: 85ms)
+Calling Replicate with:
+- userPhoto type: data URI
+- garmentImage type: data URI
+- category: tops
+REPLICATE_API_TOKEN is not set
+ POST /api/try-on 500 in 24ms (compile: 15ms, render: 9ms)
+ GET / 200 in 70ms (compile: 37ms, render: 33ms)
+ GET / 200 in 56ms (compile: 4ms, render: 53ms)
+ GET / 200 in 45ms (compile: 3ms, render: 41ms)
+ GET / 200 in 44ms (compile: 3ms, render: 41ms)
+ GET / 200 in 66ms (compile: 7ms, render: 59ms)
+ GET / 200 in 80ms (compile: 10ms, render: 70ms)
+Calling Replicate with:
+- userPhoto type: data URI
+- garmentImage type: data URI
+- category: tops
+REPLICATE_API_TOKEN is not set
+ POST /api/try-on 500 in 14ms (compile: 4ms, render: 10ms)
+ GET / 200 in 84ms (compile: 7ms, render: 77ms)
+ GET / 200 in 85ms (compile: 10ms, render: 76ms)
