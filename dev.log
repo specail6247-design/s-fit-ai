@@ -18,3 +18,98 @@ https://nextjs.org/telemetry
 ⚠️ Invalid or missing Supabase URL. Using mock connection for development.
  GET / 200 in 26.2s (compile: 25.3s, render: 874ms)
  GET / 200 in 80ms (compile: 10ms, render: 70ms)
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'alt'
+     ,-[/app/components/RealLifeFitting.tsx:118:1]
+ 115 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 116 |                   {userImage ? (
+ 117 |                     {/* eslint-disable-next-line @next/next/no-img-element */}
+ 118 |                     <img alt="User Photo" src={userImage} className="w-full h-full object-cover" />
+     :                          ^^^
+ 119 |                   ) : <span className="text-2xl">👤</span>}
+ 120 |                 </div>
+ 121 |                 <div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'alt'
+     ,-[/app/components/RealLifeFitting.tsx:118:1]
+ 115 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 116 |                   {userImage ? (
+ 117 |                     {/* eslint-disable-next-line @next/next/no-img-element */}
+ 118 |                     <img alt="User Photo" src={userImage} className="w-full h-full object-cover" />
+     :                          ^^^
+ 119 |                   ) : <span className="text-2xl">👤</span>}
+ 120 |                 </div>
+ 121 |                 <div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'alt'
+     ,-[/app/components/RealLifeFitting.tsx:118:1]
+ 115 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 116 |                   {userImage ? (
+ 117 |                     {/* eslint-disable-next-line @next/next/no-img-element */}
+ 118 |                     <img alt="User Photo" src={userImage} className="w-full h-full object-cover" />
+     :                          ^^^
+ 119 |                   ) : <span className="text-2xl">👤</span>}
+ 120 |                 </div>
+ 121 |                 <div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'alt'
+     ,-[/app/components/RealLifeFitting.tsx:118:1]
+ 115 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 116 |                   {userImage ? (
+ 117 |                     {/* eslint-disable-next-line @next/next/no-img-element */}
+ 118 |                     <img alt="User Photo" src={userImage} className="w-full h-full object-cover" />
+     :                          ^^^
+ 119 |                   ) : <span className="text-2xl">👤</span>}
+ 120 |                 </div>
+ 121 |                 <div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'alt'
+     ,-[/app/components/RealLifeFitting.tsx:140:1]
+ 137 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 138 |                   {garmentImage ? (
+ 139 |                     {/* eslint-disable-next-line @next/next/no-img-element */}
+ 140 |                     <img alt="Target Garment" src={garmentImage} className="w-full h-full object-cover" />
+     :                          ^^^
+ 141 |                   ) : <span className="text-2xl">👕</span>}
+ 142 |                 </div>
+ 143 |                 <div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
