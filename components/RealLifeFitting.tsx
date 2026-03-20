@@ -78,7 +78,7 @@ export default function RealLifeFitting() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
-      {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
+      { }
       
       {/* Sensory Ambience (Audio) */}
       <audio
@@ -129,6 +129,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
                   {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
@@ -146,6 +147,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
                   {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
@@ -243,6 +245,7 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
@@ -312,6 +315,7 @@ export default function RealLifeFitting() {
                 <div className="grid grid-cols-2 gap-4">
                   {savedLooks.map((src, index) => (
                     <div key={index} className="relative group rounded-lg overflow-hidden border border-white/10 aspect-[3/4] bg-black/50">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={src} alt={`Saved look ${index + 1}`} className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <button
