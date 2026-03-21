@@ -1,5 +1,3 @@
-/* eslint-disable @next/next/google-font-display */
-/* eslint-disable @next/next/no-page-custom-font */
 import { Manrope } from 'next/font/google'
 import React from 'react'
 
