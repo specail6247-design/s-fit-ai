@@ -102,6 +102,9 @@ importers:
       jsdom:
         specifier: ^27.4.0
         version: 27.4.0
+      pnpm:
+        specifier: ^10.32.1
+        version: 10.32.1
       tailwindcss:
         specifier: ^4
         version: 4.2.2
@@ -2409,6 +2412,11 @@ packages:
   playwright@1.58.2:
     resolution: {integrity: sha512-vA30H8Nvkq/cPBnNw4Q8TWz1EJyqgpuinBcHET0YVJVFldr8JDNiU9LaWAE1KqSkRYazuaBhTpB5ZzShOezQ6A==}
     engines: {node: '>=18'}
+    hasBin: true
+
+  pnpm@10.32.1:
+    resolution: {integrity: sha512-pwaTjw6JrBRWtlY+q07fHR+vM2jRGR/FxZeQ6W3JGORFarLmfWE94QQ9LoyB+HMD5rQNT/7KnfFe8a1Wc0jyvg==}
+    engines: {node: '>=18.12'}
     hasBin: true
 
   possible-typed-array-names@1.1.0:
@@ -5404,6 +5412,8 @@ snapshots:
       playwright-core: 1.58.2
     optionalDependencies:
       fsevents: 2.3.2
+
+  pnpm@10.32.1: {}
 
   possible-typed-array-names@1.1.0: {}
 
