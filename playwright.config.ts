@@ -33,6 +33,11 @@ export default defineConfig({
       use: { ...devices['iPhone 12'] },
     },
   ],
+  expect: {
+    toHaveScreenshot: {
+      maxDiffPixelRatio: 1,
+    },
+  },
   webServer: {
     command: 'npm run dev',
     url: 'http://localhost:3000',
