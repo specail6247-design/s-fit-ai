@@ -1,15 +1,24 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Space_Grotesk } from "next/font/google";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const [isAudioMuted, setIsAudioMuted] = useState(false);
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
+      {/* Sensory Ambience (Background Audio) */}
+      <audio
+        autoPlay
+        loop
+        muted={isAudioMuted}
+        src="https://cdn.pixabay.com/audio/2022/02/22/audio_d1718ab41b.mp3"
+      />
+
       {/* Top App Bar */}
       <div className="z-50 flex items-center justify-between bg-transparent p-4">
         <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
@@ -19,8 +28,15 @@ export default function PhotoFitting() {
           <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
-        <div className="flex w-12 items-center justify-end">
-          <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
+        <div className="flex w-12 items-center justify-end gap-2">
+          <button
+            onClick={() => setIsAudioMuted(!isAudioMuted)}
+            aria-label={isAudioMuted ? "Unmute ambience" : "Mute ambience"}
+            className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md transition-colors hover:bg-white/10"
+          >
+            <span className="material-symbols-outlined">{isAudioMuted ? 'volume_off' : 'volume_up'}</span>
+          </button>
+          <button aria-label="Information" className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md transition-colors hover:bg-white/10">
             <span className="material-symbols-outlined">info</span>
           </button>
         </div>

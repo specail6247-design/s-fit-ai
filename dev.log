@@ -1,0 +1,95 @@
+
+> s-fit-ai@0.1.0 dev /app
+> next dev --webpack
+
+▲ Next.js 16.1.4 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+
+✓ Starting...
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+✓ Ready in 1793ms
+○ Compiling /luxury ...
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /luxury 200 in 11.6s (compile: 10.4s, render: 1284ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /luxury/fitting 200 in 1854ms (compile: 1508ms, render: 347ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /spa/fitting 200 in 1180ms (compile: 976ms, render: 203ms)
+○ Compiling / ...
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET / 200 in 13.4s (compile: 13.0s, render: 366ms)
+ GET / 200 in 57ms (compile: 7ms, render: 50ms)
+ GET / 200 in 109ms (compile: 7ms, render: 102ms)
+ GET / 200 in 115ms (compile: 6ms, render: 109ms)
+ GET / 200 in 93ms (compile: 10ms, render: 83ms)
+ GET / 200 in 69ms (compile: 5ms, render: 64ms)
+ GET / 200 in 52ms (compile: 5ms, render: 47ms)
+ GET / 200 in 114ms (compile: 7ms, render: 108ms)
+ GET / 200 in 71ms (compile: 5ms, render: 65ms)
+ GET / 200 in 56ms (compile: 7ms, render: 49ms)
+ GET / 200 in 122ms (compile: 6ms, render: 116ms)
+ GET / 200 in 122ms (compile: 5ms, render: 118ms)
+ GET / 200 in 128ms (compile: 23ms, render: 105ms)
+ GET / 200 in 59ms (compile: 6ms, render: 54ms)
+ GET / 200 in 94ms (compile: 7ms, render: 87ms)
+ GET / 200 in 45ms (compile: 18ms, render: 27ms)
+ GET / 200 in 48ms (compile: 4ms, render: 44ms)
+ GET / 200 in 47ms (compile: 3ms, render: 43ms)
+ GET / 200 in 43ms (compile: 3ms, render: 40ms)
+ GET / 200 in 73ms (compile: 3ms, render: 70ms)
+ GET / 200 in 58ms (compile: 5ms, render: 52ms)
+ GET / 200 in 78ms (compile: 19ms, render: 58ms)
+ GET / 200 in 64ms (compile: 7ms, render: 57ms)
+ GET / 200 in 98ms (compile: 6ms, render: 91ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET / 200 in 493ms (compile: 229ms, render: 263ms)
+ GET / 200 in 82ms (compile: 23ms, render: 58ms)
+ GET / 200 in 107ms (compile: 4ms, render: 103ms)
+ GET / 200 in 93ms (compile: 5ms, render: 88ms)
+ GET / 200 in 106ms (compile: 4ms, render: 102ms)
+ GET / 200 in 103ms (compile: 8ms, render: 95ms)
+ GET / 200 in 137ms (compile: 18ms, render: 119ms)
+ GET / 200 in 53ms (compile: 4ms, render: 49ms)
+ GET / 200 in 68ms (compile: 3ms, render: 65ms)
+ GET / 200 in 80ms (compile: 12ms, render: 69ms)
+ GET / 200 in 143ms (compile: 30ms, render: 113ms)
+ GET / 200 in 52ms (compile: 4ms, render: 48ms)
+ GET / 200 in 75ms (compile: 12ms, render: 63ms)
+ GET / 200 in 51ms (compile: 8ms, render: 43ms)
+ GET / 200 in 66ms (compile: 9ms, render: 57ms)
+ GET / 200 in 48ms (compile: 5ms, render: 43ms)
+ GET / 200 in 47ms (compile: 3ms, render: 44ms)
+ GET / 200 in 55ms (compile: 4ms, render: 51ms)
+ GET / 200 in 68ms (compile: 13ms, render: 55ms)
+ GET / 200 in 48ms (compile: 3ms, render: 44ms)
+ GET / 200 in 49ms (compile: 4ms, render: 45ms)
+ GET / 200 in 46ms (compile: 3ms, render: 43ms)
+ GET / 200 in 2.3s (compile: 799ms, render: 1466ms)
+ GET / 200 in 286ms (compile: 156ms, render: 129ms)
+ GET / 200 in 152ms (compile: 9ms, render: 143ms)
+ GET / 200 in 157ms (compile: 12ms, render: 146ms)
+ GET / 200 in 210ms (compile: 11ms, render: 199ms)
+ GET / 200 in 211ms (compile: 4ms, render: 207ms)
+ GET / 200 in 66ms (compile: 7ms, render: 59ms)
+ GET / 200 in 73ms (compile: 6ms, render: 67ms)
+ GET / 200 in 90ms (compile: 8ms, render: 82ms)
+ GET / 200 in 60ms (compile: 9ms, render: 51ms)
+ GET / 200 in 69ms (compile: 5ms, render: 65ms)
+ GET / 200 in 143ms (compile: 15ms, render: 128ms)
+ GET / 200 in 120ms (compile: 10ms, render: 110ms)
+ GET / 200 in 97ms (compile: 7ms, render: 90ms)
+ GET / 200 in 63ms (compile: 6ms, render: 57ms)
+ GET / 200 in 89ms (compile: 4ms, render: 85ms)
+ GET / 200 in 58ms (compile: 9ms, render: 49ms)
+ GET / 200 in 47ms (compile: 4ms, render: 44ms)
+ GET / 200 in 119ms (compile: 9ms, render: 109ms)
+ GET / 200 in 100ms (compile: 16ms, render: 84ms)
+ GET / 200 in 233ms (compile: 22ms, render: 212ms)
+ GET / 200 in 123ms (compile: 19ms, render: 104ms)

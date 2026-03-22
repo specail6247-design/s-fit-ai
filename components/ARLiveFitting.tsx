@@ -1,11 +1,27 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Space_Grotesk } from "next/font/google";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function ARLiveFitting() {
+  const [timeLeft, setTimeLeft] = useState(7200); // 2 hours in seconds
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTime = (seconds: number) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f6f7f8] text-white dark:bg-[#101922] ${spaceGrotesk.className}`}>
       {/* Main AR Viewport Container */}
@@ -90,6 +106,23 @@ export default function ARLiveFitting() {
           {/* Garment Carousel */}
           <div className="flex overflow-x-auto px-2 py-4 scrollbar-hide" style={{ maskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)" }}>
             <div className="flex items-stretch gap-3">
+              {/* Exclusive Drop (Locked) */}
+              <div className="flex min-w-28 flex-col gap-2 rounded-xl border border-white/10 bg-black/40 p-1 backdrop-blur-md relative overflow-hidden group">
+                <div className="absolute inset-0 bg-black/60 z-10 flex flex-col items-center justify-center gap-1">
+                  <span className="material-symbols-outlined text-white/80 text-lg">lock</span>
+                  <p className="text-[9px] font-bold text-white uppercase tracking-widest text-center px-1">Available In<br/><span className="text-[#ecab13]">{formatTime(timeLeft)}</span></p>
+                </div>
+                <div
+                  className="aspect-[4/5] w-full rounded-lg bg-cover bg-center bg-no-repeat blur-[2px] grayscale-[0.5]"
+                  data-alt="Locked exclusive garment"
+                  style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBqkn4HFnxWGVtmWbfYSHCV_0_Eix7IhuazsGoJhX_mZ0YSMRUig_BHDMoHIAapobfGWThLoMAvthdSMIT6zWhWTFp8GxOJe9a0NYtCwiUlYeJgFDX6uf47SweuwPSw0ifCVSal7eP6WDO1pyzOpMYk-TECLTV3Il19DmBV5p8acsIruMpV5hpoay7GQLfUQFZr1AMRddi5grhGdrPXb-TbjULkGcldw5FZg81mGVBmRGEfOT_KrdMTUPs9rPuDcgFxbGZ-rA_imkk")' }}
+                ></div>
+                <div className="px-1 pb-1 relative z-20 opacity-50">
+                  <p className="truncate text-[10px] font-bold uppercase text-white">Onyx Trench</p>
+                  <p className="text-[10px] font-bold text-[#ecab13]">Drop 04</p>
+                </div>
+              </div>
+
               <div className="flex min-w-28 flex-col gap-2 rounded-xl border-2 border-[#2b8cee] bg-[#2b8cee]/20 p-1 backdrop-blur-md">
                 <div
                   className="aspect-[4/5] w-full rounded-lg bg-cover bg-center bg-no-repeat"
