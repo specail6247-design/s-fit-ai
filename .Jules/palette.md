@@ -1,0 +1,3 @@
+## 2024-05-25 - Missing ARIA Labels on material-symbols-outlined Icons
+**Learning:** Found a recurring pattern across the app where buttons or links relying entirely on `<span className="material-symbols-outlined">icon_name</span>` lack `aria-label`s. This makes the actions invisible to screen readers, preventing users with vision impairments from understanding the button's purpose (e.g., share, zoom, refresh).
+**Action:** When adding or modifying icon-only buttons that rely on `material-symbols-outlined` spans for visuals (e.g., in `ARLiveFitting` or `LuxuryGarmentDetail`), explicitly include an `aria-label` attribute on the `<button>` element to ensure screen reader accessibility.
