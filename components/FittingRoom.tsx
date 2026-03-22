@@ -607,15 +607,130 @@ interface ShareModalProps {
   brandName?: string;
   fitScore: number;
   recommendedSize?: string;
+  resultImageUrl?: string | null;
 }
 
-function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize }: ShareModalProps) {
+function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize, resultImageUrl }: ShareModalProps) {
   const [hasPublished, setHasPublished] = useState(false);
+  const [isGeneratingStory, setIsGeneratingStory] = useState(false);
   if (!isOpen) return null;
 
   const safeItemName = itemName ?? 'this fit';
   const safeBrandName = brandName ?? 'S_FIT AI';
   const shareText = `I just tried on ${safeItemName} from ${safeBrandName} using S_FIT AI! Fit score ${fitScore}% ${recommendedSize ? `(Size ${recommendedSize})` : ''} #SFIT #VirtualTryOn #Fashion`;
+
+  const generateInstagramStory = async () => {
+    if (!resultImageUrl) {
+      alert("No try-on image available to share.");
+      return;
+    }
+
+    setIsGeneratingStory(true);
+
+    try {
+      const canvas = document.createElement('canvas');
+      // Instagram Story size
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error("Could not get canvas context");
+
+      // Draw background (dark gradient)
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, '#0a0a0a');
+      gradient.addColorStop(1, '#1a1a1a');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Add subtle grid or grain (simplified here)
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.02)';
+      for (let i = 0; i < canvas.width; i += 40) {
+        ctx.fillRect(i, 0, 1, canvas.height);
+      }
+      for (let i = 0; i < canvas.height; i += 40) {
+        ctx.fillRect(0, i, canvas.width, 1);
+      }
+
+      // Load user image
+      const img = new window.Image();
+      img.crossOrigin = 'anonymous'; // Important to prevent canvas tainting
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = resultImageUrl;
+      });
+
+      // Calculate aspect ratio and draw image centered
+      const imgRatio = img.width / img.height;
+      const targetHeight = 1200;
+      const targetWidth = targetHeight * imgRatio;
+      const x = (canvas.width - targetWidth) / 2;
+      const y = (canvas.height - targetHeight) / 2 - 100; // Shift up slightly
+
+      ctx.shadowColor = 'rgba(204, 255, 0, 0.3)';
+      ctx.shadowBlur = 50;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 20;
+
+      // Draw image
+      ctx.drawImage(img, x, y, targetWidth, targetHeight);
+
+      // Reset shadow
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+
+      // Draw S_FIT AI Logo/Brand at bottom
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 80px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT AI', canvas.width / 2, canvas.height - 300);
+
+      ctx.fillStyle = '#CCFF00'; // Cyber lime
+      ctx.font = '40px sans-serif';
+      ctx.fillText('Virtual Try-On Result', canvas.width / 2, canvas.height - 230);
+
+      ctx.fillStyle = '#8A8A8A';
+      ctx.font = '30px sans-serif';
+      const detailText = `${safeItemName} • Fit ${fitScore}%`;
+      ctx.fillText(detailText, canvas.width / 2, canvas.height - 180);
+
+      // Create blob and download or share
+      canvas.toBlob((blob) => {
+        if (!blob) throw new Error("Canvas to blob failed");
+
+        const file = new File([blob], "sfit-story.png", { type: "image/png" });
+
+        // Try Web Share API first (works well on mobile Safari/Chrome)
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({
+            files: [file],
+            title: 'S_FIT AI Try-On',
+            text: shareText
+          }).catch(console.error);
+        } else {
+          // Fallback to download
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'sfit-story.png';
+          a.click();
+          URL.revokeObjectURL(url);
+          alert('Story image downloaded! You can now share it to Instagram.');
+        }
+      }, 'image/png', 0.95);
+
+    } catch (err) {
+      console.error(err);
+      alert('Failed to generate Story image. Copying text instead.');
+      navigator.clipboard.writeText(shareText);
+    } finally {
+      setIsGeneratingStory(false);
+      onClose();
+    }
+  };
 
   const handleShare = (platform: string) => {
     const encodedText = encodeURIComponent(shareText);
@@ -623,11 +738,11 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
     let shareUrl = '';
     if (platform === 'twitter') shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${url}`;
     else if (platform === 'facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${encodedText}`;
-    else if (platform === 'instagram') { navigator.clipboard.writeText(shareText); alert('Text copied for Instagram! 📱'); return; }
+    else if (platform === 'instagram') { generateInstagramStory(); return; }
     else if (platform === 'kakao') shareUrl = `https://story.kakao.com/share?url=${url}&text=${encodedText}`;
     
     if (shareUrl) window.open(shareUrl, '_blank', 'width=600,height=400');
-    onClose();
+    if (platform !== 'instagram') onClose();
   };
 
   return (
@@ -639,7 +754,10 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
         <div className="grid grid-cols-2 gap-3 mb-4">
           <button onClick={() => handleShare('twitter')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#1DA1F2] text-xs"><span>𝕏</span> Twitter</button>
           <button onClick={() => handleShare('facebook')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#1877F2] text-xs"><span>📘</span> Facebook</button>
-          <button onClick={() => handleShare('instagram')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-[#833AB4] to-[#F77737] text-xs"><span>📷</span> Instagram</button>
+          <button onClick={() => handleShare('instagram')} disabled={isGeneratingStory} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-[#833AB4] to-[#F77737] text-xs disabled:opacity-50">
+            {isGeneratingStory ? <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <span>📷</span>}
+            {isGeneratingStory ? 'Generating...' : 'IG Story'}
+          </button>
           <button onClick={() => handleShare('kakao')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#FEE500] text-black text-xs"><span>💬</span> KakaoStory</button>
         </div>
         <div className="pt-4 border-t border-border-color">
@@ -1133,6 +1251,7 @@ export function FittingRoom() {
         brandName={currentItem?.brand} 
         fitScore={fitScore}
         recommendedSize={recommendedFit?.recommendedSize}
+        resultImageUrl={aiTryOnResult} // pass the result image from AITryOnModal
       />
       <CompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} picks={topPicks} onSelect={setSelectedItem} />
       <AITryOnModal
