@@ -12,3 +12,4 @@
 ✓ Ready in 1839ms
 ○ Compiling /luxury/fitting ...
  GET /luxury/fitting 200 in 10.8s (compile: 9.3s, render: 1550ms)
+⨯ Module not found: Error: Can't resolve 'next-flight-client-entry-loader' in '/app'
