@@ -1,5 +1,6 @@
 {
   "name": "s-fit-ai",
+  "packageManager": "pnpm@10.30.3",
   "version": "0.1.0",
   "private": true,
   "scripts": {
