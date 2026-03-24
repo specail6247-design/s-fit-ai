@@ -1,0 +1,4 @@
+## 2024-03-24 - API Key Exposure in Client Bundle
+**Vulnerability:** Instantiating server-side SDKs (like OpenAI) with `NEXT_PUBLIC_` prefixed environment variables and `dangerouslyAllowBrowser: true` in files that may be imported by client components (e.g., `lib/visionService.ts` imported by `'use client'` files).
+**Learning:** Next.js bundles anything referenced in files imported by `'use client'` components. Even if a function is only intended for the server, initializing a top-level module with `NEXT_PUBLIC_` variables makes the API key available in the browser's JavaScript bundle.
+**Prevention:** Never use `NEXT_PUBLIC_` for sensitive API keys. Do not use `dangerouslyAllowBrowser: true` for sensitive SDKs. Delay SDK initialization until inside server actions/API routes, or ensure the file is strictly marked with `'use server'` and never imported by client components directly.
