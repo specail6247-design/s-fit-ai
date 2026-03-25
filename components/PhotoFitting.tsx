@@ -1,30 +1,48 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Space_Grotesk } from "next/font/google";
+import { motion, AnimatePresence } from "framer-motion";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
 
+  // Immersive Fitting State variables
+  const [isAnalyzing] = useState(true);
+  const [isFitting] = useState(false);
+
+  const isProcessing = isAnalyzing || isFitting;
+
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
-      {/* Top App Bar */}
-      <div className="z-50 flex items-center justify-between bg-transparent p-4">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
+      <AnimatePresence>
+        {!isProcessing && (
+          <motion.div
+            key="top-bar"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="z-50 flex items-center justify-between bg-transparent p-4 absolute top-0 left-0 right-0"
+          >
+            {/* Top App Bar */}
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
           <span className="material-symbols-outlined">arrow_back_ios_new</span>
         </div>
         <div className="flex flex-col items-center">
           <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
-        <div className="flex w-12 items-center justify-end">
-          <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
-            <span className="material-symbols-outlined">info</span>
-          </button>
-        </div>
-      </div>
+            <div className="flex w-12 items-center justify-end">
+              <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
+                <span className="material-symbols-outlined">info</span>
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Main Viewport (Photo Fitting Canvas) */}
       <div className="absolute inset-0 z-0">
@@ -44,24 +62,51 @@ export default function PhotoFitting() {
           ></div>
 
           {/* HUD Overlays */}
-          <div className="glass-panel absolute left-4 top-24 rounded-lg p-3" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
-            <div className="flex items-center gap-2">
-              <div className="size-2 animate-pulse rounded-full bg-[#256af4]"></div>
-              <p className="text-[10px] font-bold uppercase tracking-tighter text-[#90a4cb]">Real-time Simulation</p>
-            </div>
-            <p className="mt-1 text-xs">
-              Fabric: <span className="text-[#256af4]">Metallic Liquid Silk</span>
-            </p>
-          </div>
-          <div className="glass-panel absolute right-4 top-24 rounded-lg p-3 text-right" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
-            <p className="text-[10px] font-bold uppercase tracking-tighter text-[#90a4cb]">Mesh Density</p>
-            <p className="mt-1 text-xs">42,000 Polygons</p>
-          </div>
+          <AnimatePresence>
+            {!isProcessing && (
+              <React.Fragment key="hud-overlays">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="glass-panel absolute left-4 top-24 rounded-lg p-3" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="size-2 animate-pulse rounded-full bg-[#256af4]"></div>
+                    <p className="text-[10px] font-bold uppercase tracking-tighter text-[#90a4cb]">Real-time Simulation</p>
+                  </div>
+                  <p className="mt-1 text-xs">
+                    Fabric: <span className="text-[#256af4]">Metallic Liquid Silk</span>
+                  </p>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="glass-panel absolute right-4 top-24 rounded-lg p-3 text-right" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}
+                >
+                  <p className="text-[10px] font-bold uppercase tracking-tighter text-[#90a4cb]">Mesh Density</p>
+                  <p className="mt-1 text-xs">42,000 Polygons</p>
+                </motion.div>
+              </React.Fragment>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
       {/* Processing State (Overlay) */}
-      <div className="absolute inset-x-0 top-1/2 z-30 -translate-y-1/2 px-6">
+      <AnimatePresence>
+        {isProcessing && (
+          <motion.div
+            key="processing-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="absolute inset-x-0 top-1/2 z-30 -translate-y-1/2 px-6"
+          >
         <div className="glass-panel mx-auto max-w-sm rounded-xl p-6 shadow-2xl" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
           <div className="flex flex-col gap-3">
             <div className="flex items-end justify-between gap-6">
@@ -77,11 +122,22 @@ export default function PhotoFitting() {
             <p className="mt-1 text-center text-[11px] font-medium leading-normal text-[#90a4cb]">Analyzing body dimensions and metallic fabric drape physics</p>
           </div>
         </div>
-      </div>
+      </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Controls Footer */}
-      <div className="mt-auto space-y-4 p-4 z-40">
-        <div className="flex items-center justify-between px-2">
+      <AnimatePresence>
+        {!isProcessing && (
+          <motion.div
+            key="controls-footer"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mt-auto space-y-4 p-4 z-40 absolute bottom-0 left-0 right-0"
+          >
+            <div className="flex items-center justify-between px-2">
           <h3 className="text-sm font-bold leading-tight tracking-wider uppercase text-white">Fitting Controls</h3>
           <span className="rounded bg-[#256af4]/20 px-2 py-0.5 text-[10px] text-[#256af4]">ADVANCED</span>
         </div>
@@ -117,16 +173,27 @@ export default function PhotoFitting() {
             </label>
           </div>
         </div>
-        <button className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-[#256af4] text-base font-bold text-white shadow-lg shadow-[#256af4]/20 transition-colors hover:bg-blue-600">
-          <span className="material-symbols-outlined">check_circle</span>
-          Confirm & Proceed to Checkout
-        </button>
-        <div className="h-4"></div>
-      </div>
+            <button className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-[#256af4] text-base font-bold text-white shadow-lg shadow-[#256af4]/20 transition-colors hover:bg-blue-600">
+              <span className="material-symbols-outlined">check_circle</span>
+              Confirm & Proceed to Checkout
+            </button>
+            <div className="h-4"></div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Heatmap Legend */}
-      <div className="glass-panel absolute bottom-64 left-4 z-40 flex flex-col gap-1.5 rounded-lg p-2" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
-        <div className="flex items-center gap-2">
+      <AnimatePresence>
+        {!isProcessing && (
+          <motion.div
+            key="heatmap-legend"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="glass-panel absolute bottom-64 left-4 z-40 flex flex-col gap-1.5 rounded-lg p-2" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}
+          >
+            <div className="flex items-center gap-2">
           <div className="size-2 rounded-full bg-red-500"></div>
           <span className="text-[9px] font-bold uppercase text-white">Tight</span>
         </div>
@@ -134,11 +201,13 @@ export default function PhotoFitting() {
           <div className="size-2 rounded-full bg-green-500"></div>
           <span className="text-[9px] font-bold uppercase text-white">Perfect</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="size-2 rounded-full bg-blue-500"></div>
-          <span className="text-[9px] font-bold uppercase text-white">Loose</span>
-        </div>
-      </div>
+            <div className="flex items-center gap-2">
+              <div className="size-2 rounded-full bg-blue-500"></div>
+              <span className="text-[9px] font-bold uppercase text-white">Loose</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
