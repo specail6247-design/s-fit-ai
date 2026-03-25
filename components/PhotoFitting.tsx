@@ -64,13 +64,16 @@ export default function PhotoFitting() {
           {/* HUD Overlays */}
           <AnimatePresence>
             {!isProcessing && (
-              <React.Fragment key="hud-overlays">
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="glass-panel absolute left-4 top-24 rounded-lg p-3" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}
+              <motion.div
+                key="hud-overlays-container"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="pointer-events-none absolute inset-0 z-20"
+              >
+                <div
+                  className="glass-panel pointer-events-auto absolute left-4 top-24 rounded-lg p-3" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}
                 >
                   <div className="flex items-center gap-2">
                     <div className="size-2 animate-pulse rounded-full bg-[#256af4]"></div>
@@ -79,18 +82,14 @@ export default function PhotoFitting() {
                   <p className="mt-1 text-xs">
                     Fabric: <span className="text-[#256af4]">Metallic Liquid Silk</span>
                   </p>
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="glass-panel absolute right-4 top-24 rounded-lg p-3 text-right" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}
+                </div>
+                <div
+                  className="glass-panel pointer-events-auto absolute right-4 top-24 rounded-lg p-3 text-right" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}
                 >
                   <p className="text-[10px] font-bold uppercase tracking-tighter text-[#90a4cb]">Mesh Density</p>
                   <p className="mt-1 text-xs">42,000 Polygons</p>
-                </motion.div>
-              </React.Fragment>
+                </div>
+              </motion.div>
             )}
           </AnimatePresence>
         </div>
