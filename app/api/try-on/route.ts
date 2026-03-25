@@ -12,7 +12,14 @@ function localFileToDataUri(localPath: string): string | null {
   try {
     // Remove leading slash and resolve to public directory
     const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
-    const absolutePath = path.join(process.cwd(), 'public', relativePath);
+    const publicDir = path.join(process.cwd(), 'public');
+    const absolutePath = path.resolve(publicDir, relativePath);
+
+    // Security: Prevent path traversal by ensuring the resolved path is within the public directory
+    if (!absolutePath.startsWith(publicDir + path.sep)) {
+      console.error('Security alert: Attempted path traversal:', absolutePath);
+      return null;
+    }
     
     console.log('Reading local file:', absolutePath);
     
@@ -107,8 +114,9 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     console.error('Try-on API error:', error);
+    // Security: Do not expose internal error details to the client
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
