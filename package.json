@@ -2,6 +2,7 @@
   "name": "s-fit-ai",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.30.3",
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build --webpack",
@@ -38,6 +39,7 @@
     "@types/react-dom": "^19",
     "@types/three": "^0.182.0",
     "@vitejs/plugin-react": "^5.1.2",
+    "@vitest/coverage-v8": "^4.1.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.4",
     "happy-dom": "^20.3.7",
