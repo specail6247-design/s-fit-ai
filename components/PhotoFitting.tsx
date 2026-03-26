@@ -7,6 +7,53 @@ const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+
+  const audioCtxRef = React.useRef<AudioContext | null>(null);
+  const gainNodeRef = React.useRef<GainNode | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !audioCtxRef.current) {
+      const WebAudioContext = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const audioCtx = new WebAudioContext();
+      audioCtxRef.current = audioCtx;
+
+      const oscillator = audioCtx.createOscillator();
+      oscillator.type = 'sine';
+      oscillator.frequency.value = 65; // Soft low-frequency hum
+
+      const gainNode = audioCtx.createGain();
+      gainNode.gain.value = 0; // Start muted
+      gainNodeRef.current = gainNode;
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      oscillator.start();
+    }
+
+    return () => {
+      if (audioCtxRef.current) {
+        audioCtxRef.current.close();
+        audioCtxRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (gainNodeRef.current && audioCtxRef.current) {
+      const audioCtx = audioCtxRef.current;
+      if (audioCtx.state === 'suspended' && !isMuted) {
+        audioCtx.resume();
+      }
+
+      // Smooth volume transition to avoid clicks
+      gainNodeRef.current.gain.setTargetAtTime(
+        isMuted ? 0 : 0.15,
+        audioCtx.currentTime,
+        0.5
+      );
+    }
+  }, [isMuted]);
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
@@ -19,7 +66,13 @@ export default function PhotoFitting() {
           <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
-        <div className="flex w-12 items-center justify-end">
+        <div className="flex items-center justify-end gap-2">
+          <button
+            onClick={() => setIsMuted(!isMuted)}
+            className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md"
+          >
+            <span className="material-symbols-outlined">{isMuted ? 'volume_off' : 'volume_up'}</span>
+          </button>
           <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
             <span className="material-symbols-outlined">info</span>
           </button>
