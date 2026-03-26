@@ -2,6 +2,7 @@
 // https://replicate.com/cuuupid/idm-vton
 
 import Replicate from "replicate";
+import RunwayML from "@runwayml/sdk";
 import type { SegmentationResult } from './segmentation';
 
 export interface TryOnRequest {
@@ -196,20 +197,64 @@ export async function upscaleImage(imageUrl: string): Promise<string | null> {
   }
 }
 
-// Unified Video Generation (Runway/SVD)
+// Unified Video Generation (Runway/SVD/Gen-3 Alpha)
 export async function generateCinematicVideo(imageUrl: string): Promise<CinematicVideoResult> {
-  const apiToken = process.env.REPLICATE_API_TOKEN;
+  const runwayApiKey = process.env.RUNWAYML_API_SECRET;
+  const replicateApiToken = process.env.REPLICATE_API_TOKEN;
 
-  if (!apiToken) {
+  if (runwayApiKey) {
+    try {
+      console.log("Starting Cinematic Video Generation (Runway Gen-3 Alpha)...");
+      const client = new RunwayML({ apiKey: runwayApiKey });
+      const task = await client.imageToVideo.create({
+        model: "gen3a_turbo",
+        promptImage: imageUrl,
+        promptText: "A cinematic slow-motion fashion film shot in 4k. Beautiful dramatic lighting.",
+        duration: 5,
+        ratio: "1280:768"
+      });
+
+      const taskId = task.id;
+      let taskResponse;
+      let retries = 0;
+      const maxRetries = 60; // 60 * 2s = 120s max wait time
+
+      while (retries < maxRetries) {
+        taskResponse = await client.tasks.retrieve(taskId);
+        if (taskResponse.status === "SUCCEEDED" || taskResponse.status === "FAILED") {
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        retries++;
+      }
+
+      if (taskResponse?.status === "SUCCEEDED" && taskResponse.output && taskResponse.output.length > 0) {
+         return {
+          success: true,
+          videoUrl: taskResponse.output[0]
+         };
+      } else {
+         throw new Error(`RunwayML task failed or timed out: ${taskResponse?.status}`);
+      }
+    } catch (error) {
+      console.error('Runway cinematic video generation error:', error);
+      // Fallback to Replicate if Runway fails
+      console.log("Falling back to SVD for Cinematic Video Generation...");
+    }
+  } else {
+    console.log("RUNWAYML_API_SECRET not set. Using SVD for Cinematic Video Generation...");
+  }
+
+  if (!replicateApiToken) {
     console.error("REPLICATE_API_TOKEN is not set");
     return {
       success: false,
-      error: 'REPLICATE_API_TOKEN not configured'
+      error: 'API tokens not configured for video generation'
     };
   }
 
   const replicate = new Replicate({
-    auth: apiToken,
+    auth: replicateApiToken,
   });
 
   try {
@@ -248,7 +293,7 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
     }
 
   } catch (error) {
-    console.error('Cinematic video generation error:', error);
+    console.error('SVD cinematic video generation error:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'
