@@ -1,0 +1,4 @@
+## 2024-05-18 - Path Traversal in Virtual Try-On API Helper
+**Vulnerability:** A critical Path Traversal vulnerability existed in `app/api/try-on/route.ts` where `path.join(process.cwd(), 'public', relativePath)` allowed `../` sequences in `relativePath` to escape the `/public` directory context and access sensitive local system files, converting them to Base64 via `fs.readFileSync`.
+**Learning:** `path.join` does not sanitize against relative traversal sequences escaping the intended base directory. It blindly concatenates and collapses sequences, making it inherently unsafe when processing user-provided input.
+**Prevention:** Always use `path.resolve` to establish an absolute path and explicitly validate that the resulting path string begins with the intended base directory (using `absolutePath.startsWith(publicDir + path.sep)`) before performing any I/O operations.
