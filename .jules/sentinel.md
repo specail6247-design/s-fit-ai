@@ -1,0 +1,4 @@
+## 2026-03-27 - [Path Traversal in API Endpoint]
+**Vulnerability:** The `/api/try-on` endpoint reads files from the filesystem using user-provided paths (`garmentImageUrl`) via `path.join()`. This allows a malicious user to supply paths like `../../../etc/passwd` or `../../.env` to bypass the `public/` directory constraint and read sensitive files on the server.
+**Learning:** `path.join()` inherently resolves `..` sequences, meaning any resulting path might lie outside the intended base directory. Even if prepended with `public/`, `../../` traversal strings will walk up the directory tree.
+**Prevention:** Use `path.resolve()` to generate an absolute path and explicitly assert that it strictly starts with the intended base directory including the trailing separator: `if (!absolutePath.startsWith(publicDir + path.sep)) { ... }` to enforce containment within the expected directory structure.
