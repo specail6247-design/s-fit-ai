@@ -1,0 +1,18 @@
+
+> s-fit-ai@0.1.0 dev /app
+> next dev --webpack
+
+⚠ Port 3000 is in use by an unknown process, using available port 3001 instead.
+▲ Next.js 16.1.4 (webpack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.0.2:3001
+- Environments: .env.local
+
+✓ Starting...
+✓ Ready in 1747ms
+○ Compiling /luxury ...
+ GET /luxury 200 in 10.0s (compile: 8.6s, render: 1410ms)
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /luxury/fitting 200 in 1688ms (compile: 1352ms, render: 336ms)
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /spa/fitting 200 in 1404ms (compile: 1190ms, render: 213ms)

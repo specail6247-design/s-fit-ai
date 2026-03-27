@@ -1,11 +1,37 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Space_Grotesk } from "next/font/google";
+import { useSensoryAmbience } from "../hooks/useSensoryAmbience";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function ARLiveFitting() {
+  const { isMuted, toggleMute } = useSensoryAmbience();
+  const [timeLeft, setTimeLeft] = useState("02:00:00");
+
+  useEffect(() => {
+    // Simple countdown effect for the locked drop
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        let [hours, minutes, seconds] = prev.split(":").map(Number);
+        if (hours === 0 && minutes === 0 && seconds === 0) return prev;
+
+        seconds--;
+        if (seconds < 0) {
+          seconds = 59;
+          minutes--;
+        }
+        if (minutes < 0) {
+          minutes = 59;
+          hours--;
+        }
+        return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f6f7f8] text-white dark:bg-[#101922] ${spaceGrotesk.className}`}>
       {/* Main AR Viewport Container */}
@@ -36,8 +62,13 @@ export default function ARLiveFitting() {
             <div className="size-2 animate-pulse rounded-full bg-red-500"></div>
             <h2 className="text-sm font-bold tracking-widest uppercase text-white">Live Fit AI</h2>
           </div>
-          <div className="flex size-12 items-center justify-center rounded-full" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
-            <span className="material-symbols-outlined text-white">flash_on</span>
+          <div className="flex gap-2">
+            <button aria-label="Toggle Audio" onClick={toggleMute} className="flex size-12 items-center justify-center rounded-full" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+              <span className="material-symbols-outlined text-white">{isMuted ? "volume_off" : "volume_up"}</span>
+            </button>
+            <div className="flex size-12 items-center justify-center rounded-full" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+              <span className="material-symbols-outlined text-white">flash_on</span>
+            </div>
           </div>
         </div>
 
@@ -103,18 +134,28 @@ export default function ARLiveFitting() {
               </div>
               
               {[
-                  { name: "Silk Gown", price: "$3,100", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBDuZWxVmd1NmjEA78u9Bug9IALerv3mXMc1jJvFfkpQU0KEpj8H61ezGs7q-hQ_LQRxtHc4H_QAcTqOu2tETfyqrqqB-aXKc3It-W2CEa6sQYIBEuVrJ3bD5_XTaA0GeVrfvnDnypd9so862LZS33A3sTJ-U845P-JhNQnT3cFcg8qcI-I8oVMkmM7fFRmlKYyMl1ej6WWWa3MkChOC6VmkauVlN4Z8jsBZoMcEUD9yXSwQ97ZkmgJJj2A6eIHMvudiZqjCSTgWh0" },
-                  { name: "Moto Jacket", price: "$1,800", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC4WsO7nAvYpKcBO57jVyp0YklJpX_1jakpJ8Q8DHKRMnTuFiuqdMOMc5T8jm5VHhZfC00BeK-6O6b2UzIyeGN8OTo4vEWkA4n4WIeBHpjd0E882pLWtMQsFmLD9SSzggRQOqIp_f1PDthmab_IDQQjIlLRLz7awqLtNNwL4AwmMdO1C6Awys7X4XI2eHXujG3PA6q0PWyWDWnKH4UeydNguGQ3QoDfXb_iFtnnamfha3oliMDvJNKh0ziNwdhpcFqMa37R2dXgBTA" },
-                  { name: "Tech Coat", price: "$4,500", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCjef1QH6Yj47WsC6tyzaVdCx8u_EHOntW_LwbQvYacs4OUrYqnxBZMKJswSTCNOYPADKBHdr3WRf86o9a3U7tbaZaUxv-0V1fPtVCbcDTFuYPBb5ITuO9bbrSgMckR3OQyQQ5N7b50Q7PWnohUhW10eJ4q0P_fzBprFGVMB3hRK2fwx_r3SrA9W8GcvFT54pPNxi0d2CgbAjYvsILAmB6MYKH6pyc8XhpbS2IlNVVjjFg8iC2t5PY2EsJD0mD7vgAWXN-rcW2ILAk" },
+                  { name: "Silk Gown", price: "$3,100", isLocked: true, img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBDuZWxVmd1NmjEA78u9Bug9IALerv3mXMc1jJvFfkpQU0KEpj8H61ezGs7q-hQ_LQRxtHc4H_QAcTqOu2tETfyqrqqB-aXKc3It-W2CEa6sQYIBEuVrJ3bD5_XTaA0GeVrfvnDnypd9so862LZS33A3sTJ-U845P-JhNQnT3cFcg8qcI-I8oVMkmM7fFRmlKYyMl1ej6WWWa3MkChOC6VmkauVlN4Z8jsBZoMcEUD9yXSwQ97ZkmgJJj2A6eIHMvudiZqjCSTgWh0" },
+                  { name: "Moto Jacket", price: "$1,800", isLocked: false, img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC4WsO7nAvYpKcBO57jVyp0YklJpX_1jakpJ8Q8DHKRMnTuFiuqdMOMc5T8jm5VHhZfC00BeK-6O6b2UzIyeGN8OTo4vEWkA4n4WIeBHpjd0E882pLWtMQsFmLD9SSzggRQOqIp_f1PDthmab_IDQQjIlLRLz7awqLtNNwL4AwmMdO1C6Awys7X4XI2eHXujG3PA6q0PWyWDWnKH4UeydNguGQ3QoDfXb_iFtnnamfha3oliMDvJNKh0ziNwdhpcFqMa37R2dXgBTA" },
+                  { name: "Tech Coat", price: "$4,500", isLocked: false, img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCjef1QH6Yj47WsC6tyzaVdCx8u_EHOntW_LwbQvYacs4OUrYqnxBZMKJswSTCNOYPADKBHdr3WRf86o9a3U7tbaZaUxv-0V1fPtVCbcDTFuYPBb5ITuO9bbrSgMckR3OQyQQ5N7b50Q7PWnohUhW10eJ4q0P_fzBprFGVMB3hRK2fwx_r3SrA9W8GcvFT54pPNxi0d2CgbAjYvsILAmB6MYKH6pyc8XhpbS2IlNVVjjFg8iC2t5PY2EsJD0mD7vgAWXN-rcW2ILAk" },
               ].map((item, i) => (
-                <div key={i} className="flex min-w-28 flex-col gap-2 rounded-xl p-1 opacity-80" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+                <div key={i} className={`flex min-w-28 flex-col gap-2 rounded-xl p-1 ${item.isLocked ? "opacity-60 grayscale" : "opacity-80"}`} style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
                     <div
-                    className="aspect-[4/5] w-full rounded-lg bg-cover bg-center bg-no-repeat"
+                    className="relative aspect-[4/5] w-full rounded-lg bg-cover bg-center bg-no-repeat"
                     style={{ backgroundImage: `url("${item.img}")` }}
-                    ></div>
+                    >
+                      {item.isLocked && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm rounded-lg">
+                          <span className="material-symbols-outlined text-white/80">lock</span>
+                        </div>
+                      )}
+                    </div>
                     <div className="px-1 pb-1">
-                    <p className="truncate text-[10px] font-bold uppercase text-white">{item.name}</p>
-                    <p className="text-[10px] font-bold text-white/50">{item.price}</p>
+                      <p className="truncate text-[10px] font-bold uppercase text-white">{item.name}</p>
+                      {item.isLocked ? (
+                        <p className="text-[10px] font-bold text-orange-400 animate-pulse">Available in {timeLeft}</p>
+                      ) : (
+                        <p className="text-[10px] font-bold text-white/50">{item.price}</p>
+                      )}
                     </div>
                 </div>
               ))}
