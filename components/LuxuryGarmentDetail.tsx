@@ -1,17 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function LuxuryGarmentDetail() {
-  const [isVaultOpen, setIsVaultOpen] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
-
-  const handleSaveLook = () => {
-    setIsSaved(true);
-    setIsVaultOpen(true);
-  };
+  const [isVaultOpen, setIsVaultOpen] = React.useState(false);
 
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
@@ -22,11 +16,8 @@ export default function LuxuryGarmentDetail() {
             <span className="material-symbols-outlined">arrow_back</span>
           </Link>
           <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center">S_FIT AI</h2>
-          <div className="flex items-center justify-end gap-2">
-            <button onClick={() => setIsVaultOpen(true)} aria-label="Open Vault" className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
-              <span className="material-symbols-outlined">diamond</span>
-            </button>
-            <button aria-label="Share" className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
+          <div className="flex w-10 items-center justify-end">
+            <button className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
               <span className="material-symbols-outlined">share</span>
             </button>
           </div>
@@ -58,8 +49,21 @@ export default function LuxuryGarmentDetail() {
           </div>
         </div>
 
+        {/* AI Stylist Note */}
+        <div className="px-4 -mt-4 relative z-10 mb-8">
+          <div className="bg-[#1a1a1a]/80 backdrop-blur-xl border border-[#ecab13]/30 p-4 rounded-xl flex items-start gap-3">
+            <span className="material-symbols-outlined text-[#ecab13] text-xl mt-0.5">auto_awesome</span>
+            <div>
+              <p className="text-[#ecab13] text-[10px] font-bold uppercase tracking-widest mb-1">AI Stylist Note</p>
+              <p className="text-zinc-300 text-sm leading-relaxed">
+                Pair this with structured denim for a balanced silhouette. The liquid metal finish contrasts beautifully with matte textures.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Material Stats */}
-        <div className="px-4 -mt-4 relative z-10">
+        <div className="px-4 relative z-10">
           <div className="flex flex-wrap gap-3 bg-[#1a1a1a]/60 backdrop-blur-xl border border-[#2d2d2d] p-4 rounded-xl">
             <div className="flex min-w-[80px] flex-1 flex-col gap-1 items-center text-center">
               <p className="text-[#ecab13] text-xl font-bold leading-tight">99.8%</p>
@@ -88,17 +92,6 @@ export default function LuxuryGarmentDetail() {
             Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
-          {/* AI Stylist Note */}
-          <div className="mb-6 rounded-lg bg-[#1a1a1a]/50 p-4 border border-[#ecab13]/20">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="material-symbols-outlined text-[#ecab13] text-sm">auto_awesome</span>
-              <h3 className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase">AI Stylist Note</h3>
-            </div>
-            <p className="text-white text-sm italic">
-              &quot;Styling Tip: Pair this with structured denim for a balanced silhouette.&quot;
-            </p>
-          </div>
-
           {/* Chips */}
           <div className="flex gap-2 flex-wrap mb-8">
             <div className="flex h-8 items-center justify-center rounded-full border border-[#ecab13]/30 bg-[#ecab13]/10 px-4">
@@ -153,69 +146,55 @@ export default function LuxuryGarmentDetail() {
       </main>
 
       {/* Bottom Action Bar */}
-      <div className="fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex gap-4 items-center z-40">
-        <div className="flex flex-col flex-1">
-          <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
-          <p className="text-white text-xl font-bold">$2,850</p>
-        </div>
-        <div className="flex-[2] flex gap-2">
+      <div className="fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex flex-col gap-4 items-center z-50">
+        <div className="flex w-full gap-4 max-w-md mx-auto">
+          <div className="flex flex-col flex-1 justify-center">
+            <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
+            <p className="text-white text-xl font-bold">$2,850</p>
+          </div>
           <button
-            onClick={handleSaveLook}
-            className="flex-1 bg-[#1a1a1a] border border-[#2d2d2d] text-white h-14 rounded-xl flex items-center justify-center gap-2 hover:bg-[#2d2d2d] transition-colors"
+            onClick={() => setIsVaultOpen(true)}
+            aria-label="Save Look"
+            className="flex-[1] bg-[#1a1a1a] border border-[#2d2d2d] text-white h-14 rounded-xl flex items-center justify-center gap-2 hover:bg-[#2a2a2a] transition-colors"
           >
-            <span className="material-symbols-outlined text-sm">{isSaved ? 'bookmark_added' : 'bookmark_add'}</span>
-            <span className="font-bold text-xs tracking-widest uppercase">{isSaved ? 'Saved' : 'Save Look'}</span>
+            <span className="material-symbols-outlined">bookmark_border</span>
+            <span className="text-xs font-bold tracking-widest uppercase">Save Look</span>
           </button>
-          <Link href="/luxury/fitting" className="flex-[1.5] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
-            <span className="material-symbols-outlined font-bold text-sm">person_add_alt</span>
+          <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
+            <span className="material-symbols-outlined font-bold">person_add_alt</span>
             <span className="font-bold text-xs tracking-widest uppercase">Try On</span>
           </Link>
         </div>
       </div>
 
-      {/* "The Vault" Digital Wardrobe Drawer */}
+      {/* The Vault Drawer */}
       <AnimatePresence>
         {isVaultOpen && (
           <motion.div
             key="vault-drawer"
-            initial={{ y: "100%" }}
+            initial={{ y: '100%' }}
             animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-x-0 bottom-0 z-50 rounded-t-3xl bg-[#111] border-t border-[#2d2d2d] shadow-[0_-10px_40px_rgba(0,0,0,0.5)] h-[60vh] flex flex-col"
+            exit={{ y: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed inset-x-0 bottom-0 z-[60] h-[60vh] bg-[#0a0a0a] border-t border-[#2d2d2d] rounded-t-3xl p-6 shadow-2xl flex flex-col max-w-md mx-auto"
           >
-            <div className="p-4 border-b border-[#2d2d2d] flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#ecab13]">diamond</span>
-                <h2 className="text-white text-sm font-bold tracking-[0.2em] uppercase">The Vault</h2>
-              </div>
-              <button
-                onClick={() => setIsVaultOpen(false)}
-                aria-label="Close Vault"
-                className="size-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-              >
-                <span className="material-symbols-outlined text-sm">close</span>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-white font-bold tracking-[0.2em] uppercase">The Vault</h3>
+              <button onClick={() => setIsVaultOpen(false)} aria-label="Close Vault" className="text-zinc-500 hover:text-white transition-colors">
+                <span className="material-symbols-outlined">close</span>
               </button>
             </div>
-
-            <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
-              <p className="text-zinc-500 text-xs text-center mb-2">Compare your curated looks.</p>
-
-              {isSaved && (
-                <div className="flex gap-4 p-3 rounded-xl border border-[#2d2d2d] bg-[#1a1a1a]">
-                  <div
-                    className="w-20 h-24 rounded-lg bg-zinc-800 bg-cover bg-center"
-                    style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' }}
-                  />
-                  <div className="flex-1 flex flex-col justify-center">
-                    <h3 className="text-white text-sm font-bold mb-1">Metallic Silk Blazer</h3>
-                    <p className="text-[#ecab13] text-xs font-bold">$2,850</p>
-                    <div className="mt-2 flex gap-2">
-                      <button className="px-3 py-1.5 rounded-lg bg-white/10 text-white text-[10px] font-bold uppercase tracking-wider hover:bg-white/20 transition-colors">Compare</button>
-                    </div>
-                  </div>
+            <div className="flex-1 overflow-y-auto no-scrollbar">
+              {/* Saved Item */}
+              <div className="flex gap-4 p-4 bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl mb-4">
+                <div className="size-20 bg-zinc-800 rounded-lg overflow-hidden bg-cover bg-center" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBqkn4HFnxWGVtmWbfYSHCV_0_Eix7IhuazsGoJhX_mZ0YSMRUig_BHDMoHIAapobfGWThLoMAvthdSMIT6zWhWTFp8GxOJe9a0NYtCwiUlYeJgFDX6uf47SweuwPSw0ifCVSal7eP6WDO1pyzOpMYk-TECLTV3Il19DmBV5p8acsIruMpV5hpoay7GQLfUQFZr1AMRddi5grhGdrPXb-TbjULkGcldw5FZg81mGVBmRGEfOT_KrdMTUPs9rPuDcgFxbGZ-rA_imkk")' }} />
+                <div className="flex flex-col justify-center">
+                  <p className="text-[#ecab13] text-[10px] font-bold uppercase tracking-widest mb-1">Saved Look</p>
+                  <h4 className="text-white text-sm font-bold">Metallic Silk Blazer</h4>
+                  <p className="text-zinc-400 text-xs">$2,850</p>
                 </div>
-              )}
+              </div>
+              <p className="text-zinc-500 text-xs text-center mt-8 italic">Luxury shoppers compare; they don&apos;t just buy.</p>
             </div>
           </motion.div>
         )}
