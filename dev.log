@@ -24,3 +24,11 @@ https://nextjs.org/telemetry
 ⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
  GET /luxury 200 in 2.1s (compile: 1809ms, render: 263ms)
 ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET / 200 in 1174ms (compile: 730ms, render: 444ms)
+ GET / 200 in 53ms (compile: 6ms, render: 47ms)
+ GET / 200 in 91ms (compile: 6ms, render: 85ms)
+ GET / 200 in 63ms (compile: 5ms, render: 58ms)
+ GET / 200 in 97ms (compile: 8ms, render: 89ms)
+ GET / 200 in 88ms (compile: 6ms, render: 82ms)
+ GET / 200 in 67ms (compile: 6ms, render: 61ms)
