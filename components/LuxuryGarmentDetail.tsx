@@ -2,9 +2,11 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function LuxuryGarmentDetail() {
+  const [isVaultOpen, setIsVaultOpen] = React.useState(false);
+
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -47,8 +49,21 @@ export default function LuxuryGarmentDetail() {
           </div>
         </div>
 
+        {/* AI Stylist Note */}
+        <div className="px-4 -mt-4 relative z-10 mb-8">
+          <div className="bg-[#1a1a1a]/80 backdrop-blur-xl border border-[#ecab13]/30 p-4 rounded-xl flex items-start gap-3">
+            <span className="material-symbols-outlined text-[#ecab13] text-xl mt-0.5">auto_awesome</span>
+            <div>
+              <p className="text-[#ecab13] text-[10px] font-bold uppercase tracking-widest mb-1">AI Stylist Note</p>
+              <p className="text-zinc-300 text-sm leading-relaxed">
+                Pair this with structured denim for a balanced silhouette. The liquid metal finish contrasts beautifully with matte textures.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Material Stats */}
-        <div className="px-4 -mt-4 relative z-10">
+        <div className="px-4 relative z-10">
           <div className="flex flex-wrap gap-3 bg-[#1a1a1a]/60 backdrop-blur-xl border border-[#2d2d2d] p-4 rounded-xl">
             <div className="flex min-w-[80px] flex-1 flex-col gap-1 items-center text-center">
               <p className="text-[#ecab13] text-xl font-bold leading-tight">99.8%</p>
@@ -74,7 +89,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
@@ -131,16 +146,59 @@ export default function LuxuryGarmentDetail() {
       </main>
 
       {/* Bottom Action Bar */}
-      <div className="fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex gap-4 items-center z-50">
-        <div className="flex flex-col flex-1">
-          <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
-          <p className="text-white text-xl font-bold">$2,850</p>
+      <div className="fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex flex-col gap-4 items-center z-50">
+        <div className="flex w-full gap-4 max-w-md mx-auto">
+          <div className="flex flex-col flex-1 justify-center">
+            <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
+            <p className="text-white text-xl font-bold">$2,850</p>
+          </div>
+          <button
+            onClick={() => setIsVaultOpen(true)}
+            aria-label="Save Look"
+            className="flex-[1] bg-[#1a1a1a] border border-[#2d2d2d] text-white h-14 rounded-xl flex items-center justify-center gap-2 hover:bg-[#2a2a2a] transition-colors"
+          >
+            <span className="material-symbols-outlined">bookmark_border</span>
+            <span className="text-xs font-bold tracking-widest uppercase">Save Look</span>
+          </button>
+          <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
+            <span className="material-symbols-outlined font-bold">person_add_alt</span>
+            <span className="font-bold text-xs tracking-widest uppercase">Try On</span>
+          </Link>
         </div>
-        <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
-          <span className="material-symbols-outlined font-bold">person_add_alt</span>
-          <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
-        </Link>
       </div>
+
+      {/* The Vault Drawer */}
+      <AnimatePresence>
+        {isVaultOpen && (
+          <motion.div
+            key="vault-drawer"
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed inset-x-0 bottom-0 z-[60] h-[60vh] bg-[#0a0a0a] border-t border-[#2d2d2d] rounded-t-3xl p-6 shadow-2xl flex flex-col max-w-md mx-auto"
+          >
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-white font-bold tracking-[0.2em] uppercase">The Vault</h3>
+              <button onClick={() => setIsVaultOpen(false)} aria-label="Close Vault" className="text-zinc-500 hover:text-white transition-colors">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto no-scrollbar">
+              {/* Saved Item */}
+              <div className="flex gap-4 p-4 bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl mb-4">
+                <div className="size-20 bg-zinc-800 rounded-lg overflow-hidden bg-cover bg-center" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBqkn4HFnxWGVtmWbfYSHCV_0_Eix7IhuazsGoJhX_mZ0YSMRUig_BHDMoHIAapobfGWThLoMAvthdSMIT6zWhWTFp8GxOJe9a0NYtCwiUlYeJgFDX6uf47SweuwPSw0ifCVSal7eP6WDO1pyzOpMYk-TECLTV3Il19DmBV5p8acsIruMpV5hpoay7GQLfUQFZr1AMRddi5grhGdrPXb-TbjULkGcldw5FZg81mGVBmRGEfOT_KrdMTUPs9rPuDcgFxbGZ-rA_imkk")' }} />
+                <div className="flex flex-col justify-center">
+                  <p className="text-[#ecab13] text-[10px] font-bold uppercase tracking-widest mb-1">Saved Look</p>
+                  <h4 className="text-white text-sm font-bold">Metallic Silk Blazer</h4>
+                  <p className="text-zinc-400 text-xs">$2,850</p>
+                </div>
+              </div>
+              <p className="text-zinc-500 text-xs text-center mt-8 italic">Luxury shoppers compare; they don&apos;t just buy.</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <style jsx global>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
