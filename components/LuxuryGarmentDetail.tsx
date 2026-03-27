@@ -1,10 +1,39 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import CinematicViewer from '@/components/ui/CinematicViewer';
 
 export default function LuxuryGarmentDetail() {
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
+
+  const heroImageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E";
+
+  const generateCinematicVideo = async () => {
+    setIsGeneratingVideo(true);
+    try {
+      const response = await fetch('/api/cinematic-try-on', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: heroImageUrl }),
+      });
+      const data = await response.json();
+      if (data.success && data.videoUrl) {
+        setVideoUrl(data.videoUrl);
+      } else {
+        console.error("Failed to generate cinematic video:", data.error);
+        alert("Failed to generate cinematic video.");
+      }
+    } catch (error) {
+      console.error("Error generating cinematic video:", error);
+      alert("Error generating cinematic video.");
+    } finally {
+      setIsGeneratingVideo(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -15,8 +44,13 @@ export default function LuxuryGarmentDetail() {
           </Link>
           <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center">S_FIT AI</h2>
           <div className="flex w-10 items-center justify-end">
-            <button className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
-              <span className="material-symbols-outlined">share</span>
+            <button
+              onClick={generateCinematicVideo}
+              disabled={isGeneratingVideo}
+              aria-label="Generate Cinematic Video"
+              className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors disabled:opacity-50"
+            >
+              <span className="material-symbols-outlined">{isGeneratingVideo ? 'hourglass_empty' : 'movie'}</span>
             </button>
           </div>
         </div>
@@ -26,12 +60,20 @@ export default function LuxuryGarmentDetail() {
       <main className="max-w-md mx-auto pt-16 pb-32">
         {/* 3D Interactive Viewport (Hero Image) */}
         <div className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900">
-          <div 
-            className="absolute inset-0 bg-cover bg-center" 
-            style={{ 
-              backgroundImage: 'linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' 
-            }}
-          />
+          {videoUrl ? (
+            <div className="absolute inset-0 z-0">
+              <CinematicViewer videoUrl={videoUrl} posterUrl={heroImageUrl} className="h-full w-full max-w-full rounded-none" />
+            </div>
+          ) : (
+            <motion.div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: `linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%), url("${heroImageUrl}")`
+              }}
+              whileHover={{ scale: 1.5 }}
+              transition={{ duration: 0.5 }}
+            />
+          )}
           
           {/* 3D UI Overlays */}
           <div className="absolute bottom-6 left-4 right-4 flex justify-between items-end">
@@ -74,7 +116,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}

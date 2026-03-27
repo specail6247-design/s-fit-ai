@@ -1,12 +1,40 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Space_Grotesk } from "next/font/google";
+import CinematicViewer from "@/components/ui/CinematicViewer";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
+
+  const heroImageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuCGfKW7fSSx0BbN4w9CP-cPpb_GgcZgK3IAWtBDg18Z4EDDIvAvw0CYBp2ynyLSCTfQa3XtdTA5PTl7gZiCiugdiuuJGRvvmUlvjBFrWthED8dEe3CP3REf2b2s3LD1jlGYxcOkEBqgVsRXmY3sN7_6LsADaLzbcd5SrJPyiMiop4OSdYyRPcnzNh9Boe6dav_PUsJn_t0Fo1urrSzWCUnXU8cLgZY7rJmKnal8LfghoMed8GtjDMO9ruztSGEQMUNqhhkDtR0k60g";
+
+  const generateCinematicVideo = async () => {
+    setIsGeneratingVideo(true);
+    try {
+      const response = await fetch('/api/cinematic-try-on', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: heroImageUrl }),
+      });
+      const data = await response.json();
+      if (data.success && data.videoUrl) {
+        setVideoUrl(data.videoUrl);
+      } else {
+        console.error("Failed to generate cinematic video:", data.error);
+        alert("Failed to generate cinematic video.");
+      }
+    } catch (error) {
+      console.error("Error generating cinematic video:", error);
+      alert("Error generating cinematic video.");
+    } finally {
+      setIsGeneratingVideo(false);
+    }
+  };
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
@@ -28,36 +56,40 @@ export default function PhotoFitting() {
 
       {/* Main Viewport (Photo Fitting Canvas) */}
       <div className="absolute inset-0 z-0">
-        <div
-          className="relative h-full w-full bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCGfKW7fSSx0BbN4w9CP-cPpb_GgcZgK3IAWtBDg18Z4EDDIvAvw0CYBp2ynyLSCTfQa3XtdTA5PTl7gZiCiugdiuuJGRvvmUlvjBFrWthED8dEe3CP3REf2b2s3LD1jlGYxcOkEBqgVsRXmY3sN7_6LsADaLzbcd5SrJPyiMiop4OSdYyRPcnzNh9Boe6dav_PUsJn_t0Fo1urrSzWCUnXU8cLgZY7rJmKnal8LfghoMed8GtjDMO9ruztSGEQMUNqhhkDtR0k60g")',
-          }}
-        >
-          {/* Scanning Effect */}
+        {videoUrl ? (
+          <CinematicViewer videoUrl={videoUrl} posterUrl={heroImageUrl} className="h-full w-full max-w-full rounded-none" />
+        ) : (
           <div
-            className="absolute top-[40%] z-20 h-[2px] w-full"
+            className="relative h-full w-full bg-cover bg-center bg-no-repeat"
             style={{
-              background: "linear-gradient(180deg, transparent 0%, #256af4 50%, transparent 100%)",
-              boxShadow: "0 0 15px #256af4",
+              backgroundImage: `url("${heroImageUrl}")`,
             }}
-          ></div>
+          >
+            {/* Scanning Effect */}
+            <div
+              className="absolute top-[40%] z-20 h-[2px] w-full"
+              style={{
+                background: "linear-gradient(180deg, transparent 0%, #256af4 50%, transparent 100%)",
+                boxShadow: "0 0 15px #256af4",
+              }}
+            ></div>
 
-          {/* HUD Overlays */}
-          <div className="glass-panel absolute left-4 top-24 rounded-lg p-3" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
-            <div className="flex items-center gap-2">
-              <div className="size-2 animate-pulse rounded-full bg-[#256af4]"></div>
-              <p className="text-[10px] font-bold uppercase tracking-tighter text-[#90a4cb]">Real-time Simulation</p>
+            {/* HUD Overlays */}
+            <div className="glass-panel absolute left-4 top-24 rounded-lg p-3" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
+              <div className="flex items-center gap-2">
+                <div className="size-2 animate-pulse rounded-full bg-[#256af4]"></div>
+                <p className="text-[10px] font-bold uppercase tracking-tighter text-[#90a4cb]">Real-time Simulation</p>
+              </div>
+              <p className="mt-1 text-xs">
+                Fabric: <span className="text-[#256af4]">Metallic Liquid Silk</span>
+              </p>
             </div>
-            <p className="mt-1 text-xs">
-              Fabric: <span className="text-[#256af4]">Metallic Liquid Silk</span>
-            </p>
+            <div className="glass-panel absolute right-4 top-24 rounded-lg p-3 text-right" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
+              <p className="text-[10px] font-bold uppercase tracking-tighter text-[#90a4cb]">Mesh Density</p>
+              <p className="mt-1 text-xs">42,000 Polygons</p>
+            </div>
           </div>
-          <div className="glass-panel absolute right-4 top-24 rounded-lg p-3 text-right" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
-            <p className="text-[10px] font-bold uppercase tracking-tighter text-[#90a4cb]">Mesh Density</p>
-            <p className="mt-1 text-xs">42,000 Polygons</p>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Processing State (Overlay) */}
@@ -120,6 +152,14 @@ export default function PhotoFitting() {
         <button className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-[#256af4] text-base font-bold text-white shadow-lg shadow-[#256af4]/20 transition-colors hover:bg-blue-600">
           <span className="material-symbols-outlined">check_circle</span>
           Confirm & Proceed to Checkout
+        </button>
+        <button
+          onClick={generateCinematicVideo}
+          disabled={isGeneratingVideo}
+          className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-purple-600 text-base font-bold text-white shadow-lg shadow-purple-600/20 transition-colors hover:bg-purple-700 disabled:bg-purple-400 disabled:cursor-not-allowed"
+        >
+          <span className="material-symbols-outlined">{isGeneratingVideo ? 'hourglass_empty' : 'movie'}</span>
+          {isGeneratingVideo ? 'Generating Cinematic Video...' : 'Generate Cinematic Video'}
         </button>
         <div className="h-4"></div>
       </div>

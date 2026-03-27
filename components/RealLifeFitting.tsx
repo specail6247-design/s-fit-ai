@@ -16,6 +16,7 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [category, setCategory] = useState<string>('tops');
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -48,7 +49,7 @@ export default function RealLifeFitting() {
         body: JSON.stringify({
           userPhotoUrl: userImage,
           garmentImageUrl: garmentImage,
-          category: 'tops' // Default for demo
+          category: category // Default for demo
         })
       });
       const data = await res.json();
@@ -96,6 +97,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
                   {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
@@ -113,6 +115,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
                   {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
@@ -120,6 +123,23 @@ export default function RealLifeFitting() {
                   <div className="text-[10px] text-gray-500">Front view preferred</div>
                 </div>
               </label>
+            </div>
+          </div>
+
+          {/* Category Input */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-[#007AFF] uppercase">03. Category</label>
+            <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full bg-transparent text-sm font-bold text-gray-300 group-hover:text-white focus:outline-none appearance-none cursor-pointer"
+              >
+                <option value="tops" className="bg-gray-900">Tops</option>
+                <option value="lower_body" className="bg-gray-900">Lower Body</option>
+                <option value="dresses" className="bg-gray-900">Dresses</option>
+                <option value="accessories" className="bg-gray-900">Accessories</option>
+              </select>
             </div>
           </div>
         </div>
@@ -195,6 +215,7 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
