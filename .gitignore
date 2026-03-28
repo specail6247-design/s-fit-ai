@@ -43,3 +43,5 @@ client_secret_*.json
 
 /net-commander
 dev.log
+playwright-report/
+test-results/
