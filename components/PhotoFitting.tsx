@@ -1,15 +1,24 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Space_Grotesk } from "next/font/google";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
+      <audio
+        src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"
+        loop
+        muted={isMuted}
+        autoPlay
+        className="hidden"
+      />
+
       {/* Top App Bar */}
       <div className="z-50 flex items-center justify-between bg-transparent p-4">
         <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
@@ -19,8 +28,15 @@ export default function PhotoFitting() {
           <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
-        <div className="flex w-12 items-center justify-end">
-          <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
+        <div className="flex items-center justify-end gap-2">
+          <button
+            className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md"
+            aria-label={isMuted ? "Unmute Ambient Audio" : "Mute Ambient Audio"}
+            onClick={() => setIsMuted(!isMuted)}
+          >
+            <span className="material-symbols-outlined">{isMuted ? 'volume_off' : 'volume_up'}</span>
+          </button>
+          <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md" aria-label="Info">
             <span className="material-symbols-outlined">info</span>
           </button>
         </div>
