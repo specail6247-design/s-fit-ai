@@ -306,10 +306,8 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
-}: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const _unused = opacity; // Silence the unused opacity variable
+  height = 170
+}: { height?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
   
@@ -541,7 +539,7 @@ function Scene({
             scale={1.0}
           />
         ) : (
-          <Mannequin height={height} opacity={1.0} />
+          <Mannequin height={height} />
         )}
         
         {/* Fit Heatmap Visual Overlay */}
