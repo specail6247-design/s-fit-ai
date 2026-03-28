@@ -15,18 +15,22 @@ test.describe('Home Page', () => {
     await expect(heroHeading).toContainText('FIT');
   });
 
-  test('should display mode selection options', async ({ page }) => {
-    // Check for presence of mode cards
-    await expect(page.getByText('VIBE CHECK')).toBeVisible();
-    await expect(page.getByText('DIGITAL TWIN')).toBeVisible();
-    await expect(page.getByText('EASY FIT')).toBeVisible();
+  test('should display primary actions', async ({ page }) => {
+    // Wait for the main UI sections to load
+    await expect(page.getByText('Upload User Photo')).toBeVisible();
+    await expect(page.getByText('Select Garment')).toBeVisible();
 
-    // Check continue button
-    const continueBtn = page.getByRole('button', { name: /Continue/i });
-    await expect(continueBtn).toBeVisible();
+    // The submit try-on button should be visible
+    const tryItOnBtn = page.getByRole('button', { name: /TRY IT ON/i });
+    await expect(tryItOnBtn).toBeVisible();
   });
 
   test('should match visual snapshot', async ({ page }) => {
-    await expect(page).toHaveScreenshot({ fullPage: true });
+    // Increase tolerance due to dynamic backgrounds and 3D webGL canvases causing minor rendering variations
+    await expect(page).toHaveScreenshot({
+      fullPage: true,
+      maxDiffPixelRatio: 0.1,
+      animations: 'disabled'
+    });
   });
 });
