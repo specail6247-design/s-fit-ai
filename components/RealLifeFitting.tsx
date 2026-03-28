@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { PrivacyModal } from '@/components/ui/PrivacyModal';
+import { SupportHub } from '@/components/ui/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,53 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const handleShareToStory = () => {
+    if (!resultImage || !canvasRef.current) return;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      // 1080x1920 Instagram Story size
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, 1080, 1920);
+
+      // Draw image in center
+      const aspectRatio = img.width / img.height;
+      let drawWidth = 1080;
+      let drawHeight = 1080 / aspectRatio;
+      if (drawHeight > 1920) {
+        drawHeight = 1920;
+        drawWidth = 1920 * aspectRatio;
+      }
+      const x = (1080 - drawWidth) / 2;
+      const y = (1920 - drawHeight) / 2;
+      ctx.drawImage(img, x, y, drawWidth, drawHeight);
+
+      // Add Branding
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(0, 1800, 1080, 120);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 40px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT NEO | AI GENERATED', 540, 1870);
+
+      // Download
+      const dataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = 's_fit_story.png';
+      link.href = dataUrl;
+      link.click();
+    };
+    img.src = resultImage;
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -73,6 +122,8 @@ export default function RealLifeFitting() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
+      <PrivacyModal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
+      <SupportHub isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
       
       {/* LEFT PANEL: CONTROLS */}
       <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
@@ -96,11 +147,15 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {userImage ? <img src={userImage} alt="User Preview" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
+                  <div className="text-[10px] text-[#007AFF] mt-1 flex items-center gap-1 bg-[#007AFF]/10 px-2 py-0.5 rounded-md inline-flex w-fit">
+                    <span>🛡️</span> Photos are processed securely and not shared.
+                  </div>
                 </div>
               </label>
             </div>
@@ -113,7 +168,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {garmentImage ? <img src={garmentImage} alt="Garment Preview" className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -158,6 +214,21 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-4 flex gap-2">
+            <button
+              onClick={() => setIsPrivacyOpen(true)}
+              className="flex-1 py-2 text-[10px] text-gray-500 hover:text-white transition-colors uppercase tracking-widest text-center"
+            >
+              Privacy & Terms
+            </button>
+            <button
+              onClick={() => setIsSupportOpen(true)}
+              className="flex-1 py-2 text-[10px] text-gray-500 hover:text-white transition-colors uppercase tracking-widest text-center"
+            >
+              Report Issue
+            </button>
+          </div>
+
         </div>
       </div>
 
@@ -195,19 +266,31 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
-              <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
-              >
-                ✕ Close
-              </button>
+              <div className="absolute top-4 right-4 flex flex-col gap-2">
+                <button
+                  onClick={() => setResultImage(null)}
+                  className="bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors flex items-center justify-center gap-2 text-sm px-4"
+                >
+                  ✕ Close
+                </button>
+                <button
+                  onClick={handleShareToStory}
+                  className="bg-[#007AFF] text-white rounded-full p-2 hover:bg-[#005bb5] transition-colors flex items-center justify-center gap-2 text-sm px-4 shadow-[0_0_15px_rgba(0,122,255,0.5)]"
+                >
+                  <span>📷</span> Share to Story
+                </button>
+              </div>
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
             </div>
           </motion.div>
         )}
+
+        {/* Hidden Canvas for Share Composite */}
+        <canvas ref={canvasRef} width={1080} height={1920} className="hidden" />
       </div>
     </div>
   );

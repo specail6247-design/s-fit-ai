@@ -15,15 +15,19 @@ test.describe('Home Page', () => {
     await expect(heroHeading).toContainText('FIT');
   });
 
-  test('should display mode selection options', async ({ page }) => {
-    // Check for presence of mode cards
-    await expect(page.getByText('VIBE CHECK')).toBeVisible();
-    await expect(page.getByText('DIGITAL TWIN')).toBeVisible();
-    await expect(page.getByText('EASY FIT')).toBeVisible();
+  test('should display RealLifeFitting mode UI', async ({ page }) => {
+    // The application's root page renders the RealLifeFitting component directly
+    // Playwright E2E tests must target RealLifeFitting UI elements rather than legacy mode buttons
 
-    // Check continue button
-    const continueBtn = page.getByRole('button', { name: /Continue/i });
-    await expect(continueBtn).toBeVisible();
+    // Check for the Upload User Photo section
+    await expect(page.getByText('Upload User Photo', { exact: false })).toBeVisible();
+
+    // Check for the Select Garment section
+    await expect(page.getByText('Select Garment', { exact: false })).toBeVisible();
+
+    // Check for the TRY IT ON submit button
+    const submitBtn = page.getByRole('button', { name: /TRY IT ON/i });
+    await expect(submitBtn).toBeVisible();
   });
 
   test('should match visual snapshot', async ({ page }) => {
