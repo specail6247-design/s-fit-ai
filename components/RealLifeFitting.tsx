@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import CinematicViewer from '@/components/ui/CinematicViewer';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +17,11 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  // Cinematic video state
+  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [videoError, setVideoError] = useState<string | null>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -41,6 +47,10 @@ export default function RealLifeFitting() {
     }, 500);
 
     try {
+      // Reset video state on new try-on
+      setVideoUrl(null);
+      setVideoError(null);
+
       // API call to our backend (which calls Replicate/Fashn.ai)
       const res = await fetch('/api/try-on', {
         method: 'POST',
@@ -71,6 +81,36 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleGenerateVideo = async () => {
+    if (!resultImage) return;
+
+    setIsGeneratingVideo(true);
+    setVideoError(null);
+
+    try {
+      const res = await fetch('/api/runway-motion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageUrl: resultImage,
+          upscale: true // Satisfy post-processing requirement
+        })
+      });
+      const data = await res.json();
+
+      if (data.success && data.videoUrl) {
+        setVideoUrl(data.videoUrl);
+      } else {
+        throw new Error(data.error || "Video Generation Failed");
+      }
+    } catch (err) {
+      console.error(err);
+      setVideoError("Failed to generate cinematic video. Please try again.");
+    } finally {
+      setIsGeneratingVideo(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
@@ -96,7 +136,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {userImage ? <img src={userImage} alt="User Photo" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +154,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {garmentImage ? <img src={garmentImage} alt="Garment Photo" className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -192,19 +234,74 @@ export default function RealLifeFitting() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-6 bg-black/80 backdrop-blur-xl rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] flex flex-col items-center max-h-[90vh] overflow-hidden"
           >
-            <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+            <div className="flex justify-between w-full mb-4 items-center">
+              <div className="text-white/80 font-mono text-xs tracking-widest uppercase">
+                Fitting Complete
+              </div>
               <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                onClick={() => { setResultImage(null); setVideoUrl(null); }}
+                className="text-white/50 hover:text-white transition-colors"
+                aria-label="Close result"
               >
                 ✕ Close
               </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
-                AI GENERATED_
-              </div>
+            </div>
+
+            <div className="relative group rounded-2xl overflow-hidden bg-neutral-900 border border-white/5 flex-shrink max-h-[60vh] flex items-center justify-center">
+              {videoUrl ? (
+                <div className="h-[60vh] max-w-[full] aspect-[9/16]">
+                  <CinematicViewer videoUrl={videoUrl} posterUrl={resultImage} className="h-full w-full" />
+                </div>
+              ) : (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={resultImage} alt="Result" className="w-auto h-[60vh] object-contain" />
+              )}
+
+              {!videoUrl && (
+                <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30 backdrop-blur-sm">
+                  AI GENERATED_
+                </div>
+              )}
+            </div>
+
+            {/* Cinematic Share Action */}
+            <div className="mt-6 w-full space-y-3">
+              {!videoUrl ? (
+                <button
+                  onClick={handleGenerateVideo}
+                  disabled={isGeneratingVideo}
+                  className={`w-full py-4 rounded-xl font-bold tracking-wide transition-all flex items-center justify-center gap-2 ${
+                    isGeneratingVideo
+                      ? 'bg-white/10 text-white/50 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] transform hover:-translate-y-0.5'
+                  }`}
+                >
+                  {isGeneratingVideo ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <span>Generating Cinematic 4K Video...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>🎬</span>
+                      <span>Generate Cinematic Share</span>
+                    </>
+                  )}
+                </button>
+              ) : (
+                <button
+                  className="w-full py-4 rounded-xl font-bold tracking-wide transition-all bg-white text-black hover:bg-neutral-200 flex items-center justify-center gap-2 shadow-lg"
+                >
+                  <span>📤</span>
+                  <span>Export 4K Video</span>
+                </button>
+              )}
+
+              {videoError && (
+                <p className="text-red-400 text-xs text-center font-mono">{videoError}</p>
+              )}
             </div>
           </motion.div>
         )}
