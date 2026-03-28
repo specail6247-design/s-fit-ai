@@ -29,16 +29,16 @@ export default function ARLiveFitting() {
 
         {/* Top Navigation Bar */}
         <div className="z-10 flex items-center justify-between p-4 pt-8">
-          <div className="flex size-12 items-center justify-center rounded-full" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+          <button className="flex size-12 items-center justify-center rounded-full" aria-label="Close" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
             <span className="material-symbols-outlined text-white">close</span>
-          </div>
+          </button>
           <div className="flex items-center gap-2 rounded-full px-4 py-2" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
             <div className="size-2 animate-pulse rounded-full bg-red-500"></div>
             <h2 className="text-sm font-bold tracking-widest uppercase text-white">Live Fit AI</h2>
           </div>
-          <div className="flex size-12 items-center justify-center rounded-full" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+          <button className="flex size-12 items-center justify-center rounded-full" aria-label="Flash On" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
             <span className="material-symbols-outlined text-white">flash_on</span>
-          </div>
+          </button>
         </div>
 
         {/* Upper HUD: Stability & AI Status */}
@@ -103,11 +103,17 @@ export default function ARLiveFitting() {
               </div>
               
               {[
-                  { name: "Silk Gown", price: "$3,100", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBDuZWxVmd1NmjEA78u9Bug9IALerv3mXMc1jJvFfkpQU0KEpj8H61ezGs7q-hQ_LQRxtHc4H_QAcTqOu2tETfyqrqqB-aXKc3It-W2CEa6sQYIBEuVrJ3bD5_XTaA0GeVrfvnDnypd9so862LZS33A3sTJ-U845P-JhNQnT3cFcg8qcI-I8oVMkmM7fFRmlKYyMl1ej6WWWa3MkChOC6VmkauVlN4Z8jsBZoMcEUD9yXSwQ97ZkmgJJj2A6eIHMvudiZqjCSTgWh0" },
+                  { name: "Silk Gown", price: "$3,100", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBDuZWxVmd1NmjEA78u9Bug9IALerv3mXMc1jJvFfkpQU0KEpj8H61ezGs7q-hQ_LQRxtHc4H_QAcTqOu2tETfyqrqqB-aXKc3It-W2CEa6sQYIBEuVrJ3bD5_XTaA0GeVrfvnDnypd9so862LZS33A3sTJ-U845P-JhNQnT3cFcg8qcI-I8oVMkmM7fFRmlKYyMl1ej6WWWa3MkChOC6VmkauVlN4Z8jsBZoMcEUD9yXSwQ97ZkmgJJj2A6eIHMvudiZqjCSTgWh0", locked: true },
                   { name: "Moto Jacket", price: "$1,800", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC4WsO7nAvYpKcBO57jVyp0YklJpX_1jakpJ8Q8DHKRMnTuFiuqdMOMc5T8jm5VHhZfC00BeK-6O6b2UzIyeGN8OTo4vEWkA4n4WIeBHpjd0E882pLWtMQsFmLD9SSzggRQOqIp_f1PDthmab_IDQQjIlLRLz7awqLtNNwL4AwmMdO1C6Awys7X4XI2eHXujG3PA6q0PWyWDWnKH4UeydNguGQ3QoDfXb_iFtnnamfha3oliMDvJNKh0ziNwdhpcFqMa37R2dXgBTA" },
                   { name: "Tech Coat", price: "$4,500", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCjef1QH6Yj47WsC6tyzaVdCx8u_EHOntW_LwbQvYacs4OUrYqnxBZMKJswSTCNOYPADKBHdr3WRf86o9a3U7tbaZaUxv-0V1fPtVCbcDTFuYPBb5ITuO9bbrSgMckR3OQyQQ5N7b50Q7PWnohUhW10eJ4q0P_fzBprFGVMB3hRK2fwx_r3SrA9W8GcvFT54pPNxi0d2CgbAjYvsILAmB6MYKH6pyc8XhpbS2IlNVVjjFg8iC2t5PY2EsJD0mD7vgAWXN-rcW2ILAk" },
               ].map((item, i) => (
-                <div key={i} className="flex min-w-28 flex-col gap-2 rounded-xl p-1 opacity-80" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+                <div key={i} className={`flex min-w-28 flex-col gap-2 rounded-xl p-1 relative ${item.locked ? 'opacity-100' : 'opacity-80'}`} style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+                    {item.locked && (
+                      <div className="absolute inset-0 z-10 bg-black/50 rounded-xl flex flex-col items-center justify-center p-2 backdrop-blur-sm">
+                        <span className="material-symbols-outlined text-white mb-1 text-xl">lock</span>
+                        <p className="text-[9px] font-bold text-white uppercase text-center tracking-widest leading-tight">Available in<br/>02:00:00</p>
+                      </div>
+                    )}
                     <div
                     className="aspect-[4/5] w-full rounded-lg bg-cover bg-center bg-no-repeat"
                     style={{ backgroundImage: `url("${item.img}")` }}
@@ -123,12 +129,12 @@ export default function ARLiveFitting() {
 
           {/* Capture Controls */}
           <div className="flex items-center justify-center gap-10 p-4">
-            <button className="flex size-12 shrink-0 items-center justify-center rounded-full text-white" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+            <button className="flex size-12 shrink-0 items-center justify-center rounded-full text-white" aria-label="Photo Library" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
               <span className="material-symbols-outlined">photo_library</span>
             </button>
             <div className="relative flex items-center justify-center">
               <div className="absolute inset-0 animate-pulse rounded-full bg-[#2b8cee]/30 blur-xl"></div>
-              <button className="relative flex size-20 shrink-0 items-center justify-center rounded-full border-4 border-[#2b8cee] bg-white">
+              <button className="relative flex size-20 shrink-0 items-center justify-center rounded-full border-4 border-[#2b8cee] bg-white" aria-label="Fit Snap">
                 <div className="flex size-16 items-center justify-center rounded-full border-2 border-[#101922]/10">
                   <span className="material-symbols-outlined text-4xl text-[#101922]">camera</span>
                 </div>
@@ -137,7 +143,7 @@ export default function ARLiveFitting() {
                 <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#2b8cee]">Fit Snap</span>
               </div>
             </div>
-            <button className="flex size-12 shrink-0 items-center justify-center rounded-full text-white" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+            <button className="flex size-12 shrink-0 items-center justify-center rounded-full text-white" aria-label="Refresh" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
               <span className="material-symbols-outlined">refresh</span>
             </button>
           </div>

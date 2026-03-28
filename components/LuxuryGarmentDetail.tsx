@@ -1,21 +1,36 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function LuxuryGarmentDetail() {
+  const [isVaultOpen, setIsVaultOpen] = useState(false);
+  const [vaultItems, setVaultItems] = useState<string[]>([]);
+
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
       <div className="fixed top-0 z-50 w-full bg-[#f8f7f6]/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md">
         <div className="flex items-center p-4 justify-between max-w-md mx-auto">
-          <Link href="/" className="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors">
+          <Link href="/" className="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors" aria-label="Back">
             <span className="material-symbols-outlined">arrow_back</span>
           </Link>
           <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center">S_FIT AI</h2>
-          <div className="flex w-10 items-center justify-end">
-            <button className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
+          <div className="flex items-center justify-end gap-2">
+            <button
+              className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+              aria-label="Save Look"
+              onClick={() => {
+                if (!vaultItems.includes("Metallic Silk Evening Blazer")) {
+                  setVaultItems([...vaultItems, "Metallic Silk Evening Blazer"]);
+                }
+                setIsVaultOpen(true);
+              }}
+            >
+              <span className="material-symbols-outlined">bookmark</span>
+            </button>
+            <button className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors" aria-label="Share">
               <span className="material-symbols-outlined">share</span>
             </button>
           </div>
@@ -36,9 +51,9 @@ export default function LuxuryGarmentDetail() {
           {/* 3D UI Overlays */}
           <div className="absolute bottom-6 left-4 right-4 flex justify-between items-end">
             <div className="bg-black/40 backdrop-blur-md rounded-lg p-2 flex flex-col gap-2 border border-white/10">
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">zoom_in</span></button>
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">360</span></button>
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">light_mode</span></button>
+              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded" aria-label="Zoom In"><span className="material-symbols-outlined text-sm">zoom_in</span></button>
+              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded" aria-label="360 View"><span className="material-symbols-outlined text-sm">360</span></button>
+              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded" aria-label="Light Mode"><span className="material-symbols-outlined text-sm">light_mode</span></button>
             </div>
             <div className="text-right">
               <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mb-1">Authentic Render</p>
@@ -71,11 +86,22 @@ export default function LuxuryGarmentDetail() {
         <div className="mt-8 px-4">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-white text-xs font-bold tracking-[0.2em] uppercase">Material Science</h2>
-            <span className="text-[#ecab13] material-symbols-outlined">info</span>
+            <span className="text-[#ecab13] material-symbols-outlined" aria-hidden="true">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
+
+          {/* AI Stylist Note */}
+          <div className="bg-[#1a1a1a]/40 border border-[#ecab13]/20 rounded-xl p-4 mb-6">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="material-symbols-outlined text-[#ecab13] text-sm" aria-hidden="true">auto_awesome</span>
+              <h3 className="text-[#ecab13] text-xs font-bold uppercase tracking-widest">AI Stylist Note</h3>
+            </div>
+            <p className="text-zinc-300 text-sm italic">
+              &quot;Pair this with structured denim for a balanced silhouette.&quot;
+            </p>
+          </div>
           
           {/* Chips */}
           <div className="flex gap-2 flex-wrap mb-8">
@@ -129,6 +155,50 @@ export default function LuxuryGarmentDetail() {
           </div>
         </div>
       </main>
+
+      {/* "The Vault" Drawer */}
+      <AnimatePresence>
+        {isVaultOpen && (
+          <motion.div
+            key="vault-drawer"
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed bottom-0 left-0 right-0 z-[60] bg-[#0a0a0a] border-t border-[#2d2d2d] shadow-[0_-10px_40px_rgba(0,0,0,0.5)] max-w-md mx-auto rounded-t-2xl pb-safe"
+          >
+            <div className="p-4">
+              <div className="w-12 h-1 bg-zinc-700 rounded-full mx-auto mb-4" />
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-white text-sm font-bold tracking-[0.2em] uppercase">The Vault</h3>
+                <button
+                  onClick={() => setIsVaultOpen(false)}
+                  className="text-zinc-500 hover:text-white transition-colors"
+                  aria-label="Close Vault"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+
+              <div className="space-y-4 max-h-[40vh] overflow-y-auto no-scrollbar pb-6">
+                {vaultItems.length === 0 ? (
+                  <p className="text-zinc-500 text-center text-sm py-4">Your vault is empty.</p>
+                ) : (
+                  vaultItems.map((item, index) => (
+                    <div key={index} className="flex items-center gap-4 bg-[#1a1a1a] p-3 rounded-xl border border-[#2d2d2d]">
+                      <div className="w-12 h-16 bg-zinc-800 rounded bg-cover bg-center" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' }} />
+                      <div className="flex-1">
+                        <p className="text-white text-sm font-bold">{item}</p>
+                        <p className="text-zinc-500 text-xs mt-1">Saved Look</p>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Bottom Action Bar */}
       <div className="fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex gap-4 items-center z-50">
