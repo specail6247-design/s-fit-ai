@@ -1,0 +1,7 @@
+## 2024-05-24 - Client-Side Exposure of OpenAI API Key
+**Vulnerability:** The OpenAI client was initialized with `dangerouslyAllowBrowser: true` and the API key was passed from a `NEXT_PUBLIC_` environment variable (`NEXT_PUBLIC_OPENAI_API_KEY`). This allowed the API key to be injected directly into the client-side bundle, where it could be trivially extracted by an attacker.
+**Learning:** Next.js explicitly embeds any environment variable starting with `NEXT_PUBLIC_` into the JavaScript bundle sent to the browser. Initializing a sensitive service like OpenAI on the client-side allows malicious users to steal the API key and use it for their own purposes, potentially leading to significant financial costs or quota exhaustion.
+**Prevention:**
+1. Never use `NEXT_PUBLIC_` for sensitive secrets (like API keys, database credentials, etc.). Use standard environment variable names (e.g., `OPENAI_API_KEY`) so they remain server-only.
+2. If a library needs to be initialized in a file that might be shared between client and server, ensure the initialization is guarded so it only runs on the server (e.g., checking `typeof window === 'undefined'`).
+3. Avoid using "escape hatches" like `dangerouslyAllowBrowser: true` for sensitive SDKs unless absolutely necessary and securely implemented. All sensitive API calls should be routed through a backend endpoint (Next.js API route or Server Action) to proxy the request and hide the key.
