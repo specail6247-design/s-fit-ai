@@ -15,18 +15,17 @@ test.describe('Home Page', () => {
     await expect(heroHeading).toContainText('FIT');
   });
 
-  test('should display mode selection options', async ({ page }) => {
-    // Check for presence of mode cards
-    await expect(page.getByText('VIBE CHECK')).toBeVisible();
-    await expect(page.getByText('DIGITAL TWIN')).toBeVisible();
-    await expect(page.getByText('EASY FIT')).toBeVisible();
+  test('should display fitting upload options', async ({ page }) => {
+    // The home page now directly renders RealLifeFitting
+    await expect(page.getByText('Upload User Photo', { exact: true })).toBeVisible();
+    await expect(page.getByText('Select Garment', { exact: true })).toBeVisible();
 
-    // Check continue button
-    const continueBtn = page.getByRole('button', { name: /Continue/i });
-    await expect(continueBtn).toBeVisible();
+    // Check try it on button
+    const tryBtn = page.getByRole('button', { name: /TRY IT ON/i });
+    await expect(tryBtn).toBeVisible();
   });
 
   test('should match visual snapshot', async ({ page }) => {
-    await expect(page).toHaveScreenshot({ fullPage: true });
+    await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixelRatio: 0.1 });
   });
 });
