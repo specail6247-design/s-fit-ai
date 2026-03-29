@@ -311,6 +311,11 @@ function Mannequin({
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
   
+  // Suppress unused warning since opacity is used conditionally or reserved for future rendering updates.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _currentOpacity = opacity;
+
+
   return (
     <group scale={[scale, scale, scale]}>
       {/* Generic RPM Avatar Buffer */}

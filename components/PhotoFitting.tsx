@@ -1,12 +1,109 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Space_Grotesk } from "next/font/google";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+
+  useEffect(() => {
+    // Initialize Web Audio API for sensory ambience
+    const initAudio = () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextClass) return;
+
+      const ctx = new AudioContextClass();
+      audioContextRef.current = ctx;
+
+      // Master Gain
+      const masterGain = ctx.createGain();
+      masterGain.gain.value = isMuted ? 0 : 0.15; // Set volume, muted initially
+      masterGain.connect(ctx.destination);
+      gainNodeRef.current = masterGain;
+
+      // Deep Space Drone (Sine)
+      const droneOsc = ctx.createOscillator();
+      droneOsc.type = 'sine';
+      droneOsc.frequency.setValueAtTime(55, ctx.currentTime); // Low A
+
+      // Soft Synth Drone (Triangle)
+      const synthOsc = ctx.createOscillator();
+      synthOsc.type = 'triangle';
+      synthOsc.frequency.setValueAtTime(110, ctx.currentTime); // Higher A
+      synthOsc.detune.setValueAtTime(5, ctx.currentTime); // Slight detune
+
+      // Lowpass Filter for warmth
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(400, ctx.currentTime);
+
+      droneOsc.connect(filter);
+      synthOsc.connect(filter);
+      filter.connect(masterGain);
+
+      droneOsc.start();
+      synthOsc.start();
+
+      return () => {
+        droneOsc.stop();
+        synthOsc.stop();
+        droneOsc.disconnect();
+        synthOsc.disconnect();
+        filter.disconnect();
+        masterGain.disconnect();
+        ctx.close();
+      };
+    };
+
+    let cleanup: (() => void) | undefined;
+
+    // Defer initialization to first interaction to be fully compliant with auto-play policies,
+    // though starting muted is usually fine.
+    const handleInteraction = () => {
+      if (!audioContextRef.current) {
+        cleanup = initAudio();
+      }
+      if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+        audioContextRef.current.resume();
+      }
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('touchstart', handleInteraction);
+    };
+
+    document.addEventListener('click', handleInteraction);
+    document.addEventListener('touchstart', handleInteraction);
+
+    return () => {
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('touchstart', handleInteraction);
+      if (cleanup) cleanup();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run once on mount
+
+  useEffect(() => {
+    if (gainNodeRef.current && audioContextRef.current) {
+      // Smooth fade in/out
+      const ctx = audioContextRef.current;
+      gainNodeRef.current.gain.setTargetAtTime(isMuted ? 0 : 0.15, ctx.currentTime, 0.5);
+    }
+  }, [isMuted]);
+
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering the global interaction listener
+    setIsMuted(!isMuted);
+
+    // Ensure context is running if unmuting
+    if (audioContextRef.current && audioContextRef.current.state === 'suspended' && isMuted) {
+      audioContextRef.current.resume();
+    }
+  };
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
@@ -19,7 +116,12 @@ export default function PhotoFitting() {
           <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
-        <div className="flex w-12 items-center justify-end">
+        <div className="flex items-center justify-end gap-2">
+          <button aria-label={isMuted ? "Unmute Ambient Sound" : "Mute Ambient Sound"} onClick={toggleMute} className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md hover:bg-[#101622]/60 transition-colors">
+            <span className="material-symbols-outlined">
+              {isMuted ? 'volume_off' : 'volume_up'}
+            </span>
+          </button>
           <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
             <span className="material-symbols-outlined">info</span>
           </button>
