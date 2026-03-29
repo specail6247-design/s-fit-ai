@@ -9,10 +9,12 @@ interface Props {
 
 export default function LuxuryImageDistortion({ src, alt, className = '' }: Props) {
   return (
-    <div className={`overflow-hidden relative ${className}`}>
+    <div className={`overflow-hidden relative ${className}`} aria-label={alt}>
       <motion.div
         className="w-full h-full bg-cover bg-center"
         style={{ backgroundImage: `url(${src})` }}
+        role="img"
+        aria-label={alt}
         initial={{ scale: 1.1, filter: 'contrast(1.2) saturate(0)' }}
         animate={{ scale: 1, filter: 'contrast(1) saturate(1)' }}
         transition={{ duration: 1.5, ease: 'easeOut' }}
