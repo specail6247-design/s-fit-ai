@@ -1,0 +1,4 @@
+## 2025-03-04 - Path Traversal Vulnerability in Image Processor
+**Vulnerability:** Path Traversal in `/api/try-on` endpoint. The `localFileToDataUri` function incorrectly resolved the path of local image files allowing attackers to pass paths such as `/../.env` and have the backend application return the base64-encoded string representation of sensitive files via data URIs to the external Replicate API, which might be intercepted.
+**Learning:** Using `path.join(process.cwd(), 'public', relativePath)` to resolve a file path from user input (`relativePath`) does not stop traversal if `relativePath` contains `../`. The server will resolve it back up the directory tree to the application root, ignoring the `'public'` part of the initial string.
+**Prevention:** Always use `path.resolve(baseDir, userInput)` and verify the resolved path still starts with the base directory before using `fs.readFileSync` or performing file I/O operations.
