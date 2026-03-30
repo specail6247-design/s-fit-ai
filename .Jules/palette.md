@@ -1,0 +1,3 @@
+## 2024-03-30 - Screen Reader Accessibility for Icon-only Buttons
+**Learning:** Found a recurring pattern where components (like `ARLiveFitting` and `LuxuryGarmentDetail`) use `material-symbols-outlined` spans inside icon-only `<button>` or `<Link>` elements. While visually intuitive, this causes screen readers to have no context of the button's purpose since there's no visible text.
+**Action:** Always verify icon-only buttons using `material-symbols-outlined` (or similar font-based icons) have an explicit `aria-label` attribute describing their function. This pattern should be consistently applied across all new and existing components in the design system.
