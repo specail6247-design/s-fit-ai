@@ -15,15 +15,18 @@ test.describe('Home Page', () => {
     await expect(heroHeading).toContainText('FIT');
   });
 
-  test('should display mode selection options', async ({ page }) => {
-    // Check for presence of mode cards
-    await expect(page.getByText('VIBE CHECK')).toBeVisible();
-    await expect(page.getByText('DIGITAL TWIN')).toBeVisible();
-    await expect(page.getByText('EASY FIT')).toBeVisible();
+  test('should display fitting upload options', async ({ page }) => {
+    // Check for presence of upload options in RealLifeFitting
+    await expect(page.getByText('Upload User Photo')).toBeVisible();
+    await expect(page.getByText('Select Garment')).toBeVisible();
 
-    // Check continue button
-    const continueBtn = page.getByRole('button', { name: /Continue/i });
-    await expect(continueBtn).toBeVisible();
+    // Check for style line selection
+    await expect(page.getByText('SPA Line')).toBeVisible();
+    await expect(page.getByText('Luxury Line')).toBeVisible();
+
+    // Check try it on button
+    const tryBtn = page.getByRole('button', { name: /TRY IT ON/i });
+    await expect(tryBtn).toBeVisible();
   });
 
   test('should match visual snapshot', async ({ page }) => {
