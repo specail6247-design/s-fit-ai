@@ -1,12 +1,69 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Space_Grotesk } from "next/font/google";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const oscillatorRef = useRef<OscillatorNode | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+
+  useEffect(() => {
+    if (!isMuted) {
+      if (!audioCtxRef.current) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+        gainNodeRef.current = audioCtxRef.current.createGain();
+        gainNodeRef.current.connect(audioCtxRef.current.destination);
+        gainNodeRef.current.gain.value = 0.05; // Subtle hum
+
+        oscillatorRef.current = audioCtxRef.current.createOscillator();
+        oscillatorRef.current.type = 'sine'; // Soft, continuous synth wave
+        oscillatorRef.current.frequency.setValueAtTime(65, audioCtxRef.current.currentTime); // Low hum frequency
+
+        // Add a slight vibrato to make it sound like a machine/engine
+        const lfo = audioCtxRef.current.createOscillator();
+        lfo.type = 'sine';
+        lfo.frequency.value = 0.5; // Slow modulation
+        const lfoGain = audioCtxRef.current.createGain();
+        lfoGain.gain.value = 5;
+        lfo.connect(lfoGain);
+        lfoGain.connect(oscillatorRef.current.frequency);
+
+        lfo.start();
+        oscillatorRef.current.connect(gainNodeRef.current);
+        oscillatorRef.current.start();
+      } else if (audioCtxRef.current.state === 'suspended') {
+        audioCtxRef.current.resume();
+      }
+    } else {
+      if (audioCtxRef.current && audioCtxRef.current.state === 'running') {
+        audioCtxRef.current.suspend();
+      }
+    }
+
+    return () => {
+      // Cleanup on unmount handled gracefully
+      if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
+         // Keep context alive but suspended if component re-renders,
+         // the cleanup function for web audio is tricky across renders.
+         // Realistically, we just suspend.
+      }
+    };
+  }, [isMuted]);
+
+  useEffect(() => {
+      // Complete teardown on unmount
+      return () => {
+          if (audioCtxRef.current) {
+              audioCtxRef.current.close();
+          }
+      };
+  }, []);
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
@@ -19,7 +76,14 @@ export default function PhotoFitting() {
           <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
-        <div className="flex w-12 items-center justify-end">
+        <div className="flex items-center justify-end gap-2">
+          <button
+            onClick={() => setIsMuted(!isMuted)}
+            className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md transition-colors hover:bg-[#256af4]/20"
+            aria-label={isMuted ? "Unmute Ambience" : "Mute Ambience"}
+          >
+            <span className="material-symbols-outlined text-sm">{isMuted ? 'volume_off' : 'volume_up'}</span>
+          </button>
           <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
             <span className="material-symbols-outlined">info</span>
           </button>

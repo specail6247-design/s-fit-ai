@@ -5,46 +5,29 @@ test.describe('User Flow', () => {
     await page.goto('/');
   });
 
-  test('should complete Easy Fit flow', async ({ page }) => {
-    // 1. Select Easy Fit Mode
-    // Force click to ensure it hits even if covered or slightly off-screen in mobile
-    await page.getByText('EASY FIT').click({ force: true });
+  test('should complete SPA Line flow', async ({ page }) => {
+    // 1. Verify we are on RealLifeFitting component
+    // We should see "Upload User Photo" and "Select Garment"
+    await expect(page.getByText('Upload User Photo')).toBeVisible();
 
-    // Verify selection (border color change or checkmark)
-    const continueToModeBtn = page.getByRole('button', { name: /Continue →/i });
-    await expect(continueToModeBtn).toBeEnabled();
-    await continueToModeBtn.click();
+    // Ensure SPA Line is selected by default or select it
+    // The button might have text "SPA Line"
+    const spaLineBtn = page.getByText('SPA Line');
+    await expect(spaLineBtn).toBeVisible();
+    await spaLineBtn.click({ force: true });
 
-    // 2. Input Stats
-    // Wait for "Easy Fit" header
-    await expect(page.getByRole('heading', { name: 'Easy Fit' })).toBeVisible();
+    // Once we click SPA Line, it might navigate. Let's verify we are on the new page
+    // by checking for a known element, such as "START AR FITTING"
 
-    // Just click "Continue to Fitting Room" as defaults are valid.
-    await page.getByRole('button', { name: /Continue to Fitting Room/i }).click();
+    // Check if START AR FITTING link/button exists on the SPA page
+    const startArFittingBtn = page.getByRole('link', { name: /START AR FITTING/i });
+    await expect(startArFittingBtn).toBeVisible();
 
-    // 3. Brand Selection
-    // Wait for "Select Brand" header
-    await expect(page.getByText('Select Brand')).toBeVisible();
+    // We can navigate to the fitting view
+    await startArFittingBtn.click();
 
-    // Easy Fit defaults to Uniqlo auto-selected.
-    // Check if Uniqlo button has class indicating selection (border-pure-white) or just check if "Enter Fitting Room" is enabled.
-    const enterFittingRoomBtn = page.getByRole('button', { name: /Enter Fitting Room/i });
-    await expect(enterFittingRoomBtn).toBeEnabled();
-
-    // We can also switch brand manually.
-    // Note: buttons in BrandSelector might have text "ZARA" and role "button"
-    await page.getByRole('button', { name: 'ZARA' }).click();
-
-    await enterFittingRoomBtn.click();
-
-    // 4. Fitting Room
-    // Should see "Fitting Room" component.
-    // Home.tsx: "Back to brands" button visible.
-    await expect(page.getByRole('button', { name: /Back to brands/i })).toBeVisible();
-
-    // Should see 3D canvas (maybe check for canvas element)
-    // Note: WebGL might not be available in all headless environments
-    // We check if the container exists at least.
-    await expect(page.locator('.glass-card').first()).toBeVisible();
+    // We can't easily test webcam in E2E headless without mocks,
+    // but we can check if the basic UI for the SPA Fitting page is there.
+    await expect(page.locator('text=Live Fit AI')).toBeVisible();
   });
 });
