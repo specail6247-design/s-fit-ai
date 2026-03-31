@@ -1,4 +1,0 @@
-## 2024-03-05 - Path Traversal Vulnerability in Local File API
-**Vulnerability:** A path traversal vulnerability existed in `app/api/try-on/route.ts` where the `localFileToDataUri` function accepted an arbitrary `localPath` argument, removed its leading slash, and joined it directly with the public directory using `path.join`. This allowed an attacker to access arbitrary files on the server (e.g., `/../../../etc/passwd`).
-**Learning:** `path.join` with unsanitized user input does not guarantee that the resulting path will be confined to the specified base directory. A malicious user can craft an input using `../` components to escape the base directory.
-**Prevention:** To prevent path traversal, always use `path.resolve` to obtain an absolute path and then verify that this absolute path strictly begins with the expected base directory path appended with a directory separator (`path.sep`). For example: `absolutePath.startsWith(publicDir + path.sep)`.
