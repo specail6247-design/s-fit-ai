@@ -43,7 +43,7 @@ function localFileToDataUri(localPath: string): string | null {
     };
     const mimeType = mimeTypes[ext] || 'image/png';
     
-    return \`data:\${mimeType};base64,\${base64}\`;
+    return `data:${mimeType};base64,${base64}`;
   } catch (error) {
     console.error('Error reading local file:', error);
     return null;
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
         const dataUri = localFileToDataUri(garmentImageUrl);
         if (!dataUri) {
           return NextResponse.json(
-            { error: \`Failed to read local image: \${garmentImageUrl}\` },
+            { error: `Failed to read local image: ${garmentImageUrl}` },
             { status: 400 }
           );
         }
