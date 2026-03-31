@@ -12,7 +12,15 @@ function localFileToDataUri(localPath: string): string | null {
   try {
     // Remove leading slash and resolve to public directory
     const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
-    const absolutePath = path.join(process.cwd(), 'public', relativePath);
+    const publicDir = path.join(process.cwd(), 'public');
+    const absolutePath = path.resolve(publicDir, relativePath);
+
+    // Security Fix: Prevent Path Traversal
+    // Ensure the resolved absolute path is actually within the public directory
+    if (!absolutePath.startsWith(publicDir + path.sep) && absolutePath !== publicDir) {
+      console.error('Security violation: Attempted path traversal outside public directory:', localPath);
+      return null;
+    }
     
     console.log('Reading local file:', absolutePath);
     
@@ -35,7 +43,7 @@ function localFileToDataUri(localPath: string): string | null {
     };
     const mimeType = mimeTypes[ext] || 'image/png';
     
-    return `data:${mimeType};base64,${base64}`;
+    return \`data:\${mimeType};base64,\${base64}\`;
   } catch (error) {
     console.error('Error reading local file:', error);
     return null;
@@ -70,7 +78,7 @@ export async function POST(request: NextRequest) {
         const dataUri = localFileToDataUri(garmentImageUrl);
         if (!dataUri) {
           return NextResponse.json(
-            { error: `Failed to read local image: ${garmentImageUrl}` },
+            { error: \`Failed to read local image: \${garmentImageUrl}\` },
             { status: 400 }
           );
         }
