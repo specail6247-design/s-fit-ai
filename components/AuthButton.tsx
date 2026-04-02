@@ -68,18 +68,18 @@ export function AuthButton() {
 
   if (user) {
     return (
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         <div className="text-right hidden md:block">
-          <p className="text-xs text-soft-gray">Welcome,</p>
-          <p className="text-sm font-medium text-white max-w-[100px] truncate">
+          <p className="text-[10px] text-soft-gray tracking-widest uppercase">Member</p>
+          <p className="text-sm font-serif italic text-luxury-gold max-w-[120px] truncate">
             {user.email?.split('@')[0]}
           </p>
         </div>
         <button
           onClick={handleLogout}
-          className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-xs font-medium transition-colors border border-white/10"
+          className="border border-white/20 hover:bg-white/10 text-white px-4 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase transition-colors"
         >
-          Sign Out
+          Exit
         </button>
       </div>
     );
@@ -89,81 +89,86 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="bg-transparent border border-luxury-gold/50 text-luxury-gold hover:bg-luxury-gold hover:text-black px-6 py-2 rounded-full text-xs font-bold tracking-widest uppercase transition-all shadow-[0_0_15px_rgba(201,176,55,0.2)] hover:shadow-[0_0_25px_rgba(201,176,55,0.4)]"
       >
-        LOGIN
+        MEMBER ACCESS
       </button>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
+          <div className="bg-[#050505] border border-luxury-gold/30 w-full max-w-md rounded-none p-8 relative shadow-[0_0_40px_rgba(201,176,55,0.15)]">
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              className="absolute top-4 right-4 text-soft-gray hover:text-luxury-gold transition-colors text-sm font-mono"
             >
-              ✕
+              [X]
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h2>
+            <div className="text-center mb-10">
+              <h2 className="text-3xl font-serif italic text-luxury-gold mb-2">
+                {isLogin ? 'Sign In' : 'Join VIP'}
+              </h2>
+              <p className="text-xs text-soft-gray tracking-[0.2em] uppercase">
+                Exclusive Virtual Experience
+              </p>
+            </div>
 
-            <form onSubmit={handleAuth} className="space-y-4 mb-6">
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
+            <form onSubmit={handleAuth} className="space-y-6 mb-8">
+              <div className="relative">
+                <input
+                  type="email"
+                  placeholder="Email Address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white text-sm focus:border-luxury-gold outline-none transition-colors placeholder:text-white/30"
+                  required
+                />
+              </div>
+              <div className="relative">
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white text-sm focus:border-luxury-gold outline-none transition-colors placeholder:text-white/30"
+                  required
+                />
+              </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="w-full bg-luxury-gold text-black font-bold py-4 mt-4 tracking-[0.2em] uppercase hover:bg-yellow-500 transition-colors disabled:opacity-50 flex justify-center items-center gap-2"
               >
-                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+                {loading ? 'Authenticating...' : (isLogin ? 'Enter' : 'Apply')}
               </button>
             </form>
 
-            <div className="flex items-center gap-2 mb-6">
+            <div className="flex items-center gap-4 mb-8">
               <div className="h-px bg-white/10 flex-1" />
-              <span className="text-xs text-soft-gray">OR SOCIAL LOGIN</span>
+              <span className="text-[10px] text-soft-gray tracking-widest uppercase">Or Continue With</span>
               <div className="h-px bg-white/10 flex-1" />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <button onClick={() => handleSocialLogin('google')} className="bg-white/5 hover:bg-white/10 border border-white/10 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🇬</span> <span className="text-xs text-white">Google</span>
+            <div className="grid grid-cols-2 gap-4">
+              <button onClick={() => handleSocialLogin('google')} className="bg-transparent border border-white/20 hover:border-luxury-gold py-3 flex items-center justify-center gap-2 transition-colors group">
+                <span className="text-lg opacity-70 group-hover:opacity-100 transition-opacity">🇬</span> <span className="text-xs text-soft-gray group-hover:text-luxury-gold transition-colors tracking-wider">Google</span>
               </button>
-              <button onClick={() => handleSocialLogin('kakao')} className="bg-[#FAE100] hover:bg-[#FADB00] text-[#371D1E] py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">💬</span> <span className="text-xs font-bold">Kakao</span>
-              </button>
-              <button onClick={() => handleSocialLogin('apple')} className="bg-white hover:bg-gray-100 text-black py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🍎</span> <span className="text-xs font-bold">Apple</span>
-              </button>
-              <button onClick={() => handleSocialLogin('discord')} className="bg-[#5865F2] hover:bg-[#4752C4] text-white py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🎮</span> <span className="text-xs font-bold">Discord</span>
+              <button onClick={() => handleSocialLogin('apple')} className="bg-transparent border border-white/20 hover:border-luxury-gold py-3 flex items-center justify-center gap-2 transition-colors group">
+                <span className="text-lg opacity-70 group-hover:opacity-100 transition-opacity">🍎</span> <span className="text-xs text-soft-gray group-hover:text-luxury-gold transition-colors tracking-wider">Apple</span>
               </button>
             </div>
 
-            <p className="mt-6 text-center text-xs text-soft-gray">
-              {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
-              <button
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-cyber-lime hover:underline ml-1"
-              >
-                {isLogin ? 'Sign up' : 'Log in'}
-              </button>
-            </p>
+            <div className="mt-8 text-center">
+              <p className="text-[10px] text-soft-gray tracking-wider">
+                {isLogin ? "Not a member yet?" : "Already a member?"}{' '}
+                <button
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="text-luxury-gold hover:text-white transition-colors uppercase ml-2 border-b border-luxury-gold/30 hover:border-white pb-0.5"
+                >
+                  {isLogin ? 'Request Access' : 'Sign In'}
+                </button>
+              </p>
+            </div>
           </div>
         </div>
       )}
