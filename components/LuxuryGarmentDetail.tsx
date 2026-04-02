@@ -1,10 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function LuxuryGarmentDetail() {
+  const [isSaved, setIsSaved] = useState(false);
+  const [isVaultOpen, setIsVaultOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -67,6 +70,19 @@ export default function LuxuryGarmentDetail() {
           </div>
         </div>
 
+        {/* AI Stylist Note */}
+        <div className="mt-8 px-4">
+          <div className="bg-[#ecab13]/10 border border-[#ecab13]/30 p-4 rounded-xl">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="material-symbols-outlined text-[#ecab13] text-sm">auto_awesome</span>
+              <span className="text-[#ecab13] text-xs font-bold tracking-[0.1em] uppercase">AI Stylist Note</span>
+            </div>
+            <p className="text-zinc-300 text-sm italic leading-relaxed">
+              &quot;Pair this structured blazer with dark tailored denim and minimal gold jewelry for a balanced, sophisticated silhouette.&quot;
+            </p>
+          </div>
+        </div>
+
         {/* Material Science Description */}
         <div className="mt-8 px-4">
           <div className="flex items-center justify-between mb-4">
@@ -74,7 +90,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
@@ -128,18 +144,94 @@ export default function LuxuryGarmentDetail() {
             <span className="text-white text-sm">12,400 Polygons</span>
           </div>
         </div>
+
+        {/* Exclusive Drops */}
+        <div className="px-4 mb-8">
+          <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-4 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-2 bg-[#0a0a0a] rounded-bl-xl border-b border-l border-[#2d2d2d]">
+              <span className="material-symbols-outlined text-zinc-500 text-sm">lock</span>
+            </div>
+            <h3 className="text-white text-xs font-bold tracking-[0.2em] uppercase mb-1">Exclusive Drop</h3>
+            <p className="text-[#ecab13] text-sm font-bold mb-3">Matching Metallic Trousers</p>
+            <div className="flex items-center gap-2 text-zinc-400 text-xs font-mono">
+              <span className="material-symbols-outlined text-sm">schedule</span>
+              <span>Available in 02:00:00</span>
+            </div>
+          </div>
+        </div>
+
+        {/* The Vault Drawer Overlay */}
+        <AnimatePresence>
+          {isVaultOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm"
+              onClick={() => setIsVaultOpen(false)}
+            >
+              <motion.div
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="w-80 max-w-[80vw] h-full bg-[#0a0a0a] border-l border-[#2d2d2d] flex flex-col"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="p-6 border-b border-[#2d2d2d] flex items-center justify-between">
+                  <h2 className="text-white text-sm font-bold tracking-[0.2em] uppercase">The Vault</h2>
+                  <button onClick={() => setIsVaultOpen(false)} className="text-zinc-500 hover:text-white transition-colors">
+                    <span className="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+                <div className="p-6 flex-1 overflow-y-auto">
+                  {isSaved ? (
+                    <div className="flex gap-4 items-center bg-[#1a1a1a] p-3 rounded-xl border border-[#2d2d2d]">
+                      <div
+                        className="size-16 rounded-lg bg-cover bg-center border border-[#2d2d2d]"
+                        style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' }}
+                      />
+                      <div>
+                        <p className="text-white text-xs font-bold">Metallic Silk Evening Blazer</p>
+                        <p className="text-zinc-500 text-[10px] mt-1">$2,850</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-zinc-500 text-xs italic text-center mt-10">Your vault is empty.</p>
+                  )}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       {/* Bottom Action Bar */}
-      <div className="fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex gap-4 items-center z-50">
-        <div className="flex flex-col flex-1">
-          <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
-          <p className="text-white text-xl font-bold">$2,850</p>
+      <div className="fixed bottom-0 w-full max-w-md mx-auto p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex flex-col gap-3 z-50">
+        <div className="flex gap-4 items-center w-full">
+          <button
+            onClick={() => setIsSaved(!isSaved)}
+            className={`flex size-14 shrink-0 items-center justify-center rounded-xl border transition-colors ${isSaved ? 'bg-[#ecab13]/20 border-[#ecab13] text-[#ecab13]' : 'bg-[#1a1a1a] border-[#2d2d2d] text-white hover:bg-[#2d2d2d]'}`}
+            aria-label="Save Look"
+            title="Save Look"
+          >
+            <span className="material-symbols-outlined font-bold" style={{ fontVariationSettings: isSaved ? '"FILL" 1' : '"FILL" 0' }}>bookmark</span>
+          </button>
+          <Link href="/luxury/fitting" className="flex-1 bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform px-2">
+            <span className="material-symbols-outlined font-bold text-sm">person_add_alt</span>
+            <span className="font-bold text-xs tracking-widest uppercase text-center">Try on Mannequin</span>
+          </Link>
+          <button
+            onClick={() => setIsVaultOpen(true)}
+            className="flex flex-col size-14 shrink-0 items-center justify-center rounded-xl bg-[#1a1a1a] border border-[#2d2d2d] text-white hover:bg-[#2d2d2d] transition-colors relative"
+            aria-label="Open Vault"
+            title="The Vault"
+          >
+            <span className="material-symbols-outlined text-sm">inventory_2</span>
+            <span className="text-[8px] tracking-widest uppercase mt-1 font-bold">Vault</span>
+            {isSaved && <span className="absolute top-1 right-1 size-2 bg-[#ecab13] rounded-full"></span>}
+          </button>
         </div>
-        <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
-          <span className="material-symbols-outlined font-bold">person_add_alt</span>
-          <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
-        </Link>
       </div>
 
       <style jsx global>{`
