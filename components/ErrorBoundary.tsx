@@ -16,7 +16,10 @@ export class ErrorBoundary extends Component<Props, State> {
     hasError: false
   };
 
-  public static getDerivedStateFromError(_: Error): State {
+  public static getDerivedStateFromError(error: Error): State {
+    // Keep error variable to prevent unused var warning, but we don't strictly need it.
+    // Could also just use `_error` if configured, but naming it `error` is safer.
+    console.debug('Error boundary caught:', error.message);
     return { hasError: true };
   }
 
