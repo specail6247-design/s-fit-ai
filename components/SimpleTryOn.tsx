@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 const SFitAIProject = () => {
   const [userImage, setUserImage] = useState<string | null>(null);
@@ -64,7 +65,7 @@ const SFitAIProject = () => {
             <h3>User Photo</h3>
             <div style={styles.uploadBox}>
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} />
-              {userImage && <img src={userImage} style={styles.preview} alt="User" />}
+              {userImage && <div style={{position: 'relative', width: styles.preview.width, height: styles.preview.height, marginTop: styles.preview.marginTop, borderRadius: styles.preview.borderRadius, overflow: 'hidden'}}><Image src={userImage} fill style={{objectFit: 'cover'}} alt="User" /></div>}
             </div>
           </div>
 
@@ -72,7 +73,7 @@ const SFitAIProject = () => {
             <h3>Garment</h3>
             <div style={styles.uploadBox}>
               <input type="file" onChange={(e) => handleFileUpload(e, setClothingImage)} />
-              {clothingImage && <img src={clothingImage} style={styles.preview} alt="Cloth" />}
+              {clothingImage && <div style={{position: 'relative', width: styles.preview.width, height: styles.preview.height, marginTop: styles.preview.marginTop, borderRadius: styles.preview.borderRadius, overflow: 'hidden'}}><Image src={clothingImage} fill style={{objectFit: 'cover'}} alt="Cloth" /></div>}
             </div>
           </div>
         </div>
@@ -90,7 +91,9 @@ const SFitAIProject = () => {
         {finalResult && (
           <div style={styles.resultContainer}>
             <h2 style={styles.resultTitle}>Fitting Result</h2>
-            <img src={finalResult} style={styles.finalImg} alt="Result" />
+            <div style={{position: 'relative', width: styles.finalImg.width, height: styles.finalImg.height, marginTop: styles.finalImg.marginTop, borderRadius: styles.finalImg.borderRadius, overflow: 'hidden'}}>
+              <Image src={finalResult} fill style={{objectFit: 'cover'}} alt="Result" />
+            </div>
           </div>
         )}
       </main>

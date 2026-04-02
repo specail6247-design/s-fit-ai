@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import MemberAccess from '@/components/MemberAccess';
+import SupportHub from '@/components/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +19,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isMemberAccessOpen, setIsMemberAccessOpen] = useState(false);
+  const [isSupportHubOpen, setIsSupportHubOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -95,8 +100,8 @@ export default function RealLifeFitting() {
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10 relative">
+                  {userImage ? <Image src={userImage} alt="User photo" fill className="object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -112,8 +117,8 @@ export default function RealLifeFitting() {
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10 relative">
+                  {garmentImage ? <Image src={garmentImage} alt="Target garment" fill className="object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -163,6 +168,26 @@ export default function RealLifeFitting() {
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
+
+        {/* Top Right Floating Actions */}
+        <div className="absolute top-6 right-6 z-30 flex gap-4">
+          <button
+            onClick={() => setIsSupportHubOpen(true)}
+            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 hover:border-[#C9B037]/50 transition-all shadow-lg backdrop-blur-md"
+            aria-label="Support Hub"
+          >
+            <span className="material-symbols-outlined text-[20px]">help</span>
+          </button>
+          <button
+            onClick={() => setIsMemberAccessOpen(true)}
+            className="px-4 h-10 rounded-full bg-white/5 border border-white/10 flex items-center gap-2 text-white/70 hover:text-white hover:bg-white/10 hover:border-[#C9B037]/50 transition-all shadow-lg backdrop-blur-md font-mono text-xs uppercase tracking-widest"
+            aria-label="VIP Access"
+          >
+            <span className="material-symbols-outlined text-[18px]">key</span>
+            <span>VIP Access</span>
+          </button>
+        </div>
+
         {/* Background Image (Night City Vibe) */}
         <div className="absolute inset-0 opacity-40 z-0">
            {/* Placeholder for Night City HDRI background visual */}
@@ -194,8 +219,8 @@ export default function RealLifeFitting() {
             animate={{ opacity: 1, scale: 1 }}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
-            <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+            <div className="relative group w-auto h-[70vh]">
+              <Image src={resultImage} alt="Result" fill className="rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
@@ -209,6 +234,10 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      {/* Service Essentials Overlays */}
+      <MemberAccess isOpen={isMemberAccessOpen} onClose={() => setIsMemberAccessOpen(false)} />
+      <SupportHub isOpen={isSupportHubOpen} onClose={() => setIsSupportHubOpen(false)} />
     </div>
   );
 }
