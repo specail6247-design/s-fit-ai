@@ -5,7 +5,6 @@
 // Includes: Accessory & Layering, Cinematic Video, AI Stylist, Comparison, Sharing
 
 import React, { Suspense, useRef, useState, useCallback, useEffect, useMemo } from 'react';
-import Image from 'next/image';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { 
   OrbitControls, 
@@ -306,7 +305,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170,
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
@@ -753,13 +752,11 @@ function AITryOnModal({
                         </div>
                     ) : (
                         <div className="relative group h-40 w-full rounded-xl border border-border-color bg-charcoal/40">
-                            <Image
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
                               src={userPhotoPreview}
                               alt="User Preview"
-                              fill
-                              className="object-contain"
-                              sizes="(max-width: 768px) 100vw, 400px"
-                              unoptimized
+                              className="object-contain w-full h-full"
                             />
                             <button onClick={() => fileInputRef.current?.click()} className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-[9px] px-3 py-1 rounded-full group-hover:opacity-100 transition-opacity">Change Photo</button>
                         </div>
@@ -781,13 +778,11 @@ function AITryOnModal({
                               <CinematicViewer videoUrl={videoUrl} posterUrl={result || undefined} className="w-full aspect-[9/16] rounded-xl shadow-2xl" />
                             ) : result && (
                                 <div className="relative w-full aspect-[9/16] rounded-xl border-2 border-cyber-lime/20 shadow-xl overflow-hidden">
-                                  <Image
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img
                                     src={result}
                                     alt="AI Try-On Result"
-                                    fill
-                                    className="object-cover"
-                                    sizes="(max-width: 768px) 100vw, 420px"
-                                    unoptimized
+                                    className="object-cover w-full h-full"
                                   />
                                   <div className="absolute top-2 right-2 bg-cyber-lime/90 text-void-black text-[10px] font-bold px-2 py-0.5 rounded">ULTRA-FIT</div>
                                 </div>
@@ -951,13 +946,11 @@ export function FittingRoom() {
                   style={{ marginTop: currentItem.category === 'bottoms' ? '30%' : (currentItem.category === 'dresses' ? '0%' : '-20%') }}
                 >
                   <div className="relative w-[70%] h-[50%]">
-                    <Image
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
                       src={currentItem.imageUrl}
                       alt={currentItem.name}
-                      fill
-                      className="object-contain drop-shadow-2xl"
-                      sizes="(max-width: 768px) 60vw, 280px"
-                      unoptimized
+                      className="object-contain drop-shadow-2xl w-full h-full"
                     />
                   </div>
                 </div>
