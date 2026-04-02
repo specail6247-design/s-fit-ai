@@ -1,0 +1,3 @@
+1. We need to implement `components/MemberAccess.tsx`.
+2. We need to implement `components/SupportHub.tsx`.
+3. We need to integrate them into `components/RealLifeFitting.tsx`.
