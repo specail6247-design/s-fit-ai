@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import MemberAccess from '@/components/MemberAccess';
+import SupportHub from '@/components/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isMemberAccessOpen, setIsMemberAccessOpen] = useState(false);
+  const [isSupportHubOpen, setIsSupportHubOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -163,6 +167,26 @@ export default function RealLifeFitting() {
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
+
+        {/* Top Right Floating Actions */}
+        <div className="absolute top-6 right-6 z-30 flex gap-4">
+          <button
+            onClick={() => setIsSupportHubOpen(true)}
+            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 hover:border-[#C9B037]/50 transition-all shadow-lg backdrop-blur-md"
+            aria-label="Support Hub"
+          >
+            <span className="material-symbols-outlined text-[20px]">help</span>
+          </button>
+          <button
+            onClick={() => setIsMemberAccessOpen(true)}
+            className="px-4 h-10 rounded-full bg-white/5 border border-white/10 flex items-center gap-2 text-white/70 hover:text-white hover:bg-white/10 hover:border-[#C9B037]/50 transition-all shadow-lg backdrop-blur-md font-mono text-xs uppercase tracking-widest"
+            aria-label="VIP Access"
+          >
+            <span className="material-symbols-outlined text-[18px]">key</span>
+            <span>VIP Access</span>
+          </button>
+        </div>
+
         {/* Background Image (Night City Vibe) */}
         <div className="absolute inset-0 opacity-40 z-0">
            {/* Placeholder for Night City HDRI background visual */}
@@ -209,6 +233,10 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      {/* Service Essentials Overlays */}
+      <MemberAccess isOpen={isMemberAccessOpen} onClose={() => setIsMemberAccessOpen(false)} />
+      <SupportHub isOpen={isSupportHubOpen} onClose={() => setIsSupportHubOpen(false)} />
     </div>
   );
 }
