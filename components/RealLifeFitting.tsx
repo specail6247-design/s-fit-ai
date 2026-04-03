@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LegalModal } from './ui/LegalModal';
+import { ReportIssueModal } from './ui/ReportIssueModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [legalType, setLegalType] = useState<'privacy' | 'terms' | null>(null);
+  const [isReportOpen, setIsReportOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -24,6 +28,59 @@ export default function RealLifeFitting() {
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleShareToStory = () => {
+    if (!resultImage) return;
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      // Create vertical story format (e.g. 1080x1920)
+      canvas.width = 1080;
+      canvas.height = 1920;
+
+      // Fill background
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw the image, scaled to fit the height while maintaining aspect ratio
+      const scale = canvas.height / img.height;
+      const scaledWidth = img.width * scale;
+      const x = (canvas.width - scaledWidth) / 2;
+      ctx.drawImage(img, x, 0, scaledWidth, canvas.height);
+
+      // Add overlay gradient for text visibility
+      const gradient = ctx.createLinearGradient(0, canvas.height - 400, 0, canvas.height);
+      gradient.addColorStop(0, 'rgba(0,0,0,0)');
+      gradient.addColorStop(1, 'rgba(0,0,0,0.8)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, canvas.height - 400, canvas.width, 400);
+
+      // Add branding
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 80px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT', canvas.width / 2, canvas.height - 150);
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = 'bold 40px monospace';
+      ctx.fillText('AI VIRTUAL FITTING', canvas.width / 2, canvas.height - 80);
+
+      // Trigger download
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+      const link = document.createElement('a');
+      link.download = `s_fit_story_${Date.now()}.jpg`;
+      link.href = dataUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+    img.src = resultImage;
   };
 
   const handleTryOn = async () => {
@@ -104,6 +161,11 @@ export default function RealLifeFitting() {
                 </div>
               </label>
             </div>
+            {/* Data Safety Badge */}
+            <div className="flex items-center gap-2 text-[10px] text-green-400/80 mt-1 pl-1">
+              <span className="material-symbols-outlined text-[12px]">lock</span>
+              <span>Photos are processed securely and not shared.</span>
+            </div>
           </div>
 
           {/* Garment Input */}
@@ -124,8 +186,8 @@ export default function RealLifeFitting() {
           </div>
         </div>
 
-        {/* Action Button */}
-        <div className="mt-8 relative z-10">
+        {/* Action Button & Footer Links */}
+        <div className="mt-8 relative z-10 flex flex-col gap-4">
           {isProcessing ? (
             <div className="space-y-2">
               <div className="flex justify-between text-xs text-[#007AFF] font-mono">
@@ -158,8 +220,21 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="flex justify-between items-center text-[10px] text-gray-500 mt-2">
+            <div className="flex gap-3">
+              <button onClick={() => setLegalType('privacy')} className="hover:text-white transition-colors">Privacy</button>
+              <button onClick={() => setLegalType('terms')} className="hover:text-white transition-colors">Terms</button>
+            </div>
+            <button onClick={() => setIsReportOpen(true)} className="hover:text-[#007AFF] transition-colors flex items-center gap-1">
+              <span className="material-symbols-outlined text-[12px]">bug_report</span> Report Issue
+            </button>
+          </div>
+
         </div>
       </div>
+
+      <LegalModal isOpen={legalType !== null} onClose={() => setLegalType(null)} type={legalType} />
+      <ReportIssueModal isOpen={isReportOpen} onClose={() => setIsReportOpen(false)} />
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
@@ -205,6 +280,12 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-[#007AFF] hover:bg-[#005bb5] text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg transition-transform hover:scale-105 flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-[16px]">share</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
