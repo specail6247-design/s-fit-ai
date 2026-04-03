@@ -43,9 +43,15 @@ vi.mock('three', () => ({
 
 describe('AvatarLoader', () => {
   it('renders without crashing', () => {
+    // Ignore warnings regarding <group> and <primitive> being rendered in standard DOM
+    const consoleError = vi.spyOn(console, 'error').mockImplementation((msg) => {
+      if (typeof msg === 'string' && msg.includes('is unrecognized in this browser')) return;
+      console.warn(msg);
+    });
     // Since AvatarLoader uses R3F hooks, we can't fully render it in happy-dom without a canvas context mock.
     // However, we can assert that the hooks are called.
     const { container } = render(<AvatarLoader url="test.glb" />);
     expect(container).toBeDefined();
+    consoleError.mockRestore();
   });
 });

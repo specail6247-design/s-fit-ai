@@ -1,11 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { ModeSelector } from './ModeSelector';
-import { LegalModal } from './ui/LegalModal';
 
 export function LandingPage() {
-  const [legalType, setLegalType] = useState<'privacy' | 'terms' | null>(null);
-
   return (
     <div className="min-h-screen bg-void-black text-pure-white overflow-hidden relative selection:bg-cyber-lime selection:text-black">
       
@@ -66,19 +63,9 @@ export function LandingPage() {
             <span className="text-white">Three.js</span>
             <span className="text-white">Next.js 15</span>
           </div>
-          <div className="flex gap-4 items-center">
-            <button onClick={() => setLegalType('privacy')} className="hover:text-white transition-colors">Privacy Policy</button>
-            <button onClick={() => setLegalType('terms')} className="hover:text-white transition-colors">Terms of Service</button>
-            <p>© 2026 Antigravity. All rights reserved.</p>
-          </div>
+          <p>© 2026 Antigravity. All rights reserved.</p>
         </div>
       </footer>
-
-      <LegalModal
-        isOpen={legalType !== null}
-        onClose={() => setLegalType(null)}
-        type={legalType}
-      />
     </div>
   );
 }
