@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LegalModal } from '@/components/ui/LegalModal';
+import { SupportHub } from '@/components/ui/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,9 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  const [isLegalOpen, setIsLegalOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -71,8 +76,62 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleShareToStory = () => {
+    if (!resultImage) return;
+
+    // Create a temporary canvas to draw the branded story
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Draw dark background
+    ctx.fillStyle = '#0a0a0a';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      // Calculate scaling to fit image nicely in center
+      const scale = Math.min((canvas.width * 0.9) / img.width, (canvas.height * 0.7) / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (canvas.width - w) / 2;
+      const y = (canvas.height - h) / 2;
+
+      // Draw rounded rect clipping area for the image (optional but nice)
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, 40);
+      ctx.clip();
+      ctx.drawImage(img, x, y, w, h);
+      ctx.restore();
+
+      // Add branding logo
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 60px "Geist Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT NEO', canvas.width / 2, 150);
+
+      // Add text label
+      ctx.fillStyle = '#007AFF';
+      ctx.font = 'bold 30px "Geist Mono", monospace';
+      ctx.fillText('AI GENERATED FITTING', canvas.width / 2, 210);
+
+      // Trigger download
+      const link = document.createElement('a');
+      link.download = 'sfit_neo_story.jpg';
+      link.href = canvas.toDataURL('image/jpeg', 0.9);
+      link.click();
+    };
+    img.src = resultImage;
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
+      <LegalModal isOpen={isLegalOpen} onClose={() => setIsLegalOpen(false)} />
+      <SupportHub isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
       
       {/* LEFT PANEL: CONTROLS */}
       <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
@@ -96,13 +155,19 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {userImage ? <img src={userImage} alt="User Photo" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
                 </div>
               </label>
+            </div>
+            {/* Data Safety Badge */}
+            <div className="flex items-center gap-1.5 text-[10px] text-gray-400 mt-2 px-1">
+              <span className="text-green-500">🔒</span>
+              Photos are processed securely and not shared.
             </div>
           </div>
 
@@ -113,7 +178,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {garmentImage ? <img src={garmentImage} alt="Target Garment" className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -158,6 +224,22 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Footer Actions */}
+          <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-4 px-2">
+            <button
+              onClick={() => setIsLegalOpen(true)}
+              className="text-[10px] text-gray-500 hover:text-white uppercase tracking-widest transition-colors"
+            >
+              Terms & Privacy
+            </button>
+            <button
+              onClick={() => setIsSupportOpen(true)}
+              className="text-[10px] text-gray-500 hover:text-white uppercase tracking-widest transition-colors"
+            >
+              Support Hub
+            </button>
+          </div>
+
         </div>
       </div>
 
@@ -195,6 +277,7 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
@@ -205,6 +288,12 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg hover:opacity-90 transition-opacity flex items-center gap-2"
+              >
+                📸 Share to Story
+              </button>
             </div>
           </motion.div>
         )}
