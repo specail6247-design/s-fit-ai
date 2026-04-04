@@ -1,11 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { User } from '@supabase/supabase-js';
 
 export function AuthButton() {
+  const [mounted, setMounted] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [showModal, setShowModal] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
@@ -89,13 +95,13 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="font-mono tracking-widest bg-transparent border border-white/20 hover:bg-white hover:text-black text-white transition-colors px-6 py-2 text-xs uppercase"
       >
-        LOGIN
+        MEMBER ACCESS
       </button>
 
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+      {showModal && mounted && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
           <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
             <button
               onClick={() => setShowModal(false)}
@@ -104,8 +110,8 @@ export function AuthButton() {
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
+            <h2 className="text-xl font-mono font-bold text-white mb-6 text-center tracking-widest uppercase">
+              {isLogin ? 'VIP ACCESS_' : 'INITIATE SEQUENCE_'}
             </h2>
 
             <form onSubmit={handleAuth} className="space-y-4 mb-6">
@@ -165,7 +171,8 @@ export function AuthButton() {
               </button>
             </p>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
