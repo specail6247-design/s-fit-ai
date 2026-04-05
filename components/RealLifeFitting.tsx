@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import MemberAccessModal from './MemberAccessModal';
+import SupportHubDrawer from './SupportHubDrawer';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
+  const [isSupportDrawerOpen, setIsSupportDrawerOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -163,6 +167,29 @@ export default function RealLifeFitting() {
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
+
+        {/* Hidden-until-needed utilities */}
+        <div className="absolute top-8 right-8 z-30">
+          <button
+            onClick={() => setIsMemberModalOpen(true)}
+            className="text-white/40 hover:text-[#c9b037] text-xs font-mono tracking-[0.2em] uppercase transition-colors"
+          >
+            MEMBER ACCESS
+          </button>
+        </div>
+
+        <div className="absolute bottom-8 right-8 z-30">
+          <button
+            onClick={() => setIsSupportDrawerOpen(true)}
+            className="text-white/40 hover:text-white text-xs font-mono tracking-[0.2em] uppercase transition-colors"
+          >
+            SUPPORT HUB
+          </button>
+        </div>
+
+        <MemberAccessModal isOpen={isMemberModalOpen} onClose={() => setIsMemberModalOpen(false)} />
+        <SupportHubDrawer isOpen={isSupportDrawerOpen} onClose={() => setIsSupportDrawerOpen(false)} />
+
         {/* Background Image (Night City Vibe) */}
         <div className="absolute inset-0 opacity-40 z-0">
            {/* Placeholder for Night City HDRI background visual */}
