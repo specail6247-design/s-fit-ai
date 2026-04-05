@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { PrivacyModal } from './ui/PrivacyModal';
+import { SupportHubModal } from './ui/SupportHubModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -17,12 +19,75 @@ export default function RealLifeFitting() {
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
 
+  // Modal states
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+
+    try {
+      // Create a canvas with IG Story dimensions (1080x1920)
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Draw background (dark gray/black)
+      ctx.fillStyle = '#0a0a0a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Load image
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.src = resultImage;
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      // Calculate dimensions to fit image within the canvas while maintaining aspect ratio,
+      // leaving room at the top and bottom for branding.
+      const targetWidth = canvas.width * 0.9;
+      const scale = targetWidth / img.width;
+      const targetHeight = img.height * scale;
+
+      const x = (canvas.width - targetWidth) / 2;
+      const y = (canvas.height - targetHeight) / 2;
+
+      // Draw the result image
+      ctx.drawImage(img, x, y, targetWidth, targetHeight);
+
+      // Add Branding
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 60px "Helvetica Neue", Helvetica, Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT AI', canvas.width / 2, y - 100);
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = '40px monospace';
+      ctx.fillText('VIRTUAL FITTING RESULT', canvas.width / 2, y + targetHeight + 100);
+
+      // Download
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+      const link = document.createElement('a');
+      link.download = `sfit-story-${Date.now()}.jpg`;
+      link.href = dataUrl;
+      link.click();
+    } catch (error) {
+      console.error("Failed to generate story image:", error);
+      alert("Failed to generate story image. Please try again.");
     }
   };
 
@@ -73,7 +138,10 @@ export default function RealLifeFitting() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
-      
+      {/* Modals */}
+      <PrivacyModal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
+      <SupportHubModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
+
       {/* LEFT PANEL: CONTROLS */}
       <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
         {/* Background Ambience */}
@@ -96,7 +164,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {userImage ? <img src={userImage} alt="User Upload" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +182,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {garmentImage ? <img src={garmentImage} alt="Garment Upload" className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -121,6 +191,14 @@ export default function RealLifeFitting() {
                 </div>
               </label>
             </div>
+          </div>
+
+          {/* Data Safety Badge */}
+          <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+            <span className="text-green-400 text-lg">🛡️</span>
+            <span className="text-xs text-green-100/80 font-medium">
+              Photos are processed securely and not shared.
+            </span>
           </div>
         </div>
 
@@ -156,6 +234,22 @@ export default function RealLifeFitting() {
              <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                Luxury Line
              </a>
+          </div>
+
+          {/* Footer Links */}
+          <div className="mt-8 pt-4 border-t border-white/10 flex justify-between items-center text-[10px] text-gray-500 font-mono">
+            <button
+              onClick={() => setIsPrivacyOpen(true)}
+              className="hover:text-white transition-colors uppercase tracking-wider"
+            >
+              Privacy & Terms
+            </button>
+            <button
+              onClick={() => setIsSupportOpen(true)}
+              className="hover:text-white transition-colors uppercase tracking-wider"
+            >
+              Report Issue
+            </button>
           </div>
 
         </div>
@@ -195,6 +289,7 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
@@ -205,6 +300,12 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-[#007AFF] text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-[#005bb5] transition-colors shadow-lg flex items-center gap-2"
+              >
+                <span>📸</span> SHARE TO STORY
+              </button>
             </div>
           </motion.div>
         )}
