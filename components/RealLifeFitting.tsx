@@ -262,6 +262,7 @@ export default function RealLifeFitting() {
                  ) : (
                     // Hyper-Zoom interactive image container
                     <motion.div
+                       data-hyper-zoom
                        className="w-full h-full cursor-crosshair"
                        animate={{ scale: zoomLevel }}
                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
