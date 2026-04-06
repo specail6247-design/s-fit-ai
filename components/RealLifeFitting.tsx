@@ -251,7 +251,10 @@ export default function RealLifeFitting() {
                     const rect = e.currentTarget.getBoundingClientRect();
                     const x = (e.clientX - rect.left) / rect.width;
                     const y = (e.clientY - rect.top) / rect.height;
-                    e.currentTarget.style.transformOrigin = `${x * 100}% ${y * 100}%`;
+                    const child = e.currentTarget.querySelector('div[data-hyper-zoom]') as HTMLElement;
+                    if (child) {
+                      child.style.transformOrigin = `${x * 100}% ${y * 100}%`;
+                    }
                  }}
               >
                  {videoUrl ? (
