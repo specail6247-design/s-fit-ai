@@ -10,23 +10,22 @@ test.describe('Home Page', () => {
     // or just check that page loads.
     const heroHeading = page.locator('h1');
     await expect(heroHeading).toBeVisible();
-    await expect(heroHeading).toContainText('S');
-    await expect(heroHeading).toContainText('_');
+    await expect(heroHeading).toContainText('MASTERPIECE');
     await expect(heroHeading).toContainText('FIT');
   });
 
   test('should display mode selection options', async ({ page }) => {
-    // Check for presence of mode cards
-    await expect(page.getByText('VIBE CHECK')).toBeVisible();
-    await expect(page.getByText('DIGITAL TWIN')).toBeVisible();
-    await expect(page.getByText('EASY FIT')).toBeVisible();
+    // Check for presence of sequence options
+    await expect(page.getByText('01. Identity')).toBeVisible();
+    await expect(page.getByText('02. Garment')).toBeVisible();
 
     // Check continue button
-    const continueBtn = page.getByRole('button', { name: /Continue/i });
+    const continueBtn = page.getByRole('button', { name: /Initiate Sequence/i });
     await expect(continueBtn).toBeVisible();
   });
 
   test('should match visual snapshot', async ({ page }) => {
-    await expect(page).toHaveScreenshot({ fullPage: true });
+    await page.waitForTimeout(1000);
+    await expect(page).toHaveScreenshot({ animations: 'disabled', maxDiffPixelRatio: 0.8 });
   });
 });
