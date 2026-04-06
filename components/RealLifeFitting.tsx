@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { SupportHubDrawer } from '@/components/SupportHubDrawer';
+import { LegalModal } from '@/components/LegalModal';
+import { DataSafetyBadge } from '@/components/DataSafetyBadge';
+import { ShareStoryButton } from '@/components/ShareStoryButton';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +20,9 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [legalType, setLegalType] = useState<'privacy' | 'terms' | null>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -149,6 +156,8 @@ export default function RealLifeFitting() {
             </button>
           )}
           
+          <DataSafetyBadge />
+
           <div className="mt-4 flex gap-2">
              <a href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                SPA Line
@@ -158,6 +167,16 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Footer Links */}
+          <div className="mt-8 flex flex-col items-center gap-2 text-[10px] text-gray-500">
+            <button onClick={() => setIsSupportOpen(true)} className="hover:text-white transition-colors uppercase tracking-widest border border-white/10 px-3 py-1 rounded-full bg-black/20">
+              Support Hub
+            </button>
+            <div className="flex gap-4 mt-2">
+              <button onClick={() => setLegalType('privacy')} className="hover:text-white transition-colors underline">Privacy Policy</button>
+              <button onClick={() => setLegalType('terms')} className="hover:text-white transition-colors underline">Terms of Service</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -206,9 +225,13 @@ export default function RealLifeFitting() {
                 AI GENERATED_
               </div>
             </div>
+            <ShareStoryButton imageUrl={resultImage} />
           </motion.div>
         )}
       </div>
+
+      <SupportHubDrawer isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
+      <LegalModal isOpen={!!legalType} type={legalType} onClose={() => setLegalType(null)} />
     </div>
   );
 }
