@@ -5,7 +5,7 @@
 export interface ClothingItem {
   id: string;
   name: string;
-  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
+  brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany' | 'Ader Error' | 'Gentle Monster';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
   subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
   zIndex?: number;
@@ -89,6 +89,20 @@ export const brands: Brand[] = [
     id: 'tiffany',
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
+    isLuxury: true,
+    tier: 'luxury',
+  },
+  {
+    id: 'ader-error',
+    name: 'Ader Error',
+    logo: 'https://placehold.co/100x100?text=ADER',
+    isLuxury: false,
+    tier: 'mass',
+  },
+  {
+    id: 'gentle-monster',
+    name: 'Gentle Monster',
+    logo: 'https://placehold.co/100x100?text=GENTLE+MONSTER',
     isLuxury: true,
     tier: 'luxury',
   },
@@ -533,7 +547,53 @@ export const mockClothingItems: ClothingItem[] = [
     isLuxury: true,
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
-    description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+    description: 'Heavy gold-plated brass chain with a substantial weight, interacting realistically with silk layers',
+  },
+  {
+    id: 'gucci-scarf-001',
+    name: 'GG Flora Print Silk Scarf',
+    brand: 'Gucci',
+    category: 'accessories',
+    subCategory: 'scarf',
+    zIndex: 40,
+    price: 495.00,
+    currency: 'USD',
+    imageUrl: '/accessories/gucci_scarf.png',
+    textureUrl: '/accessories/gucci_scarf.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Multicolor'],
+    description: 'Ultra-lightweight 100% silk twill with high drape and sheen, dynamically reacting to wind and gravity',
+  },
+  {
+    id: 'gentle-monster-001',
+    name: 'Lilit 01',
+    brand: 'Gentle Monster',
+    category: 'accessories',
+    subCategory: 'glasses',
+    zIndex: 60,
+    price: 280.00,
+    currency: 'USD',
+    imageUrl: '/accessories/gentle_monster.png',
+    textureUrl: '/accessories/gentle_monster.png',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Black'],
+    description: 'Oversized flat bar acetate frame with dark lenses, rigid physics interaction',
+  },
+  {
+    id: 'ader-error-001',
+    name: 'Tetris Logo Hoodie',
+    brand: 'Ader Error',
+    category: 'tops',
+    price: 240.00,
+    currency: 'USD',
+    imageUrl: '/clothing/ader_hoodie.png',
+    textureUrl: '/clothing/ader_hoodie.png',
+    isLuxury: false,
+    sizes: ['A1', 'A2', 'A3'],
+    colors: ['Blue', 'Grey'],
+    description: 'Heavyweight structured cotton hoodie with signature oversized, rigid drape characteristics',
   },
 ];
 
