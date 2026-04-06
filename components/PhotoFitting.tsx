@@ -1,15 +1,35 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Space_Grotesk } from "next/font/google";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isVaultOpen, setIsVaultOpen] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.muted = isMuted;
+      if (!isMuted) {
+        audioRef.current.play().catch(e => console.log('Audio play prevented', e));
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isMuted]);
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
+      {/* Sensory Ambience */}
+      <audio
+        ref={audioRef}
+        loop
+        src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+      />
       {/* Top App Bar */}
       <div className="z-50 flex items-center justify-between bg-transparent p-4">
         <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
@@ -19,9 +39,18 @@ export default function PhotoFitting() {
           <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
-        <div className="flex w-12 items-center justify-end">
-          <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
-            <span className="material-symbols-outlined">info</span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsMuted(!isMuted)}
+            className="flex size-10 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md hover:bg-[#101622]/60 transition-colors"
+          >
+            <span className="material-symbols-outlined text-sm">{isMuted ? 'volume_off' : 'volume_up'}</span>
+          </button>
+          <button
+            onClick={() => setIsVaultOpen(true)}
+            className="flex size-10 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md hover:bg-[#101622]/60 transition-colors"
+          >
+            <span className="material-symbols-outlined text-sm">inventory_2</span>
           </button>
         </div>
       </div>
@@ -117,12 +146,55 @@ export default function PhotoFitting() {
             </label>
           </div>
         </div>
-        <button className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-[#256af4] text-base font-bold text-white shadow-lg shadow-[#256af4]/20 transition-colors hover:bg-blue-600">
-          <span className="material-symbols-outlined">check_circle</span>
-          Confirm & Proceed to Checkout
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => setIsVaultOpen(true)}
+            className="flex h-14 flex-1 items-center justify-center gap-2 rounded-xl border border-white/20 bg-transparent text-sm font-bold text-white transition-colors hover:bg-white/10"
+          >
+            <span className="material-symbols-outlined">bookmark_add</span>
+            Save Look
+          </button>
+          <button className="flex h-14 flex-[2] items-center justify-center gap-2 rounded-xl bg-[#256af4] text-sm font-bold text-white shadow-lg shadow-[#256af4]/20 transition-colors hover:bg-blue-600">
+            <span className="material-symbols-outlined">check_circle</span>
+            Proceed to Checkout
+          </button>
+        </div>
         <div className="h-4"></div>
       </div>
+
+      {/* The Vault Drawer */}
+      {isVaultOpen && (
+        <>
+          <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm" onClick={() => setIsVaultOpen(false)} />
+          <div className="fixed bottom-0 left-0 right-0 z-[70] flex max-h-[80vh] flex-col rounded-t-[32px] bg-[#101622] shadow-[0_-10px_40px_rgba(0,0,0,0.5)] border-t border-white/10 transition-transform duration-300">
+            <div className="flex items-center justify-between p-6 pb-2">
+              <div>
+                <h3 className="text-xl font-bold tracking-tight text-white">The Vault</h3>
+                <p className="text-xs font-medium text-[#90a4cb] uppercase tracking-widest mt-1">Digital Wardrobe</p>
+              </div>
+              <button onClick={() => setIsVaultOpen(false)} className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-6 pt-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="group relative aspect-[3/4] overflow-hidden rounded-xl border border-white/10 bg-zinc-900">
+                   <div className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' }} />
+                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                   <div className="absolute bottom-3 left-3 right-3">
+                     <p className="text-[10px] font-bold text-[#ecab13] uppercase tracking-wider mb-0.5">Saved Look</p>
+                     <p className="text-xs font-medium text-white truncate">Metallic Silk Evening Blazer</p>
+                   </div>
+                </div>
+                <div className="flex aspect-[3/4] items-center justify-center rounded-xl border border-dashed border-white/20 bg-white/5 hover:bg-white/10 transition-colors cursor-pointer flex-col gap-2">
+                  <span className="material-symbols-outlined text-white/40 text-3xl">add</span>
+                  <p className="text-xs font-medium text-white/40 uppercase tracking-wider">Empty Slot</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Heatmap Legend */}
       <div className="glass-panel absolute bottom-64 left-4 z-40 flex flex-col gap-1.5 rounded-lg p-2" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>

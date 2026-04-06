@@ -17,6 +17,8 @@ export interface ClothingItem {
   sizes: string[];
   colors: string[];
   description: string;
+  stylingTip?: string;
+  locked?: boolean;
 }
 
 export interface Brand {
@@ -182,6 +184,8 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 44', 'IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Beige/Ebony'],
     description: 'Iconic GG pattern wool blazer with silk lining',
+    stylingTip: 'Pair this with structured denim for a balanced silhouette.',
+    locked: true,
   },
   {
     id: 'gucci-002',
@@ -196,6 +200,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 38', 'IT 40', 'IT 42', 'IT 44', 'IT 46'],
     colors: ['Ivory', 'Black'],
     description: 'Pure silk blouse with signature horsebit print',
+    stylingTip: 'Tuck into a high-waisted skirt for a classic evening look.',
   },
   {
     id: 'gucci-003',

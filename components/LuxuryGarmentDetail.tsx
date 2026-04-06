@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+
 
 export default function LuxuryGarmentDetail() {
   return (
@@ -67,6 +67,19 @@ export default function LuxuryGarmentDetail() {
           </div>
         </div>
 
+        {/* Styling Tip */}
+        <div className="mt-8 px-4">
+          <div className="flex items-start gap-3 p-4 bg-[#1a1a1a]/60 border border-[#2d2d2d] rounded-xl">
+            <span className="text-[#ecab13] material-symbols-outlined text-xl mt-0.5">diamond</span>
+            <div>
+              <h2 className="text-white text-xs font-bold tracking-[0.2em] uppercase mb-1">Styling Tip</h2>
+              <p className="text-zinc-400 text-sm leading-relaxed italic">
+                &quot;Pair this with structured denim for a balanced silhouette.&quot;
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Material Science Description */}
         <div className="mt-8 px-4">
           <div className="flex items-center justify-between mb-4">
@@ -74,7 +87,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
@@ -131,15 +144,23 @@ export default function LuxuryGarmentDetail() {
       </main>
 
       {/* Bottom Action Bar */}
-      <div className="fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex gap-4 items-center z-50">
-        <div className="flex flex-col flex-1">
-          <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
-          <p className="text-white text-xl font-bold">$2,850</p>
+      <div className="fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex flex-col gap-4 z-50">
+        <div className="flex items-center justify-between px-2 mb-2">
+           <div className="flex items-center gap-2">
+             <span className="material-symbols-outlined text-[#ecab13] text-sm animate-pulse">lock</span>
+             <span className="text-[#ecab13] text-xs font-bold tracking-widest uppercase">Available in 02:00:00</span>
+           </div>
         </div>
-        <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
-          <span className="material-symbols-outlined font-bold">person_add_alt</span>
-          <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
-        </Link>
+        <div className="flex gap-4 items-center">
+          <div className="flex flex-col flex-1">
+            <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
+            <p className="text-white text-xl font-bold">$2,850</p>
+          </div>
+          <button disabled className="flex-[2] bg-zinc-800 text-zinc-500 h-14 rounded-xl flex items-center justify-center gap-3 shadow-none cursor-not-allowed">
+            <span className="material-symbols-outlined font-bold">person_add_alt</span>
+            <span className="font-bold text-sm tracking-widest uppercase">Locked</span>
+          </button>
+        </div>
       </div>
 
       <style jsx global>{`
