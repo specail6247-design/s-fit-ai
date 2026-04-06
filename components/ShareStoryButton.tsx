@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function ShareStoryButton({ imageUrl }: { imageUrl: string }) {
   const [isSharing, setIsSharing] = useState(false);
 
