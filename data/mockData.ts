@@ -240,6 +240,56 @@ export const mockClothingItems: ClothingItem[] = [
     description: 'Genuine leather bomber with embroidered patches',
   },
 
+  // GUCCI ACCESSORIES - Luxury (3 items)
+  {
+    id: 'gucci-acc-001',
+    name: 'Marmont Matelassé Bag',
+    brand: 'Gucci',
+    category: 'accessories',
+    subCategory: 'bag',
+    price: 2550,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x500/0a0a0a/ecab13?text=GUCCI+BAG',
+    textureUrl: '/textures/leather_normal.jpg',
+    isLuxury: true,
+    sizes: ['OS'],
+    colors: ['Black', 'Red'],
+    description: 'Iconic chevron leather bag with Double G hardware.',
+    zIndex: 50
+  },
+  {
+    id: 'gucci-acc-002',
+    name: 'Floral Silk Scarf',
+    brand: 'Gucci',
+    category: 'accessories',
+    subCategory: 'scarf',
+    price: 495,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x500/0a0a0a/ecab13?text=GUCCI+SCARF',
+    textureUrl: '/textures/silk_normal.jpg',
+    isLuxury: true,
+    sizes: ['OS'],
+    colors: ['Multicolor'],
+    description: 'Vibrant silk twill scarf with historic Flora print.',
+    zIndex: 40
+  },
+  {
+    id: 'gucci-acc-003',
+    name: 'Interlocking G Necklace',
+    brand: 'Gucci',
+    category: 'accessories',
+    subCategory: 'jewelry',
+    price: 850,
+    currency: 'USD',
+    imageUrl: 'https://placehold.co/400x500/0a0a0a/ecab13?text=GUCCI+JEWELRY',
+    textureUrl: '/textures/metal_normal.jpg',
+    isLuxury: true,
+    sizes: ['OS'],
+    colors: ['Silver', 'Gold'],
+    description: 'Heavy sterling silver chain necklace with Interlocking G.',
+    zIndex: 60
+  },
+
   // UNIQLO - Basic (5 items)
   {
     id: 'uniqlo-001',

@@ -87,24 +87,50 @@ export async function POST(request: NextRequest) {
     console.log('- garmentImage type:', garmentImageInput.startsWith('data:') ? 'data URI' : 'URL');
     console.log('- category:', category || 'upper_body');
 
-    // Call Replicate API
-    const result = await generateVirtualTryOn({
-      userPhoto: userPhotoInput,
-      garmentImage: garmentImageInput,
-      category: category || 'upper_body'
-    });
+    const orchestratorUrl = process.env.AI_ORCHESTRATOR_URL || 'http://localhost:8000';
+    let finalImageUrl = null;
 
-    if (result.success) {
-      return NextResponse.json({
-        success: true,
-        imageUrl: result.imageUrl
+    try {
+      const orchestratorResponse = await fetch(`${orchestratorUrl}/generate-try-on`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userPhotoUrl: userPhotoInput,
+          garmentImageUrl: garmentImageInput,
+          category: category || 'upper_body'
+        }),
       });
-    } else {
-      return NextResponse.json(
-        { error: result.error },
-        { status: 500 }
-      );
+      if (orchestratorResponse.ok) {
+        const orchestratorData = await orchestratorResponse.json();
+        if (orchestratorData.success && orchestratorData.imageUrl) {
+          finalImageUrl = orchestratorData.imageUrl;
+        }
+      }
+    } catch (e) {
+      console.warn("Orchestrator not available or failed. Falling back to lib/virtualTryOn", e);
     }
+
+    if (!finalImageUrl) {
+      // Call Replicate API Fallback
+      const result = await generateVirtualTryOn({
+        userPhoto: userPhotoInput,
+        garmentImage: garmentImageInput,
+        category: category || 'upper_body'
+      });
+      if (result.success) {
+        finalImageUrl = result.imageUrl;
+      } else {
+        return NextResponse.json(
+          { error: result.error },
+          { status: 500 }
+        );
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      imageUrl: finalImageUrl
+    });
   } catch (error) {
     console.error('Try-on API error:', error);
     return NextResponse.json(
