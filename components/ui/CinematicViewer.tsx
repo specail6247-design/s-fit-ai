@@ -15,17 +15,6 @@ export default function CinematicViewer({ videoUrl, posterUrl, className = '' }:
   const [isPlaying, setIsPlaying] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
-
-  const handleShare = async () => {
-    try {
-      await navigator.clipboard.writeText(videoUrl);
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy share link', err);
-    }
-  };
 
   // Toggle Play/Pause
   const togglePlay = () => {
@@ -125,26 +114,10 @@ export default function CinematicViewer({ videoUrl, posterUrl, className = '' }:
           )}
         </button>
 
-        <div className="flex gap-3">
-          <button
-            onClick={handleShare}
-            className="flex items-center gap-2 px-5 py-2.5 bg-transparent border border-white/30 text-white hover:bg-white/10 rounded-full text-sm font-bold tracking-wide transition-all"
-            aria-label="Share Cinematic Video"
-          >
-            {isCopied ? (
-              <span className="text-[#ecab13]">COPIED!</span>
-            ) : (
-              <>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-                <span>SHARE</span>
-              </>
-            )}
-          </button>
-
-          <button
-            onClick={toggleFullscreen}
-            className="flex items-center gap-2 px-5 py-2.5 bg-white text-black hover:bg-gray-100 rounded-full text-sm font-bold tracking-wide transition-all shadow-lg transform hover:scale-105"
-          >
+        <button
+          onClick={toggleFullscreen}
+          className="flex items-center gap-2 px-5 py-2.5 bg-white text-black hover:bg-gray-100 rounded-full text-sm font-bold tracking-wide transition-all shadow-lg transform hover:scale-105"
+        >
           {isFullscreen ? (
              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
           ) : (
@@ -152,7 +125,6 @@ export default function CinematicViewer({ videoUrl, posterUrl, className = '' }:
           )}
           <span>CINEMATIC MODE</span>
         </button>
-        </div>
       </motion.div>
 
       {/* Film Grain / Aesthetic Overlay (Optional) */}

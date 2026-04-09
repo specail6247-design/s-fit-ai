@@ -23,28 +23,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const orchestratorUrl = process.env.AI_ORCHESTRATOR_URL || 'http://localhost:8000';
-    let videoUrl = null;
-
-    try {
-      const orchestratorResponse = await fetch(`${orchestratorUrl}/generate-runway-motion`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageUrl: processedImageUrl, upscale }),
-      });
-      if (orchestratorResponse.ok) {
-        const orchestratorData = await orchestratorResponse.json();
-        if (orchestratorData.success && orchestratorData.videoUrl) {
-          videoUrl = orchestratorData.videoUrl;
-        }
-      }
-    } catch (e) {
-      console.warn("Orchestrator not available or failed. Falling back to lib/virtualTryOn", e);
-    }
-
-    if (!videoUrl) {
-      videoUrl = await generateRunwayVideo(processedImageUrl);
-    }
+    const videoUrl = await generateRunwayVideo(processedImageUrl);
 
     if (videoUrl) {
       return NextResponse.json({ success: true, videoUrl });

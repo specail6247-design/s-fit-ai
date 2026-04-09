@@ -309,11 +309,10 @@ function Mannequin({
   height = 170, opacity = 1.0 
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
-  // Use opacity in styling or group transparent to fix unused var error
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
   
   return (
-    <group scale={[scale, scale, scale]} userData={{ opacity }}>
+    <group scale={[scale, scale, scale]}>
       {/* Generic RPM Avatar Buffer */}
       <AvatarLoader 
         url="https://models.readyplayer.me/64f0263b8655b32115ba9269.glb" 
@@ -797,7 +796,7 @@ function AITryOnModal({
                                 <button onClick={async () => {
                                     setIsVideoLoading(true);
                                     try {
-                                        const res = await fetch('/api/runway-motion', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({imageUrl: result}) });
+                                        const res = await fetch('/api/cinematic-try-on', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({imageUrl: result}) });
                                         const data = await res.json();
                                         if(data.success) setVideoUrl(data.videoUrl);
                                     } finally { setIsVideoLoading(false); }
