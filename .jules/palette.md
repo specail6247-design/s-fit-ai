@@ -1,0 +1,3 @@
+## 2024-04-09 - Accessible Icon-Only Buttons
+**Learning:** Icon-only buttons (like those using `material-symbols-outlined` in 3D UI overlays or nav bars) often completely lack accessible names, hidden decorative icons, and keyboard focus indicators (`focus-visible:ring-2 outline-none`), making them invisible to screen readers and difficult to use via keyboard navigation in this app's components.
+**Action:** Always append an explicit `aria-label` to the `<button>`, `aria-hidden="true"` to the purely decorative `<span className="material-symbols-outlined">`, and `focus-visible:ring-2 outline-none` to the button's classes to ensure proper screen reader support and keyboard accessibility.
