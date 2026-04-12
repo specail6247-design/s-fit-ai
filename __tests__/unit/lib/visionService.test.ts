@@ -20,7 +20,7 @@ describe('Vision Service', () => {
       torsoHeight: 0.5,
       legLength: 0.5,
       overallRatio: 0.5
-    , waistWidth: 0.5, armLength: 0.5, shoulderSlope: 0.5};
+    };
     const userHeight = 175; // cm
 
     it('should return a valid size recommendation for ZARA top', () => {
@@ -64,7 +64,7 @@ describe('Vision Service', () => {
 
         // With high stretch
         const mockAnalysis: ClothingStyleAnalysis = {
-            category: 'tops' as const,
+            category: 'tops',
             subCategory: 'sweatshirt',
             fitType: 'oversized',
             material: 'Heavy Cotton',
@@ -106,7 +106,7 @@ describe('Vision Service', () => {
 
     it('should prioritize matching colors (black/white)', () => {
         // Create a mock black item
-        const blackItem = { ...getAllItems()[0], colors: ['Black'], category: 'tops' as const };
+        const blackItem = { ...getAllItems()[0], colors: ['Black'], category: 'tops' };
         const recommendations = getComplementaryItems(blackItem);
         expect(recommendations.length).toBeGreaterThan(0);
     });
