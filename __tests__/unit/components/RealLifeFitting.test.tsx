@@ -29,12 +29,12 @@ vi.mock('three', () => ({
 }));
 
 describe('RealLifeFitting', () => {
-  it('renders the Night City UI structure', () => {
+  it('renders the Digital Atelier UI structure', () => {
     render(<RealLifeFitting />);
     
     // Check for Main Header
     expect(screen.getByText(/S_FIT/i)).toBeInTheDocument();
-    expect(screen.getByText(/NEO/i)).toBeInTheDocument();
+    expect(screen.getByText(/Masterpiece Fit/i)).toBeInTheDocument();
     
     // Check for Sections
     expect(screen.getByText(/01. Identification/i)).toBeInTheDocument();
