@@ -16,14 +16,14 @@ test.describe('Home Page', () => {
   });
 
   test('should display mode selection options', async ({ page }) => {
-    // Check for presence of mode cards
-    await expect(page.getByText('VIBE CHECK')).toBeVisible();
-    await expect(page.getByText('DIGITAL TWIN')).toBeVisible();
-    await expect(page.getByText('EASY FIT')).toBeVisible();
+    // The app root renders RealLifeFitting directly.
+    // We check for elements present in the RealLifeFitting component.
+    await expect(page.getByText('01. Identification')).toBeVisible();
+    await expect(page.getByText('02. Target Garment')).toBeVisible();
 
-    // Check continue button
-    const continueBtn = page.getByRole('button', { name: /Continue/i });
-    await expect(continueBtn).toBeVisible();
+    // Check try on button
+    const tryOnBtn = page.getByRole('button', { name: /TRY IT ON/i });
+    await expect(tryOnBtn).toBeVisible();
   });
 
   test('should match visual snapshot', async ({ page }) => {
