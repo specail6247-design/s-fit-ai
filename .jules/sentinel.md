@@ -1,0 +1,4 @@
+## 2024-04-13 - Path Traversal Vulnerability in Local Image Handling
+**Vulnerability:** The `localFileToDataUri` function in `app/api/try-on/route.ts` used `path.join` with unsanitized user-supplied paths to read local files, allowing for path traversal out of the intended `public/` directory via sequences like `../../../`.
+**Learning:** `path.join` does not prevent path traversal if the input contains `../`. The server must definitively verify the absolute resolved path to ensure it belongs to the intended base directory before performing filesystem operations.
+**Prevention:** Always use `path.resolve()` with a fixed base directory, and explicitly verify that the resulting absolute path begins with the base directory plus the OS-specific path separator (e.g., `absolutePath.startsWith(publicDir + path.sep)`).
