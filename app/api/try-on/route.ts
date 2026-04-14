@@ -12,7 +12,15 @@ function localFileToDataUri(localPath: string): string | null {
   try {
     // Remove leading slash and resolve to public directory
     const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
-    const absolutePath = path.join(process.cwd(), 'public', relativePath);
+
+    // Prevent path traversal by strictly validating absolute path against public directory
+    const publicDir = path.resolve(process.cwd(), 'public');
+    const absolutePath = path.resolve(publicDir, relativePath);
+
+    if (!absolutePath.startsWith(publicDir + path.sep) && absolutePath !== publicDir) {
+      console.error('Security Alert: Path traversal attempt detected:', absolutePath);
+      return null;
+    }
     
     console.log('Reading local file:', absolutePath);
     
