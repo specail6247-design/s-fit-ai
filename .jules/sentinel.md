@@ -1,0 +1,4 @@
+## 2025-02-28 - [Path Traversal in API]
+**Vulnerability:** Found a critical path traversal vulnerability in `app/api/try-on/route.ts` where unsanitized user-supplied paths were combined with `path.join()`. This allowed malicious input (e.g., `../../../../etc/passwd`) to traverse out of the intended `public/` directory and access arbitrary files on the system because `path.join()` inherently processes `../` relative navigation but doesn't constrain it to a base directory.
+**Learning:** `path.join()` does not automatically confine resulting absolute paths to a specific sandbox directory, and using it to combine a base path with a potentially malicious relative path is a direct path traversal vector.
+**Prevention:** Always use `path.resolve()` with a known base directory, and explicitly verify the resulting absolute path starts with `baseDir + path.sep` (or matches `baseDir` exactly) to restrict access to authorized directories.
