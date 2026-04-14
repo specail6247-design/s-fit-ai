@@ -26,6 +26,54 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Draw background
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw image
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.src = resultImage;
+      await new Promise((resolve) => { img.onload = resolve; });
+
+      const scale = Math.min(canvas.width / img.width, (canvas.height - 400) / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (canvas.width - w) / 2;
+      const y = (canvas.height - h) / 2;
+
+      ctx.drawImage(img, x, y, w, h);
+
+      // Draw Logo/Branding
+      ctx.fillStyle = '#C9B037';
+      ctx.font = 'bold 80px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT AI', canvas.width / 2, 150);
+      ctx.font = '40px sans-serif';
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillText('Virtual Try-On Experience', canvas.width / 2, 220);
+
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+
+      const link = document.createElement('a');
+      link.download = 'sfit-story.jpg';
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to share to story.");
+    }
+  };
+
   const handleTryOn = async () => {
     if (!userImage || !garmentImage) return alert("Please upload both User Photo and Garment.");
     
@@ -158,6 +206,12 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Phase 6: Data Safety Badge */}
+          <div className="mt-6 flex items-center justify-center gap-2 text-[10px] text-gray-500 bg-white/5 py-2 px-3 rounded-lg border border-white/10">
+            <span className="text-sm" aria-hidden="true">🔒</span>
+            <span>Photos are processed securely and not shared.</span>
+          </div>
+
         </div>
       </div>
 
@@ -205,6 +259,13 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+          <button
+            onClick={handleShareToStory}
+            className="absolute bottom-4 right-4 bg-gradient-to-r from-[#C9B037] to-[#A0882A] text-black px-4 py-2 rounded-lg text-sm font-bold shadow-lg hover:scale-105 transition-transform"
+          >
+            📸 Share to Story
+          </button>
             </div>
           </motion.div>
         )}
