@@ -1,0 +1,5 @@
+
+> s-fit-ai@0.1.0 dev
+> next dev --webpack 3001
+
+Invalid project directory provided, no such directory: /app/3001
