@@ -26,7 +26,7 @@ test.describe('Home Page', () => {
 
   test('should match visual snapshot', async ({ page }) => {
     // Note: Taking a full page screenshot. Need to wait for it to be stable.
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
     await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixelRatio: 0.2, timeout: 15000 });
   });
 });
