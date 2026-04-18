@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LegalModal } from '@/components/LegalModal';
+import { SocialShare } from '@/components/SocialShare';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -12,6 +14,7 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
   const [userImage, setUserImage] = useState<string | null>(null);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
@@ -149,6 +152,17 @@ export default function RealLifeFitting() {
             </button>
           )}
           
+          <div className="mt-6 flex flex-col gap-2">
+            <div className="flex items-center gap-2 text-xs text-white/50 justify-center">
+              <span className="text-[#007AFF]">🔒</span>
+              Photos are processed securely and not shared.
+            </div>
+            <div className="flex justify-center gap-4 text-[10px] text-white/40 mb-2">
+              <button onClick={() => setIsLegalModalOpen(true)} className="hover:text-white underline decoration-white/30">Privacy Policy</button>
+              <button onClick={() => setIsLegalModalOpen(true)} className="hover:text-white underline decoration-white/30">Terms of Service</button>
+            </div>
+          </div>
+
           <div className="mt-4 flex gap-2">
              <a href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                SPA Line
@@ -206,9 +220,13 @@ export default function RealLifeFitting() {
                 AI GENERATED_
               </div>
             </div>
+            <div className="mt-4">
+              <SocialShare resultImage={resultImage} />
+            </div>
           </motion.div>
         )}
       </div>
+      <LegalModal isOpen={isLegalModalOpen} onClose={() => setIsLegalModalOpen(false)} />
     </div>
   );
 }
