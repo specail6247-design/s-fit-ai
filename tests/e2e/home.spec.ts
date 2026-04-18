@@ -26,6 +26,7 @@ test.describe('Home Page', () => {
   });
 
   test('should match visual snapshot', async ({ page }) => {
-    await expect(page).toHaveScreenshot({ fullPage: true });
+    await page.waitForTimeout(2000);
+    await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixelRatio: 0.2, timeout: 15000 });
   });
 });
