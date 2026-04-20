@@ -89,6 +89,12 @@ export default function RealLifeFitting() {
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
+          {/* Data Safety Badge */}
+          <div className="mb-4 flex items-center gap-2 text-[#4ade80] bg-[#4ade80]/10 border border-[#4ade80]/20 rounded-lg p-3 text-xs shadow-lg">
+            <span className="text-sm">🔒</span>
+            <span className="font-medium">Photos are processed securely and not shared.</span>
+          </div>
+
           {/* User Photo Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
@@ -205,6 +211,68 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={async () => {
+                  try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 1080;
+                    canvas.height = 1920;
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) return;
+
+                    // Draw Background
+                    ctx.fillStyle = '#050505';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    // Draw Result Image
+                    const img = new window.Image();
+                    img.crossOrigin = 'anonymous';
+                    img.src = resultImage;
+                    await new Promise((resolve, reject) => {
+                      img.onload = resolve;
+                      img.onerror = reject;
+                    });
+
+                    // Calculate scaling to fit image nicely
+                    const scale = Math.min(1080 / img.width, 1400 / img.height);
+                    const drawWidth = img.width * scale;
+                    const drawHeight = img.height * scale;
+                    const x = (1080 - drawWidth) / 2;
+                    const y = (1920 - drawHeight) / 2;
+
+                    ctx.drawImage(img, x, y, drawWidth, drawHeight);
+
+                    // Draw Logo / Branding
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = 'bold 60px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('S_FIT AI', 540, 150);
+
+                    ctx.fillStyle = '#C9B037';
+                    ctx.font = '30px monospace';
+                    ctx.fillText('Virtual Try-On Experience', 540, 200);
+
+                    ctx.fillStyle = '#007AFF';
+                    ctx.font = 'bold 40px sans-serif';
+                    ctx.fillText('AI GENERATED_FIT', 540, 1800);
+
+                    // Export and Share
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                    const link = document.createElement('a');
+                    link.download = 'sfit-story.jpg';
+                    link.href = dataUrl;
+                    link.click();
+                  } catch (e) {
+                    console.error('Failed to generate story image', e);
+                    alert('Could not generate image for story.');
+                  }
+                }}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-[#833AB4] to-[#F77737] text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg hover:brightness-110 transition-all focus-visible:ring-2 outline-none"
+                aria-label="Share to Story"
+              >
+                <span>📷</span>
+                Share to Story
+              </button>
             </div>
           </motion.div>
         )}
