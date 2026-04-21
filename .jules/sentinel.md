@@ -1,0 +1,4 @@
+## 2024-05-18 - Prevent Path Traversal in API Routes
+**Vulnerability:** The Next.js API route `/api/try-on` used `path.join()` with unsanitized user input (`garmentImageUrl`) to construct a local file path. This allowed attackers to escape the `public` directory and read arbitrary files on the system by supplying paths like `../../../../etc/passwd`.
+**Learning:** `path.join()` simply normalizes the path but does not restrict it to a specific base directory. This is a common pattern when proxying local assets or handling file paths based on user input.
+**Prevention:** Always construct the absolute path using `path.resolve()` with a known base directory, and explicitly verify that the result begins with `baseDir + path.sep` (e.g., `!absolutePath.startsWith(publicDir + path.sep) && absolutePath !== publicDir`) before attempting to access the file system.
