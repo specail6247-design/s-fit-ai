@@ -171,7 +171,6 @@ export default function LuxuryLiveFitting() {
           <div className="w-full h-[25vh]">
             {/* Dynamic import of HyperZoomViewer to avoid SSR canvas issues if needed, but it's a client component */}
             <React.Suspense fallback={<div className="w-full h-full border border-white/10 flex items-center justify-center text-xs text-[#C9B037]">Loading Engine...</div>}>
-              {/* @ts-expect-error - Importing client component dynamically or directly */}
               <HyperZoomWrapper imageUrl={garmentImage} materialType="silk" />
             </React.Suspense>
           </div>
