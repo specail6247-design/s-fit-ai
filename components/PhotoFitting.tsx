@@ -7,6 +7,45 @@ const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
+
+  useEffect(() => {
+    if (isMuted) return;
+
+    const AudioContext = window.AudioContext || (window as unknown as { webkitAudioContext: typeof window.AudioContext }).webkitAudioContext;
+    const ctx = new AudioContext();
+
+    // Soft synth hum (two oscillators + lowpass filter)
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const filter = ctx.createBiquadFilter();
+    const gainNode = ctx.createGain();
+
+    osc1.type = 'sine';
+    osc1.frequency.value = 55; // Low hum
+
+    osc2.type = 'triangle';
+    osc2.frequency.value = 110;
+
+    filter.type = 'lowpass';
+    filter.frequency.value = 200;
+
+    gainNode.gain.value = 0.05; // Very subtle volume
+
+    osc1.connect(filter);
+    osc2.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    osc1.start();
+    osc2.start();
+
+    return () => {
+      osc1.stop();
+      osc2.stop();
+      ctx.close();
+    };
+  }, [isMuted]);
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
@@ -19,7 +58,13 @@ export default function PhotoFitting() {
           <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
-        <div className="flex w-12 items-center justify-end">
+        <div className="flex items-center justify-end gap-2">
+          <button
+            onClick={() => setIsMuted(!isMuted)}
+            className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md"
+          >
+            <span className="material-symbols-outlined">{isMuted ? 'volume_off' : 'volume_up'}</span>
+          </button>
           <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
             <span className="material-symbols-outlined">info</span>
           </button>
