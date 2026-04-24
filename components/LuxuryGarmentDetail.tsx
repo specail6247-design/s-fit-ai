@@ -3,6 +3,18 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
+
+const LuxuryImageDistortion = dynamic(() => import('@/components/masterpiece/LuxuryImageDistortion'), { ssr: false });
+
+function DistortionWrapper({ imageUrl }: { imageUrl: string }) {
+  return (
+    <div className="absolute inset-0">
+      <LuxuryImageDistortion imageUrl={imageUrl} />
+    </div>
+  );
+}
+
 
 export default function LuxuryGarmentDetail() {
   return (
@@ -25,7 +37,7 @@ export default function LuxuryGarmentDetail() {
       {/* Main Content Container (Mobile Optimized) */}
       <main className="max-w-md mx-auto pt-16 pb-32">
         {/* 3D Interactive Viewport (Hero Image) */}
-        <div className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900">
+        <div className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900 group">
           <div 
             className="absolute inset-0 bg-cover bg-center" 
             style={{ 
@@ -41,8 +53,8 @@ export default function LuxuryGarmentDetail() {
               <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">light_mode</span></button>
             </div>
             <div className="text-right">
-              <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mb-1">Authentic Render</p>
-              <h1 className="text-white text-3xl font-extralight leading-tight">Metallic Silk <br/><span className="font-bold">Evening Blazer</span></h1>
+              <p className="font-cinzel text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mb-1">Authentic Render</p>
+              <h1 className="font-cinzel text-white text-3xl font-extralight leading-tight">Metallic Silk <br/><span className="font-bold">Evening Blazer</span></h1>
             </div>
           </div>
         </div>
@@ -74,7 +86,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
