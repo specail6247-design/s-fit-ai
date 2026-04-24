@@ -6,9 +6,11 @@ test.describe('User Flow', () => {
   });
 
   test('should complete Easy Fit flow', async ({ page }) => {
+    // Wait for network
+    await page.waitForLoadState('networkidle');
     // 1. Select Easy Fit Mode
     // Force click to ensure it hits even if covered or slightly off-screen in mobile
-    await page.getByText('EASY FIT').click({ force: true });
+    await page.getByText('EASY FIT').click({ force: true, timeout: 15000 });
 
     // Verify selection (border color change or checkmark)
     const continueToModeBtn = page.getByRole('button', { name: /Continue →/i });
