@@ -7,6 +7,55 @@ const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
+
+  useEffect(() => {
+    // Sensory Ambience: Audio Hum
+    const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof window.AudioContext }).webkitAudioContext;
+    if (!AudioContextClass) return;
+
+    const audioCtx = new AudioContextClass();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    // Soft synth hum
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(65, audioCtx.currentTime); // Low hum
+
+    gainNode.gain.setValueAtTime(isMuted ? 0 : 0.05, audioCtx.currentTime); // Very subtle
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    let started = false;
+
+    const startAudio = () => {
+      if (!started && audioCtx.state === 'suspended') {
+        audioCtx.resume().then(() => {
+            if (!started) {
+                oscillator.start();
+                started = true;
+            }
+        });
+      } else if (!started) {
+          oscillator.start();
+          started = true;
+      }
+    };
+
+    // Require user interaction to start audio due to browser policies
+    document.addEventListener('click', startAudio, { once: true });
+
+    return () => {
+      document.removeEventListener('click', startAudio);
+      if (started) {
+          oscillator.stop();
+      }
+      oscillator.disconnect();
+      gainNode.disconnect();
+      audioCtx.close();
+    };
+  }, [isMuted]); // Re-run if isMuted changes (for demo purposes, simple approach)
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
@@ -19,7 +68,14 @@ export default function PhotoFitting() {
           <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
-        <div className="flex w-12 items-center justify-end">
+        <div className="flex gap-2 items-center justify-end">
+          <button
+            onClick={() => setIsMuted(!isMuted)}
+            className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md"
+            aria-label={isMuted ? "Unmute sensory ambience" : "Mute sensory ambience"}
+          >
+            <span className="material-symbols-outlined">{isMuted ? 'volume_off' : 'volume_up'}</span>
+          </button>
           <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
             <span className="material-symbols-outlined">info</span>
           </button>
