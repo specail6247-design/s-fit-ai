@@ -39,6 +39,7 @@
     "@types/react-dom": "^19",
     "@types/three": "^0.182.0",
     "@vitejs/plugin-react": "^5.1.2",
+    "@vitest/coverage-v8": "^4.1.5",
     "eslint": "^9",
     "eslint-config-next": "16.1.4",
     "happy-dom": "^20.3.7",
@@ -46,5 +47,6 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.0.18"
-  }
+  },
+  "packageManager": "pnpm@10.30.3"
 }
