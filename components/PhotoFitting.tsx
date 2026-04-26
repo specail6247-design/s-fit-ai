@@ -1,26 +1,120 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Space_Grotesk } from "next/font/google";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const [isAudioMuted, setIsAudioMuted] = useState(false);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextClass) return;
+
+    const ctx = new AudioContextClass();
+    audioCtxRef.current = ctx;
+
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+    const lfo = ctx.createOscillator();
+    const lfoGain = ctx.createGain();
+
+    osc1.type = "sine";
+    osc1.frequency.setValueAtTime(65.41, ctx.currentTime); // C2
+
+    osc2.type = "triangle";
+    osc2.frequency.setValueAtTime(130.81, ctx.currentTime); // C3
+
+    // Subtly modulate the gain for a breathing effect
+    lfo.type = "sine";
+    lfo.frequency.setValueAtTime(0.1, ctx.currentTime); // Very slow breathing
+    lfoGain.gain.setValueAtTime(0.01, ctx.currentTime);
+    lfo.connect(lfoGain);
+
+    gainNode.gain.setValueAtTime(0.015, ctx.currentTime);
+    lfoGain.connect(gainNode.gain);
+
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(400, ctx.currentTime);
+
+    osc1.connect(gainNode);
+    osc2.connect(gainNode);
+    gainNode.connect(filter);
+    filter.connect(ctx.destination);
+
+    osc1.start();
+    osc2.start();
+    lfo.start();
+
+    if (ctx.state === "running") {
+      ctx.suspend();
+    }
+
+    return () => {
+      osc1.stop();
+      osc2.stop();
+      lfo.stop();
+      ctx.close();
+    };
+  }, []);
+
+  useEffect(() => {
+    const ctx = audioCtxRef.current;
+    if (!ctx) return;
+
+    if (!isAudioMuted && ctx.state === "suspended") {
+      ctx.resume().catch(() => {
+        console.warn("AudioContext resume failed, user interaction required.");
+      });
+    } else if (isAudioMuted && ctx.state === "running") {
+      ctx.suspend();
+    }
+  }, [isAudioMuted]);
+
+  useEffect(() => {
+    const handleInteraction = () => {
+      const ctx = audioCtxRef.current;
+      if (ctx && ctx.state === "suspended" && !isAudioMuted) {
+        ctx.resume();
+      }
+    };
+    window.addEventListener("click", handleInteraction);
+    return () => window.removeEventListener("click", handleInteraction);
+  }, [isAudioMuted]);
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
       {/* Top App Bar */}
       <div className="z-50 flex items-center justify-between bg-transparent p-4">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
-          <span className="material-symbols-outlined">arrow_back_ios_new</span>
+        <div className="flex w-[104px] shrink-0 items-center justify-start">
+          <div className="flex size-12 items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
+            <span className="material-symbols-outlined">arrow_back_ios_new</span>
+          </div>
         </div>
         <div className="flex flex-col items-center">
           <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
-        <div className="flex w-12 items-center justify-end">
-          <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
+        <div className="flex w-[104px] items-center justify-end gap-2">
+          <button
+            onClick={() => setIsAudioMuted(!isAudioMuted)}
+            className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md transition-colors hover:bg-[#101622]/60"
+            aria-label={isAudioMuted ? "Unmute ambience" : "Mute ambience"}
+          >
+            <span className="material-symbols-outlined">
+              {isAudioMuted ? "volume_off" : "volume_up"}
+            </span>
+          </button>
+          <button
+            className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md"
+            aria-label="Information"
+          >
             <span className="material-symbols-outlined">info</span>
           </button>
         </div>
