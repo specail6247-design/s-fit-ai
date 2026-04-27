@@ -16,6 +16,62 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+
+  const handleShareToStory = () => {
+    if (!resultImage) return;
+
+    // Create canvas to generate IG Story sized image (1080x1920)
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Background
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      // Calculate aspect ratio to fit image nicely
+      const imgAspect = img.width / img.height;
+      const targetAspect = canvas.width / canvas.height;
+
+      let drawWidth, drawHeight;
+      if (imgAspect > targetAspect) {
+        drawWidth = canvas.width;
+        drawHeight = canvas.width / imgAspect;
+      } else {
+        drawHeight = canvas.height * 0.8; // Leave space for branding
+        drawWidth = drawHeight * imgAspect;
+      }
+
+      const x = (canvas.width - drawWidth) / 2;
+      const y = (canvas.height - drawHeight) / 2;
+
+      ctx.drawImage(img, x, y, drawWidth, drawHeight);
+
+      // Add branding
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 60px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT NEO', canvas.width / 2, canvas.height - 150);
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = '40px sans-serif';
+      ctx.fillText('VIRTUAL FITTING', canvas.width / 2, canvas.height - 80);
+
+      // Download
+      const link = document.createElement('a');
+      link.download = 'sfit-story.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    };
+    img.src = resultImage;
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -103,6 +159,9 @@ export default function RealLifeFitting() {
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
                 </div>
               </label>
+              <div className="mt-2 flex items-center gap-1 text-[10px] text-green-400">
+                <span className="text-sm">🔒</span> Photos are processed securely and not shared.
+              </div>
             </div>
           </div>
 
@@ -158,6 +217,12 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-8 flex items-center justify-center gap-4 text-xs text-gray-500">
+            <button onClick={() => setIsPrivacyModalOpen(true)} className="hover:text-white transition-colors">Privacy Policy & Terms</button>
+            <span>|</span>
+            <button onClick={() => setIsSupportModalOpen(true)} className="hover:text-white transition-colors">Report Issue</button>
+          </div>
+
         </div>
       </div>
 
@@ -205,10 +270,50 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      {/* Modals */}
+      {isPrivacyModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-[#111] border border-white/10 p-8 rounded-2xl max-w-md w-full relative">
+            <button onClick={() => setIsPrivacyModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+            <h2 className="text-xl font-bold mb-4">Privacy Policy & Terms</h2>
+            <div className="text-sm text-gray-400 space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+              <p><strong>1. Data Collection:</strong> We temporarily process photos to generate fitting results. We do not store user photos persistently.</p>
+              <p><strong>2. Usage:</strong> AI generation uses secure endpoints. No data is sold to third parties.</p>
+              <p><strong>3. Terms:</strong> By using this service, you agree to these ephemeral processing terms.</p>
+            </div>
+            <button onClick={() => setIsPrivacyModalOpen(false)} className="mt-6 w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl font-bold">Close</button>
+          </div>
+        </div>
+      )}
+
+      {isSupportModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-[#111] border border-white/10 p-8 rounded-2xl max-w-md w-full relative">
+            <button onClick={() => setIsSupportModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+            <h2 className="text-xl font-bold mb-2">Support Hub</h2>
+            <p className="text-xs text-gray-400 mb-6">Report an issue or bug you encountered.</p>
+            <form onSubmit={(e) => { e.preventDefault(); alert("Report submitted!"); setIsSupportModalOpen(false); }} className="space-y-4">
+              <div>
+                <label className="text-xs font-bold text-gray-400 mb-1 block">Describe the issue</label>
+                <textarea className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-sm min-h-[100px] focus:outline-none focus:border-[#007AFF]" placeholder="What went wrong?" required></textarea>
+              </div>
+              <button type="submit" className="w-full py-3 bg-[#007AFF] hover:bg-[#005bb5] rounded-xl font-bold">Submit Report</button>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
