@@ -99,6 +99,7 @@ export function AuthButton() {
           <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
             <button
               onClick={() => setShowModal(false)}
+              aria-label="Close modal"
               className="absolute top-4 right-4 text-soft-gray hover:text-white"
             >
               ✕
