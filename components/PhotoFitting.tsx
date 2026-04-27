@@ -1,12 +1,68 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Space_Grotesk } from "next/font/google";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
+  const gainNodeRef = useRef<GainNode | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextClass) return;
+
+    const ctx = new AudioContextClass();
+    audioCtxRef.current = ctx;
+
+    // Create a soft low-frequency oscillator for "hum"
+    const osc = ctx.createOscillator();
+    osc.type = "sine";
+    osc.frequency.value = 65; // C2 hum
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = 150;
+
+    const gainNode = ctx.createGain();
+    gainNode.gain.value = 0.2; // subtle volume
+    gainNodeRef.current = gainNode;
+
+    osc.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    osc.start();
+
+    // Resume AudioContext on first user interaction if suspended
+    const resumeAudio = () => {
+      if (ctx.state === "suspended") {
+        ctx.resume();
+      }
+    };
+
+    document.addEventListener("click", resumeAudio, { once: true });
+    document.addEventListener("touchstart", resumeAudio, { once: true });
+
+    return () => {
+      osc.stop();
+      ctx.close();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (gainNodeRef.current && audioCtxRef.current) {
+      gainNodeRef.current.gain.setTargetAtTime(
+        isMuted ? 0 : 0.2,
+        audioCtxRef.current.currentTime,
+        0.1
+      );
+    }
+  }, [isMuted]);
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
@@ -19,8 +75,15 @@ export default function PhotoFitting() {
           <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
-        <div className="flex w-12 items-center justify-end">
-          <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
+        <div className="flex items-center gap-2 justify-end">
+          <button
+            onClick={() => setIsMuted(!isMuted)}
+            className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md"
+            aria-label={isMuted ? "Unmute Ambience" : "Mute Ambience"}
+          >
+            <span className="material-symbols-outlined">{isMuted ? "volume_off" : "volume_up"}</span>
+          </button>
+          <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md" aria-label="Info">
             <span className="material-symbols-outlined">info</span>
           </button>
         </div>
