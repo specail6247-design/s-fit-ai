@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import PrivacyModal from './PrivacyModal';
+import SupportHubModal from './SupportHubModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,68 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const resultImgRef = useRef<HTMLImageElement>(null);
+
+  const handleShareToStory = () => {
+    if (!resultImage || !resultImgRef.current) return;
+
+    // Create a temporary canvas to draw the branded story
+    const canvas = document.createElement('canvas');
+    // Standard Instagram story resolution 1080x1920
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Fill background
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the image
+    const img = resultImgRef.current;
+
+    // Calculate aspect ratios to scale image appropriately (cover style)
+    const imgAspect = img.naturalWidth / img.naturalHeight;
+    const canvasAspect = canvas.width / canvas.height;
+
+    let drawWidth = canvas.width;
+    let drawHeight = canvas.height;
+    let drawX = 0;
+    let drawY = 0;
+
+    if (imgAspect > canvasAspect) {
+        // Image is wider than canvas
+        drawWidth = img.naturalWidth * (canvas.height / img.naturalHeight);
+        drawX = (canvas.width - drawWidth) / 2;
+    } else {
+        // Image is taller than canvas
+        drawHeight = img.naturalHeight * (canvas.width / img.naturalWidth);
+        drawY = (canvas.height - drawHeight) / 2;
+    }
+
+    ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+
+    // Add Branding Overlay
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+    ctx.fillRect(0, canvas.height - 200, canvas.width, 200);
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'italic 900 60px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('S_FIT NEO', canvas.width / 2, canvas.height - 100);
+
+    ctx.fillStyle = '#007AFF';
+    ctx.font = 'bold 30px monospace';
+    ctx.fillText('AI GENERATED FITTING', canvas.width / 2, canvas.height - 50);
+
+    // Trigger download
+    const link = document.createElement('a');
+    link.download = `s_fit_story_${Date.now()}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -122,6 +186,10 @@ export default function RealLifeFitting() {
               </label>
             </div>
           </div>
+
+          <div className="text-[10px] text-green-400 mt-2 flex items-center gap-1 font-mono">
+            <span>🛡️</span> Photos are processed securely and not shared.
+          </div>
         </div>
 
         {/* Action Button */}
@@ -156,6 +224,12 @@ export default function RealLifeFitting() {
              <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                Luxury Line
              </a>
+          </div>
+
+          <div className="mt-6 pt-6 border-t border-white/10 flex justify-center gap-4 text-xs text-gray-500">
+            <button onClick={() => setIsPrivacyOpen(true)} className="hover:text-white transition-colors">Privacy & Terms</button>
+            <span>|</span>
+            <button onClick={() => setIsSupportOpen(true)} className="hover:text-white transition-colors">Report Issue</button>
           </div>
 
         </div>
@@ -195,12 +269,18 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              <img ref={resultImgRef} src={resultImage} crossOrigin="anonymous" alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
               >
                 ✕ Close
+              </button>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-[#007AFF] text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg hover:bg-[#005bb5] transition-colors flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
               </button>
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
@@ -209,6 +289,9 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      {isPrivacyOpen && <PrivacyModal onClose={() => setIsPrivacyOpen(false)} />}
+      {isSupportOpen && <SupportHubModal onClose={() => setIsSupportOpen(false)} />}
     </div>
   );
 }
