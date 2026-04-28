@@ -1,0 +1,4 @@
+## 2025-04-28 - [CRITICAL] Path Traversal in Virtual Try-On API
+**Vulnerability:** The API endpoint `/api/try-on` accepted user-provided `garmentImageUrl` paths (starting with `/`) and read them from the local filesystem using `path.join(process.cwd(), 'public', relativePath)` without verifying that the resolved absolute path actually resided within the `public` directory.
+**Learning:** Using `path.join` on user-supplied input allows path traversal using `../` segments (e.g., `/../../etc/passwd`), permitting an attacker to read any file on the filesystem that the application process has access to, effectively bypassing intended directory constraints.
+**Prevention:** Always use `path.resolve` to determine the true absolute path of the requested file, and explicitly check that this resolved path starts with the intended base directory's absolute path (e.g., `absolutePath.startsWith(publicDir)`) before allowing file access.
