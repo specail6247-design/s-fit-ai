@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { PrivacyModal } from './ui/PrivacyModal';
+import { ReportIssueModal } from './ui/ReportIssueModal';
+import { DataSafetyBadge } from './ui/DataSafetyBadge';
+import { ShareToStoryButton } from './ui/ShareToStoryButton';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +20,9 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isReportOpen, setIsReportOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -104,6 +111,7 @@ export default function RealLifeFitting() {
                 </div>
               </label>
             </div>
+            <DataSafetyBadge />
           </div>
 
           {/* Garment Input */}
@@ -159,6 +167,16 @@ export default function RealLifeFitting() {
           </div>
 
         </div>
+
+          {/* Footer Links */}
+          <div className="absolute bottom-8 left-8 right-8 flex justify-between items-center text-[10px] text-gray-500 font-bold uppercase tracking-widest z-10">
+            <button onClick={() => setIsPrivacyOpen(true)} className="hover:text-white transition-colors">Privacy & Terms</button>
+            <button onClick={() => setIsReportOpen(true)} className="hover:text-white transition-colors">Report Issue</button>
+          </div>
+
+          <PrivacyModal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
+          <ReportIssueModal isOpen={isReportOpen} onClose={() => setIsReportOpen(false)} />
+
       </div>
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
@@ -205,6 +223,7 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <ShareToStoryButton imageUrl={resultImage} />
             </div>
           </motion.div>
         )}
