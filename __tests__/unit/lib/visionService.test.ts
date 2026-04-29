@@ -110,6 +110,7 @@ describe('Vision Service', () => {
     it('should prioritize matching colors (black/white)', () => {
         // Create a mock black item
         const blackItem = { ...getAllItems()[0], colors: ['Black'], category: 'tops' as const };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const recommendations = getComplementaryItems(blackItem as any);
         expect(recommendations.length).toBeGreaterThan(0);
     });
