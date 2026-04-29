@@ -1,10 +1,29 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 export default function LuxuryGarmentDetail() {
+  const [timeLeft, setTimeLeft] = useState(7200); // 2 hours
+  const [isSaved, setIsSaved] = useState(false);
+  const [showVault, setShowVault] = useState(false);
+
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [timeLeft]);
+
+  const formatTime = (seconds: number) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -14,9 +33,13 @@ export default function LuxuryGarmentDetail() {
             <span className="material-symbols-outlined">arrow_back</span>
           </Link>
           <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center">S_FIT AI</h2>
-          <div className="flex w-10 items-center justify-end">
+          <div className="flex w-auto gap-2 items-center justify-end">
+            <button onClick={() => setShowVault(!showVault)} className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors relative">
+              <span className="material-symbols-outlined text-[18px]">inventory_2</span>
+              {isSaved && <span className="absolute top-2 right-2 size-2 bg-[#ecab13] rounded-full"></span>}
+            </button>
             <button className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
-              <span className="material-symbols-outlined">share</span>
+              <span className="material-symbols-outlined text-[18px]">share</span>
             </button>
           </div>
         </div>
@@ -27,11 +50,22 @@ export default function LuxuryGarmentDetail() {
         {/* 3D Interactive Viewport (Hero Image) */}
         <div className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900">
           <div 
-            className="absolute inset-0 bg-cover bg-center" 
+            className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 ${timeLeft > 0 ? 'grayscale-[80%] brightness-50 blur-[2px]' : ''}`}
             style={{ 
               backgroundImage: 'linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' 
             }}
           />
+
+          {/* Locked Overlay */}
+          {timeLeft > 0 && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+              <span className="material-symbols-outlined text-white text-5xl mb-4 opacity-80">lock</span>
+              <p className="text-[#ecab13] text-xs font-bold tracking-[0.3em] uppercase mb-2">Exclusive Drop</p>
+              <div className="bg-black/60 backdrop-blur-md px-6 py-3 rounded-xl border border-white/10">
+                <p className="text-white text-2xl font-light tabular-nums tracking-widest">{formatTime(timeLeft)}</p>
+              </div>
+            </div>
+          )}
           
           {/* 3D UI Overlays */}
           <div className="absolute bottom-6 left-4 right-4 flex justify-between items-end">
@@ -74,7 +108,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
@@ -88,6 +122,20 @@ export default function LuxuryGarmentDetail() {
             <div className="flex h-8 items-center justify-center rounded-full border border-[#2d2d2d] bg-[#1a1a1a] px-4">
               <p className="text-zinc-300 text-[11px] font-bold uppercase tracking-wider">Silk Blend</p>
             </div>
+          </div>
+        </div>
+
+        {/* AI Stylist Note */}
+        <div className="mx-4 mb-8">
+          <div className="rounded-xl border border-[#2d2d2d] bg-[#1a1a1a]/40 backdrop-blur-md p-4 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-[#ecab13]"></div>
+            <div className="flex items-center gap-3 mb-2">
+              <span className="material-symbols-outlined text-[#ecab13] text-lg">auto_awesome</span>
+              <h3 className="text-white text-[10px] font-bold tracking-[0.2em] uppercase">AI Stylist Note</h3>
+            </div>
+            <p className="text-zinc-300 text-sm italic ml-7">
+              &quot;Pair this with structured denim for a balanced silhouette.&quot;
+            </p>
           </div>
         </div>
 
@@ -131,16 +179,68 @@ export default function LuxuryGarmentDetail() {
       </main>
 
       {/* Bottom Action Bar */}
-      <div className="fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex gap-4 items-center z-50">
+      <div className="fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex gap-3 items-center z-50">
         <div className="flex flex-col flex-1">
           <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
           <p className="text-white text-xl font-bold">$2,850</p>
         </div>
-        <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
-          <span className="material-symbols-outlined font-bold">person_add_alt</span>
-          <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
-        </Link>
+
+        <button
+          onClick={() => setIsSaved(!isSaved)}
+          className={`flex size-14 items-center justify-center rounded-xl border transition-colors ${isSaved ? 'border-[#ecab13] bg-[#ecab13]/10 text-[#ecab13]' : 'border-[#2d2d2d] bg-[#1a1a1a] text-white hover:bg-[#2d2d2d]'}`}
+        >
+          <span className="material-symbols-outlined" style={{ fontVariationSettings: isSaved ? "'FILL' 1" : "'FILL' 0" }}>bookmark</span>
+        </button>
+
+        {timeLeft > 0 ? (
+          <button className="flex-[2] bg-[#1a1a1a] border border-[#2d2d2d] text-white h-14 rounded-xl flex items-center justify-center gap-2 opacity-80 cursor-not-allowed">
+            <span className="material-symbols-outlined">notifications</span>
+            <span className="font-bold text-[13px] tracking-widest uppercase">Notify Me</span>
+          </button>
+        ) : (
+          <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
+            <span className="material-symbols-outlined font-bold">person_add_alt</span>
+            <span className="font-bold text-[13px] tracking-widest uppercase truncate px-1">Try on Mannequin</span>
+          </Link>
+        )}
       </div>
+
+      {/* The Vault Drawer */}
+      {showVault && (
+        <div className="fixed inset-0 z-[60] flex flex-col justify-end">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowVault(false)}></div>
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="relative bg-[#1a1a1a] border-t border-[#2d2d2d] rounded-t-3xl p-6 pb-12 w-full max-w-md mx-auto"
+          >
+            <div className="w-12 h-1 bg-[#2d2d2d] rounded-full mx-auto mb-6"></div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-white text-xs font-bold tracking-[0.2em] uppercase">The Vault</h2>
+              <span className="text-zinc-500 text-[10px] uppercase tracking-widest">{isSaved ? '1 Item' : 'Empty'}</span>
+            </div>
+
+            {isSaved ? (
+              <div className="flex gap-4 p-3 rounded-xl border border-[#2d2d2d] bg-[#0a0a0a]">
+                <div className="size-20 rounded-lg bg-zinc-800 bg-cover bg-center shrink-0" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' }}></div>
+                <div className="flex flex-col justify-center">
+                  <p className="text-white text-sm font-bold">Metallic Silk Evening Blazer</p>
+                  <p className="text-zinc-500 text-xs mt-1">Saved Look</p>
+                  <p className="text-[#ecab13] text-sm font-bold mt-2">$2,850</p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <span className="material-symbols-outlined text-[#2d2d2d] text-5xl mb-4">inventory_2</span>
+                <p className="text-zinc-500 text-sm">Your vault is empty.</p>
+                <p className="text-zinc-600 text-xs mt-2 max-w-[200px]">Save items to compare materials and fits later.</p>
+              </div>
+            )}
+          </motion.div>
+        </div>
+      )}
 
       <style jsx global>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
