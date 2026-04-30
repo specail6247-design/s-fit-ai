@@ -17,6 +17,7 @@ export interface ClothingItem {
   sizes: string[];
   colors: string[];
   description: string;
+  textureType?: 'silk' | 'denim' | 'wool' | 'cotton' | 'leather' | 'velvet' | 'sequin';
 }
 
 export interface Brand {
@@ -110,6 +111,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy', 'Beige'],
     description: 'Relaxed fit blazer with structured shoulders',
+    textureType: 'cotton',
   },
   {
     id: 'zara-002',
@@ -124,6 +126,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'White', 'Camel'],
     description: 'Elegant wide leg trousers with pleats',
+    textureType: 'cotton',
   },
   {
     id: 'zara-003',
@@ -138,6 +141,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L'],
     colors: ['Cream', 'Black', 'Sage'],
     description: 'Minimalist cropped sweater',
+    textureType: 'wool',
   },
   {
     id: 'zara-004',
@@ -152,6 +156,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Champagne', 'Black', 'Burgundy'],
     description: 'Elegant satin dress with cowl neck',
+    textureType: 'silk',
   },
   {
     id: 'zara-005',
@@ -166,6 +171,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     colors: ['Black', 'Brown'],
     description: 'Faux leather bomber with ribbed trim',
+    textureType: 'leather',
   },
 
   // GUCCI - Luxury (5 items with isLuxury: true)
@@ -182,6 +188,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 44', 'IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Beige/Ebony'],
     description: 'Iconic GG pattern wool blazer with silk lining',
+    textureType: 'silk',
   },
   {
     id: 'gucci-002',
@@ -196,6 +203,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 38', 'IT 40', 'IT 42', 'IT 44', 'IT 46'],
     colors: ['Ivory', 'Black'],
     description: 'Pure silk blouse with signature horsebit print',
+    textureType: 'silk',
   },
   {
     id: 'gucci-003',
@@ -210,6 +218,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy'],
     description: 'Technical jersey pants with Web stripe',
+    textureType: 'cotton',
   },
   {
     id: 'gucci-004',
@@ -224,6 +233,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 38', 'IT 40', 'IT 42', 'IT 44'],
     colors: ['Pink Flora'],
     description: 'Flowing silk georgette dress with iconic Flora print',
+    textureType: 'silk',
   },
   {
     id: 'gucci-005',
@@ -238,6 +248,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Black'],
     description: 'Genuine leather bomber with embroidered patches',
+    textureType: 'leather',
   },
 
   // UNIQLO - Basic (5 items)
@@ -254,6 +265,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['Black', 'Navy', 'Olive', 'Wine'],
     description: 'Lightweight, compact down jacket',
+    textureType: 'cotton',
   },
   {
     id: 'uniqlo-002',
@@ -268,6 +280,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
     colors: ['White', 'Black', 'Gray', 'Navy', 'Olive'],
     description: 'Premium Supima cotton basic tee',
+    textureType: 'cotton',
   },
   {
     id: 'uniqlo-003',
@@ -282,6 +295,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['Black', 'Navy', 'Gray', 'Beige'],
     description: 'Easy care stretch ankle pants',
+    textureType: 'cotton',
   },
   {
     id: 'uniqlo-004',
@@ -296,6 +310,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['Black', 'Navy', 'Wine', 'Cream'],
     description: 'Soft merino wool blend crew neck',
+    textureType: 'wool',
   },
   {
     id: 'uniqlo-005',
@@ -310,6 +325,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy', 'Olive'],
     description: 'Comfortable everyday rayon dress',
+    textureType: 'cotton',
   },
 
   // H&M - Mass Market (5 items)
@@ -326,6 +342,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['White', 'Light Blue', 'Black'],
     description: 'Classic slim fit dress shirt',
+    textureType: 'cotton',
   },
   {
     id: 'hm-002',
@@ -340,6 +357,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy', 'Gray'],
     description: 'Versatile regular fit blazer',
+    textureType: 'cotton',
   },
   {
     id: 'hm-003',
@@ -354,6 +372,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['28', '30', '32', '34', '36'],
     colors: ['Dark Blue', 'Black', 'Light Blue'],
     description: 'Cotton blend slim fit jeans',
+    textureType: 'cotton',
   },
   {
     id: 'hm-004',
@@ -368,6 +387,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['White', 'Black', 'Beige'],
     description: 'Fitted ribbed tank top',
+    textureType: 'cotton',
   },
   {
     id: 'hm-005',
@@ -382,6 +402,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Floral', 'Red'],
     description: 'Elegant wrap dress with tie waist',
+    textureType: 'cotton',
   },
 
   // COS - Premium Mass Market (2 items)
@@ -398,6 +419,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L'],
     colors: ['Black', 'Cream', 'Navy'],
     description: 'Minimalist wool blend top',
+    textureType: 'wool',
   },
   {
     id: 'cos-002',
@@ -412,6 +434,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L'],
     colors: ['Black', 'Beige', 'Gray'],
     description: 'High-waisted wide-leg trousers',
+    textureType: 'cotton',
   },
 
   // GAP - Basic (5 items)
@@ -428,6 +451,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['Gray', 'Navy', 'Black', 'Oatmeal'],
     description: 'Soft fleece pullover hoodie',
+    textureType: 'cotton',
   },
   {
     id: 'gap-002',
@@ -442,6 +466,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['White', 'Blue', 'Pink'],
     description: 'Classic button-down oxford shirt',
+    textureType: 'cotton',
   },
   {
     id: 'gap-003',
@@ -456,6 +481,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['White', 'Black', 'Navy', 'Gray'],
     description: 'Everyday essential cotton tee',
+    textureType: 'cotton',
   },
   {
     id: 'gap-004',
@@ -470,6 +496,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['28', '30', '32', '34', '36', '38'],
     colors: ['Khaki', 'Navy', 'Black'],
     description: 'Straight fit modern khaki pants',
+    textureType: 'cotton',
   },
   {
     id: 'gap-005',
@@ -484,6 +511,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Gray', 'Navy'],
     description: 'Comfortable athletic joggers',
+    textureType: 'cotton',
   },
 
   // ACCESSORIES - New Category
@@ -502,6 +530,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Black', 'Beige'],
     description: 'Iconic quilted leather handbag with chain strap',
+    textureType: 'leather',
   },
   {
     id: 'supreme-hat-001',
@@ -518,6 +547,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['Adjustable'],
     colors: ['Red', 'Black', 'Camo'],
     description: 'Cotton canvas camp cap with woven box logo',
+    textureType: 'cotton',
   },
   {
     id: 'tiffany-necklace-001',
@@ -534,6 +564,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
+    textureType: 'cotton',
   },
 ];
 
