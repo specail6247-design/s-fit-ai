@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import CinematicViewer from '@/components/ui/CinematicViewer';
+import CinematicViewer from '@/components/masterpiece/CinematicViewer';
 
 export default function CinematicDemoPage() {
   const [imageUrl, setImageUrl] = useState('https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop'); // Default fashion image

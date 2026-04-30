@@ -30,7 +30,7 @@ import { AvatarLoader } from './AvatarLoader';
 import { FabricMaterial } from './masterpiece/FabricMaterial';
 import { StudioStage } from './masterpiece/StudioStage';
 import { FabricType } from './masterpiece/types';
-import CinematicViewer from '@/components/ui/CinematicViewer';
+import CinematicViewer from '@/components/masterpiece/CinematicViewer';
 import { layeringEngine } from '@/lib/layering';
 
 // --- PHYSICS ENGINE (Ammo.js) ---
