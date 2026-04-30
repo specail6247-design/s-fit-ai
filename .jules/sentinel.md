@@ -1,0 +1,4 @@
+## 2025-04-30 - [Fix Path Traversal in Virtual Try-On API]
+**Vulnerability:** Found a critical path traversal vulnerability in `app/api/try-on/route.ts` where `localFileToDataUri` was taking user input `garmentImageUrl` and resolving it directly against the `public` directory without verifying the resulting absolute path stayed within the `public` directory.
+**Learning:** `path.join(process.cwd(), 'public', relativePath)` combined with unvalidated `relativePath` allows attackers to access arbitrary files on the file system by prefixing the path with `../../`.
+**Prevention:** Always use `path.resolve` to resolve the full absolute path of both the target and base directories. Then, strictly verify the resolved target path `startsWith(baseDir + path.sep)` to ensure it safely resides within the expected boundary and prevents partial path matches (e.g., matching `/public_secrets` instead of `/public`).
