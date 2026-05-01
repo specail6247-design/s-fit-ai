@@ -8,9 +8,6 @@ interface ProductCardProps {
   imageUrl: string;
   onTryOn?: () => void;
   className?: string;
-  stylingTip?: string;
-  isLocked?: boolean;
-  unlockTime?: string;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
@@ -20,50 +17,37 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   imageUrl,
   onTryOn,
   className = '',
-  stylingTip,
-  isLocked = false,
-  unlockTime,
 }) => {
   return (
     <motion.div
-      className={`group relative w-full overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-surface)] border border-[var(--border-color)] flex flex-col h-full ${className}`}
-      whileHover={!isLocked ? { y: -5 } : {}}
+      className={`group relative w-full overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-surface)] border border-[var(--border-color)] ${className}`}
+      whileHover={{ y: -5 }}
       transition={{ duration: 0.3 }}
     >
       {/* Image Container */}
-      <div className="relative aspect-[3/4] overflow-hidden bg-[var(--color-background)] shrink-0">
+      <div className="relative aspect-[3/4] overflow-hidden bg-[var(--color-background)]">
         <motion.img
           src={imageUrl}
           alt={name}
-          className={`h-full w-full object-cover transition-transform duration-700 ease-out ${isLocked ? 'blur-md grayscale opacity-80' : 'group-hover:scale-110'}`}
+          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
         />
 
-        {isLocked ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[2px]">
-            <span className="material-symbols-outlined text-white text-4xl mb-2">lock</span>
-            <span className="text-white font-bold tracking-widest uppercase text-sm mb-1">Locked Drop</span>
-            {unlockTime && (
-              <span className="text-[var(--color-primary)] font-mono text-xs">{unlockTime}</span>
-            )}
-          </div>
-        ) : (
-          /* Overlay Actions */
-          <div className="absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-center justify-center">
-            <motion.button
-              onClick={onTryOn}
-              className="rounded-full bg-[var(--color-surface)] px-6 py-2 text-sm font-semibold text-[var(--color-secondary)] hover:bg-[var(--color-primary)] transition-colors shadow-lg"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Try On
-            </motion.button>
-          </div>
-        )}
+        {/* Overlay Actions */}
+        <div className="absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-center justify-center">
+          <motion.button
+            onClick={onTryOn}
+            className="rounded-full bg-[var(--color-surface)] px-6 py-2 text-sm font-semibold text-[var(--color-secondary)] hover:bg-[var(--color-primary)] transition-colors shadow-lg"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Try On
+          </motion.button>
+        </div>
       </div>
 
       {/* Content */}
-      <div className="p-4 flex flex-col flex-1">
-        <div className="flex justify-between items-start mb-auto">
+      <div className="p-4">
+        <div className="flex justify-between items-start">
           <div>
             <p className="text-xs uppercase tracking-wider text-[var(--color-text-secondary)] mb-1">
               {brand}
@@ -72,20 +56,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               {name}
             </h3>
           </div>
-          <span className="font-mono text-sm text-[var(--color-text-primary)] shrink-0">
+          <span className="font-mono text-sm text-[var(--color-text-primary)]">
             {price}
           </span>
         </div>
-
-        {/* Styling Tip */}
-        {stylingTip && (
-          <div className="mt-4 pt-3 border-t border-[var(--border-color)]">
-            <p className="text-xs text-[var(--color-text-secondary)] italic flex items-start gap-1">
-              <span className="material-symbols-outlined text-[14px] shrink-0 text-[var(--color-primary)] mt-0.5">auto_awesome</span>
-              {stylingTip}
-            </p>
-          </div>
-        )}
       </div>
     </motion.div>
   );

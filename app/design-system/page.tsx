@@ -34,7 +34,6 @@ export default function DesignSystemPage() {
             price="$2,400"
             imageUrl="https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=2883&auto=format&fit=crop"
             onTryOn={() => console.log('Try On')}
-            stylingTip="Pair this with structured denim for a balanced silhouette."
           />
            <ProductCard
             name="Structured Blazer"
@@ -42,16 +41,6 @@ export default function DesignSystemPage() {
             price="$129"
             imageUrl="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=2836&auto=format&fit=crop"
             onTryOn={() => console.log('Try On')}
-            stylingTip="Elevate with a silk camisole and minimalist gold jewelry."
-          />
-          <ProductCard
-            name="Limited Edition Sneakers"
-            brand="Balenciaga"
-            price="$1,150"
-            imageUrl="https://images.unsplash.com/photo-1552346154-21d32810baa3?q=80&w=2938&auto=format&fit=crop"
-            onTryOn={() => console.log('Try On')}
-            isLocked={true}
-            unlockTime="Available in 02:00:00"
           />
         </div>
       </section>
