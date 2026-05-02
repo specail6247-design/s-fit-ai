@@ -103,7 +103,7 @@ export function AuthButton() {
             >
               ✕
             </button>
-            
+
             <h2 className="text-xl font-bold text-white mb-6 text-center">
               {isLogin ? 'Welcome Back' : 'Create Account'}
             </h2>
