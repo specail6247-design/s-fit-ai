@@ -677,7 +677,7 @@ function CompareModal({ isOpen, onClose, picks, onSelect }: CompareModalProps) {
       <motion.div className="relative glass-card p-6 max-w-md w-full max-h-[80vh] overflow-y-auto" initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}>
         <div className="flex justify-between items-center mb-6">
           <div><h3 className="text-lg font-bold">Compare AI Picks</h3><p className="text-[10px] text-soft-gray">Ranked by your unique body signals</p></div>
-          <button onClick={onClose} className="text-soft-gray hover:text-white">✕</button>
+          <button aria-label="Close" onClick={onClose} className="text-soft-gray hover:text-white">✕</button>
         </div>
         <div className="space-y-4">
           {picks.map((pick, idx) => (
@@ -740,7 +740,7 @@ function AITryOnModal({
                         <h3 className="text-xl font-bold text-pure-white flex items-center gap-2"><span className="animate-pulse">✨</span> Masterpiece Try-On</h3>
                         <p className="text-xs text-soft-gray mt-1">Hollywood-grade virtual fitting engine</p>
                     </div>
-                    <button onClick={onClose} className="text-soft-gray hover:text-white text-2xl">✕</button>
+                    <button aria-label="Close" onClick={onClose} className="text-soft-gray hover:text-white text-2xl">✕</button>
                 </div>
 
                 <div className="space-y-6">
@@ -1011,7 +1011,7 @@ export function FittingRoom() {
         )}
 
         <div className="absolute top-4 left-4 flex gap-2 z-20">
-            <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
+            <button aria-label="Share" onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
                 <span>📤</span>
             </button>
             <motion.button onClick={() => setShowAITryOnModal(true)} 
