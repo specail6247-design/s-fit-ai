@@ -17,8 +17,11 @@ describe('Vision Service', () => {
     const mockProportions: PoseProportions = {
       shoulderWidth: 0.5,
       hipWidth: 0.5,
+      waistWidth: 0.4,
       torsoHeight: 0.5,
       legLength: 0.5,
+      armLength: 0.4,
+      shoulderSlope: 10,
       overallRatio: 0.5
     };
     const userHeight = 175; // cm
@@ -106,7 +109,8 @@ describe('Vision Service', () => {
 
     it('should prioritize matching colors (black/white)', () => {
         // Create a mock black item
-        const blackItem = { ...getAllItems()[0], colors: ['Black'], category: 'tops' };
+        const baseItem = getAllItems()[0];
+        const blackItem: ClothingItem = { ...baseItem, colors: ['Black'], category: 'tops' as const };
         const recommendations = getComplementaryItems(blackItem);
         expect(recommendations.length).toBeGreaterThan(0);
     });

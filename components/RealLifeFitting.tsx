@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LegalModal } from './legal/LegalModal';
+import { ReportIssueModal } from './ReportIssueModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [legalType, setLegalType] = useState<'privacy' | 'terms' | null>(null);
+  const [isReportOpen, setIsReportOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -124,6 +128,14 @@ export default function RealLifeFitting() {
           </div>
         </div>
 
+        {/* Data Safety Badge */}
+        <div className="mt-4 flex items-center gap-2 p-3 bg-[#007AFF]/10 border border-[#007AFF]/30 rounded-lg">
+          <span className="text-xl">🔒</span>
+          <p className="text-xs text-gray-300">
+            <strong className="text-white">Data Safety:</strong> Photos are processed securely and not shared.
+          </p>
+        </div>
+
         {/* Action Button */}
         <div className="mt-8 relative z-10">
           {isProcessing ? (
@@ -156,6 +168,18 @@ export default function RealLifeFitting() {
              <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                Luxury Line
              </a>
+          </div>
+
+          {/* Support & Legal Links */}
+          <div className="mt-6 flex flex-col gap-2 items-center text-xs text-gray-500">
+             <div className="flex gap-4">
+                <button onClick={() => setLegalType('privacy')} className="hover:text-white transition-colors">Privacy Policy</button>
+                <span>|</span>
+                <button onClick={() => setLegalType('terms')} className="hover:text-white transition-colors">Terms of Service</button>
+             </div>
+             <button onClick={() => setIsReportOpen(true)} className="text-[#007AFF] hover:text-[#005bb5] transition-colors flex items-center gap-1 mt-2">
+                <span>⚠️</span> Report Issue
+             </button>
           </div>
 
         </div>
@@ -205,10 +229,22 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+              {/* Share to Story */}
+              <button
+                onClick={() => alert("Generating branded image for Instagram Stories! 📸")}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-2"
+              >
+                <span>📱</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      {/* Modals */}
+      <LegalModal isOpen={!!legalType} onClose={() => setLegalType(null)} type={legalType} />
+      <ReportIssueModal isOpen={isReportOpen} onClose={() => setIsReportOpen(false)} />
     </div>
   );
 }
