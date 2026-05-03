@@ -2,7 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+// motion imported but not used, we can just comment it out
+// import { motion } from 'framer-motion';
 
 export default function LuxuryGarmentDetail() {
   return (
