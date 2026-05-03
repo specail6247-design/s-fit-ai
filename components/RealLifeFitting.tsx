@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { DataBadge } from '@/components/ui/DataBadge';
+import { SupportHub } from '@/components/ui/SupportHub';
+import { StoryShareModal } from '@/components/ui/StoryShareModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +19,7 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isStoryModalOpen, setIsStoryModalOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -101,6 +105,7 @@ export default function RealLifeFitting() {
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
+                  <div className="mt-2"><DataBadge /></div>
                 </div>
               </label>
             </div>
@@ -158,6 +163,10 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-8 relative z-10 flex justify-center pb-4">
+             <a href="/legal" className="text-[10px] text-gray-500 hover:text-white uppercase tracking-widest transition-colors">Privacy & Terms</a>
+          </div>
+
         </div>
       </div>
 
@@ -205,10 +214,24 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <div className="absolute bottom-4 right-4">
+                <button
+                  onClick={() => setIsStoryModalOpen(true)}
+                  className="bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg hover:opacity-90 transition-opacity flex items-center gap-2"
+                >
+                  <span>📸</span> Share to Story
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
       </div>
+
+      <SupportHub />
+
+      {resultImage && (
+        <StoryShareModal isOpen={isStoryModalOpen} onClose={() => setIsStoryModalOpen(false)} resultImage={resultImage} />
+      )}
     </div>
   );
 }
