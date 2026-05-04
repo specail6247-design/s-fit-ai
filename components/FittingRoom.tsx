@@ -932,7 +932,7 @@ export function FittingRoom() {
   }, [poseAnalysis, currentItem, resolvedHeight]);
 
   return (
-    <div className="w-full h-full flex flex-col bg-void-black text-pure-white">
+    <div className={`w-full h-full flex flex-col bg-void-black text-pure-white immersive-fade ${aiTryOnLoading ? 'faded' : ''}`}>
       <div className="flex-1 relative min-h-[350px]">
         {webglFailed ? (
           /* 2D Fallback View */

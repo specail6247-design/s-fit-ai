@@ -72,7 +72,7 @@ export default function RealLifeFitting() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
+    <div className={`min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden immersive-fade ${isProcessing ? 'faded' : ''}`}>
       
       {/* LEFT PANEL: CONTROLS */}
       <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
@@ -80,7 +80,7 @@ export default function RealLifeFitting() {
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
         <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
+          <h1 className="text-4xl font-black tracking-tighter italic cinzel-text">
             S_FIT <span className="text-[#007AFF]">NEO</span>
           </h1>
           <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
