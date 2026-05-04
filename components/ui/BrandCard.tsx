@@ -53,7 +53,7 @@ export const BrandCard: React.FC<BrandCardProps> = ({
       {/* Brand Name */}
       <span
         className={`
-          font-mono font-bold text-lg tracking-[0.1em] uppercase
+          cinzel-text font-bold text-lg tracking-[0.1em] uppercase
           ${isActive ? 'text-[var(--color-surface)]' : 'text-[var(--color-text-secondary)]'}
         `}
       >
