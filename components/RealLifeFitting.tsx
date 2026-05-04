@@ -3,6 +3,12 @@ import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
+import { PrivacyTermsModal } from './ui/PrivacyTermsModal';
+import { DataSafetyBadge } from './ui/DataSafetyBadge';
+import { SupportHub } from './ui/SupportHub';
+import { StoryShareButton } from './ui/StoryShareButton';
+
+
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
   ssr: false,
@@ -16,6 +22,9 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  const [modalType, setModalType] = useState<'privacy' | 'terms' | null>(null);
+
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -105,6 +114,8 @@ export default function RealLifeFitting() {
               </label>
             </div>
           </div>
+          <DataSafetyBadge />
+
 
           {/* Garment Input */}
           <div className="space-y-2">
@@ -205,10 +216,29 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <div className="absolute bottom-4 right-4 z-30">
+                <StoryShareButton imageUrl={resultImage} />
+              </div>
+
             </div>
           </motion.div>
         )}
       </div>
-    </div>
+
+      {/* Footer / Privacy Terms */}
+      <div className="absolute bottom-4 left-8 z-20 flex gap-4 text-xs text-gray-500">
+        <button onClick={() => setModalType('privacy')} className="hover:text-white transition-colors">Privacy Policy</button>
+        <button onClick={() => setModalType('terms')} className="hover:text-white transition-colors">Terms of Service</button>
+      </div>
+
+      <PrivacyTermsModal
+        isOpen={modalType !== null}
+        type={modalType || 'privacy'}
+        onClose={() => setModalType(null)}
+      />
+
+      <SupportHub />
+
+</div>
   );
 }
