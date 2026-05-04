@@ -306,7 +306,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
@@ -580,20 +580,34 @@ interface ItemCardProps {
 function ItemCard({
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
+  const [timeLeft, setTimeLeft] = useState("02:00:00");
+  const isLocked = item.isLocked;
+  useEffect(() => {
+    if (!isLocked) return;
+    const timer = setInterval(() => {
+      const parts = timeLeft.split(":");
+      let h = parseInt(parts[0]), m = parseInt(parts[1]), s = parseInt(parts[2]);
+      if (s > 0) s--; else if (m > 0) { m--; s = 59; } else if (h > 0) { h--; m = 59; s = 59; }
+      setTimeLeft(`${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [isLocked, timeLeft]);
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
   return (
     <motion.button
       onClick={onSelect}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
+      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'} ${isLocked ? 'opacity-70 cursor-not-allowed grayscale' : ''}`}
+      disabled={isLocked}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
       <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
-        <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
+        <span className="text-2xl drop-shadow-lg">{isLocked ? '🔒' : getCategoryIcon(item.category)}</span>
         {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
       </div>
       <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
+      {isLocked && <p className="text-[0.5rem] text-luxury-gold mt-0.5 font-bold animate-pulse">Available in {timeLeft}</p>}
       <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
       <p className="text-[0.55rem] text-cyber-lime">Fit {fitScore}%</p>
     </motion.button>
@@ -840,6 +854,20 @@ export function FittingRoom() {
   const [userPhotoPreview, setUserPhotoPreview] = useState<string | null>(null);
   const [isMasterpieceMode, setIsMasterpieceMode] = useState(true);
   const [isMacroView, setIsMacroView] = useState(false);
+  const [vaultItems, setVaultItems] = useState<ClothingItem[]>([]);
+  const [showVault, setShowVault] = useState(false);
+  const [isAudioMuted, setIsAudioMuted] = useState(true);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isMasterpieceMode && !isAudioMuted) {
+        audioRef.current.play().catch(() => {});
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isMasterpieceMode, isAudioMuted]);
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [webglFailed, setWebglFailed] = useState(false);
   const [autoCycleEnabled, setAutoCycleEnabled] = useState(() => {
@@ -933,6 +961,13 @@ export function FittingRoom() {
 
   return (
     <div className="w-full h-full flex flex-col bg-void-black text-pure-white">
+      {/* Audio Element */}
+      <audio ref={audioRef} src="https://assets.mixkit.co/sfx/preview/mixkit-subtle-white-noise-ambient-2782.mp3" loop />
+
+      {/* Audio Mute Toggle */}
+      <button onClick={() => setIsAudioMuted(!isAudioMuted)} className="absolute top-16 right-4 z-50 p-2 bg-void-black/80 backdrop-blur rounded-full border border-white/10 text-white text-xs hover:bg-white/10 shadow-lg">
+        {isAudioMuted ? '🔇' : '🔊'}
+      </button>
       <div className="flex-1 relative min-h-[350px]">
         {webglFailed ? (
           /* 2D Fallback View */
@@ -1013,6 +1048,9 @@ export function FittingRoom() {
         <div className="absolute top-4 left-4 flex gap-2 z-20">
             <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
                 <span>📤</span>
+            </button>
+            <button onClick={() => { if(currentItem && !vaultItems.find(i => i.id === currentItem.id)) setVaultItems([...vaultItems, currentItem]); }} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors text-xs flex items-center gap-1">
+                {currentItem && vaultItems.find(i => i.id === currentItem.id) ? '🏦 Saved' : '🏦 Save'}
             </button>
             <motion.button onClick={() => setShowAITryOnModal(true)} 
                            className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
@@ -1112,6 +1150,7 @@ export function FittingRoom() {
             </div>
             <span className="text-[8px] text-soft-gray italic">Complete the Look</span>
           </div>
+          {currentItem.stylingTip && <div className="mb-3 p-2 bg-void-black/50 border border-cyber-lime/20 rounded-md"><p className="text-[10px] text-pure-white"><span className="text-cyber-lime font-bold">Styling Tip:</span> {currentItem.stylingTip}</p></div>}
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {/* These would normally come from lib/visionService.getComplementaryItems */}
             {brandItems.filter(i => i.id !== currentItem.id).slice(0, 3).map((compItem) => (
@@ -1125,6 +1164,44 @@ export function FittingRoom() {
           </div>
         </div>
       )}
+
+      <button onClick={() => setShowVault(true)} className="fixed bottom-24 right-4 z-40 bg-void-black/90 backdrop-blur p-3 rounded-full border border-white/20 text-white shadow-lg flex items-center justify-center gap-2 hover:bg-white/10 transition-colors">
+        <span>🏦</span><span className="text-xs font-bold">Vault ({vaultItems.length})</span>
+      </button>
+
+      <AnimatePresence>
+        {showVault && (
+          <motion.div
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed inset-x-0 bottom-0 z-50 h-[50vh] bg-charcoal/95 backdrop-blur-xl border-t border-white/20 rounded-t-3xl p-6 flex flex-col"
+          >
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-bold text-white uppercase tracking-widest">The Vault</h3>
+              <button onClick={() => setShowVault(false)} className="text-soft-gray hover:text-white p-2 text-xl">&times;</button>
+            </div>
+            {vaultItems.length === 0 ? (
+              <div className="flex-1 flex flex-col items-center justify-center text-soft-gray">
+                <p className="text-4xl mb-4">🏦</p>
+                <p className="text-sm">Your vault is empty. Save items to compare.</p>
+              </div>
+            ) : (
+              <div className="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 gap-4 pb-10">
+                {vaultItems.map(item => (
+                  <div key={item.id} className="bg-void-black/60 p-3 rounded-xl border border-white/10 relative">
+                    <button onClick={() => setVaultItems(vaultItems.filter(i => i.id !== item.id))} className="absolute top-2 right-2 text-soft-gray hover:text-red-500 text-xs bg-black/50 w-6 h-6 rounded-full flex items-center justify-center">&times;</button>
+                    <div className="aspect-square bg-charcoal rounded-lg mb-2 flex items-center justify-center text-3xl">{getCategoryIcon(item.category)}</div>
+                    <p className="text-xs text-white font-medium truncate">{item.name}</p>
+                    <p className="text-[10px] text-soft-gray mt-1">{item.brand}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <ShareModal 
         isOpen={showShareModal} 
