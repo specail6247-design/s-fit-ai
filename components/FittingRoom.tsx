@@ -539,7 +539,7 @@ function Scene({
             scale={1.0}
           />
         ) : (
-          <Mannequin height={height} opacity={1.0} />
+          <Mannequin height={height} />
         )}
         
         {/* Fit Heatmap Visual Overlay */}
@@ -855,6 +855,7 @@ export function FittingRoom() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
+
   const [savedItems, setSavedItems] = useState<ClothingItem[]>([]);
   const [isVaultOpen, setIsVaultOpen] = useState(false);
   const [isAudioMuted, setIsAudioMuted] = useState(true);
