@@ -26,8 +26,7 @@
   --border-color: rgba(255, 255, 255, 0.1);
 
   /* Typography */
-  --font-display: var(--font-inter), -apple-system, sans-serif;
-  --font-cinzel: var(--font-cinzel), serif;
+  --font-display: "Geist", -apple-system, sans-serif;
   --font-mono: "Geist Mono", monospace;
 
   /* Transitions */
@@ -291,5 +290,3 @@ body {
     padding: var(--spacing-lg);
   }
 }
-
-.font-cinzel { font-family: var(--font-cinzel); }
