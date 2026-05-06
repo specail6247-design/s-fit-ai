@@ -306,8 +306,8 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
-}: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
+  height = 170
+}: { height?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
   
@@ -539,7 +539,7 @@ function Scene({
             scale={1.0}
           />
         ) : (
-          <Mannequin height={height} opacity={1.0} />
+          <Mannequin height={height} />
         )}
         
         {/* Fit Heatmap Visual Overlay */}
@@ -578,12 +578,31 @@ interface ItemCardProps {
 }
 
 function ItemCard({
+
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
+  const [timeLeft, setTimeLeft] = useState<string>('');
+  useEffect(() => {
+    if (!item.lockedUntil) return;
+    const interval = setInterval(() => {
+      const diff = new Date(item.lockedUntil!).getTime() - Date.now();
+      if (diff <= 0) {
+        setTimeLeft('');
+        clearInterval(interval);
+      } else {
+        const h = Math.floor(diff / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+        setTimeLeft(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [item.lockedUntil]);
+  const isLocked = !!(item.lockedUntil && new Date(item.lockedUntil).getTime() > new Date().getTime());
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
   return (
     <motion.button
-      onClick={onSelect}
+      onClick={isLocked ? undefined : onSelect}
       className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
@@ -596,6 +615,7 @@ function ItemCard({
       <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
       <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
       <p className="text-[0.55rem] text-cyber-lime">Fit {fitScore}%</p>
+      {isLocked && <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center rounded-lg backdrop-blur-[1px]"><span className="text-[10px]">🔒</span><span className="text-[8px] text-white">Available in {timeLeft}</span></div>}
     </motion.button>
   );
 }
@@ -835,6 +855,10 @@ export function FittingRoom() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
+
+  const [savedItems, setSavedItems] = useState<ClothingItem[]>([]);
+  const [isVaultOpen, setIsVaultOpen] = useState(false);
+  const [isAudioMuted, setIsAudioMuted] = useState(true);
   const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
   const [aiTryOnLoading, setAITryOnLoading] = useState(false);
   const [userPhotoPreview, setUserPhotoPreview] = useState<string | null>(null);
@@ -1011,9 +1035,25 @@ export function FittingRoom() {
         )}
 
         <div className="absolute top-4 left-4 flex gap-2 z-20">
-            <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
+<div className="pointer-events-auto flex gap-2">
+             <button onClick={() => setIsAudioMuted(!isAudioMuted)} className="bg-charcoal/60 backdrop-blur-md px-2 py-1 rounded-xl border border-white/10 text-[10px]">
+                {isAudioMuted ? '🔇' : '🔊'}
+             </button>
+             <button onClick={() => setIsVaultOpen(!isVaultOpen)} className="bg-charcoal/60 backdrop-blur-md px-2 py-1 rounded-xl border border-white/10 text-[10px] flex items-center gap-1">
+                <span>Vault</span> <span className="bg-cyber-lime text-black rounded-full w-4 h-4 flex items-center justify-center">{savedItems.length}</span>
+             </button>
+          </div>
+          <button onClick={() => {
+                if (currentItem && !savedItems.find(i => i.id === currentItem.id)) {
+                    setSavedItems([...savedItems, currentItem]);
+                }
+            }} className="bg-charcoal/60 backdrop-blur-md px-3 py-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors text-xs font-bold text-cyber-lime pointer-events-auto">
+                💾 Save Look
+          </button>
+            <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors pointer-events-auto">
                 <span>📤</span>
             </button>
+
             <motion.button onClick={() => setShowAITryOnModal(true)} 
                            className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
                            whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
