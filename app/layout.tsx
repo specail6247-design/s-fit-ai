@@ -36,6 +36,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { SupportHub } from "@/components/SupportHub";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -50,6 +52,7 @@ export default function RootLayout({
         {/* Grain Overlay for Premium Feel */}
         <div className="grain-overlay" aria-hidden="true" />
         {children}
+        <SupportHub />
       </body>
     </html>
   );
