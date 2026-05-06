@@ -306,8 +306,8 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
-}: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
+  height = 170
+}: { height?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
   
@@ -599,9 +599,6 @@ function ItemCard({
     return () => clearInterval(interval);
   }, [item.lockedUntil]);
   const isLocked = !!(item.lockedUntil && new Date(item.lockedUntil).getTime() > new Date().getTime());
-  useEffect(() => {
-    setIsLocked(!!(item.lockedUntil && new Date(item.lockedUntil).getTime() > Date.now()));
-  }, [item.lockedUntil, timeLeft]);
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
   return (
     <motion.button
@@ -1045,7 +1042,14 @@ export function FittingRoom() {
                 <span>Vault</span> <span className="bg-cyber-lime text-black rounded-full w-4 h-4 flex items-center justify-center">{savedItems.length}</span>
              </button>
           </div>
-            <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
+          <button onClick={() => {
+                if (currentItem && !savedItems.find(i => i.id === currentItem.id)) {
+                    setSavedItems([...savedItems, currentItem]);
+                }
+            }} className="bg-charcoal/60 backdrop-blur-md px-3 py-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors text-xs font-bold text-cyber-lime pointer-events-auto">
+                💾 Save Look
+          </button>
+            <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors pointer-events-auto">
                 <span>📤</span>
             </button>
 
