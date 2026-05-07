@@ -26,8 +26,8 @@
   --border-color: rgba(255, 255, 255, 0.1);
 
   /* Typography */
-  --font-display: "Geist", -apple-system, sans-serif;
-  --font-mono: "Geist Mono", monospace;
+  --font-display: var(--font-cinzel), -apple-system, sans-serif;
+  --font-mono: var(--font-space-grotesk), monospace;
 
   /* Transitions */
   --transition-fast: 150ms ease;
@@ -47,8 +47,8 @@
   --color-gold-primary: #ecab13;
   --color-surface-dark: #1a1a1a;
   --color-border-dark: #2d2d2d;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-space-grotesk);
+  --font-mono: var(--font-space-grotesk);
 }
 
 /* Base Styles */

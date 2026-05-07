@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import StaggeredReveal from '@/components/StaggeredReveal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -75,13 +76,18 @@ export default function RealLifeFitting() {
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
       {/* LEFT PANEL: CONTROLS */}
-      <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
+      <div className={`w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative transition-opacity duration-1000 ${isProcessing ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
         <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
+          <h1 className="text-4xl font-black tracking-tighter italic font-display flex flex-wrap gap-2">
+            <StaggeredReveal>
+              S_FIT
+            </StaggeredReveal>
+            <StaggeredReveal delay={0.1}>
+              <span className="text-[#C9B037]">LUXURY</span>
+            </StaggeredReveal>
           </h1>
           <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
             Professional Virtual Fitting
@@ -141,21 +147,25 @@ export default function RealLifeFitting() {
               </div>
             </div>
           ) : (
-            <button 
+            <motion.button
               onClick={handleTryOn}
-              className="w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
+              whileTap={{ scale: 0.95 }}
+              className="w-full py-4 bg-[#C9B037] hover:bg-[#b09825] text-black font-bold rounded-xl shadow-[0_0_20px_rgba(201,176,55,0.4)] transition-colors hover:scale-[1.02] flex items-center justify-center gap-2 relative overflow-hidden group"
             >
-              <span>⚡️</span> TRY IT ON
-            </button>
+              <span className="absolute inset-0 w-full h-full bg-white/20 scale-0 group-active:scale-100 rounded-xl transition-transform duration-300 opacity-0 group-active:opacity-100"></span>
+              <span className="relative z-10 flex items-center gap-2"><span>⚡️</span> TRY IT ON</span>
+            </motion.button>
           )}
           
           <div className="mt-4 flex gap-2">
-             <a href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
-               SPA Line
-             </a>
-             <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
-               Luxury Line
-             </a>
+             <motion.a whileTap={{ scale: 0.95 }} href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors relative overflow-hidden group">
+               <span className="absolute inset-0 w-full h-full bg-white/20 scale-0 group-active:scale-100 rounded-xl transition-transform duration-300 opacity-0 group-active:opacity-100"></span>
+               <span className="relative z-10">SPA Line</span>
+             </motion.a>
+             <motion.a whileTap={{ scale: 0.95 }} href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors relative overflow-hidden group">
+               <span className="absolute inset-0 w-full h-full bg-white/20 scale-0 group-active:scale-100 rounded-xl transition-transform duration-300 opacity-0 group-active:opacity-100"></span>
+               <span className="relative z-10">Luxury Line</span>
+             </motion.a>
           </div>
 
         </div>
