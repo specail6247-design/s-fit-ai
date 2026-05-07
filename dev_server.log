@@ -17,3 +17,425 @@ https://nextjs.org/telemetry
 ⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
  GET / 200 in 22.2s (compile: 21.8s, render: 418ms)
  GET / 200 in 100ms (compile: 9ms, render: 90ms)
+⨯ ./node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs
+Error: ENOENT: no such file or directory, open '/app/node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs'
+
+Import trace for requested module:
+./node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs
+./node_modules/@react-three/drei/web/FaceLandmarker.js
+./node_modules/@react-three/drei/index.js
+./components/AvatarCanvas.tsx
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs
+Error: ENOENT: no such file or directory, open '/app/node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs'
+
+Import trace for requested module:
+./node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs
+./node_modules/@react-three/drei/web/FaceLandmarker.js
+./node_modules/@react-three/drei/index.js
+./components/AvatarCanvas.tsx
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs
+Error: ENOENT: no such file or directory, open '/app/node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs'
+
+Import trace for requested module:
+./node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs
+./node_modules/@react-three/drei/web/FaceLandmarker.js
+./node_modules/@react-three/drei/index.js
+./components/AvatarCanvas.tsx
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs
+Error: ENOENT: no such file or directory, open '/app/node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs'
+
+Import trace for requested module:
+./node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs
+./node_modules/@react-three/drei/web/FaceLandmarker.js
+./node_modules/@react-three/drei/index.js
+./components/AvatarCanvas.tsx
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs
+Error: ENOENT: no such file or directory, open '/app/node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs'
+
+Import trace for requested module:
+./node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs
+./node_modules/@react-three/drei/web/FaceLandmarker.js
+./node_modules/@react-three/drei/index.js
+./components/AvatarCanvas.tsx
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs
+Error: ENOENT: no such file or directory, open '/app/node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs'
+
+Import trace for requested module:
+./node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs
+./node_modules/@react-three/drei/web/FaceLandmarker.js
+./node_modules/@react-three/drei/index.js
+./components/AvatarCanvas.tsx
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs
+Error: ENOENT: no such file or directory, open '/app/node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs'
+
+Import trace for requested module:
+./node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs
+./node_modules/@react-three/drei/web/FaceLandmarker.js
+./node_modules/@react-three/drei/index.js
+./components/AvatarCanvas.tsx
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs
+Error: ENOENT: no such file or directory, open '/app/node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs'
+
+Import trace for requested module:
+./node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs
+./node_modules/@react-three/drei/web/FaceLandmarker.js
+./node_modules/@react-three/drei/index.js
+./components/AvatarCanvas.tsx
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:120:1]
+ 117 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+ 118 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 119 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 120 |                   <img src={userImage} alt="User" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                        ^^^
+ 121 |                 </div>
+ 122 |                 <div>
+ 123 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:120:1]
+ 117 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+ 118 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 119 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 120 |                   <img src={userImage} alt="User" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                        ^^^
+ 121 |                 </div>
+ 122 |                 <div>
+ 123 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:120:1]
+ 117 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+ 118 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 119 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 120 |                   <img src={userImage} alt="User" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                        ^^^
+ 121 |                 </div>
+ 122 |                 <div>
+ 123 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:120:1]
+ 117 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+ 118 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 119 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 120 |                   <img src={userImage} alt="User" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                        ^^^
+ 121 |                 </div>
+ 122 |                 <div>
+ 123 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:120:1]
+ 117 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+ 118 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 119 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 120 |                   <img src={userImage} alt="User" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                        ^^^
+ 121 |                 </div>
+ 122 |                 <div>
+ 123 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:120:1]
+ 117 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+ 118 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 119 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 120 |                   <img src={userImage} alt="User" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                        ^^^
+ 121 |                 </div>
+ 122 |                 <div>
+ 123 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:120:1]
+ 117 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+ 118 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 119 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 120 |                   <img src={userImage} alt="User" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                        ^^^
+ 121 |                 </div>
+ 122 |                 <div>
+ 123 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:120:1]
+ 117 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+ 118 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 119 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 120 |                   <img src={userImage} alt="User" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                        ^^^
+ 121 |                 </div>
+ 122 |                 <div>
+ 123 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:120:1]
+ 117 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+ 118 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 119 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 120 |                   <img src={userImage} alt="User" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                        ^^^
+ 121 |                 </div>
+ 122 |                 <div>
+ 123 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:120:1]
+ 117 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+ 118 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 119 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 120 |                   <img src={userImage} alt="User" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                        ^^^
+ 121 |                 </div>
+ 122 |                 <div>
+ 123 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:120:1]
+ 117 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+ 118 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 119 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 120 |                   <img src={userImage} alt="User" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                        ^^^
+ 121 |                 </div>
+ 122 |                 <div>
+ 123 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:120:1]
+ 117 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+ 118 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 119 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 120 |                   <img src={userImage} alt="User" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                        ^^^
+ 121 |                 </div>
+ 122 |                 <div>
+ 123 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:120:1]
+ 117 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+ 118 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 119 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 120 |                   <img src={userImage} alt="User" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                        ^^^
+ 121 |                 </div>
+ 122 |                 <div>
+ 123 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:120:1]
+ 117 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+ 118 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 119 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 120 |                   <img src={userImage} alt="User" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                        ^^^
+ 121 |                 </div>
+ 122 |                 <div>
+ 123 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:120:1]
+ 117 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+ 118 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 119 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 120 |                   <img src={userImage} alt="User" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                        ^^^
+ 121 |                 </div>
+ 122 |                 <div>
+ 123 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:100:1]
+  97 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+  98 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+  99 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 100 |                     <img src={userImage} alt="User photo" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                          ^^^
+ 101 |                 </div>
+ 102 |                 <div>
+ 103 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:100:1]
+  97 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+  98 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+  99 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 100 |                     <img src={userImage} alt="User photo" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                          ^^^
+ 101 |                 </div>
+ 102 |                 <div>
+ 103 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:100:1]
+  97 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+  98 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+  99 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 100 |                     <img src={userImage} alt="User photo" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                          ^^^
+ 101 |                 </div>
+ 102 |                 <div>
+ 103 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
