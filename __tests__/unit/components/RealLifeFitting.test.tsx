@@ -34,7 +34,7 @@ describe('RealLifeFitting', () => {
     
     // Check for Main Header
     expect(screen.getByText(/S_FIT/i)).toBeInTheDocument();
-    expect(screen.getByText(/NEO/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/LUXURY/i)[0]).toBeInTheDocument();
     
     // Check for Sections
     expect(screen.getByText(/01. Identification/i)).toBeInTheDocument();
