@@ -89,6 +89,11 @@ export default function RealLifeFitting() {
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
+          {/* Data Safety Badge */}
+          <div className="flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-lg p-3 text-green-500">
+            <span className="material-symbols-outlined text-lg">verified_user</span>
+            <span className="text-xs font-medium">Photos are processed securely and not shared.</span>
+          </div>
           {/* User Photo Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
