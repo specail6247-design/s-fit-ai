@@ -96,7 +96,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? <img src={userImage} alt="User photo preview" className="w-full h-full object-cover" /> : <span className="text-2xl" aria-hidden="true">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +113,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? <img src={garmentImage} alt="Garment photo preview" className="w-full h-full object-cover" /> : <span className="text-2xl" aria-hidden="true">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -143,9 +143,16 @@ export default function RealLifeFitting() {
           ) : (
             <button 
               onClick={handleTryOn}
-              className="w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
+              disabled={!userImage || !garmentImage}
+              aria-disabled={!userImage || !garmentImage}
+              title={!userImage || !garmentImage ? "Please upload both a User Photo and a Target Garment" : "Try it on"}
+              className={`w-full py-4 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 ${
+                !userImage || !garmentImage
+                  ? 'bg-gray-800/80 text-gray-400 cursor-not-allowed border border-white/5'
+                  : 'bg-[#007AFF] hover:bg-[#005bb5] shadow-[0_0_20px_rgba(0,122,255,0.4)] transform hover:scale-[1.02]'
+              }`}
             >
-              <span>⚡️</span> TRY IT ON
+              <span aria-hidden="true">⚡️</span> {(!userImage || !garmentImage) ? 'UPLOAD PHOTOS TO START' : 'TRY IT ON'}
             </button>
           )}
           

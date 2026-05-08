@@ -41,6 +41,6 @@ describe('RealLifeFitting', () => {
     expect(screen.getByText(/02. Target Garment/i)).toBeInTheDocument();
     
     // Check for CTA
-    expect(screen.getByText(/TRY IT ON/i)).toBeInTheDocument();
+    expect(screen.getByText(/UPLOAD PHOTOS TO START/i)).toBeInTheDocument();
   });
 });

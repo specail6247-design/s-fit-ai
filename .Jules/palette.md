@@ -1,0 +1,3 @@
+## 2025-02-18 - Missing Disabled States on Form Actions
+**Learning:** The main virtual fitting UI (RealLifeFitting) did not disable the "TRY IT ON" button when required inputs (user photo, garment image) were missing, leading to an abrupt `alert()` popup on click instead of proactive UX guidance. Furthermore, the icon-only placeholders (👤, 👕) lacked `aria-hidden="true"` and the image previews lacked `alt` attributes.
+**Action:** When auditing form actions, look for buttons that trigger `alert()` on validation failure. Replace reactive alerts with proactive disabled states that clearly communicate what is missing using tooltips (`title`) and visual cues (opacity/colors). Ensure image previews have `alt` tags and decorative emojis use `aria-hidden="true"`.
