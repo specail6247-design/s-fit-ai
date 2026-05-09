@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import html2canvas from 'html2canvas';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -23,6 +24,38 @@ export default function RealLifeFitting() {
       const reader = new FileReader();
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
+    }
+  };
+
+
+  const handleShareToStory = async () => {
+    try {
+      const el = document.getElementById('result-overlay-container');
+      if (!el) return;
+      const canvas = await html2canvas(el, { useCORS: true, backgroundColor: '#000000' });
+      const image = canvas.toDataURL('image/png');
+
+      const response = await fetch(image);
+      const blob = await response.blob();
+      const file = new File([blob], 's_fit_ai_story.png', { type: 'image/png' });
+
+      if (navigator.share) {
+        await navigator.share({
+          title: 'My S_FIT AI Try-On',
+          text: 'Check out my virtual fitting result!',
+          files: [file],
+        });
+      } else {
+        // Fallback: download the image
+        const a = document.createElement('a');
+        a.href = image;
+        a.download = 's_fit_ai_story.png';
+        a.click();
+        alert("Image downloaded! You can now share it to your story.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to generate story image.");
     }
   };
 
@@ -194,7 +227,7 @@ export default function RealLifeFitting() {
             animate={{ opacity: 1, scale: 1 }}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
-            <div className="relative group">
+            <div id="result-overlay-container" className="relative group p-4 bg-black/80 rounded-xl">
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
@@ -205,6 +238,13 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 hover:opacity-90 transition-opacity shadow-lg"
+              >
+                <span className="material-symbols-outlined text-sm">share</span>
+                Share to Story
+              </button>
             </div>
           </motion.div>
         )}
