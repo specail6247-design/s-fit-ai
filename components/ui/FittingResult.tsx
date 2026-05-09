@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import html2canvas from 'html2canvas';
 
 interface FittingResultProps {
   originalImage: string;
@@ -19,7 +20,7 @@ export const FittingResult: React.FC<FittingResultProps> = ({
   return (
     <div className="relative w-full max-w-md mx-auto overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-color)] bg-[var(--color-secondary)]">
       {/* AR Overlay UI */}
-      <div className="relative aspect-[3/4]">
+      <div id="fitting-result-canvas" className="relative aspect-[3/4] p-4 bg-black/80 rounded-xl">
         <Image
           src={resultImage}
           alt="Virtual Try-On Result"
@@ -70,9 +71,10 @@ export const FittingResult: React.FC<FittingResultProps> = ({
         </button>
         <button
           onClick={onShare}
-          className="flex-1 py-3 px-4 rounded-full bg-[var(--color-primary)] text-[var(--color-secondary)] text-sm font-semibold hover:brightness-110 transition-all shadow-[var(--shadow-glow)]"
+          className="flex-1 py-3 px-4 rounded-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white text-sm font-semibold hover:brightness-110 transition-all shadow-[var(--shadow-glow)] flex items-center justify-center gap-2"
         >
-          Share Look
+          <span className="material-symbols-outlined text-sm">share</span>
+          Share to Story
         </button>
       </div>
     </div>
