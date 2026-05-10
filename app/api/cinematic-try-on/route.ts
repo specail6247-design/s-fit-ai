@@ -1,31 +1,63 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateCinematicVideo } from '@/lib/virtualTryOn';
 
-export async function POST(req: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const { imageUrl } = await req.json();
+    const body = await request.json();
+    const { userPhotoUrl, garmentImageUrl, category } = body;
 
-    if (!imageUrl) {
+    if (!userPhotoUrl || !garmentImageUrl) {
       return NextResponse.json(
-        { success: false, error: 'Missing imageUrl' },
+        { error: 'userPhotoUrl and garmentImageUrl are required' },
         { status: 400 }
       );
     }
 
-    const result = await generateCinematicVideo(imageUrl);
+    const backendUrl = process.env.PYTHON_BACKEND_URL || 'http://localhost:8000';
 
-    if (result.success) {
-      return NextResponse.json(result);
-    } else {
-      return NextResponse.json(
-        { success: false, error: result.error || 'Failed to generate video' },
-        { status: 500 }
-      );
+    console.log(`Forwarding try-on request to Python backend at ${backendUrl}/api/try-on`);
+
+    const tryOnResponse = await fetch(`${backendUrl}/api/try-on`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userPhotoUrl, garmentImageUrl, category: category || 'upper_body' })
+    });
+
+    if (!tryOnResponse.ok) {
+        const errData = await tryOnResponse.json().catch(() => ({}));
+        throw new Error(errData.detail || `Backend TryOn returned ${tryOnResponse.status}`);
     }
+
+    const tryOnData = await tryOnResponse.json();
+    const imageUrl = tryOnData.imageUrl;
+
+    if (!imageUrl) {
+         throw new Error("No image URL generated from TryOn");
+    }
+
+    console.log(`Forwarding video generation request to Python backend at ${backendUrl}/api/generate-video`);
+
+    const videoResponse = await fetch(`${backendUrl}/api/generate-video`, {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({ imageUrl })
+    });
+
+    if (!videoResponse.ok) {
+        const errData = await videoResponse.json().catch(() => ({}));
+        throw new Error(errData.detail || `Backend GenerateVideo returned ${videoResponse.status}`);
+    }
+
+    const videoData = await videoResponse.json();
+
+    return NextResponse.json({
+        success: true,
+        imageUrl: imageUrl,
+        videoUrl: videoData.videoUrl
+    });
   } catch (error) {
-    console.error('API Error:', error);
+    console.error('Cinematic Try-on API error:', error);
     return NextResponse.json(
-      { success: false, error: 'Internal server error' },
+      { error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }
     );
   }
