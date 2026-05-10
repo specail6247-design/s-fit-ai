@@ -1,4 +1,5 @@
 'use client';
+import Image from "next/image";
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -88,7 +89,7 @@ export default function CinematicViewer({ videoUrl, imageUrl, onClose }: Cinemat
                 crossOrigin="anonymous"
               />
             ) : imageUrl ? (
-              <img
+              <Image fill unoptimized
                 src={imageUrl}
                 alt="Try-on Result"
                 className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
