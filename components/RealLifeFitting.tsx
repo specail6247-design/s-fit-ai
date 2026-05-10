@@ -101,6 +101,7 @@ export default function RealLifeFitting() {
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
+                  <div className="text-[10px] text-green-400 mt-1 flex items-center gap-1"><span className="material-symbols-outlined text-[12px]">shield</span> Photos are processed securely and not shared.</div>
                 </div>
               </label>
             </div>
@@ -205,6 +206,87 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={() => {
+                  if (!resultImage) return;
+
+                  // Create an offscreen canvas to generate the branded image
+                  const canvas = document.createElement('canvas');
+                  // 1080x1920 is standard for Instagram Stories
+                  canvas.width = 1080;
+                  canvas.height = 1920;
+                  const ctx = canvas.getContext('2d');
+                  if (!ctx) return;
+
+                  // Fill background
+                  ctx.fillStyle = '#000000';
+                  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                  const img = new Image();
+                  img.crossOrigin = "anonymous";
+                  img.onload = async () => {
+                    // Draw the result image in the center, preserving aspect ratio
+                    const scale = Math.min((canvas.width * 0.9) / img.width, (canvas.height * 0.7) / img.height);
+                    const drawWidth = img.width * scale;
+                    const drawHeight = img.height * scale;
+                    const x = (canvas.width - drawWidth) / 2;
+                    const y = (canvas.height - drawHeight) / 2;
+
+                    // Add a subtle glow behind the image
+                    ctx.shadowColor = 'rgba(0, 122, 255, 0.5)';
+                    ctx.shadowBlur = 50;
+                    ctx.drawImage(img, x, y, drawWidth, drawHeight);
+
+                    // Reset shadow for text
+                    ctx.shadowColor = 'transparent';
+                    ctx.shadowBlur = 0;
+
+                    // Draw S_FIT AI Logo/Branding
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = 'bold 80px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('S_FIT AI', canvas.width / 2, 150);
+
+                    ctx.fillStyle = '#007AFF';
+                    ctx.font = 'bold 40px sans-serif';
+                    ctx.fillText('VIRTUAL FITTING', canvas.width / 2, 220);
+
+                    // Add watermark at the bottom
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                    ctx.font = '30px sans-serif';
+                    ctx.fillText('sfit-ai.com', canvas.width / 2, canvas.height - 100);
+
+                    try {
+                      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+
+                      // Check if Web Share API is available (mobile)
+                      if (navigator.share) {
+                        const response = await fetch(dataUrl);
+                        const blob = await response.blob();
+                        const file = new File([blob], 'sfit-tryon.jpg', { type: 'image/jpeg' });
+
+                        await navigator.share({
+                          title: 'My Virtual Try-On',
+                          text: 'Check out my new look with S_FIT AI!',
+                          files: [file]
+                        });
+                      } else {
+                        // Fallback: trigger download on desktop
+                        const link = document.createElement('a');
+                        link.download = 'sfit-story.jpg';
+                        link.href = dataUrl;
+                        link.click();
+                      }
+                    } catch (error) {
+                      console.error('Error sharing image:', error);
+                    }
+                  };
+                  img.src = resultImage;
+                }}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
