@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { motion, AnimatePresence } from 'framer-motion';
 import { User } from '@supabase/supabase-js';
 
 export function AuthButton() {
@@ -89,14 +90,26 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="bg-transparent border border-white/20 text-white px-6 py-2 rounded-full text-xs tracking-widest font-bold hover:bg-white/10 hover:border-white transition-all uppercase"
       >
-        LOGIN
+        Member Access
       </button>
 
+      <AnimatePresence>
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ type: "spring" as const, stiffness: 300, damping: 30 }}
+            className="bg-[#0a0a0a] border border-white/10 w-full max-w-sm rounded-2xl p-8 relative shadow-[0_0_40px_rgba(255,255,255,0.05)]"
+          >
             <button
               onClick={() => setShowModal(false)}
               className="absolute top-4 right-4 text-soft-gray hover:text-white"
@@ -105,7 +118,7 @@ export function AuthButton() {
             </button>
             
             <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
+              {isLogin ? 'VIP Access' : 'Request Access'}
             </h2>
 
             <form onSubmit={handleAuth} className="space-y-4 mb-6">
@@ -114,7 +127,7 @@ export function AuthButton() {
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white text-sm focus:border-white outline-none transition-colors placeholder:text-white/30"
                 required
               />
               <input
@@ -122,13 +135,13 @@ export function AuthButton() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white text-sm focus:border-white outline-none transition-colors placeholder:text-white/30"
                 required
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-all transform active:scale-[0.98] disabled:opacity-50 tracking-widest uppercase text-sm"
               >
                 {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
               </button>
@@ -136,7 +149,7 @@ export function AuthButton() {
 
             <div className="flex items-center gap-2 mb-6">
               <div className="h-px bg-white/10 flex-1" />
-              <span className="text-xs text-soft-gray">OR SOCIAL LOGIN</span>
+              <span className="text-xs text-soft-gray">OR CONNECT WITH</span>
               <div className="h-px bg-white/10 flex-1" />
             </div>
 
@@ -164,9 +177,10 @@ export function AuthButton() {
                 {isLogin ? 'Sign up' : 'Log in'}
               </button>
             </p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
+    </AnimatePresence>
     </>
   );
 }
