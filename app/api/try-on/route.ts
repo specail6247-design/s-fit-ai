@@ -1,46 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateVirtualTryOn } from '@/lib/virtualTryOn';
-import * as fs from 'fs';
-import * as path from 'path';
-
-// Config for Node.js Runtime (required for Replicate SDK)
-export const runtime = 'nodejs';
-export const maxDuration = 120;
-
-// Helper: Convert local file to base64 data URI
-function localFileToDataUri(localPath: string): string | null {
-  try {
-    // Remove leading slash and resolve to public directory
-    const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
-    const absolutePath = path.join(process.cwd(), 'public', relativePath);
-    
-    console.log('Reading local file:', absolutePath);
-    
-    if (!fs.existsSync(absolutePath)) {
-      console.error('File not found:', absolutePath);
-      return null;
-    }
-    
-    const fileBuffer = fs.readFileSync(absolutePath);
-    const base64 = fileBuffer.toString('base64');
-    
-    // Determine MIME type from extension
-    const ext = path.extname(localPath).toLowerCase();
-    const mimeTypes: Record<string, string> = {
-      '.png': 'image/png',
-      '.jpg': 'image/jpeg',
-      '.jpeg': 'image/jpeg',
-      '.webp': 'image/webp',
-      '.gif': 'image/gif'
-    };
-    const mimeType = mimeTypes[ext] || 'image/png';
-    
-    return `data:${mimeType};base64,${base64}`;
-  } catch (error) {
-    console.error('Error reading local file:', error);
-    return null;
-  }
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -54,57 +12,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Process User Photo - Keep as data URI string for Replicate
-    const userPhotoInput: string = userPhotoUrl;
-    // Replicate accepts data URIs directly
+    const backendUrl = process.env.PYTHON_BACKEND_URL || 'http://localhost:8000';
 
-    // Process Garment Image
-    let garmentImageInput: string = garmentImageUrl;
+    console.log(`Forwarding try-on request to Python backend at ${backendUrl}/api/try-on`);
 
-    if (typeof garmentImageUrl === 'string') {
-      if (garmentImageUrl.startsWith('data:')) {
-        // Already a data URI - use as is
-        garmentImageInput = garmentImageUrl;
-      } else if (garmentImageUrl.startsWith('/')) {
-        // Local file in public directory - convert to base64 data URI
-        const dataUri = localFileToDataUri(garmentImageUrl);
-        if (!dataUri) {
-          return NextResponse.json(
-            { error: `Failed to read local image: ${garmentImageUrl}` },
-            { status: 400 }
-          );
-        }
-        garmentImageInput = dataUri;
-        console.log('Converted local file to data URI, length:', dataUri.length);
-      } else if (garmentImageUrl.startsWith('http://') || garmentImageUrl.startsWith('https://')) {
-        // External URL - Replicate can fetch this directly
-        garmentImageInput = garmentImageUrl;
-      }
-    }
-
-    console.log('Calling Replicate with:');
-    console.log('- userPhoto type:', userPhotoInput.startsWith('data:') ? 'data URI' : 'URL');
-    console.log('- garmentImage type:', garmentImageInput.startsWith('data:') ? 'data URI' : 'URL');
-    console.log('- category:', category || 'upper_body');
-
-    // Call Replicate API
-    const result = await generateVirtualTryOn({
-      userPhoto: userPhotoInput,
-      garmentImage: garmentImageInput,
-      category: category || 'upper_body'
+    const response = await fetch(`${backendUrl}/api/try-on`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userPhotoUrl, garmentImageUrl, category: category || 'upper_body' })
     });
 
-    if (result.success) {
-      return NextResponse.json({
-        success: true,
-        imageUrl: result.imageUrl
-      });
-    } else {
-      return NextResponse.json(
-        { error: result.error },
-        { status: 500 }
-      );
+    if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.detail || `Backend returned ${response.status}`);
     }
+
+    const data = await response.json();
+    return NextResponse.json(data);
   } catch (error) {
     console.error('Try-on API error:', error);
     return NextResponse.json(
