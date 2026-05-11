@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { validateEnv } from "@/lib/env";
+import SupportHub from "@/components/SupportHub";
 import "./globals.css";
 
 // Validate environment variables on startup
@@ -48,8 +49,11 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {/* Grain Overlay for Premium Feel */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=optional" rel="stylesheet" />
         <div className="grain-overlay" aria-hidden="true" />
         {children}
+        <SupportHub />
       </body>
     </html>
   );

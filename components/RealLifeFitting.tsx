@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -23,6 +23,87 @@ export default function RealLifeFitting() {
       const reader = new FileReader();
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
+    }
+  };
+
+    const resultRef = useRef<HTMLImageElement>(null);
+
+  const handleShareToStory = async () => {
+    if (!resultImage || !resultRef.current) return;
+
+    try {
+      // Create offscreen canvas to combine result image with branding
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const img = resultRef.current;
+
+      // Instagram Story optimal resolution
+      canvas.width = 1080;
+      canvas.height = 1920;
+
+      // Draw background
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw grain/noise effect overlay (simplified as subtle gradient for this example)
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, '#111');
+      gradient.addColorStop(1, '#000');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Calculate image dimensions to fit within canvas while maintaining aspect ratio
+      const padding = 100;
+      const availableWidth = canvas.width - (padding * 2);
+      const availableHeight = canvas.height - 400; // Leave room for header/footer
+
+      const scale = Math.min(
+        availableWidth / img.naturalWidth,
+        availableHeight / img.naturalHeight
+      );
+
+      const drawWidth = img.naturalWidth * scale;
+      const drawHeight = img.naturalHeight * scale;
+
+      const x = (canvas.width - drawWidth) / 2;
+      const y = (canvas.height - drawHeight) / 2;
+
+      // Draw main image
+      ctx.drawImage(img, x, y, drawWidth, drawHeight);
+
+      // Add "AI GENERATED_" label similar to UI
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.fillRect(x, y + drawHeight - 50, 150, 40);
+      ctx.fillStyle = '#007AFF';
+      ctx.font = 'bold 20px monospace';
+      ctx.fillText('AI GENERATED_', x + 10, y + drawHeight - 25);
+
+      // Add Header Branding
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold italic 60px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT NEO', canvas.width / 2, 150);
+
+      // Add Footer
+      ctx.font = '30px sans-serif';
+      ctx.fillStyle = '#AAAAAA';
+      ctx.fillText('Virtual Fitting Experience', canvas.width / 2, canvas.height - 100);
+
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+
+      // Prompt user to download/share
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = 's_fit_story.jpg';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+    } catch (e) {
+      console.error("Failed to generate story image:", e);
+      alert("Failed to create story image.");
     }
   };
 
@@ -102,7 +183,13 @@ export default function RealLifeFitting() {
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
                 </div>
+
               </label>
+            </div>
+            {/* Data Safety Badge */}
+            <div className="flex items-center gap-2 mt-2 text-[10px] text-gray-500 bg-white/5 p-2 rounded-lg border border-white/5">
+              <span className="material-symbols-outlined text-[14px] text-green-400">shield_lock</span>
+              <span>Photos are processed securely and not shared.</span>
             </div>
           </div>
 
@@ -195,16 +282,25 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              <img ref={resultRef} crossOrigin="anonymous" src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
               >
                 ✕ Close
               </button>
+
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-[16px]">share</span>
+                Share to Story
+              </button>
+
             </div>
           </motion.div>
         )}
