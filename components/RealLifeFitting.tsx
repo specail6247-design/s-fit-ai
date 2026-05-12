@@ -26,6 +26,108 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      // Dark background with gradient
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, "#050505");
+      gradient.addColorStop(1, "#111111");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Add subtle glow in center
+      const glow = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 100, canvas.width/2, canvas.height/2, 800);
+      glow.addColorStop(0, "rgba(0, 122, 255, 0.15)");
+      glow.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw Result Image
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.src = resultImage;
+
+      await new Promise((resolve) => {
+        img.onload = resolve;
+      });
+
+      // Calculate scale to fit within story while maintaining aspect ratio, leaving room for header/footer
+      const maxWidth = 900;
+      const maxHeight = 1400;
+      const scale = Math.min(maxWidth / img.width, maxHeight / img.height);
+      const scaledWidth = img.width * scale;
+      const scaledHeight = img.height * scale;
+
+      const x = (canvas.width - scaledWidth) / 2;
+      const y = (canvas.height - scaledHeight) / 2;
+
+      // Draw image with rounded corners effect (via clipping)
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(x, y, scaledWidth, scaledHeight, 40);
+      ctx.clip();
+      ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+      ctx.restore();
+
+      // Draw border
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.roundRect(x, y, scaledWidth, scaledHeight, 40);
+      ctx.stroke();
+
+      // Typography - Header
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "bold 80px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("S_FIT NEO", canvas.width / 2, 150);
+
+      ctx.fillStyle = "#007AFF";
+      ctx.font = "bold 30px monospace";
+      ctx.fillText("VIRTUAL FITTING RESULT_", canvas.width / 2, 210);
+
+      // Typography - Footer
+      ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+      ctx.font = "40px sans-serif";
+      ctx.fillText("Try it now on sfit.ai", canvas.width / 2, canvas.height - 100);
+
+      // Export
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.95));
+      if (!blob) throw new Error("Canvas to Blob failed");
+
+      if (navigator.share && navigator.canShare) {
+        const file = new File([blob], "sfit-story.jpg", { type: "image/jpeg" });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: 'My S_FIT Try-On',
+            text: 'Check out my virtual fitting result from S_FIT AI!',
+          });
+          return;
+        }
+      }
+
+      // Fallback: Download
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "sfit-story.jpg";
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Share failed:", error);
+      alert("Failed to generate image for sharing.");
+    }
+  };
+
   const handleTryOn = async () => {
     if (!userImage || !garmentImage) return alert("Please upload both User Photo and Garment.");
     
@@ -91,7 +193,13 @@ export default function RealLifeFitting() {
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
           {/* User Photo Input */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
+              <div className="flex items-center gap-1 text-[10px] text-green-400 bg-green-400/10 px-2 py-0.5 rounded-full border border-green-400/20">
+                <span className="material-symbols-outlined text-[12px]">lock</span>
+                <span>Photos are processed securely and not shared.</span>
+              </div>
+            </div>
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
@@ -205,6 +313,13 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-purple-500 to-[#007AFF] text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg hover:shadow-[0_0_15px_rgba(0,122,255,0.6)] transition-all flex items-center gap-2 transform hover:scale-105 active:scale-95"
+              >
+                <span className="material-symbols-outlined text-sm">auto_awesome</span>
+                Share to Story
+              </button>
             </div>
           </motion.div>
         )}
