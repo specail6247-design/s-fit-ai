@@ -1,0 +1,4 @@
+## 2024-05-12 - [CRITICAL] Path Traversal in localFileToDataUri
+**Vulnerability:** A path traversal vulnerability existed in `app/api/try-on/route.ts` where user-supplied `garmentImageUrl` was passed directly into `path.join(process.cwd(), 'public', relativePath)` without bounds checking, and then read via `fs.readFileSync()`. An attacker could exploit this by providing a path like `/../../../../etc/passwd` to read arbitrary files and exfiltrate them via the API.
+**Learning:** `path.join()` simplifies directory traversal paths like `../` and resolves them correctly relative to the current directory, completely nullifying the intent of resolving relative to a static directory.
+**Prevention:** Always use `path.resolve(baseDir, userInput)` and explicitly validate that the resulting absolute path remains within the base directory using `if (!absolutePath.startsWith(baseDir + path.sep) && absolutePath !== baseDir)`. Never trust user input to construct local file paths.
