@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { validateEnv } from "@/lib/env";
 import "./globals.css";
+import { SupportHub } from "@/components/SupportHub";
 
 // Validate environment variables on startup
 validateEnv();
@@ -43,13 +44,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body
+        <head>
+    {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=optional" rel="stylesheet" />
+  </head>
+  <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-void-black text-pure-white`}
         suppressHydrationWarning
       >
         {/* Grain Overlay for Premium Feel */}
         <div className="grain-overlay" aria-hidden="true" />
         {children}
+        <SupportHub />
       </body>
     </html>
   );
