@@ -1,0 +1,3 @@
+## 2024-05-13 - [Material Symbols Accessibility & Keyboard Focus]
+**Learning:** Icon-only buttons/links utilizing `material-symbols-outlined` text ligatures are opaque to assistive technologies and require explicit `aria-label` attributes to ensure screen reader accessibility. Additionally, relying solely on hover states for interactive elements makes the interface inaccessible to keyboard users.
+**Action:** Always include an `aria-label` and `aria-hidden="true"` on the ligature span when implementing icon-only buttons with `material-symbols-outlined`. Ensure keyboard accessibility by consistently applying focus states like `focus-visible:outline-none focus-visible:ring-2` to all interactive elements.
