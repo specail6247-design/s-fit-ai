@@ -7,9 +7,12 @@ import { SizeGuide } from '@/components/ui/SizeGuide';
 import { FittingResult } from '@/components/ui/FittingResult';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { BottomSheet } from '@/components/ui/BottomSheet';
+import { VaultDrawer } from '@/components/ui/VaultDrawer';
 
 export default function DesignSystemPage() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isVaultOpen, setIsVaultOpen] = useState(false);
+  const [vaultItems, setVaultItems] = useState<{id: string, name: string, brand: string, imageUrl: string}[]>([]);
 
   return (
     <div className="min-h-screen p-8 space-y-12 pb-32">
@@ -34,6 +37,8 @@ export default function DesignSystemPage() {
             price="$2,400"
             imageUrl="https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=2883&auto=format&fit=crop"
             onTryOn={() => console.log('Try On')}
+            onSave={() => { setVaultItems([...vaultItems, { id: 'item1', name: 'Silk Evening Gown', brand: 'Gucci', imageUrl: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=2883&auto=format&fit=crop' }]); setIsVaultOpen(true); }}
+            stylingTip="Pair this with delicate gold accessories to complement the luxurious silk finish."
           />
            <ProductCard
             name="Structured Blazer"
@@ -41,6 +46,16 @@ export default function DesignSystemPage() {
             price="$129"
             imageUrl="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=2836&auto=format&fit=crop"
             onTryOn={() => console.log('Try On')}
+            onSave={() => { setVaultItems([...vaultItems, { id: 'item2', name: 'Structured Blazer', brand: 'Zara', imageUrl: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=2836&auto=format&fit=crop' }]); setIsVaultOpen(true); }}
+            stylingTip="Layer over a simple slip dress for an effortless transitional day-to-night look."
+          />
+          <ProductCard
+            name="Limited Edition Sneaker"
+            brand="Balenciaga"
+            price="$1,150"
+            imageUrl="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=2787&auto=format&fit=crop"
+            isLocked={true}
+            availableIn="02:00:00"
           />
         </div>
       </section>
@@ -128,6 +143,24 @@ export default function DesignSystemPage() {
             </button>
           </div>
         </BottomSheet>
+      </section>
+
+      {/* The Vault */}
+      <section>
+        <h2 className="text-xl font-mono mb-6 text-[var(--color-text-secondary)] border-b border-[var(--border-color)] pb-2">
+          07. The Vault
+        </h2>
+        <button
+          onClick={() => setIsVaultOpen(true)}
+          className="btn-primary"
+        >
+          Open Vault
+        </button>
+        <VaultDrawer
+          isOpen={isVaultOpen}
+          onClose={() => setIsVaultOpen(false)}
+          items={vaultItems}
+        />
       </section>
     </div>
   );
