@@ -26,6 +26,49 @@ export default function RealLifeFitting() {
     }
   };
 
+
+  const handleShareToStory = () => {
+    if (!resultImage) return;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      ctx.fillStyle = "#050505";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const ratio = Math.min(canvas.width / img.width, canvas.height / img.height);
+      const newWidth = img.width * ratio * 0.9;
+      const newHeight = img.height * ratio * 0.9;
+      const x = (canvas.width - newWidth) / 2;
+      const y = (canvas.height - newHeight) / 2;
+      ctx.drawImage(img, x, y, newWidth, newHeight);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 80px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("S_FIT AI", canvas.width / 2, 120);
+
+      ctx.fillStyle = "#007AFF";
+      ctx.font = "bold 40px sans-serif";
+      ctx.fillText("Try it yourself at s-fit.ai", canvas.width / 2, canvas.height - 80);
+
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = "s-fit-story.jpg";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+    img.src = resultImage;
+  };
+
   const handleTryOn = async () => {
     if (!userImage || !garmentImage) return alert("Please upload both User Photo and Garment.");
     
@@ -202,9 +245,18 @@ export default function RealLifeFitting() {
               >
                 ✕ Close
               </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
-                AI GENERATED_
+
+              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30 flex items-center gap-2">
+                <span className="material-symbols-outlined text-[14px]">lock</span>
+                AI GENERATED_ / SECURE PROCESSING
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-[#d6249f] via-[#fd5949] to-[#fdf497] text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg hover:scale-105 transition-transform flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
+
             </div>
           </motion.div>
         )}

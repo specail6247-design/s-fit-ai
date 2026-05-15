@@ -1,3 +1,4 @@
+import SupportHub from "@/components/SupportHub";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { validateEnv } from "@/lib/env";
@@ -49,6 +50,7 @@ export default function RootLayout({
       >
         {/* Grain Overlay for Premium Feel */}
         <div className="grain-overlay" aria-hidden="true" />
+        <SupportHub />
         {children}
       </body>
     </html>
