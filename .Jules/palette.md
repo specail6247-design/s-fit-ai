@@ -1,0 +1,3 @@
+## 2024-05-16 - Prevent Fake Media Asset Downloads
+**Learning:** When downloading placeholder or ambient media assets (like audio) from external URLs via tools like curl, the URL may return an XML error document (like S3 AccessDenied) instead of the expected binary, silently masquerading as a valid file extension.
+**Action:** Always verify downloaded media file types using `file <path>` to ensure they are actually valid media formats (e.g., Ogg data, MP3) before injecting them into the application.
