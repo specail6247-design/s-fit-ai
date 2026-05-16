@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { User } from '@supabase/supabase-js';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X } from 'lucide-react';
 
 export function AuthButton() {
   const [user, setUser] = useState<User | null>(null);
@@ -70,14 +72,14 @@ export function AuthButton() {
     return (
       <div className="flex items-center gap-3">
         <div className="text-right hidden md:block">
-          <p className="text-xs text-soft-gray">Welcome,</p>
+          <p className="text-xs text-soft-gray uppercase tracking-widest font-mono">Member</p>
           <p className="text-sm font-medium text-white max-w-[100px] truncate">
             {user.email?.split('@')[0]}
           </p>
         </div>
         <button
           onClick={handleLogout}
-          className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-xs font-medium transition-colors border border-white/10"
+          className="bg-transparent hover:bg-white/5 text-white px-4 py-2 rounded-none text-xs font-medium transition-colors border border-white/20 uppercase tracking-widest"
         >
           Sign Out
         </button>
@@ -89,84 +91,107 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="bg-transparent text-white border border-white/30 px-6 py-2.5 text-xs font-mono font-bold tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-300"
       >
-        LOGIN
+        MEMBER ACCESS
       </button>
 
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
-            <button
+      <AnimatePresence>
+        {showModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
-            >
-              ✕
-            </button>
+              className="absolute inset-0 bg-black/90 backdrop-blur-md"
+            />
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h2>
-
-            <form onSubmit={handleAuth} className="space-y-4 mb-6">
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="bg-[#0a0a0a] border border-[#2d2d2d] w-full max-w-sm p-8 relative shadow-2xl"
+            >
               <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                onClick={() => setShowModal(false)}
+                className="absolute top-5 right-5 text-[#8a8a8a] hover:text-white transition-colors"
               >
-                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+                <X size={20} strokeWidth={1.5} />
               </button>
-            </form>
 
-            <div className="flex items-center gap-2 mb-6">
-              <div className="h-px bg-white/10 flex-1" />
-              <span className="text-xs text-soft-gray">OR SOCIAL LOGIN</span>
-              <div className="h-px bg-white/10 flex-1" />
-            </div>
+              <div className="text-center mb-8">
+                <h2 className="text-2xl font-light text-white tracking-widest uppercase font-mono">
+                  {isLogin ? 'Member Access' : 'Join Club'}
+                </h2>
+                <div className="w-12 h-px bg-cyber-lime mx-auto mt-4" />
+              </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <button onClick={() => handleSocialLogin('google')} className="bg-white/5 hover:bg-white/10 border border-white/10 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🇬</span> <span className="text-xs text-white">Google</span>
-              </button>
-              <button onClick={() => handleSocialLogin('kakao')} className="bg-[#FAE100] hover:bg-[#FADB00] text-[#371D1E] py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">💬</span> <span className="text-xs font-bold">Kakao</span>
-              </button>
-              <button onClick={() => handleSocialLogin('apple')} className="bg-white hover:bg-gray-100 text-black py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🍎</span> <span className="text-xs font-bold">Apple</span>
-              </button>
-              <button onClick={() => handleSocialLogin('discord')} className="bg-[#5865F2] hover:bg-[#4752C4] text-white py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🎮</span> <span className="text-xs font-bold">Discord</span>
-              </button>
-            </div>
+              <form onSubmit={handleAuth} className="space-y-5 mb-8">
+                <div>
+                  <input
+                    type="email"
+                    placeholder="EMAIL ADDRESS"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-transparent border-b border-[#2d2d2d] px-0 py-3 text-white text-sm focus:border-cyber-lime outline-none transition-colors placeholder:text-[#4a4a4a] tracking-wider uppercase font-mono text-xs"
+                    required
+                  />
+                </div>
+                <div>
+                  <input
+                    type="password"
+                    placeholder="PASSWORD"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-transparent border-b border-[#2d2d2d] px-0 py-3 text-white text-sm focus:border-cyber-lime outline-none transition-colors placeholder:text-[#4a4a4a] tracking-wider uppercase font-mono text-xs"
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-white text-black font-bold font-mono tracking-widest text-xs py-4 hover:bg-gray-200 transition-colors disabled:opacity-50 uppercase mt-4"
+                >
+                  {loading ? 'Authenticating...' : (isLogin ? 'Enter' : 'Create Access')}
+                </button>
+              </form>
 
-            <p className="mt-6 text-center text-xs text-soft-gray">
-              {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
-              <button
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-cyber-lime hover:underline ml-1"
-              >
-                {isLogin ? 'Sign up' : 'Log in'}
-              </button>
-            </p>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="h-px bg-[#2d2d2d] flex-1" />
+                <span className="text-[10px] tracking-widest text-[#4a4a4a] font-mono uppercase">Or Continue With</span>
+                <div className="h-px bg-[#2d2d2d] flex-1" />
+              </div>
+
+              <div className="grid grid-cols-4 gap-3 mb-8">
+                <button onClick={() => handleSocialLogin('google')} className="bg-[#111] hover:bg-[#222] border border-[#2d2d2d] py-3 flex items-center justify-center transition-colors group">
+                  <span className="text-lg opacity-70 group-hover:opacity-100 transition-opacity">🇬</span>
+                </button>
+                <button onClick={() => handleSocialLogin('kakao')} className="bg-[#111] hover:bg-[#222] border border-[#2d2d2d] py-3 flex items-center justify-center transition-colors group">
+                  <span className="text-lg opacity-70 group-hover:opacity-100 transition-opacity">💬</span>
+                </button>
+                <button onClick={() => handleSocialLogin('apple')} className="bg-[#111] hover:bg-[#222] border border-[#2d2d2d] py-3 flex items-center justify-center transition-colors group">
+                  <span className="text-lg opacity-70 group-hover:opacity-100 transition-opacity text-white"></span>
+                </button>
+                <button onClick={() => handleSocialLogin('discord')} className="bg-[#111] hover:bg-[#222] border border-[#2d2d2d] py-3 flex items-center justify-center transition-colors group">
+                  <span className="text-lg opacity-70 group-hover:opacity-100 transition-opacity">🎮</span>
+                </button>
+              </div>
+
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="text-[10px] tracking-widest text-[#8a8a8a] hover:text-cyber-lime transition-colors uppercase font-mono"
+                >
+                  {isLogin ? 'Request Membership' : 'Already a Member?'}
+                </button>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </>
   );
 }
