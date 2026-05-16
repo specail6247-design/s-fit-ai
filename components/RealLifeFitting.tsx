@@ -205,6 +205,82 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={async () => {
+                  if (!resultImage) return;
+                  try {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) return;
+
+                    canvas.width = 1080;
+                    canvas.height = 1920;
+
+                    const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
+                    gradient.addColorStop(0, '#111111');
+                    gradient.addColorStop(1, '#000000');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, 1080, 1920);
+
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    img.src = resultImage;
+
+                    await new Promise((resolve, reject) => {
+                      img.onload = resolve;
+                      img.onerror = reject;
+                    });
+
+                    const scale = Math.min(1000 / img.width, 1500 / img.height);
+                    const w = img.width * scale;
+                    const h = img.height * scale;
+                    const x = (1080 - w) / 2;
+                    const y = (1920 - h) / 2 - 50;
+
+                    ctx.save();
+                    ctx.beginPath();
+                    const radius = 40;
+                    ctx.moveTo(x + radius, y);
+                    ctx.lineTo(x + w - radius, y);
+                    ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+                    ctx.lineTo(x + w, y + h - radius);
+                    ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+                    ctx.lineTo(x + radius, y + h);
+                    ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+                    ctx.lineTo(x, y + radius);
+                    ctx.quadraticCurveTo(x, y, x + radius, y);
+                    ctx.closePath();
+                    ctx.clip();
+                    ctx.drawImage(img, x, y, w, h);
+                    ctx.restore();
+
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = 'bold 60px "Geist Mono", monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('S_FIT AI', 540, 160);
+
+                    ctx.fillStyle = '#007AFF';
+                    ctx.font = '40px sans-serif';
+                    ctx.fillText('My Virtual Try-On Result', 540, 240);
+
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                    ctx.font = '30px sans-serif';
+                    ctx.fillText('Try it yourself at s-fit.ai', 540, 1800);
+
+                    const dataUrl = canvas.toDataURL('image/png');
+
+                    const link = document.createElement('a');
+                    link.download = `s_fit_story_${Date.now()}.png`;
+                    link.href = dataUrl;
+                    link.click();
+                  } catch (error) {
+                    console.error('Error generating story image:', error);
+                  }
+                }}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
