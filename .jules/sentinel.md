@@ -1,0 +1,4 @@
+## 2025-05-18 - [CRITICAL] Prevent Path Traversal (CWE-22) in try-on route
+**Vulnerability:** The `app/api/try-on/route.ts` API route had a path traversal vulnerability where the user-controlled `garmentImageUrl` was concatenated with `path.join(process.cwd(), 'public', relativePath)` without verifying that the resolved path stays within the `public` directory.
+**Learning:** `path.join` alone does not prevent relative path escapes (e.g. `../../../etc/passwd`). Without explicit containment checks, a malicious user could read arbitrary local files and exfiltrate them as base64-encoded strings via the Replicate input preprocessing step.
+**Prevention:** Always use `path.resolve` against a fixed base directory, and explicitly validate that the resolved absolute path starts with the base directory path (e.g., `absolutePath.startsWith(publicDir + path.sep)`).
