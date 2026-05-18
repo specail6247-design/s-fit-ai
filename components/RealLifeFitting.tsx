@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { StaggeredReveal } from '@/components/masterpiece/StaggeredReveal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -71,11 +72,15 @@ export default function RealLifeFitting() {
     }
   };
 
+
+  const isAnalyzing = isProcessing;
+  const opacityClass = isAnalyzing ? "opacity-0" : "opacity-100";
+
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
       {/* LEFT PANEL: CONTROLS */}
-      <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
+      <div className={`w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative transition-opacity duration-1000 ${opacityClass}`}>
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
@@ -83,18 +88,24 @@ export default function RealLifeFitting() {
           <h1 className="text-4xl font-black tracking-tighter italic">
             S_FIT <span className="text-[#007AFF]">NEO</span>
           </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+          <div className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2 font-[family-name:var(--font-inter)]">
+            <StaggeredReveal text="Professional Virtual Fitting" delay={0.5} />
+          </div>
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
           {/* User Photo Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
-            <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
+            <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group cursor-pointer active:scale-95 duration-200 relative overflow-hidden">
+                <motion.div
+                    className="absolute inset-0 bg-[#007AFF]/10"
+                    initial={{ opacity: 0 }}
+                    whileTap={{ opacity: 1 }}
+                    transition={{ duration: 0.1 }}
+                />
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
-              <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+              <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4 relative z-10 w-full h-full">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
                   {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
@@ -109,9 +120,15 @@ export default function RealLifeFitting() {
           {/* Garment Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">02. Target Garment</label>
-            <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
+            <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group cursor-pointer active:scale-95 duration-200 relative overflow-hidden">
+                <motion.div
+                    className="absolute inset-0 bg-[#007AFF]/10"
+                    initial={{ opacity: 0 }}
+                    whileTap={{ opacity: 1 }}
+                    transition={{ duration: 0.1 }}
+                />
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
-              <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
+              <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4 relative z-10 w-full h-full">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
                   {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
@@ -143,17 +160,23 @@ export default function RealLifeFitting() {
           ) : (
             <button 
               onClick={handleTryOn}
-              className="w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
+              className="w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 font-[family-name:var(--font-inter)] relative overflow-hidden"
             >
               <span>⚡️</span> TRY IT ON
+              <motion.div
+                  className="absolute inset-0 bg-white/20"
+                  initial={{ scale: 0, opacity: 0 }}
+                  whileTap={{ scale: 2, opacity: 1 }}
+                  transition={{ duration: 0.4 }}
+              />
             </button>
           )}
           
           <div className="mt-4 flex gap-2">
-             <a href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
+             <a href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors cursor-pointer active:scale-95 duration-200">
                SPA Line
              </a>
-             <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
+             <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors cursor-pointer active:scale-95 duration-200">
                Luxury Line
              </a>
           </div>
@@ -198,7 +221,7 @@ export default function RealLifeFitting() {
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors cursor-pointer active:scale-90"
               >
                 ✕ Close
               </button>
