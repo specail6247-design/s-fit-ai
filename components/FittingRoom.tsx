@@ -607,9 +607,10 @@ interface ShareModalProps {
   brandName?: string;
   fitScore: number;
   recommendedSize?: string;
+  canvasImage?: string | null;
 }
 
-function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize }: ShareModalProps) {
+function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize, canvasImage }: ShareModalProps) {
   const [hasPublished, setHasPublished] = useState(false);
   if (!isOpen) return null;
 
@@ -618,12 +619,68 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
   const shareText = `I just tried on ${safeItemName} from ${safeBrandName} using S_FIT AI! Fit score ${fitScore}% ${recommendedSize ? `(Size ${recommendedSize})` : ''} #SFIT #VirtualTryOn #Fashion`;
 
   const handleShare = (platform: string) => {
+    if (platform === 'instagram') {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Draw background
+      ctx.fillStyle = '#0a0a0a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw text
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 60px "Playfair Display", serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT AI', canvas.width / 2, 200);
+
+      ctx.font = '40px sans-serif';
+      ctx.fillText(safeItemName, canvas.width / 2, 300);
+
+      ctx.fillStyle = '#c9b037';
+      ctx.fillText(`${fitScore}% MATCH`, canvas.width / 2, 380);
+
+      // Draw image if available
+      if (canvasImage) {
+        const img = new window.Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          // Calculate aspect ratio to fit image
+          const scale = Math.min((canvas.width - 100) / img.width, (canvas.height - 800) / img.height);
+          const drawWidth = img.width * scale;
+          const drawHeight = img.height * scale;
+          const drawX = (canvas.width - drawWidth) / 2;
+          const drawY = 450;
+
+          ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+
+          // Export and download
+          const dataUrl = canvas.toDataURL('image/png');
+          const link = document.createElement('a');
+          link.download = 's-fit-story.png';
+          link.href = dataUrl;
+          link.click();
+        };
+        img.src = canvasImage;
+      } else {
+        // Just text if no image
+        const dataUrl = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = 's-fit-story.png';
+        link.href = dataUrl;
+        link.click();
+      }
+      onClose();
+      return;
+    }
+
     const encodedText = encodeURIComponent(shareText);
     const url = encodeURIComponent('https://s-fit.ai');
     let shareUrl = '';
     if (platform === 'twitter') shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${url}`;
     else if (platform === 'facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${encodedText}`;
-    else if (platform === 'instagram') { navigator.clipboard.writeText(shareText); alert('Text copied for Instagram! 📱'); return; }
     else if (platform === 'kakao') shareUrl = `https://story.kakao.com/share?url=${url}&text=${encodedText}`;
     
     if (shareUrl) window.open(shareUrl, '_blank', 'width=600,height=400');
@@ -856,6 +913,15 @@ export function FittingRoom() {
     return false;
   });
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [canvasImage, setCanvasImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (showShareModal && canvasRef.current) {
+      setCanvasImage(canvasRef.current.toDataURL('image/png'));
+    } else if (!showShareModal) {
+      setCanvasImage(null);
+    }
+  }, [showShareModal]);
   
   const brandItems = useMemo(() => selectedBrand ? getItemsByBrand(selectedBrand) : [], [selectedBrand]);
   const currentItem = selectedItem || null;
@@ -1133,6 +1199,7 @@ export function FittingRoom() {
         brandName={currentItem?.brand} 
         fitScore={fitScore}
         recommendedSize={recommendedFit?.recommendedSize}
+        canvasImage={canvasImage}
       />
       <CompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} picks={topPicks} onSelect={setSelectedItem} />
       <AITryOnModal
