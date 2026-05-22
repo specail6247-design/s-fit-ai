@@ -1,0 +1,4 @@
+## 2024-05-22 - Path Traversal Vulnerability in `localFileToDataUri`
+**Vulnerability:** The `localFileToDataUri` function in `app/api/try-on/route.ts` previously combined user-provided input paths with the public directory using `path.join` without verifying the final resolved absolute path. A malicious user could supply a path starting with `../` characters like `/../../../../etc/passwd` which resolved outside the target `public/` directory, causing the server to read and leak sensitive files.
+**Learning:** `path.join` inherently resolves `..` components but does not prevent the resulting path from escaping the intended base directory.
+**Prevention:** Always use `path.resolve` to determine the absolute file path, and then strictly verify that the resulting absolute path begins exactly with the base directory path plus the OS-specific path separator (`baseDir + path.sep`) before performing any file operations.
