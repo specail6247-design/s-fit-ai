@@ -1,0 +1,1 @@
+## 2024-05-22 - aria-label added for close buttons\n**Learning:** Icon-only close buttons (like an X) need `aria-label` for screen reader accessibility, as the visual icon provides no text context.\n**Action:** Always add `aria-label="Close modal"` or similar on icon-only close buttons.
