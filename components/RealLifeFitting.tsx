@@ -205,6 +205,55 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={() => {
+                  const canvas = document.createElement('canvas');
+                  canvas.width = 1080;
+                  canvas.height = 1920;
+                  const ctx = canvas.getContext('2d');
+                  if (!ctx) return;
+
+                  // Background
+                  ctx.fillStyle = '#050505';
+                  ctx.fillRect(0, 0, 1080, 1920);
+
+                  // Logo/Branding
+                  ctx.fillStyle = '#007AFF';
+                  ctx.font = 'bold 80px sans-serif';
+                  ctx.textAlign = 'center';
+                  ctx.fillText('S_FIT NEO', 540, 200);
+
+                  ctx.fillStyle = '#ffffff';
+                  ctx.font = '30px sans-serif';
+                  ctx.fillText('Professional Virtual Fitting', 540, 260);
+
+                  const img = new Image();
+                  img.crossOrigin = 'anonymous';
+                  img.onload = () => {
+                    // Calculate dimensions to fit nicely
+                    const scale = Math.min(900 / img.width, 1300 / img.height);
+                    const w = img.width * scale;
+                    const h = img.height * scale;
+
+                    ctx.drawImage(img, (1080 - w) / 2, (1920 - h) / 2 + 50, w, h);
+
+                    // Footer
+                    ctx.fillStyle = '#666666';
+                    ctx.font = '24px sans-serif';
+                    ctx.fillText('AI GENERATED TRY-ON', 540, 1800);
+
+                    // Trigger download
+                    const link = document.createElement('a');
+                    link.download = 'sfit-story.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                  };
+                  img.src = resultImage;
+                }}
+                className="absolute bottom-4 right-4 bg-[#007AFF] text-white px-4 py-2 rounded-lg text-sm font-bold shadow-[0_0_15px_rgba(0,122,255,0.5)] hover:bg-[#005bb5] transition-colors flex items-center gap-2"
+              >
+                <span>📱</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
