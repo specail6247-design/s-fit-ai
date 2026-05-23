@@ -1,0 +1,3 @@
+## 2024-05-24 - Minimalist Luxury Login & Support Drawer UI
+**Learning:** To create a "VIP" aesthetic in a login modal, minimizing visual noise (e.g., relying on clean typography, distinct text tracking, minimal input borders instead of full outlines, and removing extra social login buttons) heavily elevates the perceived brand value. A slide-out drawer is an excellent pattern for a "Support Hub" containing dense information (FAQs, warnings, guides) without cluttering the main screen's pristine look.
+**Action:** Implemented a minimal "Member Access" modal in `AuthButton.tsx` replacing standard inputs with bottom-border-only fields and elegant typography. Created a `SupportHub.tsx` slide-out drawer using `framer-motion` integrated globally via `app/layout.tsx`.
