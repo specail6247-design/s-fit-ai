@@ -1,0 +1,3 @@
+## 2024-05-23 - Screen Reader Accessibility for Modal Close Buttons
+**Learning:** Found an accessibility issue pattern across multiple modal and overlay components (`DigitalTwinMode`, `VibeCheckMode`, `AuthButton`, `FittingRoom`) where icon-only close buttons (using the "✕" character) lacked `aria-label` attributes, making them unintelligible to screen reader users.
+**Action:** When implementing or reviewing new modal dialogs, overlays, or floating action buttons that rely on icons (like "✕" or SVG) without visible text, always ensure `aria-label` (e.g., `aria-label="Close"`) or `aria-labelledby` is added to the button element to provide necessary context for assistive technologies.
