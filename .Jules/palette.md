@@ -1,0 +1,3 @@
+## 2024-05-24 - Accessible Icon-Only Buttons
+**Learning:** Found a pattern where minimalist UI elements (like floating action buttons or utility bars) using `material-symbols-outlined` for an editorial/luxury feel frequently lack `aria-label` attributes. Without these, screen reader users only hear "button", hiding essential controls (back, share, zoom, 360 view).
+**Action:** Always add descriptive `aria-label` attributes to icon-only interactive elements (`<button>`, `<Link>`) across all UI modes, particularly in the highly-visual "Luxury" components where text labels are intentionally hidden.
