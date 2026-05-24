@@ -254,7 +254,7 @@ export function DigitalTwinMode({ onComplete }: DigitalTwinModeProps) {
 
           {currentPreview ? (
             <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+              { }
               <img
                 src={currentPreview}
                 alt={`${step} preview`}
