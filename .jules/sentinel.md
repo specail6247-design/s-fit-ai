@@ -1,0 +1,4 @@
+## 2024-05-24 - Path Traversal Vulnerability in Image Processor
+**Vulnerability:** The API endpoint `app/api/try-on/route.ts` used `path.join` to process user-supplied file paths from `garmentImageUrl` directly, allowing an attacker to escape the `public` directory (e.g. using `../../`) and read arbitrary local files on the server which would be encoded and returned as a data URI.
+**Learning:** `path.join` on its own normalizes paths but doesn't prevent directory traversal out of the base folder. Trusting client input when fetching local files can lead to data leaks if boundaries are not strictly validated.
+**Prevention:** Use `path.resolve` to get the absolute path and verify that the final resolved path strictly starts with the intended base directory and a path separator (e.g. `if (!absolutePath.startsWith(baseDir + path.sep))`).
