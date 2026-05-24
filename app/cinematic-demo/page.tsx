@@ -87,7 +87,7 @@ export default function CinematicDemoPage() {
           <div className="space-y-2">
             <h3 className="text-lg font-semibold text-neutral-400">Input Source</h3>
             <div className="aspect-[9/16] relative rounded-xl overflow-hidden bg-black border border-neutral-800">
-               {/* eslint-disable-next-line @next/next/no-img-element */}
+               { }
               <img
                 src={imageUrl}
                 alt="Input"

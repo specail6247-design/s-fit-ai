@@ -146,7 +146,7 @@ export function VibeCheckMode({ onComplete }: VibeCheckModeProps) {
 
         {preview ? (
           <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+            { }
             <img
               src={preview}
               alt="Selfie preview"
