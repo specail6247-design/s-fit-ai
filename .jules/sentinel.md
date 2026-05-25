@@ -1,0 +1,4 @@
+## 2025-05-25 - Prevent Path Traversal in API Routes
+**Vulnerability:** A path traversal vulnerability existed in `app/api/try-on/route.ts` where `fs.readFileSync` used a path directly joined with user input (`path.join(process.cwd(), 'public', relativePath)`), allowing a malicious user to access files outside the `public` directory by passing paths like `/../package.json`.
+**Learning:** Using `path.join` with untrusted user input does not prevent path traversal because it preserves `..` segments that can move up the directory tree before evaluation.
+**Prevention:** Always use `path.resolve` to normalize the absolute path, and explicitly verify that the resolved path starts with the intended base directory (e.g., `absolutePath.startsWith(publicDir + path.sep)`) before attempting file system access.
