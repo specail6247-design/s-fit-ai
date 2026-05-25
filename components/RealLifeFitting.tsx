@@ -26,6 +26,45 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleShareToStory = () => {
+    if (!resultImage) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      // Background
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw the image
+      // Calculate aspect ratio to fit inside the story
+      const scale = Math.min((canvas.width - 100) / img.width, (canvas.height - 300) / img.height);
+      const x = (canvas.width - img.width * scale) / 2;
+      const y = (canvas.height - img.height * scale) / 2;
+      ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+
+      // Draw Logo / Branding
+      ctx.fillStyle = '#007AFF';
+      ctx.font = 'bold 80px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT AI', canvas.width / 2, y - 60);
+
+      // Download
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = 's_fit_story.jpg';
+      link.click();
+    };
+    img.src = resultImage;
+  };
+
   const handleTryOn = async () => {
     if (!userImage || !garmentImage) return alert("Please upload both User Photo and Garment.");
     
@@ -205,6 +244,12 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-[#007AFF] text-white px-4 py-2 rounded-xl text-sm font-bold shadow-[0_0_15px_rgba(0,122,255,0.5)] hover:bg-[#005bb5] transition-all flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
