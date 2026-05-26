@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { validateEnv } from "@/lib/env";
 import "./globals.css";
+import SupportHub from "@/components/SupportHub";
+import { AuthButton } from "@/components/AuthButton";
 
 // Validate environment variables on startup
 validateEnv();
@@ -50,6 +52,12 @@ export default function RootLayout({
         {/* Grain Overlay for Premium Feel */}
         <div className="grain-overlay" aria-hidden="true" />
         {children}
+
+        <div className="fixed top-6 right-6 z-40 flex items-center gap-4">
+          <AuthButton />
+        </div>
+
+        <SupportHub />
       </body>
     </html>
   );
