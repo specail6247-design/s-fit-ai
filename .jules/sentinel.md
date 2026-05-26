@@ -1,0 +1,4 @@
+## 2025-05-26 - [Path Traversal in API Try-On Route]
+**Vulnerability:** The `/api/try-on` route contained a path traversal vulnerability in the `localFileToDataUri` function, allowing an attacker to supply a `garmentImageUrl` path that could escape the `/public` directory (e.g., `/../../etc/passwd`) using `path.join(process.cwd(), 'public', relativePath)` which resulted in reading sensitive internal system files.
+**Learning:** `path.join` does not normalize to restrict breakout paths, allowing inputs with `../` to resolve securely out of the intended directory tree, which in this codebase allowed arbitrary local file reads.
+**Prevention:** Always use `path.resolve` for resolving absolute directories securely and verify the result using `.startsWith(baseDirectory + path.sep)` to ensure partial path matching exploits are properly prevented.
