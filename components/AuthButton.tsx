@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { User } from '@supabase/supabase-js';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function AuthButton() {
   const [user, setUser] = useState<User | null>(null);
@@ -77,6 +78,7 @@ export function AuthButton() {
         </div>
         <button
           onClick={handleLogout}
+          aria-label="Sign Out"
           className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-xs font-medium transition-colors border border-white/10"
         >
           Sign Out
@@ -89,84 +91,103 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="text-white hover:text-white/70 px-4 py-2 text-xs tracking-widest uppercase font-mono transition-colors"
       >
-        LOGIN
+        MEMBER ACCESS
       </button>
 
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
-            <button
-              onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="w-full max-w-sm relative"
             >
-              ✕
-            </button>
-            
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h2>
-
-            <form onSubmit={handleAuth} className="space-y-4 mb-6">
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
               <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                onClick={() => setShowModal(false)}
+                aria-label="Close"
+                className="absolute -top-12 right-0 text-white/50 hover:text-white transition-colors"
               >
-                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+                ✕
               </button>
-            </form>
 
-            <div className="flex items-center gap-2 mb-6">
-              <div className="h-px bg-white/10 flex-1" />
-              <span className="text-xs text-soft-gray">OR SOCIAL LOGIN</span>
-              <div className="h-px bg-white/10 flex-1" />
-            </div>
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-light text-white tracking-widest font-[family-name:var(--font-cinzel)] uppercase">
+                  {isLogin ? 'Sign In' : 'Join Us'}
+                </h2>
+                <div className="h-px w-12 bg-white/30 mx-auto mt-6" />
+              </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <button onClick={() => handleSocialLogin('google')} className="bg-white/5 hover:bg-white/10 border border-white/10 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🇬</span> <span className="text-xs text-white">Google</span>
-              </button>
-              <button onClick={() => handleSocialLogin('kakao')} className="bg-[#FAE100] hover:bg-[#FADB00] text-[#371D1E] py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">💬</span> <span className="text-xs font-bold">Kakao</span>
-              </button>
-              <button onClick={() => handleSocialLogin('apple')} className="bg-white hover:bg-gray-100 text-black py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🍎</span> <span className="text-xs font-bold">Apple</span>
-              </button>
-              <button onClick={() => handleSocialLogin('discord')} className="bg-[#5865F2] hover:bg-[#4752C4] text-white py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🎮</span> <span className="text-xs font-bold">Discord</span>
-              </button>
-            </div>
+              <form onSubmit={handleAuth} className="space-y-8 mb-12">
+                <div className="relative">
+                  <input
+                    type="email"
+                    placeholder="EMAIL"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white text-xs tracking-widest focus:border-white outline-none transition-colors"
+                    required
+                  />
+                </div>
+                <div className="relative">
+                  <input
+                    type="password"
+                    placeholder="PASSWORD"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white text-xs tracking-widest focus:border-white outline-none transition-colors"
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-white text-black text-xs font-bold tracking-[0.2em] uppercase py-4 hover:bg-gray-200 transition-colors disabled:opacity-50 mt-4"
+                >
+                  {loading ? 'PROCESSING...' : (isLogin ? 'ENTER' : 'CREATE')}
+                </button>
+              </form>
 
-            <p className="mt-6 text-center text-xs text-soft-gray">
-              {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
-              <button
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-cyber-lime hover:underline ml-1"
-              >
-                {isLogin ? 'Sign up' : 'Log in'}
-              </button>
-            </p>
-          </div>
-        </div>
-      )}
+              <div className="flex items-center gap-4 mb-8 opacity-50">
+                <div className="h-px bg-white/20 flex-1" />
+                <span className="text-[10px] text-white tracking-widest uppercase">Or Continue With</span>
+                <div className="h-px bg-white/20 flex-1" />
+              </div>
+
+              <div className="flex justify-center gap-6">
+                <button aria-label="Google" onClick={() => handleSocialLogin('google')} className="text-white/50 hover:text-white transition-colors">
+                  <span className="text-xl">🇬</span>
+                </button>
+                <button aria-label="Kakao" onClick={() => handleSocialLogin('kakao')} className="text-[#FAE100]/50 hover:text-[#FAE100] transition-colors">
+                  <span className="text-xl">💬</span>
+                </button>
+                <button aria-label="Apple" onClick={() => handleSocialLogin('apple')} className="text-white/50 hover:text-white transition-colors">
+                  <span className="text-xl">🍎</span>
+                </button>
+                <button aria-label="Discord" onClick={() => handleSocialLogin('discord')} className="text-[#5865F2]/50 hover:text-[#5865F2] transition-colors">
+                  <span className="text-xl">🎮</span>
+                </button>
+              </div>
+
+              <div className="mt-12 text-center">
+                <button
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="text-[10px] text-white/50 hover:text-white tracking-widest uppercase transition-colors"
+                >
+                  {isLogin ? 'Request Access' : 'Return to Login'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
