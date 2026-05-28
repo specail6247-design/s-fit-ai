@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { shareToStory } from '@/lib/shareUtils';
 
 interface FittingResultProps {
   originalImage: string;
@@ -69,7 +70,12 @@ export const FittingResult: React.FC<FittingResultProps> = ({
           Retake
         </button>
         <button
-          onClick={onShare}
+          onClick={() => {
+            if (onShare) onShare();
+            else {
+              shareToStory(resultImage);
+            }
+          }}
           className="flex-1 py-3 px-4 rounded-full bg-[var(--color-primary)] text-[var(--color-secondary)] text-sm font-semibold hover:brightness-110 transition-all shadow-[var(--shadow-glow)]"
         >
           Share Look
