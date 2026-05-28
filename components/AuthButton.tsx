@@ -89,9 +89,10 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="fixed top-6 right-6 z-50 text-soft-gray hover:text-white transition-colors"
+        aria-label="Member Access"
       >
-        LOGIN
+        <span className="material-symbols-outlined text-2xl">account_circle</span>
       </button>
 
       {showModal && (
@@ -100,12 +101,13 @@ export function AuthButton() {
             <button
               onClick={() => setShowModal(false)}
               className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              aria-label="Close"
             >
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
+            <h2 className="text-2xl font-serif text-white mb-8 text-center tracking-widest uppercase">
+              Member Access
             </h2>
 
             <form onSubmit={handleAuth} className="space-y-4 mb-6">
