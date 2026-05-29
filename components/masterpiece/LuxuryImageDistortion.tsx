@@ -134,7 +134,7 @@ const ImageMesh = ({ imageUrl }: ImageMeshProps) => {
       scale={[1, 1.5, 1]} // Adjust aspect ratio to match typical product images
     >
       <planeGeometry args={[5, 5, 64, 64]} />
-      {/* @ts-ignore */}
+      {/* @ts-expect-error Typescript incorrectly flags custom JSX element */}
       <distortionMaterial
         ref={materialRef}
         uTexture={texture}
