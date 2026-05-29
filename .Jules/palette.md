@@ -1,0 +1,1 @@
+## 2026-05-29 - Accessible Close Buttons\n**Learning:** Modal dialogs, overlays, and floating action buttons in the app often use icon-only close buttons (like '✕') without descriptive attributes, severely impacting screen reader accessibility.\n**Action:** Always add an `aria-label="Close"` attribute to icon-only buttons, especially those using symbols like '✕' to close modals.
