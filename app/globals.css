@@ -290,3 +290,53 @@ body {
     padding: var(--spacing-lg);
   }
 }
+
+
+/* ============================================
+   Masterpiece Polish - Cinematic Gradients & Filters
+   ============================================ */
+
+/* Global image styling for "editorial fashion" look */
+img, video, canvas {
+  filter: saturate(0.9) contrast(1.1);
+}
+
+/* Staggered Reveal Animation */
+.stagger-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes revealUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+
+/* Cinematic Fonts Configuration */
+.font-cinematic {
+  font-family: var(--font-cinzel), serif;
+}
+
+.font-body {
+  font-family: var(--font-space-grotesk), var(--font-geist-sans), sans-serif;
+}
+
+/* Update button interactions for feel */
+button, a {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+}
+
+button:active, a:active {
+  transform: scale(0.96);
+}
