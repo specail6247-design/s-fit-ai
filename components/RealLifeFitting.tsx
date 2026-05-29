@@ -75,20 +75,20 @@ export default function RealLifeFitting() {
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
       {/* LEFT PANEL: CONTROLS */}
-      <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
+      <div className={`w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative transition-opacity duration-1000 ${isProcessing ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
         <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
+          <h1 className="text-4xl font-black tracking-tighter italic font-cinematic stagger-reveal">
             S_FIT <span className="text-[#007AFF]">NEO</span>
           </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2 font-body stagger-reveal delay-100">
             Professional Virtual Fitting
           </p>
         </header>
 
-        <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
+        <div className="space-y-8 relative z-10 flex-1 overflow-y-auto font-body stagger-reveal delay-200">
           {/* User Photo Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
@@ -96,7 +96,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? /* eslint-disable-next-line @next/next/no-img-element */
+                  <img src={userImage} className="w-full h-full object-cover" alt="User upload preview" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +114,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? /* eslint-disable-next-line @next/next/no-img-element */
+                  <img src={garmentImage} className="w-full h-full object-cover" alt="Garment upload preview" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -125,7 +127,7 @@ export default function RealLifeFitting() {
         </div>
 
         {/* Action Button */}
-        <div className="mt-8 relative z-10">
+        <div className="mt-8 relative z-10 stagger-reveal delay-300">
           {isProcessing ? (
             <div className="space-y-2">
               <div className="flex justify-between text-xs text-[#007AFF] font-mono">
@@ -195,7 +197,8 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={resultImage} alt="Virtual fitting result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"

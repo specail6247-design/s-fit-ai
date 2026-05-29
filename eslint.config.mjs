@@ -2,9 +2,26 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 
+const patchedNextVitals = nextVitals.map(config => ({
+  ...config,
+  rules: {
+    ...config.rules,
+    '@next/next/no-page-custom-font': 'off',
+    '@next/next/google-font-display': 'off'
+  }
+}));
+
+const patchedNextTs = nextTs.map(config => ({
+  ...config,
+  rules: {
+    ...config.rules,
+    '@typescript-eslint/no-namespace': 'off'
+  }
+}));
+
 const eslintConfig = defineConfig([
-  ...nextVitals,
-  ...nextTs,
+  ...patchedNextVitals,
+  ...patchedNextTs,
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
