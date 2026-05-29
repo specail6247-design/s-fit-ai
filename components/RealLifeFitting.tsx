@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -16,6 +16,68 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [vaultItems, setVaultItems] = useState<string[]>([]);
+  const [isVaultOpen, setIsVaultOpen] = useState(false);
+
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const oscillatorRef = useRef<OscillatorNode | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+
+  useEffect(() => {
+    if (isProcessing) {
+      if (!audioContextRef.current) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+
+      const ctx = audioContextRef.current;
+
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+
+      oscillatorRef.current = ctx.createOscillator();
+      gainNodeRef.current = ctx.createGain();
+
+      // Subtle, low-frequency hum for immersion
+      oscillatorRef.current.type = 'sine';
+      oscillatorRef.current.frequency.setValueAtTime(65, ctx.currentTime); // Low hum
+
+      // Gentle fade in
+      gainNodeRef.current.gain.setValueAtTime(0, ctx.currentTime);
+      gainNodeRef.current.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 2); // very low volume
+
+      oscillatorRef.current.connect(gainNodeRef.current);
+      gainNodeRef.current.connect(ctx.destination);
+
+      oscillatorRef.current.start();
+    } else {
+      if (gainNodeRef.current && audioContextRef.current) {
+        // Fade out before stopping
+        const ctx = audioContextRef.current;
+        gainNodeRef.current.gain.linearRampToValueAtTime(0, ctx.currentTime + 1);
+
+        setTimeout(() => {
+          if (oscillatorRef.current) {
+            oscillatorRef.current.stop();
+            oscillatorRef.current.disconnect();
+            oscillatorRef.current = null;
+          }
+          if (gainNodeRef.current) {
+            gainNodeRef.current.disconnect();
+            gainNodeRef.current = null;
+          }
+        }, 1000);
+      }
+    }
+
+    return () => {
+      // Cleanup on unmount
+      if (oscillatorRef.current) {
+        try { oscillatorRef.current.stop(); } catch {}
+      }
+    };
+  }, [isProcessing]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -79,16 +141,25 @@ export default function RealLifeFitting() {
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+        <header className={`mb-10 relative z-10 flex justify-between items-start transition-opacity duration-500 ${isProcessing ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+          <div>
+            <h1 className="text-4xl font-black tracking-tighter italic">
+              S_FIT <span className="text-[#007AFF]">NEO</span>
+            </h1>
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+              Professional Virtual Fitting
+            </p>
+          </div>
+          <button
+            onClick={() => setIsVaultOpen(!isVaultOpen)}
+            className="flex items-center gap-2 px-3 py-2 bg-black/40 border border-white/20 rounded-lg hover:bg-white/10 transition-colors"
+          >
+            <span className="text-lg">🔒</span>
+            <span className="text-xs font-bold tracking-widest uppercase text-gray-300">Vault</span>
+          </button>
         </header>
 
-        <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
+        <div className={`space-y-8 relative z-10 flex-1 overflow-y-auto transition-opacity duration-500 ${isProcessing ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
           {/* User Photo Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
@@ -96,7 +167,12 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={userImage} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-2xl">👤</span>
+                  )}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +189,12 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={garmentImage} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-2xl">👕</span>
+                  )}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -127,7 +208,7 @@ export default function RealLifeFitting() {
         {/* Action Button */}
         <div className="mt-8 relative z-10">
           {isProcessing ? (
-            <div className="space-y-2">
+            <div className="space-y-2 transition-opacity duration-500 opacity-100">
               <div className="flex justify-between text-xs text-[#007AFF] font-mono">
                 <span>PROCESSING DATA...</span>
                 <span>{progress}%</span>
@@ -149,7 +230,7 @@ export default function RealLifeFitting() {
             </button>
           )}
           
-          <div className="mt-4 flex gap-2">
+          <div className={`mt-4 flex gap-2 transition-opacity duration-500 ${isProcessing ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
              <a href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                SPA Line
              </a>
@@ -187,6 +268,49 @@ export default function RealLifeFitting() {
           </ErrorBoundary>
         </div>
 
+        {/* The Vault Drawer */}
+        {isVaultOpen && (
+          <div className="absolute top-0 right-0 w-[400px] h-full bg-black/90 backdrop-blur-xl border-l border-white/10 z-40 p-8 flex flex-col shadow-2xl">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-xl font-bold tracking-widest uppercase">The Vault</h2>
+              <button
+                onClick={() => setIsVaultOpen(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                ✕ Close
+              </button>
+            </div>
+
+            {vaultItems.length === 0 ? (
+              <div className="flex-1 flex flex-col items-center justify-center text-gray-500 gap-4">
+                <span className="text-4xl opacity-50">🔒</span>
+                <p className="text-sm">Your vault is empty.</p>
+                <p className="text-xs text-center px-8">Save looks to compare luxury fits.</p>
+              </div>
+            ) : (
+              <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+                {vaultItems.map((item, idx) => (
+                  <div key={idx} className="relative group rounded-xl overflow-hidden border border-white/10">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={item} alt={`Saved Look ${idx}`} className="w-full object-cover" />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-4">
+                      <div className="flex justify-end">
+                        <button
+                          onClick={() => setVaultItems(vaultItems.filter((_, i) => i !== idx))}
+                          className="bg-black/60 text-white rounded-full p-2 hover:bg-red-500/80 transition-colors"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                      <p className="text-xs font-bold uppercase tracking-widest text-center text-white">Compare Look</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Result Overlay (If success) */}
         {resultImage && !isProcessing && (
           <motion.div 
@@ -195,14 +319,26 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors z-30"
               >
                 ✕ Close
               </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
+              <button
+                onClick={() => {
+                  if (!vaultItems.includes(resultImage)) {
+                    setVaultItems([...vaultItems, resultImage]);
+                    setIsVaultOpen(true);
+                  }
+                }}
+                className="absolute top-4 right-28 bg-black/60 text-white px-4 py-2 rounded-full hover:bg-[#007AFF] transition-colors z-30 flex items-center gap-2"
+              >
+                <span>🔒</span> Save Look
+              </button>
+              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30 z-30">
                 AI GENERATED_
               </div>
             </div>
