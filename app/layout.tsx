@@ -36,6 +36,9 @@ export const metadata: Metadata = {
   },
 };
 
+import { AuthButton } from "@/components/AuthButton";
+import { SupportHub } from "@/components/SupportHub";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -49,7 +52,11 @@ export default function RootLayout({
       >
         {/* Grain Overlay for Premium Feel */}
         <div className="grain-overlay" aria-hidden="true" />
+        <div className="fixed top-6 right-6 z-50 mix-blend-difference">
+          <AuthButton />
+        </div>
         {children}
+        <SupportHub />
       </body>
     </html>
   );
