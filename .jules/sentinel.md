@@ -1,0 +1,4 @@
+## 2026-05-31 - [Path Traversal in API Route]
+**Vulnerability:** Path traversal vulnerability in `app/api/try-on/route.ts`. The API converted a user-provided local image path to a base64 data URI by concatenating it directly with `path.join(process.cwd(), 'public', userPath)`, failing to prevent path traversal with sequences like `../../` that could read arbitrary files on the filesystem.
+**Learning:** Naive validation by stripping leading slashes is insufficient. Attackers can provide payload strings to navigate out of intended directories. Using `path.join` on its own doesn't protect against `../` characters traversing up the directory tree.
+**Prevention:** Always use `path.resolve` to resolve absolute paths for user-provided locations and strictly verify that the resulting absolute path resides completely within the intended target directory by checking if `absolutePath.startsWith(baseDir + path.sep)`.
