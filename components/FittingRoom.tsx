@@ -607,9 +607,10 @@ interface ShareModalProps {
   brandName?: string;
   fitScore: number;
   recommendedSize?: string;
+  fittingImage?: string | null;
 }
 
-function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize }: ShareModalProps) {
+function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize, fittingImage }: ShareModalProps) {
   const [hasPublished, setHasPublished] = useState(false);
   if (!isOpen) return null;
 
@@ -617,14 +618,95 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
   const safeBrandName = brandName ?? 'S_FIT AI';
   const shareText = `I just tried on ${safeItemName} from ${safeBrandName} using S_FIT AI! Fit score ${fitScore}% ${recommendedSize ? `(Size ${recommendedSize})` : ''} #SFIT #VirtualTryOn #Fashion`;
 
-  const handleShare = (platform: string) => {
+  const generateInstagramStoryImage = async () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    // Background gradient
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, '#1a1a1a');
+    gradient.addColorStop(1, '#000000');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw fitting image if available
+    if (fittingImage) {
+      try {
+        const img = new window.Image();
+        img.crossOrigin = 'anonymous';
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = fittingImage;
+        });
+
+        // Calculate aspect ratio to cover or fit
+        const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
+        const w = img.width * scale;
+        const h = img.height * scale;
+        const x = (canvas.width - w) / 2;
+        const y = (canvas.height - h) / 2;
+        ctx.drawImage(img, x, y, w, h);
+      } catch (err) {
+        console.error('Failed to load fitting image for story', err);
+      }
+    }
+
+    // Overlay gradient for text readability
+    const overlayGradient = ctx.createLinearGradient(0, canvas.height - 600, 0, canvas.height);
+    overlayGradient.addColorStop(0, 'rgba(0,0,0,0)');
+    overlayGradient.addColorStop(1, 'rgba(0,0,0,0.8)');
+    ctx.fillStyle = overlayGradient;
+    ctx.fillRect(0, canvas.height - 600, canvas.width, 600);
+
+    // Branding
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 60px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('S_FIT AI', canvas.width / 2, canvas.height - 200);
+
+    ctx.font = '40px Arial';
+    ctx.fillStyle = '#a0a0a0';
+    ctx.fillText('VIRTUAL FITTING', canvas.width / 2, canvas.height - 120);
+
+    if (itemName && brandName) {
+      ctx.font = '50px Arial';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(`${itemName} by ${brandName}`, canvas.width / 2, 120);
+    }
+
+    return canvas.toDataURL('image/png');
+  };
+
+  const handleShare = async (platform: string) => {
     const encodedText = encodeURIComponent(shareText);
     const url = encodeURIComponent('https://s-fit.ai');
     let shareUrl = '';
-    if (platform === 'twitter') shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${url}`;
-    else if (platform === 'facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${encodedText}`;
-    else if (platform === 'instagram') { navigator.clipboard.writeText(shareText); alert('Text copied for Instagram! 📱'); return; }
-    else if (platform === 'kakao') shareUrl = `https://story.kakao.com/share?url=${url}&text=${encodedText}`;
+
+    if (platform === 'twitter') {
+      shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${url}`;
+    } else if (platform === 'facebook') {
+      shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${encodedText}`;
+    } else if (platform === 'instagram') {
+      const storyImage = await generateInstagramStoryImage();
+      if (storyImage) {
+        const link = document.createElement('a');
+        link.download = 's_fit_story.png';
+        link.href = storyImage;
+        link.click();
+        alert('Story image downloaded! Share it on Instagram. 📱');
+      } else {
+        navigator.clipboard.writeText(shareText);
+        alert('Text copied for Instagram! 📱');
+      }
+      onClose();
+      return;
+    } else if (platform === 'kakao') {
+      shareUrl = `https://story.kakao.com/share?url=${url}&text=${encodedText}`;
+    }
     
     if (shareUrl) window.open(shareUrl, '_blank', 'width=600,height=400');
     onClose();
@@ -829,7 +911,7 @@ function AITryOnModal({
 
 export function FittingRoom() {
   const {
-    userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis, selfieData,
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
@@ -1133,6 +1215,7 @@ export function FittingRoom() {
         brandName={currentItem?.brand} 
         fitScore={fitScore}
         recommendedSize={recommendedFit?.recommendedSize}
+        fittingImage={aiTryOnResult || selfieData.fullBodyImage}
       />
       <CompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} picks={topPicks} onSelect={setSelectedItem} />
       <AITryOnModal
