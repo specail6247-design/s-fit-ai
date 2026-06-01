@@ -635,7 +635,7 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
     // Draw fitting image if available
     if (fittingImage) {
       try {
-        const img = new Image();
+        const img = new window.Image();
         img.crossOrigin = 'anonymous';
         await new Promise((resolve, reject) => {
           img.onload = resolve;
@@ -911,7 +911,7 @@ function AITryOnModal({
 
 export function FittingRoom() {
   const {
-    userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis, selfieData,
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
