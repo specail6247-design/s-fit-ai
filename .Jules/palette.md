@@ -1,0 +1,3 @@
+## 2024-06-01 - Icon-only close buttons lacking screen reader accessibility
+**Learning:** Found multiple instances where the '✕' character is used as an icon-only close button across various modal and overlay components (e.g., `AuthButton.tsx`, `DigitalTwinMode.tsx`, `VibeCheckMode.tsx`, etc.) without a descriptive `aria-label`. This pattern hinders screen reader users from understanding the button's purpose.
+**Action:** When implementing modal dialogs, overlays, or floating action buttons in the M_FIT app that use icon-only close buttons (like '✕'), always add an `aria-label="Close"` attribute to ensure screen reader accessibility.
