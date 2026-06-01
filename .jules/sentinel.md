@@ -1,0 +1,4 @@
+## 2024-05-24 - Client-Side API Key Exposure
+**Vulnerability:** Found `NEXT_PUBLIC_OPENAI_API_KEY` being instantiated with `OpenAI` client in `lib/visionService.ts` using `dangerouslyAllowBrowser: true`. This exposes the API key to all users in the client bundle.
+**Learning:** Hardcoding API keys or prefixing sensitive keys with `NEXT_PUBLIC_` exposes them to the client-side bundle. AI service clients should not be instantiated on the frontend.
+**Prevention:** Always keep sensitive API keys on the server side (e.g. within API Routes or server actions), never prefix them with `NEXT_PUBLIC_`, and avoid enabling options like `dangerouslyAllowBrowser` in production components.
