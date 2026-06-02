@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { User } from '@supabase/supabase-js';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function AuthButton() {
   const [user, setUser] = useState<User | null>(null);
@@ -89,32 +90,42 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        aria-label="Member Access"
+        className="w-10 h-10 rounded-full bg-void-black border border-white/10 hover:border-white/30 transition-all flex items-center justify-center group"
       >
-        LOGIN
+        <span className="material-symbols-outlined text-white group-hover:text-cyber-lime transition-colors">
+          person
+        </span>
       </button>
 
+      <AnimatePresence>
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+        >
+          <div className="bg-[#050505] border border-white/10 shadow-2xl w-full max-w-md p-8 relative">
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              aria-label="Close"
+              className="absolute top-4 right-4 text-soft-gray hover:text-white transition-colors"
             >
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
+            <h2 className="text-2xl font-black uppercase italic tracking-widest text-white mb-8 text-center">
+              {isLogin ? 'MEMBER ACCESS' : 'Create Account'}
             </h2>
 
-            <form onSubmit={handleAuth} className="space-y-4 mb-6">
+            <form onSubmit={handleAuth} className="space-y-6 mb-8">
               <input
                 type="email"
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full border-b border-white/20 bg-transparent px-0 py-2 text-white text-sm focus:border-cyber-lime outline-none transition-colors"
                 required
               />
               <input
@@ -122,13 +133,13 @@ export function AuthButton() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full border-b border-white/20 bg-transparent px-0 py-2 text-white text-sm focus:border-cyber-lime outline-none transition-colors"
                 required
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="w-full bg-white text-black font-bold py-3 uppercase tracking-widest text-xs hover:bg-gray-200 transition-colors disabled:opacity-50 mt-4"
               >
                 {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
               </button>
@@ -155,18 +166,19 @@ export function AuthButton() {
               </button>
             </div>
 
-            <p className="mt-6 text-center text-xs text-soft-gray">
+            <p className="mt-8 text-center text-xs text-soft-gray uppercase tracking-widest">
               {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
               <button
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-cyber-lime hover:underline ml-1"
+                className="text-white hover:text-cyber-lime transition-colors ml-1 font-bold underline underline-offset-2"
               >
                 {isLogin ? 'Sign up' : 'Log in'}
               </button>
             </p>
           </div>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </>
   );
 }
