@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { SupportHub } from './SupportHub';
+import { PrivacyModal } from './PrivacyModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,7 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isPrivacyOpen, setPrivacyOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -23,6 +26,82 @@ export default function RealLifeFitting() {
       const reader = new FileReader();
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
+    }
+  };
+
+
+  const handleShareToStory = async (imageUrl: string) => {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Draw background/image
+      const img = new window.Image();
+      img.crossOrigin = 'anonymous';
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = imageUrl;
+      });
+
+      // Fill black background first
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, 1080, 1920);
+
+      // Calculate scale to fit width
+      const scale = 1080 / img.width;
+      const scaledHeight = img.height * scale;
+      const yPos = (1920 - scaledHeight) / 2;
+
+      ctx.drawImage(img, 0, yPos, 1080, scaledHeight);
+
+      // Gradient overlay
+      const gradient = ctx.createLinearGradient(0, 1920, 0, 1000);
+      gradient.addColorStop(0, 'rgba(0,0,0,0.9)');
+      gradient.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 1000, 1080, 920);
+
+      // Top gradient
+      const topGradient = ctx.createLinearGradient(0, 0, 0, 400);
+      topGradient.addColorStop(0, 'rgba(0,0,0,0.7)');
+      topGradient.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = topGradient;
+      ctx.fillRect(0, 0, 1080, 400);
+
+      // Draw Branding
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 80px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT AI', 540, 1600);
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = 'bold 40px monospace';
+      ctx.fillText('VIRTUAL FITTING', 540, 1680);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.font = '30px sans-serif';
+      ctx.fillText('s-fit.ai', 540, 1800);
+
+      // Export
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'sfit-story.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 'image/png');
+    } catch (err) {
+      console.error('Failed to generate story image', err);
+      alert('Failed to generate story image.');
     }
   };
 
@@ -104,6 +183,11 @@ export default function RealLifeFitting() {
                 </div>
               </label>
             </div>
+            {/* Data Safety Badge */}
+            <div className="mt-2 flex items-center gap-2 text-[10px] text-gray-400 bg-white/5 p-2 rounded-lg border border-white/5">
+              <span className="material-symbols-outlined text-green-400 text-sm">verified_user</span>
+              <span>Photos are processed securely and not shared.</span>
+            </div>
           </div>
 
           {/* Garment Input */}
@@ -157,6 +241,14 @@ export default function RealLifeFitting() {
                Luxury Line
              </a>
           </div>
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => setPrivacyOpen(true)}
+              className="text-[10px] text-gray-500 hover:text-white transition-colors underline decoration-white/30 underline-offset-4"
+            >
+              Privacy Policy & Terms
+            </button>
+          </div>
 
         </div>
       </div>
@@ -205,10 +297,19 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={() => handleShareToStory(resultImage)}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F77737] text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-sm">auto_awesome</span>
+                Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+      <PrivacyModal isOpen={isPrivacyOpen} onClose={() => setPrivacyOpen(false)} />
+      <SupportHub />
     </div>
   );
 }
