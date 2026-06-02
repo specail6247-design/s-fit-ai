@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -14,18 +14,6 @@ export default function RealLifeFitting() {
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    if (audioRef.current) {
-      if (isProcessing && !isMuted) {
-        audioRef.current.play().catch(e => console.log("Audio playback failed", e));
-      } else {
-        audioRef.current.pause();
-      }
-    }
-  }, [isProcessing, isMuted]);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
 
@@ -175,20 +163,6 @@ export default function RealLifeFitting() {
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
-        <audio ref={audioRef} loop src="https://assets.mixkit.co/active_storage/sfx/2859/2859-preview.mp3" />
-
-        {isProcessing && (
-          <button
-            onClick={() => setIsMuted(!isMuted)}
-            className="absolute top-4 right-4 z-30 bg-black/60 text-white rounded-full p-3 hover:bg-[#007AFF] transition-colors border border-white/20 shadow-lg backdrop-blur-md flex items-center justify-center"
-            aria-label={isMuted ? "Unmute Ambient Sound" : "Mute Ambient Sound"}
-          >
-            <span className="material-symbols-outlined text-sm">
-              {isMuted ? 'volume_off' : 'volume_up'}
-            </span>
-          </button>
-        )}
-
         {/* Background Image (Night City Vibe) */}
         <div className="absolute inset-0 opacity-40 z-0">
            {/* Placeholder for Night City HDRI background visual */}
