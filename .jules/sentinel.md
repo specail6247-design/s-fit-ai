@@ -1,0 +1,4 @@
+## 2024-05-20 - Path Traversal via `path.join`
+**Vulnerability:** A path traversal vulnerability existed in `app/api/try-on/route.ts` where `path.join` was used with unsanitized user input (`localPath`), allowing resolution of files outside the intended `public` directory (e.g., `/../../../../../../../etc/passwd`).
+**Learning:** `path.join` does not guarantee that the resulting path remains within the base directory, especially when the input contains directory traversal sequences (`../`).
+**Prevention:** To avoid this next time, always use `path.resolve` to get the absolute path of the base directory and the target directory. Then, explicitly verify that the resolved target path strictly starts with the base directory (appended with `path.sep` to prevent partial matches like `/app/public-data`).
