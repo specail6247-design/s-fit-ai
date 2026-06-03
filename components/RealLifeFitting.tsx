@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import LoginModal from '@/components/LoginModal';
+import SupportHub from '@/components/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -163,6 +167,24 @@ export default function RealLifeFitting() {
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
+        {/* Floating Utility Bars */}
+        <div className="absolute top-8 right-8 z-30 flex flex-col gap-4">
+          <button
+            onClick={() => setIsLoginOpen(true)}
+            aria-label="Member Access"
+            className="w-12 h-12 bg-black/40 backdrop-blur-md border border-white/20 hover:border-[#ccff00] text-white rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-105"
+          >
+            <span className="material-symbols-outlined">person</span>
+          </button>
+          <button
+            onClick={() => setIsSupportOpen(true)}
+            aria-label="Support Hub"
+            className="w-12 h-12 bg-black/40 backdrop-blur-md border border-white/20 hover:border-[#007AFF] text-white rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-105"
+          >
+            <span className="material-symbols-outlined">help</span>
+          </button>
+        </div>
+
         {/* Background Image (Night City Vibe) */}
         <div className="absolute inset-0 opacity-40 z-0">
            {/* Placeholder for Night City HDRI background visual */}
@@ -209,6 +231,9 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+      <SupportHub isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
     </div>
   );
 }
