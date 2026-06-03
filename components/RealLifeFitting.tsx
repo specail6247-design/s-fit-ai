@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -16,6 +16,17 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  const [isAudioMuted, setIsAudioMuted] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (isProcessing && !isAudioMuted) {
+      audioRef.current?.play().catch(e => console.log('Audio autoplay blocked:', e));
+    } else {
+      audioRef.current?.pause();
+    }
+  }, [isProcessing, isAudioMuted]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -162,11 +173,24 @@ export default function RealLifeFitting() {
       </div>
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
+      {/* Sensory Ambience Audio Element */}
+      <audio ref={audioRef} loop src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" />
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
         {/* Background Image (Night City Vibe) */}
         <div className="absolute inset-0 opacity-40 z-0">
            {/* Placeholder for Night City HDRI background visual */}
            <div className="w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-black to-black"></div>
+        </div>
+
+        {/* Ambience Controls */}
+        <div className="absolute top-4 right-4 z-30">
+          <button
+            onClick={() => setIsAudioMuted(!isAudioMuted)}
+            className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors border border-white/20 backdrop-blur-md"
+            aria-label={isAudioMuted ? "Unmute Ambience" : "Mute Ambience"}
+          >
+            <span className="material-symbols-outlined text-sm">{isAudioMuted ? 'volume_off' : 'volume_up'}</span>
+          </button>
         </div>
 
         {/* 3D Canvas (Safe Load) */}
