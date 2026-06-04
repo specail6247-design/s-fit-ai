@@ -1,30 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 export default function LuxuryGarmentDetail() {
-  const [timeLeft, setTimeLeft] = useState(2 * 60 * 60); // 2 hours in seconds
-  const [isVaultOpen, setIsVaultOpen] = useState(false);
-  const [vaultItems, setVaultItems] = useState([
-    { id: 1, name: 'Metallic Silk Evening Blazer', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E' }
-  ]);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const formatTime = (seconds: number) => {
-    const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
-    const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
-    const s = (seconds % 60).toString().padStart(2, '0');
-    return `${h}:${m}:${s}`;
-  };
-
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -34,15 +14,9 @@ export default function LuxuryGarmentDetail() {
             <span className="material-symbols-outlined">arrow_back</span>
           </Link>
           <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center">S_FIT AI</h2>
-          <div className="flex w-24 items-center justify-end gap-2">
+          <div className="flex w-10 items-center justify-end">
             <button className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
               <span className="material-symbols-outlined">share</span>
-            </button>
-            <button
-              onClick={() => setIsVaultOpen(true)}
-              className="flex size-10 items-center justify-center rounded-full bg-[#ecab13]/10 text-[#ecab13] hover:bg-[#ecab13]/20 transition-colors border border-[#ecab13]/30"
-            >
-              <span className="material-symbols-outlined">door_front</span>
             </button>
           </div>
         </div>
@@ -93,38 +67,6 @@ export default function LuxuryGarmentDetail() {
           </div>
         </div>
 
-        {/* AI Stylist Note & Exclusive Access (Drops) */}
-        <div className="px-4 py-6 border-b border-[#2d2d2d] mb-4 bg-gradient-to-r from-[#1a1a1a]/50 to-transparent">
-          {/* AI Stylist Note */}
-          <div className="flex items-start gap-3 mb-6">
-            <div className="size-8 shrink-0 rounded-full bg-[#ecab13]/10 border border-[#ecab13]/30 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[#ecab13] text-sm">psychiatry</span>
-            </div>
-            <div>
-              <p className="text-[#ecab13] text-[10px] font-bold uppercase tracking-widest mb-1">AI Stylist Note</p>
-              <p className="text-zinc-300 text-sm leading-relaxed italic">&quot;Pair this with structured denim for a balanced silhouette.&quot;</p>
-            </div>
-          </div>
-
-          {/* Exclusive Access */}
-          <div className="bg-[#0a0a0a] border border-[#2d2d2d] rounded-xl p-4 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#ecab13]/5 to-transparent translate-x-[-100%] animate-[shimmer_3s_infinite]" />
-            <div className="flex items-center justify-between relative z-10">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-zinc-500 text-lg">lock</span>
-                <div>
-                  <p className="text-white text-xs font-bold uppercase tracking-wider">Exclusive Drop</p>
-                  <p className="text-zinc-500 text-[10px]">VIP Access Only</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-[#ecab13] font-mono text-sm tracking-wider">{formatTime(timeLeft)}</p>
-                <p className="text-zinc-500 text-[9px] uppercase tracking-widest mt-0.5">Until Unlock</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Material Science Description */}
         <div className="mt-8 px-4">
           <div className="flex items-center justify-between mb-4">
@@ -132,7 +74,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
@@ -194,87 +136,11 @@ export default function LuxuryGarmentDetail() {
           <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
           <p className="text-white text-xl font-bold">$2,850</p>
         </div>
-        <button
-          onClick={() => {
-            if (!vaultItems.find(i => i.id === 2)) {
-              setVaultItems([...vaultItems, { id: 2, name: 'Saved Look', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E' }]);
-            }
-            setIsVaultOpen(true);
-          }}
-          className="flex-[1] bg-white/10 text-white h-14 rounded-xl flex items-center justify-center gap-2 hover:bg-white/20 transition-colors border border-white/20"
-        >
-          <span className="material-symbols-outlined text-sm">bookmark</span>
-          <span className="text-xs font-bold uppercase tracking-widest">Save</span>
-        </button>
-        <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
-          <span className="material-symbols-outlined font-bold text-sm">person_add_alt</span>
-          <span className="font-bold text-xs tracking-widest uppercase">Try On</span>
+        <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
+          <span className="material-symbols-outlined font-bold">person_add_alt</span>
+          <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
         </Link>
       </div>
-
-      {/* The Vault Drawer */}
-      <AnimatePresence>
-        {isVaultOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsVaultOpen(false)}
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60]"
-            />
-            <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed bottom-0 left-0 right-0 max-w-md mx-auto h-[80vh] bg-[#0a0a0a] border-t border-[#2d2d2d] rounded-t-3xl z-[70] flex flex-col"
-            >
-              <div className="p-6 border-b border-[#2d2d2d] flex items-center justify-between">
-                <div>
-                  <h3 className="text-white text-lg font-bold tracking-[0.2em] uppercase">The Vault</h3>
-                  <p className="text-zinc-500 text-xs mt-1">Your Curated Collection</p>
-                </div>
-                <button
-                  onClick={() => setIsVaultOpen(false)}
-                  className="size-8 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
-                >
-                  <span className="material-symbols-outlined">close</span>
-                </button>
-              </div>
-
-              <div className="flex-1 overflow-y-auto p-6">
-                {vaultItems.length === 0 ? (
-                  <div className="h-full flex flex-col items-center justify-center text-center opacity-50">
-                    <span className="material-symbols-outlined text-4xl mb-4">door_front</span>
-                    <p className="text-white text-sm">Your Vault is empty.</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 gap-4">
-                    {vaultItems.map((item, i) => (
-                      <div key={i} className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl overflow-hidden group cursor-pointer">
-                        <div className="aspect-[3/4] bg-zinc-900 relative">
-                           <img src={item.image} alt={item.name} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
-                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                           <div className="absolute bottom-2 left-2 right-2">
-                             <p className="text-white text-[10px] font-bold uppercase truncate">{item.name}</p>
-                           </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="p-6 border-t border-[#2d2d2d] bg-[#0a0a0a]">
-                <button className="w-full h-14 bg-white text-black font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-gray-200 transition-colors">
-                  Compare Selection
-                </button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
 
       <style jsx global>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
