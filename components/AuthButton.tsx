@@ -97,61 +97,71 @@ export function AuthButton() {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
           <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
+            {/* VIP Club Glow Background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-luxury-gold/5 via-transparent to-cyber-lime/5 rounded-2xl pointer-events-none" />
+
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              className="absolute top-4 right-4 text-soft-gray hover:text-white z-10 transition-colors"
             >
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h2>
+            <div className="text-center mb-8 relative z-10">
+              <h2 className="text-2xl font-serif text-white tracking-widest uppercase mb-1">
+                {isLogin ? 'Member Access' : 'Join the Club'}
+              </h2>
+              <div className="h-[1px] w-12 bg-gradient-to-r from-transparent via-luxury-gold/50 to-transparent mx-auto mt-2"></div>
+            </div>
 
-            <form onSubmit={handleAuth} className="space-y-4 mb-6">
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
+            <form onSubmit={handleAuth} className="space-y-4 mb-8 relative z-10">
+              <div className="group relative">
+                <input
+                  type="email"
+                  placeholder="Email Address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white text-sm focus:border-luxury-gold outline-none transition-colors placeholder:text-soft-gray/50"
+                  required
+                />
+              </div>
+              <div className="group relative">
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white text-sm focus:border-luxury-gold outline-none transition-colors placeholder:text-soft-gray/50"
+                  required
+                />
+              </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="w-full bg-gradient-to-r from-luxury-gold/80 to-luxury-gold text-void-black font-serif font-bold tracking-widest py-4 rounded-sm hover:brightness-110 transition-all disabled:opacity-50 mt-4 shadow-[0_0_15px_rgba(201,176,55,0.3)] uppercase text-xs"
               >
-                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+                {loading ? 'Authenticating...' : (isLogin ? 'Enter' : 'Apply')}
               </button>
             </form>
 
-            <div className="flex items-center gap-2 mb-6">
+            <div className="flex items-center gap-3 mb-6 relative z-10">
               <div className="h-px bg-white/10 flex-1" />
-              <span className="text-xs text-soft-gray">OR SOCIAL LOGIN</span>
+              <span className="text-[10px] text-soft-gray/50 tracking-widest uppercase">Or</span>
               <div className="h-px bg-white/10 flex-1" />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <button onClick={() => handleSocialLogin('google')} className="bg-white/5 hover:bg-white/10 border border-white/10 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🇬</span> <span className="text-xs text-white">Google</span>
+            <div className="grid grid-cols-4 gap-2 relative z-10">
+              <button onClick={() => handleSocialLogin('google')} className="bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-lg flex items-center justify-center transition-colors">
+                <span className="text-lg">🇬</span>
               </button>
-              <button onClick={() => handleSocialLogin('kakao')} className="bg-[#FAE100] hover:bg-[#FADB00] text-[#371D1E] py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">💬</span> <span className="text-xs font-bold">Kakao</span>
+              <button onClick={() => handleSocialLogin('kakao')} className="bg-white/5 hover:bg-[#FADB00]/20 border border-white/10 hover:border-[#FADB00]/50 py-3 rounded-lg flex items-center justify-center transition-colors text-[#FADB00]">
+                <span className="text-lg">💬</span>
               </button>
-              <button onClick={() => handleSocialLogin('apple')} className="bg-white hover:bg-gray-100 text-black py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🍎</span> <span className="text-xs font-bold">Apple</span>
+              <button onClick={() => handleSocialLogin('apple')} className="bg-white/5 hover:bg-white/20 border border-white/10 hover:border-white py-3 rounded-lg flex items-center justify-center transition-colors">
+                <span className="text-lg">🍎</span>
               </button>
-              <button onClick={() => handleSocialLogin('discord')} className="bg-[#5865F2] hover:bg-[#4752C4] text-white py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🎮</span> <span className="text-xs font-bold">Discord</span>
+              <button onClick={() => handleSocialLogin('discord')} className="bg-white/5 hover:bg-[#5865F2]/20 border border-white/10 hover:border-[#5865F2]/50 py-3 rounded-lg flex items-center justify-center transition-colors text-[#5865F2]">
+                <span className="text-lg">🎮</span>
               </button>
             </div>
 
