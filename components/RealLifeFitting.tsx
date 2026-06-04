@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 // Dynamically import the 3D scene with SSR disabled
@@ -16,6 +16,24 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  // Sensory Ambience
+  const [isMuted, setIsMuted] = useState(true);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Vault
+  const [isVaultOpen, setIsVaultOpen] = useState(false);
+  const [vaultItems, setVaultItems] = useState<{id: number, image: string}[]>([]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isProcessing && !isMuted) {
+        audioRef.current.play().catch(e => console.log('Audio play prevented:', e));
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isProcessing, isMuted]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -79,14 +97,28 @@ export default function RealLifeFitting() {
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+        <header className="mb-10 relative z-10 flex items-start justify-between">
+          <div>
+            <h1 className="text-4xl font-black tracking-tighter italic">
+              S_FIT <span className="text-[#007AFF]">NEO</span>
+            </h1>
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+              Professional Virtual Fitting
+            </p>
+          </div>
+
+          {/* Sensory Ambience Toggle */}
+          <button
+            onClick={() => setIsMuted(!isMuted)}
+            className={`flex items-center justify-center size-10 rounded-full border transition-colors ${!isMuted ? 'bg-[#007AFF]/20 border-[#007AFF]/50 text-[#007AFF]' : 'bg-white/5 border-white/10 text-gray-500'}`}
+            title="Sensory Ambience"
+          >
+            <span className="material-symbols-outlined text-sm">{isMuted ? 'volume_off' : 'volume_up'}</span>
+          </button>
         </header>
+
+        {/* Sensory Ambience Audio Element */}
+        <audio ref={audioRef} loop src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" preload="auto" />
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
           {/* User Photo Input */}
@@ -192,7 +224,7 @@ export default function RealLifeFitting() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl flex flex-col gap-2"
           >
             <div className="relative group">
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
@@ -206,9 +238,77 @@ export default function RealLifeFitting() {
                 AI GENERATED_
               </div>
             </div>
+
+            {/* Save Look Button */}
+            <button
+              onClick={() => {
+                if (!vaultItems.find(i => i.image === resultImage)) {
+                  setVaultItems([...vaultItems, { id: Date.now(), image: resultImage }]);
+                }
+                setIsVaultOpen(true);
+              }}
+              className="w-full py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white font-bold flex items-center justify-center gap-2 transition-colors"
+            >
+              <span className="material-symbols-outlined text-sm">bookmark</span>
+              <span>SAVE TO VAULT</span>
+            </button>
           </motion.div>
         )}
       </div>
+
+      {/* The Vault Drawer */}
+      <AnimatePresence>
+        {isVaultOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsVaultOpen(false)}
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60]"
+            />
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed top-0 right-0 bottom-0 w-[400px] max-w-full bg-[#0a0a0a] border-l border-white/10 z-[70] flex flex-col"
+            >
+              <div className="p-6 border-b border-white/10 flex items-center justify-between">
+                <div>
+                  <h3 className="text-white text-lg font-bold tracking-[0.2em] uppercase">The Vault</h3>
+                  <p className="text-zinc-500 text-xs mt-1">Your Curated Collection</p>
+                </div>
+                <button
+                  onClick={() => setIsVaultOpen(false)}
+                  className="size-8 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-6">
+                {vaultItems.length === 0 ? (
+                  <div className="h-full flex flex-col items-center justify-center text-center opacity-50">
+                    <span className="material-symbols-outlined text-4xl mb-4">door_front</span>
+                    <p className="text-white text-sm">Your Vault is empty.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-4">
+                    {vaultItems.map((item) => (
+                      <div key={item.id} className="bg-[#1a1a1a] border border-white/10 rounded-xl overflow-hidden group cursor-pointer relative">
+                        <div className="aspect-[3/4] bg-zinc-900">
+                           <img src={item.image} alt="Saved Look" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
