@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React, { useState } from 'react';
 
 const SFitAIProject = () => {
@@ -64,7 +65,7 @@ const SFitAIProject = () => {
             <h3>User Photo</h3>
             <div style={styles.uploadBox}>
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} />
-              {userImage && <img src={userImage} style={styles.preview} alt="User" />}
+              {userImage && <Image src={userImage} style={styles.preview} alt="User" width={150} height={200} />}
             </div>
           </div>
 
@@ -72,7 +73,7 @@ const SFitAIProject = () => {
             <h3>Garment</h3>
             <div style={styles.uploadBox}>
               <input type="file" onChange={(e) => handleFileUpload(e, setClothingImage)} />
-              {clothingImage && <img src={clothingImage} style={styles.preview} alt="Cloth" />}
+              {clothingImage && <Image src={clothingImage} style={styles.preview} alt="Cloth" width={150} height={200} />}
             </div>
           </div>
         </div>
@@ -90,7 +91,7 @@ const SFitAIProject = () => {
         {finalResult && (
           <div style={styles.resultContainer}>
             <h2 style={styles.resultTitle}>Fitting Result</h2>
-            <img src={finalResult} style={styles.finalImg} alt="Result" />
+            <Image src={finalResult} style={styles.finalImg} alt="Result" width={300} height={400} />
           </div>
         )}
       </main>

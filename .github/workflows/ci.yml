@@ -8,6 +8,8 @@ on:
 
 jobs:
   test:
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     name: Test & Build
     runs-on: ubuntu-latest
 
