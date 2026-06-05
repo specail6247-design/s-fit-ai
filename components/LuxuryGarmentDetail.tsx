@@ -74,8 +74,19 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
+
+          {/* AI Stylist Note */}
+          <div className="mb-6 rounded-lg bg-[#ecab13]/10 border border-[#ecab13]/30 p-3 flex gap-3 items-start">
+            <span className="material-symbols-outlined text-[#ecab13] text-lg shrink-0">auto_awesome</span>
+            <div>
+              <p className="text-[#ecab13] text-[10px] font-bold uppercase tracking-wider mb-1">AI Stylist Note</p>
+              <p className="text-zinc-300 text-sm italic leading-tight">
+                &quot;Styling Tip: Pair this with structured denim for a balanced silhouette.&quot;
+              </p>
+            </div>
+          </div>
           
           {/* Chips */}
           <div className="flex gap-2 flex-wrap mb-8">
@@ -128,6 +139,29 @@ export default function LuxuryGarmentDetail() {
             <span className="text-white text-sm">12,400 Polygons</span>
           </div>
         </div>
+
+        {/* Exclusive Access / Drops */}
+        <div className="px-4 mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-white text-xs font-bold tracking-[0.2em] uppercase">Exclusive Access</h2>
+          </div>
+          <div className="relative rounded-xl overflow-hidden border border-[#2d2d2d] bg-zinc-900 h-32 flex items-center justify-center group">
+            {/* Blurred background image */}
+            <div
+              className="absolute inset-0 bg-cover bg-center opacity-40 blur-sm scale-110 group-hover:scale-100 transition-transform duration-1000"
+              style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' }}
+            />
+            {/* Dark overlay */}
+            <div className="absolute inset-0 bg-black/60" />
+
+            <div className="relative z-10 flex flex-col items-center text-center px-4">
+              <span className="material-symbols-outlined text-[#ecab13] mb-2 text-3xl">lock</span>
+              <h3 className="text-white font-bold text-sm tracking-widest uppercase mb-1">Midnight Onyx Edition</h3>
+              <p className="text-zinc-400 text-xs font-mono">Available in <span className="text-white font-bold">02:00:00</span></p>
+            </div>
+          </div>
+        </div>
+
       </main>
 
       {/* Bottom Action Bar */}

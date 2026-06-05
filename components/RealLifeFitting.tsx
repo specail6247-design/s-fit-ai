@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 // Dynamically import the 3D scene with SSR disabled
@@ -16,6 +16,20 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isAudioMuted, setIsAudioMuted] = useState(true); // default true so we don't startle
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isVaultOpen, setIsVaultOpen] = useState(false);
+  const [savedLooks, setSavedLooks] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isProcessing && !isAudioMuted) {
+        audioRef.current.play().catch(e => console.log('Audio play failed:', e));
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isProcessing, isAudioMuted]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -80,13 +94,36 @@ export default function RealLifeFitting() {
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
         <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-4xl font-black tracking-tighter italic">
+                S_FIT <span className="text-[#007AFF]">NEO</span>
+              </h1>
+              <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+                Professional Virtual Fitting
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setIsAudioMuted(!isAudioMuted)}
+                className={`p-2 rounded-full border border-white/20 hover:bg-white/10 transition-colors flex items-center justify-center ${!isAudioMuted ? 'text-[#007AFF] border-[#007AFF]/50' : 'text-gray-500'}`}
+                title={isAudioMuted ? "Unmute Ambience" : "Mute Ambience"}
+              >
+                <span className="material-symbols-outlined text-sm">{isAudioMuted ? 'volume_off' : 'volume_up'}</span>
+              </button>
+              <button
+                onClick={() => setIsVaultOpen(true)}
+                className="p-2 rounded-full border border-white/20 hover:bg-white/10 transition-colors flex items-center justify-center text-white"
+                title="Open The Vault"
+              >
+                <span className="material-symbols-outlined text-sm">inventory_2</span>
+              </button>
+            </div>
+          </div>
         </header>
+
+        {/* Sensory Ambience Audio Element */}
+        <audio ref={audioRef} src="https://actions.google.com/sounds/v1/water/rain_on_roof.ogg" loop />
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
           {/* User Photo Input */}
@@ -198,9 +235,21 @@ export default function RealLifeFitting() {
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors flex items-center gap-1 text-xs"
               >
                 ✕ Close
+              </button>
+              <button
+                onClick={() => {
+                  if (resultImage && !savedLooks.includes(resultImage)) {
+                    setSavedLooks(prev => [...prev, resultImage]);
+                  }
+                  setIsVaultOpen(true);
+                }}
+                className="absolute top-4 left-4 bg-[#007AFF] text-white rounded-full px-4 py-2 font-bold text-xs hover:bg-[#005bb5] transition-colors shadow-lg flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-sm">bookmark</span>
+                Save Look
               </button>
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
@@ -208,6 +257,77 @@ export default function RealLifeFitting() {
             </div>
           </motion.div>
         )}
+
+        {/* The Vault Drawer (Slide-out) */}
+        <AnimatePresence>
+          {isVaultOpen && (
+            <>
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsVaultOpen(false)}
+                className="absolute inset-0 bg-black/50 backdrop-blur-sm z-40"
+              />
+
+              {/* Drawer */}
+              <motion.div
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                className="absolute right-0 top-0 h-full w-80 bg-[#0a0a0a] border-l border-white/10 z-50 shadow-2xl flex flex-col"
+              >
+                <div className="p-6 border-b border-white/10 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[#007AFF]">inventory_2</span>
+                    <h2 className="text-xl font-bold tracking-widest uppercase">The Vault</h2>
+                  </div>
+                  <button onClick={() => setIsVaultOpen(false)} className="text-gray-400 hover:text-white transition-colors">
+                    <span className="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                  {savedLooks.length === 0 ? (
+                    <div className="text-center text-gray-500 mt-10">
+                      <span className="material-symbols-outlined text-4xl mb-2 opacity-50">bookmark_border</span>
+                      <p className="text-sm">Your vault is empty.</p>
+                      <p className="text-xs mt-1">Save looks to compare them here.</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-4">
+                      {savedLooks.map((look, idx) => (
+                        <div key={idx} className="relative group rounded-lg overflow-hidden border border-white/10 aspect-[3/4] bg-zinc-900">
+                          <img src={look} alt={`Saved look ${idx + 1}`} className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
+                            <button
+                              onClick={() => {
+                                setResultImage(look);
+                                setIsVaultOpen(false);
+                              }}
+                              className="bg-[#007AFF] text-white text-[10px] uppercase font-bold px-3 py-1 rounded"
+                            >
+                              View
+                            </button>
+                            <button
+                              onClick={() => setSavedLooks(prev => prev.filter((_, i) => i !== idx))}
+                              className="text-red-400 text-[10px] uppercase font-bold px-3 py-1 hover:text-red-300"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
       </div>
     </div>
   );
