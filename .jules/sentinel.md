@@ -1,0 +1,4 @@
+## 2025-06-05 - Path Traversal Vulnerability in Local File Resolution
+**Vulnerability:** The API route `app/api/try-on/route.ts` used `path.join` without verifying that the resolved absolute path actually resided within the intended base directory (`public`). This could allow an attacker to read arbitrary files on the filesystem by passing paths like `../../../../etc/passwd`.
+**Learning:** `path.join` normalizes paths but does not resolve them to their true absolute locations or guarantee they stay within a specific directory.
+**Prevention:** Always use `path.resolve` to get the absolute path and verify that the resulting absolute path strictly starts with the intended base directory (appended with `path.sep`) before accessing the file system.
