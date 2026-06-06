@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -16,6 +16,55 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isMuted, setIsMuted] = useState(false);
+
+  // Sensory Ambience Audio
+  useEffect(() => {
+    let audioCtx: AudioContext | null = null;
+    let oscillator: OscillatorNode | null = null;
+    let gainNode: GainNode | null = null;
+
+    if (isProcessing && !isMuted) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+      oscillator = audioCtx.createOscillator();
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(65, audioCtx.currentTime); // Low hum (C2)
+
+      const lfo = audioCtx.createOscillator();
+      lfo.type = 'sine';
+      lfo.frequency.setValueAtTime(0.1, audioCtx.currentTime); // Very slow modulation
+
+      const lfoGain = audioCtx.createGain();
+      lfoGain.gain.setValueAtTime(5, audioCtx.currentTime);
+
+      lfo.connect(lfoGain);
+      lfoGain.connect(oscillator.frequency);
+
+      gainNode = audioCtx.createGain();
+      gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.05, audioCtx.currentTime + 2); // Fade in
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      oscillator.start();
+      lfo.start();
+    }
+
+    return () => {
+      if (gainNode && audioCtx) {
+        gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1); // Fade out
+        setTimeout(() => {
+          if (oscillator) oscillator.stop();
+          if (audioCtx) audioCtx.close();
+        }, 1000);
+      } else if (audioCtx) {
+        audioCtx.close();
+      }
+    };
+  }, [isProcessing, isMuted]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -128,8 +177,13 @@ export default function RealLifeFitting() {
         <div className="mt-8 relative z-10">
           {isProcessing ? (
             <div className="space-y-2">
-              <div className="flex justify-between text-xs text-[#007AFF] font-mono">
-                <span>PROCESSING DATA...</span>
+              <div className="flex justify-between items-center text-xs text-[#007AFF] font-mono mb-1">
+                <div className="flex items-center gap-2">
+                  <span className="animate-pulse">PROCESSING DATA...</span>
+                  <button onClick={() => setIsMuted(!isMuted)} className="hover:text-white transition-colors flex items-center" title="Toggle Ambience">
+                    <span className="material-symbols-outlined text-[14px]">{isMuted ? 'volume_off' : 'volume_up'}</span>
+                  </button>
+                </div>
                 <span>{progress}%</span>
               </div>
               <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
