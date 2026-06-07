@@ -1,0 +1,4 @@
+## 2025-06-07 - Fixed Path Traversal in API Route
+**Vulnerability:** A path traversal vulnerability was found in `app/api/try-on/route.ts` where user-supplied `garmentImageUrl` paths (if starting with `/`) were resolved against `process.cwd()/public` using string concatenation and `path.join`. Because `path.join` does not guarantee the result stays within the base directory when relative paths like `../../` are provided, attackers could potentially read arbitrary files from the server.
+**Learning:** In Next.js API routes, when resolving user-provided relative paths to absolute file paths on the server filesystem, simple `path.join` with `process.cwd()` is insufficient to prevent directory traversal.
+**Prevention:** Always use `path.resolve` to build the absolute base directory and the absolute target path, and explicitly verify that the target path strictly starts with the base directory (appended with `path.sep`) before accessing the file.
