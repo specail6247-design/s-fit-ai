@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { SupportHub } from '@/components/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -24,6 +25,55 @@ export default function RealLifeFitting() {
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleShareToStory = () => {
+    if (!resultImage) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Background
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Load Result Image
+    const img = new window.Image();
+    img.crossOrigin = "anonymous";
+    img.src = resultImage;
+    img.onload = () => {
+      // Draw Image (Cover)
+      const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+      const x = (canvas.width / 2) - (img.width / 2) * scale;
+      const y = (canvas.height / 2) - (img.height / 2) * scale;
+      ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+
+      // Gradient overlay at bottom
+      const gradient = ctx.createLinearGradient(0, canvas.height - 400, 0, canvas.height);
+      gradient.addColorStop(0, 'transparent');
+      gradient.addColorStop(1, 'rgba(0,0,0,0.9)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, canvas.height - 400, canvas.width, 400);
+
+      // Branding
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 80px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT NEO', canvas.width / 2, canvas.height - 180);
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = '40px monospace';
+      ctx.fillText('AI GENERATED_ VIRTUAL FIT', canvas.width / 2, canvas.height - 100);
+
+      // Download
+      const link = document.createElement('a');
+      link.download = `sfit-story-${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    };
   };
 
   const handleTryOn = async () => {
@@ -103,6 +153,11 @@ export default function RealLifeFitting() {
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
                 </div>
               </label>
+            </div>
+            {/* Data Safety Badge */}
+            <div className="flex items-center gap-2 mt-2 px-1 opacity-70">
+              <span className="text-xs">🔒</span>
+              <span className="text-[10px] text-gray-400 font-medium">Photos are processed securely and not shared.</span>
             </div>
           </div>
 
@@ -205,10 +260,19 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 w-48 py-3 bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 text-white font-bold rounded-full shadow-[0_0_20px_rgba(255,0,255,0.4)] transition-all flex items-center justify-center gap-2"
+              >
+                <span>📱</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      {/* Support Hub Component */}
+      <SupportHub />
     </div>
   );
 }
