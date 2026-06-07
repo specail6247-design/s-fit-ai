@@ -1,0 +1,5 @@
+1. Modify `components/AuthButton.tsx` to implement a high-fidelity "Member Access" modal with minimal fields, distinct typography, and a VIP club aesthetic.
+2. Create `components/SupportHub.tsx` implementing a Slide-out Drawer with a step-by-step User Guide carousel, camera/lighting cautions, a Report Issue form, Legal links, and an FAQ accordion.
+3. Update `components/RealLifeFitting.tsx` to integrate `<AuthButton />` into its header, add `<SupportHub />` into the layout (hidden until clicked), and add the "Data Safety Badge" to the photo upload areas.
+4. Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done.
+5. Submit changes via PR.
