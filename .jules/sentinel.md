@@ -1,0 +1,4 @@
+## 2025-06-08 - Critical Path Traversal in File Utilities
+**Vulnerability:** A path traversal vulnerability existed in the API utility function `localFileToDataUri` in `app/api/try-on/route.ts`. Using just `path.join(process.cwd(), 'public', relativePath)` allowed malicious actors to access arbitrary files on the server by supplying relative paths containing `..` like `/../../../../etc/passwd`.
+**Learning:** Using `path.join` does not sanitize file paths automatically against directory traversal, and resolving a user-provided file path to an absolute path can escape the intended root directory.
+**Prevention:** Always use `path.resolve(baseDir, relativePath)` and ensure the resolved path strictly starts with the exact intended base directory appending `path.sep` (e.g., `if (!absolutePath.startsWith(baseDir + path.sep))`).
