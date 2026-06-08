@@ -2,6 +2,7 @@
 // https://replicate.com/cuuupid/idm-vton
 
 import Replicate from "replicate";
+import RunwayML from "@runwayml/sdk";
 import type { SegmentationResult } from './segmentation';
 
 export interface TryOnRequest {
@@ -29,8 +30,6 @@ export interface CinematicVideoResult {
 const IDM_VTON_MODEL = "cuuupid/idm-vton:c871bb9b046607b680449ecbae55fd8c6d945e0a1948644bf2361b3d021d3ff4";
 // Upscaler
 const REAL_ESRGAN_MODEL = "nightmareai/real-esrgan:42fed1c4974146d4d2414e2be2c5277c7fcf05fcc3a73ab241bbb49991ea7781";
-// Video Generation (SVD) - 4K High Fidelity
-const SVD_MODEL = "stability-ai/stable-video-diffusion:3f0457e4619daac51203dedb472816f3af8d9bc94d61ced4e916cd04605162f1";
 
 // Helper to consume ReadableStream and return as base64 data URI or URL string
 async function consumeStream(stream: ReadableStream): Promise<string> {
@@ -198,41 +197,47 @@ export async function upscaleImage(imageUrl: string): Promise<string | null> {
 
 // Unified Video Generation (Runway/SVD)
 export async function generateCinematicVideo(imageUrl: string): Promise<CinematicVideoResult> {
-  const apiToken = process.env.REPLICATE_API_TOKEN;
+  const apiKey = process.env.RUNWAYML_API_SECRET;
 
-  if (!apiToken) {
-    console.error("REPLICATE_API_TOKEN is not set");
+  if (!apiKey) {
+    console.error("RUNWAYML_API_SECRET is not set");
     return {
       success: false,
-      error: 'REPLICATE_API_TOKEN not configured'
+      error: 'RUNWAYML_API_SECRET not configured'
     };
   }
 
-  const replicate = new Replicate({
-    auth: apiToken,
+  const runway = new RunwayML({
+    apiKey: apiKey,
   });
 
   try {
-    console.log("Starting Cinematic Video Generation (SVD)...");
-    const output = await replicate.run(
-      SVD_MODEL,
-      {
-        input: {
-          input_image: imageUrl,
-          video_length: "25_frames_with_svd_xt",
-          sizing_strategy: "maintain_aspect_ratio",
-          motion_bucket_id: 127,
-          frames_per_second: 6,
-          cond_aug: 0.02
-        }
-      }
-    );
+    console.log("Starting Cinematic Video Generation (Runway)...");
 
+    // Initiate task
+    const task = await runway.imageToVideo.create({
+      model: 'gen3a_turbo',
+      promptImage: imageUrl,
+      promptText: 'Cinematic fashion shot, high-fidelity motion clip showing realistic physics, swing of a dress, weight of fabric, shimmer under cinematic lighting.',
+      ratio: '768:1280'
+    });
+
+    const taskId = task.id;
+
+    // Polling task status
     let videoUrl: string | null = null;
-    if (output instanceof ReadableStream) {
-      videoUrl = await consumeStream(output);
-    } else {
-      videoUrl = extractUrlFromOutput(output);
+    const maxWaitTimes = 30; // 30 * 2s = 60s
+    let attempts = 0;
+    while (attempts < maxWaitTimes) {
+      attempts++;
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      const currentTask = await runway.tasks.retrieve(taskId);
+      if (currentTask.status === 'SUCCEEDED') {
+        videoUrl = currentTask.output?.[0] ?? null;
+        break;
+      } else if (currentTask.status === 'FAILED') {
+        throw new Error('Runway task failed');
+      }
     }
 
     if (videoUrl) {
@@ -243,7 +248,7 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
     } else {
       return {
         success: false,
-        error: "No video URL in output"
+        error: "No video URL in output or task timed out"
       };
     }
 
