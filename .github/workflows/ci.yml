@@ -7,9 +7,13 @@ on:
     branches: [ main ]
 
 jobs:
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   test:
     name: Test & Build
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
     - name: Checkout
@@ -42,6 +46,7 @@ jobs:
     - name: E2E Tests
       run: npx playwright test
       env:
+        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
         CI: true
 
     - name: Upload Coverage
