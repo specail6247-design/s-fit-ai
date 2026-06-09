@@ -214,7 +214,7 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
   try {
     console.log("Starting Cinematic Video Generation (RunwayML Gen-3 Alpha Turbo)...");
 
-    let task = await client.imageToVideo.create({
+    const task = await client.imageToVideo.create({
       model: "gen3a_turbo",
       promptImage: imageUrl,
       promptText: "A highly detailed runway walk, cinematic lighting, ultra-realistic",
