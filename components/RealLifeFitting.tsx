@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -16,6 +16,71 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isMuted, setIsMuted] = useState(false);
+
+  // Audio Context Refs
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const oscillatorRef = useRef<OscillatorNode | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+
+  // Initialize and manage audio based on processing state
+  useEffect(() => {
+    if (isProcessing && !isMuted) {
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+
+      if (audioCtxRef.current.state === 'suspended') {
+        audioCtxRef.current.resume();
+      }
+
+      const ctx = audioCtxRef.current;
+
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(65, ctx.currentTime); // Low hum frequency (e.g., C2)
+
+      gainNode.gain.setValueAtTime(0, ctx.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 1); // Fade in
+
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+
+      oscillator.start();
+
+      oscillatorRef.current = oscillator;
+      gainNodeRef.current = gainNode;
+
+    } else if ((!isProcessing || isMuted) && gainNodeRef.current && audioCtxRef.current) {
+      const ctx = audioCtxRef.current;
+      gainNodeRef.current.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.5); // Fade out
+
+      setTimeout(() => {
+        if (oscillatorRef.current) {
+          oscillatorRef.current.stop();
+          oscillatorRef.current.disconnect();
+          oscillatorRef.current = null;
+        }
+      }, 500);
+    }
+
+    return () => {
+      if (oscillatorRef.current && gainNodeRef.current && audioCtxRef.current) {
+        const ctx = audioCtxRef.current;
+        gainNodeRef.current.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.5);
+
+        setTimeout(() => {
+          if (oscillatorRef.current) {
+            oscillatorRef.current.stop();
+            oscillatorRef.current.disconnect();
+            oscillatorRef.current = null;
+          }
+        }, 500);
+      }
+    };
+  }, [isProcessing, isMuted]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -79,13 +144,22 @@ export default function RealLifeFitting() {
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+        <header className="mb-10 relative z-10 flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-black tracking-tighter italic">
+              S_FIT <span className="text-[#007AFF]">NEO</span>
+            </h1>
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+              Professional Virtual Fitting
+            </p>
+          </div>
+          <button
+            onClick={() => setIsMuted(!isMuted)}
+            className="flex items-center justify-center p-2 rounded-full border border-white/20 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+            title={isMuted ? "Unmute Ambience" : "Mute Ambience"}
+          >
+            <span className="material-symbols-outlined text-sm">{isMuted ? 'volume_off' : 'volume_up'}</span>
+          </button>
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
