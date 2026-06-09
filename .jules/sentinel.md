@@ -1,0 +1,4 @@
+## 2025-03-09 - Path Traversal Vulnerability in localFileToDataUri
+**Vulnerability:** A critical path traversal vulnerability was discovered in `app/api/try-on/route.ts` where user-supplied input (`garmentImageUrl` processed as `localPath`) was used with `path.join` to construct file paths relative to the public directory. An attacker could supply a path like `/../../../../etc/passwd` to read sensitive files on the server because `path.join` doesn't enforce root boundaries.
+**Learning:** `path.join` only concatenates paths. If an attacker inputs directory traversal sequences (`../`), the final path can escape the intended directory, enabling unauthorized file access.
+**Prevention:** To avoid this next time, always use `path.resolve` to get absolute paths and then explicitly verify that the resolved absolute path strictly starts with the intended base directory (using `startsWith(baseDir + path.sep)`) before performing any filesystem operations.
