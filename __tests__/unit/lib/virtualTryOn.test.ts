@@ -11,6 +11,16 @@ vi.mock('replicate', () => {
   };
 });
 
+// Mock RunwayML
+const mockImageToVideoCreate = vi.fn();
+const mockTasksRetrieve = vi.fn();
+vi.mock('@runwayml/sdk', () => ({
+  default: class {
+    imageToVideo = { create: mockImageToVideoCreate };
+    tasks = { retrieve: mockTasksRetrieve };
+  }
+}));
+
 describe('Virtual Try-On Service', () => {
   beforeEach(() => {
     vi.resetAllMocks();
@@ -73,32 +83,36 @@ describe('Virtual Try-On Service', () => {
 describe('Cinematic Video Generation', () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    process.env.REPLICATE_API_TOKEN = 'mock-token';
+    process.env.RUNWAYML_API_SECRET = 'mock-token';
   });
 
   afterEach(() => {
-    delete process.env.REPLICATE_API_TOKEN;
+    delete process.env.RUNWAYML_API_SECRET;
   });
 
   it('should generate cinematic video successfully', async () => {
-    mockReplicateRun.mockResolvedValue('https://replicate.com/video.mp4');
+    mockImageToVideoCreate.mockResolvedValue({ id: 'task_123' });
+    mockTasksRetrieve.mockResolvedValue({
+      id: 'task_123',
+      status: 'SUCCEEDED',
+      output: ['https://runway.com/video.mp4']
+    });
 
     const result = await generateCinematicVideo('https://replicate.com/image.jpg');
 
     expect(result.success).toBe(true);
-    expect(result.videoUrl).toBe('https://replicate.com/video.mp4');
-    expect(mockReplicateRun).toHaveBeenCalledWith(
-        expect.stringContaining('stable-video-diffusion'),
+    expect(result.videoUrl).toBe('https://runway.com/video.mp4');
+    expect(mockImageToVideoCreate).toHaveBeenCalledWith(
         expect.objectContaining({
-            input: expect.objectContaining({
-                input_image: 'https://replicate.com/image.jpg'
-            })
+            model: 'gen3a_turbo',
+            promptImage: 'https://replicate.com/image.jpg'
         })
     );
+    expect(mockTasksRetrieve).toHaveBeenCalledWith('task_123');
   });
 
   it('should handle API errors', async () => {
-    mockReplicateRun.mockRejectedValue(new Error('API Error'));
+    mockImageToVideoCreate.mockRejectedValue(new Error('API Error'));
 
     const result = await generateCinematicVideo('https://replicate.com/image.jpg');
 
