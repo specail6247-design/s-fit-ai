@@ -96,7 +96,7 @@ export default function LuxuryGarmentDetail() {
             <span className="material-symbols-outlined text-[#ecab13] shrink-0">auto_awesome</span>
             <div>
               <h3 className="text-white text-xs font-bold tracking-[0.2em] uppercase mb-1">AI Stylist Note</h3>
-              <p className="text-zinc-300 text-sm italic font-serif">"Styling Tip: Pair this with structured denim for a balanced silhouette."</p>
+              <p className="text-zinc-300 text-sm italic font-serif">&quot;Styling Tip: Pair this with structured denim for a balanced silhouette.&quot;</p>
             </div>
           </div>
         </div>
@@ -108,7 +108,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
