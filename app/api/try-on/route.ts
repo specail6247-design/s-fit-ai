@@ -10,9 +10,19 @@ export const maxDuration = 120;
 // Helper: Convert local file to base64 data URI
 function localFileToDataUri(localPath: string): string | null {
   try {
-    // Remove leading slash and resolve to public directory
+    // 🛡️ Sentinel: Fix path traversal vulnerability
+    // Remove leading slash and resolve to public directory safely
     const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
-    const absolutePath = path.join(process.cwd(), 'public', relativePath);
+
+    // Resolve absolute path and verify it stays within public directory
+    const publicDir = path.resolve(process.cwd(), 'public');
+    const absolutePath = path.resolve(publicDir, relativePath);
+
+    // Security check: Ensure the resolved path starts with the public directory path
+    if (!absolutePath.startsWith(publicDir + path.sep)) {
+      console.error('🛡️ Sentinel Security Warning: Attempted path traversal detected:', localPath);
+      return null;
+    }
     
     console.log('Reading local file:', absolutePath);
     
