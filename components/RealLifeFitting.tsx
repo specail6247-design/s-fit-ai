@@ -133,10 +133,10 @@ export default function RealLifeFitting() {
                 <span>{progress}%</span>
               </div>
               <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-                <motion.div 
-                  className="h-full bg-[#007AFF]" 
-                  initial={{ width: 0 }} 
-                  animate={{ width: `${progress}%` }} 
+                <motion.div
+                  className="h-full bg-[#007AFF]"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
                 />
               </div>
             </div>
