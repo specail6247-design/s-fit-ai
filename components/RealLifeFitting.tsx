@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -16,6 +16,70 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isMuted, setIsMuted] = useState(false);
+
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const oscillatorRef = useRef<OscillatorNode | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+
+  // Sensory Ambience Logic
+  useEffect(() => {
+    if (isProcessing && !isMuted) {
+      if (!audioCtxRef.current) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+
+      const ctx = audioCtxRef.current;
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+
+      oscillatorRef.current = ctx.createOscillator();
+      gainNodeRef.current = ctx.createGain();
+
+      // Soft low hum settings
+      oscillatorRef.current.type = 'sine';
+      oscillatorRef.current.frequency.setValueAtTime(55, ctx.currentTime); // Low frequency
+
+      gainNodeRef.current.gain.setValueAtTime(0, ctx.currentTime);
+      gainNodeRef.current.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 2); // Fade in
+
+      oscillatorRef.current.connect(gainNodeRef.current);
+      gainNodeRef.current.connect(ctx.destination);
+
+      oscillatorRef.current.start();
+    } else {
+      // Fade out and stop
+      if (gainNodeRef.current && audioCtxRef.current) {
+        gainNodeRef.current.gain.linearRampToValueAtTime(0, audioCtxRef.current.currentTime + 1);
+      }
+      if (oscillatorRef.current) {
+        const osc = oscillatorRef.current;
+        setTimeout(() => {
+          try {
+            osc.stop();
+            osc.disconnect();
+          } catch (e) {
+            // Ignore if already stopped
+          }
+        }, 1000);
+      }
+    }
+
+    return () => {
+      // Cleanup on unmount or when processing stops early
+      if (oscillatorRef.current) {
+        try {
+          oscillatorRef.current.stop();
+          oscillatorRef.current.disconnect();
+        } catch(e) {}
+      }
+      if (gainNodeRef.current) {
+        gainNodeRef.current.disconnect();
+      }
+    };
+  }, [isProcessing, isMuted]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -127,17 +191,31 @@ export default function RealLifeFitting() {
         {/* Action Button */}
         <div className="mt-8 relative z-10">
           {isProcessing ? (
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs text-[#007AFF] font-mono">
-                <span>PROCESSING DATA...</span>
-                <span>{progress}%</span>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs text-[#007AFF] font-mono">
+                  <span>PROCESSING DATA...</span>
+                  <span>{progress}%</span>
+                </div>
+                <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-[#007AFF]"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                  />
+                </div>
               </div>
-              <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-                <motion.div 
-                  className="h-full bg-[#007AFF]" 
-                  initial={{ width: 0 }} 
-                  animate={{ width: `${progress}%` }} 
-                />
+              <div className="flex items-center justify-between bg-black/40 border border-white/10 rounded-lg p-3">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[#007AFF] text-sm animate-pulse">surround_sound</span>
+                  <span className="text-xs text-gray-400 font-mono">Sensory Ambience</span>
+                </div>
+                <button
+                  onClick={() => setIsMuted(!isMuted)}
+                  className="text-white hover:text-[#007AFF] transition-colors"
+                >
+                  <span className="material-symbols-outlined text-sm">{isMuted ? 'volume_off' : 'volume_up'}</span>
+                </button>
               </div>
             </div>
           ) : (
