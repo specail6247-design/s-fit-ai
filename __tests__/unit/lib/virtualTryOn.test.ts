@@ -11,6 +11,17 @@ vi.mock('replicate', () => {
   };
 });
 
+// Mock RunwayML
+const mockRunwayCreate = vi.fn();
+const mockRunwayRetrieve = vi.fn();
+
+vi.mock('@runwayml/sdk', () => ({
+  default: class {
+    imageToVideo = { create: mockRunwayCreate };
+    tasks = { retrieve: mockRunwayRetrieve };
+  }
+}));
+
 describe('Virtual Try-On Service', () => {
   beforeEach(() => {
     vi.resetAllMocks();
@@ -73,36 +84,44 @@ describe('Virtual Try-On Service', () => {
 describe('Cinematic Video Generation', () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    process.env.REPLICATE_API_TOKEN = 'mock-token';
+    process.env.RUNWAYML_API_SECRET = 'mock-runway-token';
   });
 
   afterEach(() => {
-    delete process.env.REPLICATE_API_TOKEN;
+    delete process.env.RUNWAYML_API_SECRET;
+  });
+
+  it('should return error if RUNWAYML_API_SECRET is missing', async () => {
+    delete process.env.RUNWAYML_API_SECRET;
+    const result = await generateCinematicVideo('https://replicate.com/image.jpg');
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('RUNWAYML_API_SECRET');
   });
 
   it('should generate cinematic video successfully', async () => {
-    mockReplicateRun.mockResolvedValue('https://replicate.com/video.mp4');
+    mockRunwayCreate.mockResolvedValue({ id: 'task-123', status: 'PENDING' });
+    mockRunwayRetrieve.mockResolvedValue({ id: 'task-123', status: 'SUCCEEDED', output: ['https://runway.com/video.mp4'] });
 
     const result = await generateCinematicVideo('https://replicate.com/image.jpg');
 
     expect(result.success).toBe(true);
-    expect(result.videoUrl).toBe('https://replicate.com/video.mp4');
-    expect(mockReplicateRun).toHaveBeenCalledWith(
-        expect.stringContaining('stable-video-diffusion'),
+    expect(result.videoUrl).toBe('https://runway.com/video.mp4');
+    expect(mockRunwayCreate).toHaveBeenCalledWith(
         expect.objectContaining({
-            input: expect.objectContaining({
-                input_image: 'https://replicate.com/image.jpg'
-            })
+            model: "gen3a_turbo",
+            promptImage: 'https://replicate.com/image.jpg'
         })
     );
+    expect(mockRunwayRetrieve).toHaveBeenCalledWith('task-123');
   });
 
   it('should handle API errors', async () => {
-    mockReplicateRun.mockRejectedValue(new Error('API Error'));
+    mockRunwayCreate.mockRejectedValue(new Error('Runway API Error'));
 
     const result = await generateCinematicVideo('https://replicate.com/image.jpg');
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe('API Error');
+    expect(result.error).toBe('Runway API Error');
   });
 });

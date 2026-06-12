@@ -2,6 +2,7 @@
 // https://replicate.com/cuuupid/idm-vton
 
 import Replicate from "replicate";
+import RunwayML from "@runwayml/sdk";
 import type { SegmentationResult } from './segmentation';
 
 export interface TryOnRequest {
@@ -198,52 +199,50 @@ export async function upscaleImage(imageUrl: string): Promise<string | null> {
 
 // Unified Video Generation (Runway/SVD)
 export async function generateCinematicVideo(imageUrl: string): Promise<CinematicVideoResult> {
-  const apiToken = process.env.REPLICATE_API_TOKEN;
+  const runwayApiKey = process.env.RUNWAYML_API_SECRET;
 
-  if (!apiToken) {
-    console.error("REPLICATE_API_TOKEN is not set");
+  if (!runwayApiKey) {
+    console.error("RUNWAYML_API_SECRET is not set");
     return {
       success: false,
-      error: 'REPLICATE_API_TOKEN not configured'
+      error: 'RUNWAYML_API_SECRET not configured'
     };
   }
 
-  const replicate = new Replicate({
-    auth: apiToken,
+  const client = new RunwayML({
+    apiKey: runwayApiKey,
   });
 
   try {
-    console.log("Starting Cinematic Video Generation (SVD)...");
-    const output = await replicate.run(
-      SVD_MODEL,
-      {
-        input: {
-          input_image: imageUrl,
-          video_length: "25_frames_with_svd_xt",
-          sizing_strategy: "maintain_aspect_ratio",
-          motion_bucket_id: 127,
-          frames_per_second: 6,
-          cond_aug: 0.02
-        }
-      }
-    );
+    console.log("Starting Cinematic Video Generation (Runway Gen-3)...");
 
-    let videoUrl: string | null = null;
-    if (output instanceof ReadableStream) {
-      videoUrl = await consumeStream(output);
-    } else {
-      videoUrl = extractUrlFromOutput(output);
+    // Create the image-to-video task
+    const task = await client.imageToVideo.create({
+      model: "gen3a_turbo",
+      promptImage: imageUrl,
+      promptText: "A high fashion cinematic lookbook shot, highly detailed, photorealistic, elegant motion",
+    });
+
+    console.log("Task created:", task.id);
+
+    // Poll the task until it resolves
+    let currentTask = task;
+    while (currentTask.status !== "SUCCEEDED" && currentTask.status !== "FAILED" && currentTask.status !== "CANCELLED") {
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      currentTask = await client.tasks.retrieve(task.id);
+      console.log(`Task ${task.id} status:`, currentTask.status);
     }
 
-    if (videoUrl) {
+    if (currentTask.status === "SUCCEEDED" && currentTask.output && currentTask.output.length > 0) {
       return {
         success: true,
-        videoUrl: videoUrl
+        videoUrl: currentTask.output[0]
       };
     } else {
+      console.error("Task failed or no output:", currentTask);
       return {
         success: false,
-        error: "No video URL in output"
+        error: "Video generation failed or returned no output."
       };
     }
 
