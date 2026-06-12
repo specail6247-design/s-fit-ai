@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { SupportHub } from '@/components/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +17,7 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isSupportHubOpen, setIsSupportHubOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -160,6 +162,18 @@ export default function RealLifeFitting() {
 
         </div>
       </div>
+
+      {/* Support Hub Trigger Button */}
+      <button
+        onClick={() => setIsSupportHubOpen(true)}
+        className="fixed bottom-6 right-6 w-12 h-12 bg-void-black border border-white/20 rounded-full flex items-center justify-center text-white/50 hover:text-cyber-lime hover:border-cyber-lime/50 transition-colors z-50 shadow-xl backdrop-blur-sm"
+        aria-label="Open Support Hub"
+      >
+        <span className="text-xl">?</span>
+      </button>
+
+      {/* Support Hub Component */}
+      <SupportHub isOpen={isSupportHubOpen} onClose={() => setIsSupportHubOpen(false)} />
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
