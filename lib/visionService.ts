@@ -26,7 +26,7 @@ export interface SizeRecommendation {
 // In a real production app, the API key should be handled via environment variables
 // and the analysis should ideally happen on the server to protect the key.
 const openai = new OpenAI({
-  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY || 'your-key-here',
+  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY || '',
   dangerouslyAllowBrowser: true, // For client-side demo purposes only
 });
 
