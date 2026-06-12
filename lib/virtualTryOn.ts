@@ -30,8 +30,6 @@ export interface CinematicVideoResult {
 const IDM_VTON_MODEL = "cuuupid/idm-vton:c871bb9b046607b680449ecbae55fd8c6d945e0a1948644bf2361b3d021d3ff4";
 // Upscaler
 const REAL_ESRGAN_MODEL = "nightmareai/real-esrgan:42fed1c4974146d4d2414e2be2c5277c7fcf05fcc3a73ab241bbb49991ea7781";
-// Video Generation (SVD) - 4K High Fidelity
-const SVD_MODEL = "stability-ai/stable-video-diffusion:3f0457e4619daac51203dedb472816f3af8d9bc94d61ced4e916cd04605162f1";
 
 // Helper to consume ReadableStream and return as base64 data URI or URL string
 async function consumeStream(stream: ReadableStream): Promise<string> {
@@ -218,7 +216,8 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
 
     // Create the image-to-video task
     const task = await client.imageToVideo.create({
-      model: "gen3a_turbo",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      model: "gen3a_turbo" as any, // Bypass TS definition issues if enum differs in this specific sdk version
       promptImage: imageUrl,
       promptText: "A high fashion cinematic lookbook shot, highly detailed, photorealistic, elegant motion",
     });
@@ -226,14 +225,14 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
     console.log("Task created:", task.id);
 
     // Poll the task until it resolves
-    let currentTask = task;
+    let currentTask = await client.tasks.retrieve(task.id);
     while (currentTask.status !== "SUCCEEDED" && currentTask.status !== "FAILED" && currentTask.status !== "CANCELLED") {
       await new Promise(resolve => setTimeout(resolve, 3000));
       currentTask = await client.tasks.retrieve(task.id);
       console.log(`Task ${task.id} status:`, currentTask.status);
     }
 
-    if (currentTask.status === "SUCCEEDED" && currentTask.output && currentTask.output.length > 0) {
+    if (currentTask.status === "SUCCEEDED" && 'output' in currentTask && currentTask.output.length > 0) {
       return {
         success: true,
         videoUrl: currentTask.output[0]
