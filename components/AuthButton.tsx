@@ -95,8 +95,8 @@ export function AuthButton() {
       </button>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md p-4">
+          <div className="bg-black border border-cyber-lime/30 shadow-[0_0_40px_rgba(204,255,0,0.15)] w-full max-w-sm rounded-none p-8 relative">
             <button
               onClick={() => setShowModal(false)}
               className="absolute top-4 right-4 text-soft-gray hover:text-white"
@@ -104,7 +104,7 @@ export function AuthButton() {
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
+            <h2 className="text-2xl font-black font-display tracking-[0.2em] text-white mb-8 text-center uppercase">
               {isLogin ? 'Welcome Back' : 'Create Account'}
             </h2>
 
@@ -114,7 +114,7 @@ export function AuthButton() {
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-transparent border-b border-white/20 rounded-none px-0 py-3 text-white text-sm focus:border-cyber-lime outline-none transition-colors placeholder:text-white/30"
                 required
               />
               <input
@@ -122,13 +122,13 @@ export function AuthButton() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-transparent border-b border-white/20 rounded-none px-0 py-3 text-white text-sm focus:border-cyber-lime outline-none transition-colors placeholder:text-white/30"
                 required
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="w-full bg-cyber-lime text-black font-black font-display tracking-[0.2em] py-4 rounded-none hover:brightness-110 transition-all disabled:opacity-50 uppercase mt-4"
               >
                 {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
               </button>
