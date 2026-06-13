@@ -96,6 +96,17 @@ interface StoreState {
   selectedItem: ClothingItem | null;
   setSelectedItem: (item: ClothingItem | null) => void;
 
+  // Phase 7: The Vault (Digital Wardrobe)
+  vaultItems: ClothingItem[];
+  saveToVault: (item: ClothingItem) => void;
+  removeFromVault: (itemId: string) => void;
+  isVaultOpen: boolean;
+  setVaultOpen: (isOpen: boolean) => void;
+
+  // Phase 7: Sensory Ambience
+  isSensoryAmbienceEnabled: boolean;
+  setSensoryAmbience: (enabled: boolean) => void;
+
   // Daily Usage (Freemium)
   dailyUsage: DailyUsage;
   incrementUsage: () => void;
@@ -186,6 +197,15 @@ export const useStore = create<StoreState>()(
       selectedItem: null,
       setSelectedItem: (item) => set({ selectedItem: item }),
 
+      vaultItems: [],
+      saveToVault: (item) => set((state) => ({ vaultItems: state.vaultItems.some(i => i.id === item.id) ? state.vaultItems : [...state.vaultItems, item] })),
+      removeFromVault: (itemId) => set((state) => ({ vaultItems: state.vaultItems.filter(i => i.id !== itemId) })),
+      isVaultOpen: false,
+      setVaultOpen: (isOpen) => set({ isVaultOpen: isOpen }),
+
+      isSensoryAmbienceEnabled: false,
+      setSensoryAmbience: (enabled) => set({ isSensoryAmbienceEnabled: enabled }),
+
       // Daily Usage
       dailyUsage: {
         count: 0,
@@ -257,6 +277,8 @@ export const useStore = create<StoreState>()(
         userStats: state.userStats,
         selectedAIModels: state.selectedAIModels,
         trainingData: state.trainingData,
+        vaultItems: state.vaultItems,
+        isSensoryAmbienceEnabled: state.isSensoryAmbienceEnabled,
       }),
     }
   )

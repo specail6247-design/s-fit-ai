@@ -25,6 +25,7 @@ import {
 } from '@/lib/visionService';
 import * as THREE from 'three';
 import { AvatarLoader } from './AvatarLoader';
+import { useSensoryAmbience } from '@/hooks/useSensoryAmbience';
 
 // Masterpiece Components
 import { FabricMaterial } from './masterpiece/FabricMaterial';
@@ -580,10 +581,30 @@ interface ItemCardProps {
 function ItemCard({
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
+  const [timeLeft, setTimeLeft] = useState('00:00:00');
+  useEffect(() => {
+    if (item.isLocked && item.unlockDate) {
+      const calculateTimeLeft = () => {
+        const difference = new Date(item.unlockDate!).getTime() - new Date().getTime();
+        if (difference > 0) {
+          const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+          const minutes = Math.floor((difference / 1000 / 60) % 60);
+          const seconds = Math.floor((difference / 1000) % 60);
+          setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+        } else {
+          setTimeLeft('00:00:00');
+        }
+      };
+      calculateTimeLeft();
+      const t = setInterval(calculateTimeLeft, 1000);
+      return () => clearInterval(t);
+    }
+  }, [item.isLocked, item.unlockDate]);
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
   return (
     <motion.button
-      onClick={onSelect}
+      onClick={item.isLocked ? undefined : onSelect}
+      disabled={item.isLocked}
       className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
@@ -592,6 +613,7 @@ function ItemCard({
         <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
         {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
         {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
+        {item.isLocked && <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center text-[0.5rem] font-bold text-pure-white z-10"><span>🔒 LOCKED</span><span>{timeLeft}</span></div>}
       </div>
       <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
       <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
@@ -830,11 +852,14 @@ function AITryOnModal({
 export function FittingRoom() {
   const {
     userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    vaultItems, saveToVault, removeFromVault, isVaultOpen, setVaultOpen,
+    isSensoryAmbienceEnabled, setSensoryAmbience
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
+  useSensoryAmbience();
   const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
   const [aiTryOnLoading, setAITryOnLoading] = useState(false);
   const [userPhotoPreview, setUserPhotoPreview] = useState<string | null>(null);
@@ -1000,6 +1025,9 @@ export function FittingRoom() {
             <button onClick={() => setShowHeatmap(!showHeatmap)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 🔥 Fit Heatmap
             </button>
+            <button onClick={() => setSensoryAmbience(!isSensoryAmbienceEnabled)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isSensoryAmbienceEnabled ? 'bg-cyan-500 text-black border-cyan-500' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                🎵 Ambience {isSensoryAmbienceEnabled ? 'ON' : 'OFF'}
+            </button>
         </div>
 
         {/* Rotation hint */}
@@ -1014,6 +1042,17 @@ export function FittingRoom() {
             <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
                 <span>📤</span>
             </button>
+            <button onClick={() => setVaultOpen(!isVaultOpen)} className="bg-charcoal/60 backdrop-blur-md px-3 py-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors text-xs flex items-center gap-1">
+              <span>💎</span> Vault ({vaultItems.length})
+            </button>
+            {currentItem && (
+              <button
+                onClick={() => vaultItems.find(i => i.id === currentItem.id) ? removeFromVault(currentItem.id) : saveToVault(currentItem)}
+                className="bg-charcoal/60 backdrop-blur-md px-3 py-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors text-xs flex items-center gap-1"
+              >
+                <span>{vaultItems.find(i => i.id === currentItem.id) ? '✓ Saved' : '+ Save Look'}</span>
+              </button>
+            )}
             <motion.button onClick={() => setShowAITryOnModal(true)} 
                            className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
                            whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -1112,6 +1151,11 @@ export function FittingRoom() {
             </div>
             <span className="text-[8px] text-soft-gray italic">Complete the Look</span>
           </div>
+          {currentItem.stylingTip && (
+            <div className="mb-3 px-3 py-2 bg-black/40 border border-cyber-lime/20 rounded-lg">
+              <p className="text-[10px] text-soft-gray"><span className="text-cyber-lime font-bold">Styling Tip:</span> {currentItem.stylingTip}</p>
+            </div>
+          )}
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {/* These would normally come from lib/visionService.getComplementaryItems */}
             {brandItems.filter(i => i.id !== currentItem.id).slice(0, 3).map((compItem) => (
@@ -1125,6 +1169,41 @@ export function FittingRoom() {
           </div>
         </div>
       )}
+
+      <AnimatePresence>
+        {isVaultOpen && (
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="absolute top-0 right-0 bottom-0 w-64 bg-void-black/95 backdrop-blur-xl border-l border-white/10 z-50 p-4 flex flex-col"
+          >
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-sm font-bold tracking-widest text-cyber-lime uppercase">The Vault</h2>
+              <button onClick={() => setVaultOpen(false)} className="text-soft-gray hover:text-white">✕</button>
+            </div>
+            <div className="flex-1 overflow-y-auto flex flex-col gap-3 scrollbar-hide">
+              {vaultItems.length === 0 ? (
+                <p className="text-xs text-soft-gray text-center mt-10">Your vault is empty. Save looks to compare.</p>
+              ) : (
+                vaultItems.map(item => (
+                  <div key={item.id} className="p-3 bg-charcoal/50 rounded-lg border border-white/5 flex gap-3">
+                    <div className="w-12 h-12 bg-black/50 rounded flex items-center justify-center text-xl">
+                      {getCategoryIcon(item.category)}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-[10px] font-bold text-white truncate">{item.name}</p>
+                      <p className="text-[9px] text-soft-gray">{item.brand}</p>
+                      <button onClick={() => removeFromVault(item.id)} className="text-[8px] text-red-400 mt-2 hover:text-red-300">Remove</button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <ShareModal 
         isOpen={showShareModal} 
