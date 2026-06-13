@@ -109,7 +109,7 @@ describe('Vision Service', () => {
 
     it('should prioritize matching colors (black/white)', () => {
         // Create a mock black item
-        const blackItem: ClothingItem = { ...getAllItems()[0], colors: ['Black'], category: 'tops' as const };
+        const blackItem: ClothingItem = { ...getAllItems()[0], colors: ['Black'], category: 'tops' };
         const recommendations = getComplementaryItems(blackItem);
         expect(recommendations.length).toBeGreaterThan(0);
     });
