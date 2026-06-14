@@ -25,10 +25,24 @@ export interface SizeRecommendation {
 
 // In a real production app, the API key should be handled via environment variables
 // and the analysis should ideally happen on the server to protect the key.
-const openai = new OpenAI({
-  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY || 'your-key-here',
-  dangerouslyAllowBrowser: true, // For client-side demo purposes only
-});
+let openaiClient: OpenAI | null = null;
+
+function getOpenAIClient(): OpenAI | null {
+  if (openaiClient) return openaiClient;
+
+  try {
+    const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
+    if (!apiKey) {
+      console.warn("OpenAI API key missing, falling back to mock analysis.");
+      return null;
+    }
+    openaiClient = new OpenAI({ apiKey });
+    return openaiClient;
+  } catch (error) {
+    console.warn("Failed to securely initialize OpenAI client. Using mock analysis.", error);
+    return null;
+  }
+}
 
 /**
  * Deep Analysis using GPT-4o Vision
@@ -37,9 +51,9 @@ export async function analyzeClothingStyle(imageUrl: string): Promise<ClothingSt
   // Use openai instance in the future for real API calls
   console.log("Starting Deep Vision Analysis for image:", imageUrl.substring(0, 50) + "...");
   
-  // Use openai instance to avoid unused warning
-  if (!openai.apiKey) {
-    console.warn("OpenAI API key missing, using mock analysis.");
+  const openai = getOpenAIClient();
+  if (!openai) {
+    console.warn("OpenAI client not initialized, using mock analysis.");
   }
 
   return new Promise((resolve) => {
