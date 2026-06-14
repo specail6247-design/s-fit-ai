@@ -2,6 +2,7 @@
 // https://replicate.com/cuuupid/idm-vton
 
 import Replicate from "replicate";
+import RunwayML from '@runwayml/sdk';
 import type { SegmentationResult } from './segmentation';
 
 export interface TryOnRequest {
@@ -198,52 +199,44 @@ export async function upscaleImage(imageUrl: string): Promise<string | null> {
 
 // Unified Video Generation (Runway/SVD)
 export async function generateCinematicVideo(imageUrl: string): Promise<CinematicVideoResult> {
-  const apiToken = process.env.REPLICATE_API_TOKEN;
+  const apiToken = process.env.RUNWAYML_API_SECRET;
 
   if (!apiToken) {
-    console.error("REPLICATE_API_TOKEN is not set");
+    console.error("RUNWAYML_API_SECRET is not set");
     return {
       success: false,
-      error: 'REPLICATE_API_TOKEN not configured'
+      error: 'RUNWAYML_API_SECRET not configured'
     };
   }
 
-  const replicate = new Replicate({
-    auth: apiToken,
+  const client = new RunwayML({
+    apiKey: apiToken,
   });
 
   try {
-    console.log("Starting Cinematic Video Generation (SVD)...");
-    const output = await replicate.run(
-      SVD_MODEL,
-      {
-        input: {
-          input_image: imageUrl,
-          video_length: "25_frames_with_svd_xt",
-          sizing_strategy: "maintain_aspect_ratio",
-          motion_bucket_id: 127,
-          frames_per_second: 6,
-          cond_aug: 0.02
-        }
-      }
-    );
+    console.log("Starting Cinematic Video Generation (Runway)...");
+    const imageToVideo = await client.imageToVideo.create({
+      model: 'gen4_turbo',
+      promptImage: imageUrl,
+      ratio: '1280:720',
+      promptText: 'A high-fashion cinematic runway motion of the provided garment.',
+    });
 
-    let videoUrl: string | null = null;
-    if (output instanceof ReadableStream) {
-      videoUrl = await consumeStream(output);
-    } else {
-      videoUrl = extractUrlFromOutput(output);
-    }
+    let taskStatus;
+    do {
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      taskStatus = await client.tasks.retrieve(imageToVideo.id);
+    } while (taskStatus.status !== 'SUCCEEDED' && taskStatus.status !== 'FAILED' && taskStatus.status !== 'CANCELLED');
 
-    if (videoUrl) {
+    if (taskStatus.status === 'SUCCEEDED' && taskStatus.output && taskStatus.output.length > 0) {
       return {
         success: true,
-        videoUrl: videoUrl
+        videoUrl: taskStatus.output[0]
       };
     } else {
       return {
         success: false,
-        error: "No video URL in output"
+        error: taskStatus.status === 'FAILED' ? (taskStatus as any).failure : "Failed to generate video"
       };
     }
 
