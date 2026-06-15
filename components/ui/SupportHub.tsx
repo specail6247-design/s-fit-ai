@@ -88,7 +88,7 @@ export function SupportHub({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                       <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-widest">How to Fit</h3>
                       <div className="flex overflow-x-auto gap-4 pb-4 snap-x">
                         {guideSteps.map((step, idx) => (
-                          <div key={idx} className="min-w-[200px] snap-center bg-white/5 border border-white/10 rounded-xl p-5 flex flex-col justify-center min-h-[160px]">
+                          <div key={idx} className="min-w-[200px] shrink-0 snap-center bg-white/5 border border-white/10 rounded-xl p-5 flex flex-col justify-center min-h-[160px]">
                             <h4 className="text-[#007AFF] font-bold text-sm mb-2">{step.title}</h4>
                             <p className="text-xs text-gray-400 leading-relaxed">{step.desc}</p>
                           </div>
