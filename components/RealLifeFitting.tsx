@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { SupportHub } from '@/components/ui/SupportHub';
+
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isSupportHubOpen, setIsSupportHubOpen] = useState(false);
+
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -209,6 +213,17 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      {/* Floating Help Button */}
+      <button
+        onClick={() => setIsSupportHubOpen(true)}
+        className="absolute bottom-6 right-6 z-30 w-12 h-12 bg-[#007AFF] text-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(0,122,255,0.4)] hover:scale-110 transition-transform font-bold font-mono text-xl"
+      >
+        ?
+      </button>
+
+      {/* Support Hub Drawer */}
+      <SupportHub isOpen={isSupportHubOpen} onClose={() => setIsSupportHubOpen(false)} />
     </div>
   );
 }
