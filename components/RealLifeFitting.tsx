@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { SupportHub, DataSafetyBadge, ShareToStory } from '@/components/support';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -104,6 +105,7 @@ export default function RealLifeFitting() {
                 </div>
               </label>
             </div>
+            <DataSafetyBadge />
           </div>
 
           {/* Garment Input */}
@@ -206,9 +208,11 @@ export default function RealLifeFitting() {
                 AI GENERATED_
               </div>
             </div>
+            <ShareToStory imageUrl={resultImage} />
           </motion.div>
         )}
       </div>
+      <SupportHub />
     </div>
   );
 }
