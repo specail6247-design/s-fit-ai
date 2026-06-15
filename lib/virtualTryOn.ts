@@ -214,10 +214,10 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
 
     // We initiate the task using imageToVideo.create
     const task = await client.imageToVideo.create({
-      model: 'gen3a_turbo',
+      model: 'gen4_turbo',
       promptImage: imageUrl,
       promptText: 'A high fashion cinematic runway shot.',
-      ratio: '1280:768'
+      ratio: '1280:720'
     });
 
     console.log("Task created with ID:", task.id);

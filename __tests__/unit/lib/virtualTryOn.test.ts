@@ -121,9 +121,9 @@ describe('Cinematic Video Generation', () => {
 
     expect(mockRunwayImageToVideoCreate).toHaveBeenCalledWith(
         expect.objectContaining({
-            model: 'gen3a_turbo',
+            model: 'gen4_turbo',
             promptImage: 'https://example.com/image.jpg',
-            ratio: '1280:768'
+            ratio: '1280:720'
         })
     );
     expect(mockRunwayTasksRetrieve).toHaveBeenCalledTimes(2);
