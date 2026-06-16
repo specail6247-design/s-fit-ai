@@ -310,7 +310,7 @@ function Mannequin({
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   // This suppresses the unused variable warning for opacity
-  const _unusedOpacity = opacity;
+  console.log('Opacity set:', opacity);
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
   
   return (
