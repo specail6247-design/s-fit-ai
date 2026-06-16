@@ -1,0 +1,4 @@
+## 2025-03-06 - Client-Side API Key Exposure Risk (NEXT_PUBLIC_)
+**Vulnerability:** The OpenAI client was initially using `process.env.NEXT_PUBLIC_OPENAI_API_KEY`. Any environment variable prefixed with `NEXT_PUBLIC_` in Next.js is automatically injected into the client bundle. This guarantees exposure of the key if a user configures it.
+**Learning:** Never use `NEXT_PUBLIC_` for secrets. Additionally, removing `dangerouslyAllowBrowser` breaks the OpenAI SDK entirely on the client-side. The true secure fix requires moving the API interaction entirely to a secure backend route rather than attempting to "securely" configure the client.
+**Prevention:** Hardcode a definitive mock key for client-side demo use to prevent developers from accidentally configuring a real key via `.env`. For real usage, build a backend proxy (`/api/vision`) that securely loads non-public environment variables.
