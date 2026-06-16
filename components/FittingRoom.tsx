@@ -1079,7 +1079,7 @@ export function FittingRoom() {
         brandName={currentItem?.brand} 
         fitScore={fitScore}
         recommendedSize={recommendedFit?.recommendedSize}
-        previewImage={aiTryOnResult || currentItem?.image || null}
+        previewImage={aiTryOnResult || currentItem?.imageUrl || null}
       />
       <CompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} picks={topPicks} onSelect={setSelectedItem} />
       <AITryOnModal
