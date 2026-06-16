@@ -1,18 +1,29 @@
-import React from 'react'
-import { Inter } from 'next/font/google'
+import React from 'react';
+import { Cinzel, Space_Grotesk } from 'next/font/google';
 
-const inter = Inter({ subsets: ['latin'] })
+const cinzel = Cinzel({
+  subsets: ['latin'],
+  variable: '--font-cinzel',
+  display: 'swap',
+});
 
-export default function SPALayout({
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-space-grotesk',
+  display: 'swap',
+});
+
+export default function MFitLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <section className={inter.className}>
+    <div className={`bg-black min-h-screen text-white ${cinzel.variable} ${spaceGrotesk.variable}`}>
        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=optional" />
-      <style dangerouslySetInnerHTML={{__html: `
+       { }
+       <style dangerouslySetInnerHTML={{__html: `
         .material-symbols-outlined {
           font-family: 'Material Symbols Outlined';
           font-weight: normal;
@@ -29,6 +40,6 @@ export default function SPALayout({
         }
       `}} />
       {children}
-    </section>
-  )
+    </div>
+  );
 }

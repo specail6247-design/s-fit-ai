@@ -28,6 +28,8 @@
   /* Typography */
   --font-display: "Geist", -apple-system, sans-serif;
   --font-mono: "Geist Mono", monospace;
+  --font-cinzel: "Cinzel", serif;
+  --font-space-grotesk: "Space Grotesk", sans-serif;
 
   /* Transitions */
   --transition-fast: 150ms ease;
