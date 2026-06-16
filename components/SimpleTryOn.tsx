@@ -90,6 +90,7 @@ const SFitAIProject = () => {
         {finalResult && (
           <div style={styles.resultContainer}>
             <h2 style={styles.resultTitle}>Fitting Result</h2>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={finalResult} style={styles.finalImg} alt="Result" />
           </div>
         )}
