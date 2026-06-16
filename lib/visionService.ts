@@ -25,8 +25,11 @@ export interface SizeRecommendation {
 
 // In a real production app, the API key should be handled via environment variables
 // and the analysis should ideally happen on the server to protect the key.
+// SECURITY FIX: Using a strict mock key for client-side evaluation to prevent
+// accidental injection of real production keys via NEXT_PUBLIC_ env vars.
+// Real API interactions MUST be moved to a backend proxy/API route.
 const openai = new OpenAI({
-  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY || 'your-key-here',
+  apiKey: 'mock-key-for-client-demo-do-not-use-real-keys',
   dangerouslyAllowBrowser: true, // For client-side demo purposes only
 });
 
@@ -37,9 +40,8 @@ export async function analyzeClothingStyle(imageUrl: string): Promise<ClothingSt
   // Use openai instance in the future for real API calls
   console.log("Starting Deep Vision Analysis for image:", imageUrl.substring(0, 50) + "...");
   
-  // Use openai instance to avoid unused warning
-  if (!openai.apiKey) {
-    console.warn("OpenAI API key missing, using mock analysis.");
+  if (openai.apiKey === 'mock-key-for-client-demo-do-not-use-real-keys') {
+    console.warn("Using mock analysis to prevent client-side secret exposure.");
   }
 
   return new Promise((resolve) => {
