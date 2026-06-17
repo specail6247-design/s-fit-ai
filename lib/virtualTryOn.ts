@@ -213,10 +213,10 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
 
     // Create the video generation task
     const task = await client.imageToVideo.create({
-      model: 'gen3a_turbo',
+      model: 'gen4_turbo',
       promptImage: imageUrl,
       promptText: 'Cinematic, high fashion, smooth motion, high fidelity, 4k',
-      ratio: '1280:768',
+      ratio: '1280:720',
     });
 
     console.log(`RunwayML task created with ID: ${task.id}`);
