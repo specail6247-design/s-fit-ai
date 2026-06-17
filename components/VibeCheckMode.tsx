@@ -177,6 +177,14 @@ export function VibeCheckMode({ onComplete }: VibeCheckModeProps) {
         )}
       </div>
 
+      {/* Data Safety Badge */}
+      <div className="bg-cyber-lime/10 border border-cyber-lime/30 rounded-lg p-3 flex items-center gap-3">
+        <span className="text-xl">🔒</span>
+        <p className="text-xs text-cyber-lime font-medium leading-tight">
+          Photos are processed securely and not shared.
+        </p>
+      </div>
+
       {/* MediaPipe Analysis */}
       {analysisStatus !== 'idle' && (
         <div className="glass-card p-4">
