@@ -89,81 +89,89 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="bg-transparent border border-white/20 text-white px-5 py-2 rounded-full text-xs font-bold hover:border-cyber-lime hover:text-cyber-lime transition-all tracking-[0.2em] uppercase"
       >
-        LOGIN
+        MEMBER ACCESS
       </button>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-xl p-4">
+          {/* Glowing Accents */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg h-96 bg-cyber-lime/10 blur-[120px] rounded-full pointer-events-none" />
+
+          <div className="bg-black border border-white/10 shadow-[0_0_40px_rgba(204,255,0,0.05)] w-full max-w-sm rounded-none p-8 relative z-10">
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              className="absolute top-4 right-4 text-white/40 hover:text-white transition-colors p-2 text-xl font-light"
             >
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h2>
+            <div className="mb-10 text-center">
+              <h2 className="text-2xl font-black text-white font-[var(--font-display)] tracking-widest uppercase mb-2">
+                {isLogin ? 'MEMBER ACCESS' : 'BECOME A MEMBER'}
+              </h2>
+              <div className="w-12 h-0.5 bg-cyber-lime mx-auto" />
+            </div>
 
-            <form onSubmit={handleAuth} className="space-y-4 mb-6">
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
+            <form onSubmit={handleAuth} className="space-y-6 mb-8">
+              <div className="space-y-4">
+                <input
+                  type="email"
+                  placeholder="EMAIL"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white text-sm focus:border-cyber-lime outline-none transition-colors placeholder:text-white/30 tracking-wider"
+                  required
+                />
+                <input
+                  type="password"
+                  placeholder="PASSWORD"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white text-sm focus:border-cyber-lime outline-none transition-colors placeholder:text-white/30 tracking-wider"
+                  required
+                />
+              </div>
+
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="w-full bg-cyber-lime text-black font-black py-4 hover:bg-white hover:text-black transition-all disabled:opacity-50 tracking-[0.2em] uppercase text-sm"
               >
-                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+                {loading ? 'AUTHENTICATING...' : (isLogin ? 'ENTER' : 'APPLY')}
               </button>
             </form>
 
-            <div className="flex items-center gap-2 mb-6">
+            <div className="flex items-center gap-4 mb-8">
               <div className="h-px bg-white/10 flex-1" />
-              <span className="text-xs text-soft-gray">OR SOCIAL LOGIN</span>
+              <span className="text-[10px] text-white/40 tracking-widest">OR CONNECT WITH</span>
               <div className="h-px bg-white/10 flex-1" />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <button onClick={() => handleSocialLogin('google')} className="bg-white/5 hover:bg-white/10 border border-white/10 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🇬</span> <span className="text-xs text-white">Google</span>
+            <div className="grid grid-cols-4 gap-2">
+              <button onClick={() => handleSocialLogin('google')} className="bg-white/5 hover:bg-white/10 border border-white/10 py-3 flex items-center justify-center transition-all hover:border-white/30">
+                <span className="text-lg">G</span>
               </button>
-              <button onClick={() => handleSocialLogin('kakao')} className="bg-[#FAE100] hover:bg-[#FADB00] text-[#371D1E] py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">💬</span> <span className="text-xs font-bold">Kakao</span>
+              <button onClick={() => handleSocialLogin('kakao')} className="bg-[#FAE100]/10 hover:bg-[#FAE100]/20 text-[#FAE100] border border-[#FAE100]/20 py-3 flex items-center justify-center transition-all hover:border-[#FAE100]/50 font-bold">
+                K
               </button>
-              <button onClick={() => handleSocialLogin('apple')} className="bg-white hover:bg-gray-100 text-black py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🍎</span> <span className="text-xs font-bold">Apple</span>
+              <button onClick={() => handleSocialLogin('apple')} className="bg-white/5 hover:bg-white/10 border border-white/10 py-3 flex items-center justify-center transition-all hover:border-white/30">
+                <span className="text-lg">A</span>
               </button>
-              <button onClick={() => handleSocialLogin('discord')} className="bg-[#5865F2] hover:bg-[#4752C4] text-white py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🎮</span> <span className="text-xs font-bold">Discord</span>
+              <button onClick={() => handleSocialLogin('discord')} className="bg-[#5865F2]/10 hover:bg-[#5865F2]/20 text-[#5865F2] border border-[#5865F2]/20 py-3 flex items-center justify-center transition-all hover:border-[#5865F2]/50 font-bold">
+                D
               </button>
             </div>
 
-            <p className="mt-6 text-center text-xs text-soft-gray">
-              {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
+            <div className="mt-8 pt-6 border-t border-white/10 text-center">
               <button
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-cyber-lime hover:underline ml-1"
+                className="text-[10px] text-white/50 hover:text-cyber-lime transition-colors tracking-widest uppercase"
               >
-                {isLogin ? 'Sign up' : 'Log in'}
+                {isLogin ? 'REQUEST MEMBERSHIP' : 'ALREADY A MEMBER?'}
               </button>
-            </p>
+            </div>
           </div>
         </div>
       )}
