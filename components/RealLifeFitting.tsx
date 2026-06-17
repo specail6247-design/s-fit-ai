@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import SupportHub from '@/components/SupportHub';
+import { AuthButton } from '@/components/AuthButton';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -79,13 +81,16 @@ export default function RealLifeFitting() {
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+        <header className="mb-10 relative z-10 flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-black tracking-tighter italic">
+              S_FIT <span className="text-[#007AFF]">NEO</span>
+            </h1>
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+              Professional Virtual Fitting
+            </p>
+          </div>
+          <AuthButton />
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
@@ -121,6 +126,11 @@ export default function RealLifeFitting() {
                 </div>
               </label>
             </div>
+          </div>
+
+          <div className="flex items-center justify-center gap-2 text-[10px] text-gray-500 mt-4 border border-white/5 bg-black/20 p-2 rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span>Photos are processed securely and not shared.</span>
           </div>
         </div>
 
@@ -208,6 +218,7 @@ export default function RealLifeFitting() {
             </div>
           </motion.div>
         )}
+        <SupportHub />
       </div>
     </div>
   );
