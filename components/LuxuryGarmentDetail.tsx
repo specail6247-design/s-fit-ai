@@ -1,10 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
+import { HyperZoomCanvas } from './masterpiece/HyperZoomCanvas';
+import { CinematicShare } from './masterpiece/CinematicShare';
 
 export default function LuxuryGarmentDetail() {
+  const [showShareModal, setShowShareModal] = useState(false);
+  const heroImageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E";
+
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -15,8 +20,11 @@ export default function LuxuryGarmentDetail() {
           </Link>
           <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center">S_FIT AI</h2>
           <div className="flex w-10 items-center justify-end">
-            <button className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
-              <span className="material-symbols-outlined">share</span>
+            <button
+              onClick={() => setShowShareModal(true)}
+              className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-[#ecab13]/20 hover:text-[#ecab13] transition-colors shadow-[0_0_10px_rgba(236,171,19,0)] hover:shadow-[0_0_15px_rgba(236,171,19,0.5)] border border-transparent hover:border-[#ecab13]/50"
+            >
+              <span className="material-symbols-outlined text-lg">movie</span>
             </button>
           </div>
         </div>
@@ -26,21 +34,19 @@ export default function LuxuryGarmentDetail() {
       <main className="max-w-md mx-auto pt-16 pb-32">
         {/* 3D Interactive Viewport (Hero Image) */}
         <div className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900">
-          <div 
-            className="absolute inset-0 bg-cover bg-center" 
-            style={{ 
-              backgroundImage: 'linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' 
-            }}
-          />
+          <HyperZoomCanvas diffuseMapUrl={heroImageUrl} />
+
+          {/* Fallback overlay to fade out the top slightly for the 3D text */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent pointer-events-none" />
           
           {/* 3D UI Overlays */}
-          <div className="absolute bottom-6 left-4 right-4 flex justify-between items-end">
-            <div className="bg-black/40 backdrop-blur-md rounded-lg p-2 flex flex-col gap-2 border border-white/10">
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">zoom_in</span></button>
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">360</span></button>
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">light_mode</span></button>
+          <div className="absolute bottom-6 left-4 right-4 flex justify-between items-end pointer-events-none">
+            <div className="bg-black/40 backdrop-blur-md rounded-lg p-2 flex flex-col gap-2 border border-white/10 pointer-events-auto">
+              <button className="size-8 flex items-center justify-center text-white hover:bg-[#ecab13]/20 rounded transition-colors"><span className="material-symbols-outlined text-sm">zoom_in</span></button>
+              <button className="size-8 flex items-center justify-center text-[#ecab13] bg-white/5 rounded"><span className="material-symbols-outlined text-sm">360</span></button>
+              <button className="size-8 flex items-center justify-center text-white hover:bg-[#ecab13]/20 rounded transition-colors"><span className="material-symbols-outlined text-sm">light_mode</span></button>
             </div>
-            <div className="text-right">
+            <div className="text-right pointer-events-auto">
               <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mb-1">Authentic Render</p>
               <h1 className="text-white text-3xl font-extralight leading-tight">Metallic Silk <br/><span className="font-bold">Evening Blazer</span></h1>
             </div>
@@ -74,7 +80,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
@@ -134,13 +140,23 @@ export default function LuxuryGarmentDetail() {
       <div className="fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex gap-4 items-center z-50">
         <div className="flex flex-col flex-1">
           <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
-          <p className="text-white text-xl font-bold">$2,850</p>
+          <p className="text-white text-xl font-bold">$12,500</p>
         </div>
         <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
           <span className="material-symbols-outlined font-bold">person_add_alt</span>
           <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
         </Link>
       </div>
+
+      {/* Share Modal */}
+      <AnimatePresence>
+        {showShareModal && (
+          <CinematicShare
+            imageUrl={heroImageUrl}
+            onClose={() => setShowShareModal(false)}
+          />
+        )}
+      </AnimatePresence>
 
       <style jsx global>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
