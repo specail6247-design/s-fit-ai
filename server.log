@@ -12,7 +12,143 @@ This information is used to shape Next.js' roadmap and prioritize features.
 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
 https://nextjs.org/telemetry
 
-✓ Ready in 1780ms
-○ Compiling /cinematic-demo ...
+✓ Ready in 1986ms
+○ Compiling / ...
 ⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
- GET /cinematic-demo 200 in 12.4s (compile: 12.0s, render: 401ms)
+ GET / 200 in 24.0s (compile: 22.1s, render: 1904ms)
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:105:1]
+ 102 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+ 103 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 104 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 105 |                   <img src={userImage} alt="User photo" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                        ^^^
+ 106 |                 </div>
+ 107 |                 <div>
+ 108 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:105:1]
+ 102 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+ 103 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 104 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 105 |                   <img src={userImage} alt="User photo" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                        ^^^
+ 106 |                 </div>
+ 107 |                 <div>
+ 108 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:105:1]
+ 102 |               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
+ 103 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 104 |                   {userImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 105 |                   <img src={userImage} alt="User photo" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                        ^^^
+ 106 |                 </div>
+ 107 |                 <div>
+ 108 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[/app/components/RealLifeFitting.tsx:106:1]
+ 103 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 104 |                   {userImage ? (<>
+ 105 | {/* eslint-disable-next-line @next/next/no-img-element */}
+ 106 |                   <img src={userImage} alt="User photo" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+     :                                                                                                                                         ^
+ 107 |                 </div>
+ 108 |                 <div>
+ 109 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+     `----
+  x Expected '</', got 'div'
+     ,-[/app/components/RealLifeFitting.tsx:107:1]
+ 104 |                   {userImage ? (<>
+ 105 | {/* eslint-disable-next-line @next/next/no-img-element */}
+ 106 |                   <img src={userImage} alt="User photo" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+ 107 |                 </div>
+     :                   ^^^
+ 108 |                 <div>
+ 109 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
+ 110 |                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Expected '</', got 'src'
+     ,-[/app/components/RealLifeFitting.tsx:124:1]
+ 121 |               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
+ 122 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 123 |                   {garmentImage ? {/* eslint-disable-next-line @next/next/no-img-element */}
+ 124 |                   <img src={garmentImage} alt="Garment photo" className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+     :                        ^^^
+ 125 |                 </div>
+ 126 |                 <div>
+ 127 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
+⨯ ./components/RealLifeFitting.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[/app/components/RealLifeFitting.tsx:125:1]
+ 122 |                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+ 123 |                   {garmentImage ? (<>
+ 124 | {/* eslint-disable-next-line @next/next/no-img-element */}
+ 125 |                   <img src={garmentImage} alt="Garment photo" className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+     :                                                                                                                                               ^
+ 126 |                 </div>
+ 127 |                 <div>
+ 128 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
+     `----
+  x Expected '</', got 'div'
+     ,-[/app/components/RealLifeFitting.tsx:126:1]
+ 123 |                   {garmentImage ? (<>
+ 124 | {/* eslint-disable-next-line @next/next/no-img-element */}
+ 125 |                   <img src={garmentImage} alt="Garment photo" className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+ 126 |                 </div>
+     :                   ^^^
+ 127 |                 <div>
+ 128 |                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
+ 129 |                   <div className="text-[10px] text-gray-500">Front view preferred</div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/RealLifeFitting.tsx
+./app/page.tsx
