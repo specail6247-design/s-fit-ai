@@ -256,8 +256,5 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
   }
 }
 
-// Keep generateRunwayVideo as an alias for backward compatibility or internal use
-export const generateRunwayVideo = async (imageUrl: string) => {
-    const res = await generateCinematicVideo(imageUrl);
-    return res.success ? res.videoUrl : null;
-};
+// Re-export runway function
+export { generateRunwayVideo } from './runwayApi';
