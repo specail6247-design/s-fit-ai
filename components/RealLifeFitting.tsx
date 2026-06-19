@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { HelpCircle } from 'lucide-react';
+import { DataSafetyBadge } from './ui/DataSafetyBadge';
+import { SupportHub } from './ui/SupportHub';
+import { ShareToStory } from './ui/ShareToStory';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +20,7 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isSupportHubOpen, setIsSupportHubOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -122,6 +127,9 @@ export default function RealLifeFitting() {
               </label>
             </div>
           </div>
+
+          {/* Data Safety Badge */}
+          <DataSafetyBadge />
         </div>
 
         {/* Action Button */}
@@ -163,6 +171,18 @@ export default function RealLifeFitting() {
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
+        {/* Support Hub Toggle Button */}
+        <button
+          onClick={() => setIsSupportHubOpen(true)}
+          className="absolute top-8 right-8 z-30 flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs font-bold text-gray-300 transition-colors backdrop-blur-md"
+        >
+          <HelpCircle className="w-4 h-4 text-[#007AFF]" />
+          SUPPORT
+        </button>
+
+        {/* Support Hub Drawer */}
+        <SupportHub isOpen={isSupportHubOpen} onClose={() => setIsSupportHubOpen(false)} />
+
         {/* Background Image (Night City Vibe) */}
         <div className="absolute inset-0 opacity-40 z-0">
            {/* Placeholder for Night City HDRI background visual */}
@@ -205,6 +225,8 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+              <ShareToStory resultImageUrl={resultImage} />
             </div>
           </motion.div>
         )}
