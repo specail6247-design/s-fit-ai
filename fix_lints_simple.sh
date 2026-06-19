@@ -1,0 +1,4 @@
+#!/bin/bash
+sed -i 's/{userImage && <img src={userImage} style={styles.preview} alt="User" \/>}/{userImage \&\& ( <>\n                {\/* eslint-disable-next-line @next\/next\/no-img-element *\/}\n                <img src={userImage} style={styles.preview} alt="User" \/>\n              <\/>\n              )}/g' components/SimpleTryOn.tsx
+sed -i 's/{clothingImage && <img src={clothingImage} style={styles.preview} alt="Cloth" \/>}/{clothingImage \&\& ( <>\n                {\/* eslint-disable-next-line @next\/next\/no-img-element *\/}\n                <img src={clothingImage} style={styles.preview} alt="Cloth" \/>\n              <\/>\n              )}/g' components/SimpleTryOn.tsx
+sed -i 's/<img src={finalResult} style={styles.finalImg} alt="Result" \/>/{\/* eslint-disable-next-line @next\/next\/no-img-element *\/}\n            <img src={finalResult} style={styles.finalImg} alt="Result" \/>/g' components/SimpleTryOn.tsx
