@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { DataSafetyBadge } from '@/components/ui/DataSafetyBadge';
+import { SupportHub } from '@/components/ui/SupportHub';
+import { StoryShareModal } from '@/components/ui/StoryShareModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -13,6 +16,7 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 export default function RealLifeFitting() {
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
@@ -101,6 +105,7 @@ export default function RealLifeFitting() {
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
+                  <DataSafetyBadge />
                 </div>
               </label>
             </div>
@@ -205,10 +210,19 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={() => setIsShareModalOpen(true)}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white rounded-full px-4 py-2 hover:opacity-90 transition-opacity font-bold text-sm flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-[18px]">share</span>
+                Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+      <StoryShareModal isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)} resultImage={resultImage || ''} />
+      <SupportHub />
     </div>
   );
 }

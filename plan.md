@@ -1,0 +1,8 @@
+1. Modify `components/RealLifeFitting.tsx` to add imports for `DataSafetyBadge`, `SupportHub`, and `StoryShareModal` after line 4.
+2. Add `isShareModalOpen` state variable initialization to `components/RealLifeFitting.tsx` at line 14.
+3. Add `DataSafetyBadge` to `components/RealLifeFitting.tsx` by replacing line 103 with `<div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div><DataSafetyBadge />`.
+4. Add `StoryShareModal` and `SupportHub` to `components/RealLifeFitting.tsx` by replacing line 212 with `<StoryShareModal isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)} resultImage={resultImage || ''} /><SupportHub /></div>`.
+5. Add a "Share to IG Story" button in `components/RealLifeFitting.tsx` within the `{resultImage && !isProcessing && (...)}` block by replacing lines 205-207 with `              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">AI GENERATED_</div><button onClick={() => setIsShareModalOpen(true)} className="absolute bottom-4 right-4 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white rounded-full px-4 py-2 hover:opacity-90 transition-opacity font-bold text-sm flex items-center gap-2"><span className="material-symbols-outlined text-[18px]">share</span>Share to Story</button>`.
+6. Verify modifications to `components/RealLifeFitting.tsx` by running `read_file` to confirm the exact contents.
+7. Run `npm run lint`, `npm run build`, and `npm run test` to ensure no regressions.
+8. Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done.
