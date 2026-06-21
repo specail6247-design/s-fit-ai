@@ -223,7 +223,7 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
     });
 
     const taskId = task.id;
-    let status = task.status;
+    let status = 'PENDING';
     let videoUrl: string | null = null;
     let attempts = 0;
     const maxAttempts = 60; // 5 min max
@@ -234,7 +234,7 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
       status = taskStatus.status;
       attempts++;
       if (status === 'SUCCEEDED') {
-        videoUrl = taskStatus.output?.[0] ?? null;
+        videoUrl = (taskStatus as any).output?.[0] ?? null;
       } else if (status === 'FAILED' || status === 'CANCELLED') {
         return {
           success: false,
