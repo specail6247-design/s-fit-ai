@@ -290,20 +290,3 @@ body {
     padding: var(--spacing-lg);
   }
 }
-
-@keyframes slide-down {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100%); }
-}
-@keyframes slide-up {
-  0% { transform: translateY(100%); }
-  100% { transform: translateY(-100%); }
-}
-@keyframes slide-right {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-@keyframes slide-left {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
-}
