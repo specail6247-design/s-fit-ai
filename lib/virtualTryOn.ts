@@ -2,6 +2,7 @@
 // https://replicate.com/cuuupid/idm-vton
 
 import Replicate from "replicate";
+import RunwayML from '@runwayml/sdk';
 import type { SegmentationResult } from './segmentation';
 
 export interface TryOnRequest {
@@ -196,43 +197,57 @@ export async function upscaleImage(imageUrl: string): Promise<string | null> {
   }
 }
 
-// Unified Video Generation (Runway/SVD)
+// Unified Video Generation (RunwayML Gen-4)
 export async function generateCinematicVideo(imageUrl: string): Promise<CinematicVideoResult> {
-  const apiToken = process.env.REPLICATE_API_TOKEN;
+  const apiSecret = process.env.RUNWAYML_API_SECRET;
 
-  if (!apiToken) {
-    console.error("REPLICATE_API_TOKEN is not set");
+  if (!apiSecret) {
+    console.error("RUNWAYML_API_SECRET is not set");
     return {
       success: false,
-      error: 'REPLICATE_API_TOKEN not configured'
+      error: 'RUNWAYML_API_SECRET not configured'
     };
   }
 
-  const replicate = new Replicate({
-    auth: apiToken,
+  const runway = new RunwayML({
+    apiKey: apiSecret,
   });
 
   try {
-    console.log("Starting Cinematic Video Generation (SVD)...");
-    const output = await replicate.run(
-      SVD_MODEL,
-      {
-        input: {
-          input_image: imageUrl,
-          video_length: "25_frames_with_svd_xt",
-          sizing_strategy: "maintain_aspect_ratio",
-          motion_bucket_id: 127,
-          frames_per_second: 6,
-          cond_aug: 0.02
-        }
-      }
-    );
+    console.log("Starting Cinematic Video Generation (RunwayML)...");
+    const task = await runway.imageToVideo.create({
+      model: 'gen4_turbo',
+      promptImage: imageUrl,
+      promptText: "High fashion cinematic motion, realistic physics, highly detailed",
+      ratio: '1280:720',
+    });
 
+    const taskId = task.id;
+    let status = 'PENDING';
     let videoUrl: string | null = null;
-    if (output instanceof ReadableStream) {
-      videoUrl = await consumeStream(output);
-    } else {
-      videoUrl = extractUrlFromOutput(output);
+    let attempts = 0;
+    const maxAttempts = 60; // 5 min max
+
+    while (status !== 'SUCCEEDED' && status !== 'FAILED' && status !== 'CANCELLED' && attempts < maxAttempts) {
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      const taskStatus = await runway.tasks.retrieve(taskId);
+      status = taskStatus.status;
+      attempts++;
+      if (status === 'SUCCEEDED') {
+        videoUrl = (taskStatus as unknown as { output?: string[] }).output?.[0] ?? null;
+      } else if (status === 'FAILED' || status === 'CANCELLED') {
+        return {
+          success: false,
+          error: `Task ${status.toLowerCase()}`
+        };
+      }
+    }
+
+    if (status !== 'SUCCEEDED' && attempts >= maxAttempts) {
+        return {
+            success: false,
+            error: 'Task timed out'
+        };
     }
 
     if (videoUrl) {
