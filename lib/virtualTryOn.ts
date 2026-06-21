@@ -234,7 +234,7 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
       status = taskStatus.status;
       attempts++;
       if (status === 'SUCCEEDED') {
-        videoUrl = (taskStatus as any).output?.[0] ?? null;
+        videoUrl = (taskStatus as unknown as { output?: string[] }).output?.[0] ?? null;
       } else if (status === 'FAILED' || status === 'CANCELLED') {
         return {
           success: false,
