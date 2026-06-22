@@ -607,10 +607,12 @@ interface ShareModalProps {
   brandName?: string;
   fitScore: number;
   recommendedSize?: string;
+  imageUrl?: string | null;
 }
 
-function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize }: ShareModalProps) {
+function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize, imageUrl }: ShareModalProps) {
   const [hasPublished, setHasPublished] = useState(false);
+  const [isGeneratingCinematic, setIsGeneratingCinematic] = useState(false);
   if (!isOpen) return null;
 
   const safeItemName = itemName ?? 'this fit';
@@ -642,12 +644,57 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
           <button onClick={() => handleShare('instagram')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-[#833AB4] to-[#F77737] text-xs"><span>📷</span> Instagram</button>
           <button onClick={() => handleShare('kakao')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#FEE500] text-black text-xs"><span>💬</span> KakaoStory</button>
         </div>
-        <div className="pt-4 border-t border-border-color">
+        <div className="pt-4 border-t border-border-color space-y-3">
           {hasPublished ? (
             <div className="bg-cyber-lime/10 border border-cyber-lime/30 rounded-lg p-2 text-center text-[10px] text-cyber-lime font-bold">✨ Published to Community Runway!</div>
           ) : (
             <button onClick={() => { setHasPublished(true); setTimeout(() => setHasPublished(false), 3000); }} className="btn-primary w-full py-2 text-xs">✨ Publish to Community</button>
           )}
+
+          <button
+            onClick={async () => {
+              if (!imageUrl) {
+                alert("Please generate a try-on first.");
+                return;
+              }
+              setIsGeneratingCinematic(true);
+              try {
+                const res = await fetch('/api/cinematic-try-on', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ imageUrl })
+                });
+                const data = await res.json();
+                if (data.success && data.videoUrl) {
+                  window.open(data.videoUrl, '_blank');
+                } else {
+                  alert(data.error || "Failed to generate cinematic video");
+                }
+              } catch (err) {
+                alert("An error occurred");
+              } finally {
+                setIsGeneratingCinematic(false);
+              }
+            }}
+            disabled={isGeneratingCinematic || !imageUrl}
+            className={`w-full py-2 text-xs rounded-full font-bold flex items-center justify-center gap-2 transition-all shadow-lg border ${
+              isGeneratingCinematic || !imageUrl
+                ? 'bg-neutral-800 text-neutral-500 border-neutral-700 cursor-not-allowed'
+                : 'bg-white text-black hover:bg-neutral-200 border-white hover:scale-[1.02]'
+            }`}
+          >
+            {isGeneratingCinematic ? (
+              <>
+                <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+                <span>Generating 4K Video...</span>
+              </>
+            ) : (
+              <>
+                <span>🎬</span>
+                <span>Export Cinematic Video</span>
+              </>
+            )}
+          </button>
         </div>
         <button onClick={onClose} className="w-full mt-4 py-2 text-soft-gray hover:text-white transition-colors text-xs">Close</button>
       </motion.div>
@@ -1133,6 +1180,7 @@ export function FittingRoom() {
         brandName={currentItem?.brand} 
         fitScore={fitScore}
         recommendedSize={recommendedFit?.recommendedSize}
+        imageUrl={aiTryOnResult}
       />
       <CompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} picks={topPicks} onSelect={setSelectedItem} />
       <AITryOnModal

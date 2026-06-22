@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateCinematicVideo } from '@/lib/virtualTryOn';
 
+export const maxDuration = 300; // 5 minutes max duration for Vercel
+
 export async function POST(req: NextRequest) {
   try {
     const { imageUrl } = await req.json();
