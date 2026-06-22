@@ -2,6 +2,7 @@
 // https://replicate.com/cuuupid/idm-vton
 
 import Replicate from "replicate";
+import RunwayML from "@runwayml/sdk";
 import type { SegmentationResult } from './segmentation';
 
 export interface TryOnRequest {
@@ -29,9 +30,6 @@ export interface CinematicVideoResult {
 const IDM_VTON_MODEL = "cuuupid/idm-vton:c871bb9b046607b680449ecbae55fd8c6d945e0a1948644bf2361b3d021d3ff4";
 // Upscaler
 const REAL_ESRGAN_MODEL = "nightmareai/real-esrgan:42fed1c4974146d4d2414e2be2c5277c7fcf05fcc3a73ab241bbb49991ea7781";
-// Video Generation (SVD) - 4K High Fidelity
-const SVD_MODEL = "stability-ai/stable-video-diffusion:3f0457e4619daac51203dedb472816f3af8d9bc94d61ced4e916cd04605162f1";
-
 // Helper to consume ReadableStream and return as base64 data URI or URL string
 async function consumeStream(stream: ReadableStream): Promise<string> {
   const reader = stream.getReader();
@@ -196,56 +194,82 @@ export async function upscaleImage(imageUrl: string): Promise<string | null> {
   }
 }
 
-// Unified Video Generation (Runway/SVD)
+// Unified Video Generation (RunwayML Gen-4 Turbo)
 export async function generateCinematicVideo(imageUrl: string): Promise<CinematicVideoResult> {
-  const apiToken = process.env.REPLICATE_API_TOKEN;
+  const apiToken = process.env.RUNWAYML_API_SECRET;
 
   if (!apiToken) {
-    console.error("REPLICATE_API_TOKEN is not set");
+    console.error("RUNWAYML_API_SECRET is not set");
     return {
       success: false,
-      error: 'REPLICATE_API_TOKEN not configured'
+      error: 'RUNWAYML_API_SECRET not configured'
     };
   }
 
-  const replicate = new Replicate({
-    auth: apiToken,
+  const runway = new RunwayML({
+    apiKey: apiToken,
   });
 
   try {
-    console.log("Starting Cinematic Video Generation (SVD)...");
-    const output = await replicate.run(
-      SVD_MODEL,
-      {
-        input: {
-          input_image: imageUrl,
-          video_length: "25_frames_with_svd_xt",
-          sizing_strategy: "maintain_aspect_ratio",
-          motion_bucket_id: 127,
-          frames_per_second: 6,
-          cond_aug: 0.02
+    console.log("Starting Cinematic Video Generation (RunwayML Gen-4 Turbo)...");
+
+    // Create task
+    const task = await runway.imageToVideo.create({
+      model: 'gen4_turbo',
+      promptImage: imageUrl,
+      ratio: '1280:720',
+      promptText: "Fashion runway model, cinematic lighting, 4K high fidelity, fluid motion, hyper-realistic textures."
+    });
+
+    const taskId = task.id;
+    console.log(`Runway task created: ${taskId}`);
+
+    // Polling loop
+    let status = 'PENDING';
+    const maxAttempts = 60; // Max 5 minutes (60 * 5s)
+    let attempts = 0;
+
+    while (attempts < maxAttempts) {
+      await new Promise(resolve => setTimeout(resolve, 5000)); // wait 5 seconds
+      attempts++;
+
+      const currentTask = await runway.tasks.retrieve(taskId);
+      status = currentTask.status;
+
+      console.log(`Polling Runway task ${taskId}: ${status}`);
+
+      if (status === 'SUCCEEDED') {
+        const currentTaskWithOutput = currentTask as unknown as { output?: string[] };
+        const videoUrl = currentTaskWithOutput.output?.[0];
+        if (videoUrl) {
+          return {
+            success: true,
+            videoUrl: videoUrl
+          };
+        } else {
+           return {
+             success: false,
+             error: "Task succeeded but no video URL found"
+           };
         }
+      } else if (status === 'FAILED') {
+        const currentTaskWithFailure = currentTask as unknown as { failure?: string };
+        return {
+          success: false,
+          error: `Runway task failed: ${currentTaskWithFailure.failure || 'Unknown failure'}`
+        };
+      } else if (status === 'CANCELLED') {
+        return {
+          success: false,
+          error: 'Runway task was cancelled'
+        };
       }
-    );
-
-    let videoUrl: string | null = null;
-    if (output instanceof ReadableStream) {
-      videoUrl = await consumeStream(output);
-    } else {
-      videoUrl = extractUrlFromOutput(output);
     }
 
-    if (videoUrl) {
-      return {
-        success: true,
-        videoUrl: videoUrl
-      };
-    } else {
-      return {
-        success: false,
-        error: "No video URL in output"
-      };
-    }
+    return {
+      success: false,
+      error: 'Runway task polling timed out after 5 minutes'
+    };
 
   } catch (error) {
     console.error('Cinematic video generation error:', error);
