@@ -1,15 +1,41 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Space_Grotesk } from "next/font/google";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isVaultOpen, setIsVaultOpen] = useState(false);
+  const [vaultItems, setVaultItems] = useState<{ id: string; name: string; image: string }[]>([]);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  const handleSaveLook = () => {
+    setVaultItems([...vaultItems, {
+      id: Date.now().toString(),
+      name: "Metallic Silk Evening Blazer",
+      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E"
+    }]);
+    setIsVaultOpen(true);
+  };
+
+  useEffect(() => {
+    if (audioRef.current) {
+      if (!isMuted) {
+        audioRef.current.play().catch(() => setIsMuted(true));
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isMuted]);
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
+      {/* Sensory Ambience Audio */}
+      <audio ref={audioRef} loop src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA" />
+
       {/* Top App Bar */}
       <div className="z-50 flex items-center justify-between bg-transparent p-4">
         <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
@@ -19,8 +45,11 @@ export default function PhotoFitting() {
           <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
-        <div className="flex w-12 items-center justify-end">
-          <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
+        <div className="flex items-center justify-end gap-2">
+          <button onClick={() => setIsMuted(!isMuted)} className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md transition-colors hover:bg-white/10">
+            <span className="material-symbols-outlined">{isMuted ? 'volume_off' : 'volume_up'}</span>
+          </button>
+          <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md transition-colors hover:bg-white/10">
             <span className="material-symbols-outlined">info</span>
           </button>
         </div>
@@ -121,6 +150,10 @@ export default function PhotoFitting() {
           <span className="material-symbols-outlined">check_circle</span>
           Confirm & Proceed to Checkout
         </button>
+        <button onClick={handleSaveLook} className="flex h-14 w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-transparent text-base font-bold text-white transition-colors hover:bg-white/5 mt-2">
+          <span className="material-symbols-outlined">favorite</span>
+          Save Look to Vault
+        </button>
         <div className="h-4"></div>
       </div>
 
@@ -139,6 +172,45 @@ export default function PhotoFitting() {
           <span className="text-[9px] font-bold uppercase text-white">Loose</span>
         </div>
       </div>
+
+      {/* The Vault Drawer */}
+      <div className={`absolute bottom-0 left-0 right-0 z-50 bg-[#101622]/95 backdrop-blur-xl border-t border-[#314368]/50 transition-transform duration-500 ease-out ${isVaultOpen ? 'translate-y-0' : 'translate-y-full'}`}>
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-bold tracking-widest uppercase text-white flex items-center gap-2">
+              <span className="material-symbols-outlined text-[#256af4]">inventory_2</span>
+              The Vault
+            </h3>
+            <button onClick={() => setIsVaultOpen(false)} className="size-8 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
+              <span className="material-symbols-outlined text-sm">close</span>
+            </button>
+          </div>
+
+          <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+            {vaultItems.length === 0 ? (
+              <div className="w-full py-8 flex flex-col items-center justify-center text-[#90a4cb]">
+                <span className="material-symbols-outlined text-3xl mb-2 opacity-50">wardrobe</span>
+                <p className="text-xs">Your vault is empty</p>
+              </div>
+            ) : (
+              vaultItems.map(item => (
+                <div key={item.id} className="min-w-[120px] flex flex-col gap-2">
+                  <div
+                    className="w-[120px] h-[160px] rounded-lg bg-cover bg-center border border-[#314368]/50 shadow-lg"
+                    style={{ backgroundImage: `url(${item.image})` }}
+                  />
+                  <p className="text-[10px] text-[#90a4cb] font-medium leading-tight line-clamp-2">{item.name}</p>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+
+      <style jsx global>{`
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
     </div>
   );
 }

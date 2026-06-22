@@ -40,7 +40,11 @@ export default function LuxuryGarmentDetail() {
               <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">360</span></button>
               <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">light_mode</span></button>
             </div>
-            <div className="text-right">
+            <div className="text-right flex flex-col items-end">
+              <div className="bg-black/80 backdrop-blur-md border border-[#ecab13]/30 px-3 py-1.5 rounded-full flex items-center gap-2 mb-3 self-end shadow-[0_0_15px_rgba(236,171,19,0.2)]">
+                <span className="material-symbols-outlined text-[#ecab13] text-sm animate-pulse">lock</span>
+                <span className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase">Locked &bull; Drops in 02:00:00</span>
+              </div>
               <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mb-1">Authentic Render</p>
               <h1 className="text-white text-3xl font-extralight leading-tight">Metallic Silk <br/><span className="font-bold">Evening Blazer</span></h1>
             </div>
@@ -91,6 +95,19 @@ export default function LuxuryGarmentDetail() {
           </div>
         </div>
 
+        {/* AI Stylist Note */}
+        <div className="px-4 mb-8">
+          <div className="bg-[#1a1a1a]/60 backdrop-blur-xl border border-[#2d2d2d] rounded-xl p-4 flex gap-4 items-start">
+            <div className="size-8 shrink-0 rounded-full bg-[#ecab13]/10 flex items-center justify-center border border-[#ecab13]/30">
+              <span className="material-symbols-outlined text-[#ecab13] text-sm">auto_awesome</span>
+            </div>
+            <div>
+              <h3 className="text-white text-xs font-bold tracking-[0.2em] uppercase mb-1">AI Stylist Note</h3>
+              <p className="text-zinc-400 text-sm leading-relaxed italic">"Styling Tip: Pair this with structured denim for a balanced silhouette."</p>
+            </div>
+          </div>
+        </div>
+
         {/* Macro Gallery */}
         <div className="mb-8">
           <div className="px-4 flex items-center justify-between mb-4">
@@ -136,9 +153,9 @@ export default function LuxuryGarmentDetail() {
           <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
           <p className="text-white text-xl font-bold">$2,850</p>
         </div>
-        <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
-          <span className="material-symbols-outlined font-bold">person_add_alt</span>
-          <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
+        <Link href="/luxury/fitting" className="flex-[2] bg-zinc-800 text-zinc-400 h-14 rounded-xl flex items-center justify-center gap-3 border border-zinc-700 pointer-events-none opacity-80">
+          <span className="material-symbols-outlined font-bold">lock</span>
+          <span className="font-bold text-sm tracking-widest uppercase">Preview Fit (Locked)</span>
         </Link>
       </div>
 
