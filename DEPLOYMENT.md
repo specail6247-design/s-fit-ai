@@ -26,6 +26,7 @@ Configure the following environment variables in your Vercel Project Settings:
 *   `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase Project URL.
 *   `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase Anonymous Key.
 *   `REPLICATE_API_TOKEN`: Your Replicate API Token.
+*   `RUNWAYML_API_SECRET`: Your RunwayML API Secret for generating videos.
 *   `NEXT_PUBLIC_APP_URL`: The URL of your deployed application (e.g., `https://s-fit-ai.vercel.app`).
 *   `GOOGLE_ANALYTICS_ID`: (Optional) Your Google Analytics ID.
 

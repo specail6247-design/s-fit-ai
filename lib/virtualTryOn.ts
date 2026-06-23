@@ -2,6 +2,7 @@
 // https://replicate.com/cuuupid/idm-vton
 
 import Replicate from "replicate";
+import RunwayML from '@runwayml/sdk';
 import type { SegmentationResult } from './segmentation';
 
 export interface TryOnRequest {
@@ -256,8 +257,52 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
   }
 }
 
-// Keep generateRunwayVideo as an alias for backward compatibility or internal use
+// Generate video using Runway Gen4 API
 export const generateRunwayVideo = async (imageUrl: string) => {
-    const res = await generateCinematicVideo(imageUrl);
-    return res.success ? res.videoUrl : null;
+    const apiKey = process.env.RUNWAYML_API_SECRET;
+    if (!apiKey) {
+      console.error("RUNWAYML_API_SECRET is not set");
+      return null;
+    }
+
+    const runway = new RunwayML({ apiKey });
+
+    try {
+      console.log("Starting Runway Video Generation (Gen-4 Turbo)...");
+      const task = await runway.imageToVideo.create({
+        model: 'gen4_turbo',
+        ratio: '1280:720',
+        promptImage: imageUrl,
+      });
+
+      const taskId = task.id;
+      console.log(`Runway task created: ${taskId}`);
+
+      let status = 'PENDING';
+      const maxAttempts = 60; // 5 minutes max
+      let currentAttempt = 0;
+
+      while (status !== 'SUCCEEDED' && status !== 'FAILED' && status !== 'CANCELLED' && currentAttempt < maxAttempts) {
+        currentAttempt++;
+        await new Promise(resolve => setTimeout(resolve, 5000)); // Poll every 5s
+
+        const taskStatus = await runway.tasks.retrieve(taskId);
+        status = taskStatus.status;
+        console.log(`Runway task status: ${status}`);
+
+        if (status === 'SUCCEEDED') {
+           const output = (taskStatus as unknown as { output?: string[] }).output;
+           if (output && output.length > 0) {
+               return output[0];
+           }
+        }
+      }
+
+      console.error(`Runway video generation failed or timed out. Status: ${status}`);
+      return null;
+
+    } catch (error) {
+      console.error('Runway video generation error:', error);
+      return null;
+    }
 };
