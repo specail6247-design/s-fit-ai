@@ -89,9 +89,9 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="bg-transparent border border-[#ecab13] text-[#ecab13] px-5 py-2 rounded-full text-xs font-mono font-bold tracking-widest hover:bg-[#ecab13] hover:text-black transition-all"
       >
-        LOGIN
+        MEMBER ACCESS
       </button>
 
       {showModal && (
@@ -104,8 +104,8 @@ export function AuthButton() {
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
+            <h2 className="text-xl font-bold text-white mb-6 text-center uppercase tracking-widest font-mono text-[#ecab13]">
+              {isLogin ? 'VIP Member Access' : 'Request VIP Access'}
             </h2>
 
             <form onSubmit={handleAuth} className="space-y-4 mb-6">
