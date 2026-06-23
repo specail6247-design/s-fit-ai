@@ -106,7 +106,7 @@ export function SupportHub() {
                   <span className="material-symbols-outlined transition-transform group-open:rotate-180 text-soft-gray">expand_more</span>
                 </summary>
                 <div className="px-4 pb-4 text-xs text-soft-gray leading-relaxed">
-                  This usually happens if the uploaded photo has poor lighting, is taken from a low angle, or if you are wearing baggy clothing. Try again following our "Best Results Guide" above.
+                  This usually happens if the uploaded photo has poor lighting, is taken from a low angle, or if you are wearing baggy clothing. Try again following our &quot;Best Results Guide&quot; above.
                 </div>
               </details>
             </div>
