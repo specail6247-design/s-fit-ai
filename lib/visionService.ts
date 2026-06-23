@@ -1,4 +1,4 @@
-import OpenAI from 'openai';
+
 
 // This service handles the 'Deep' analysis of clothing and body photos
 // to provide professional-grade fitting results.
@@ -23,42 +23,29 @@ export interface SizeRecommendation {
   fitNotes: string[];
 }
 
-// In a real production app, the API key should be handled via environment variables
-// and the analysis should ideally happen on the server to protect the key.
-const openai = new OpenAI({
-  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY || 'your-key-here',
-  dangerouslyAllowBrowser: true, // For client-side demo purposes only
-});
-
 /**
  * Deep Analysis using GPT-4o Vision
  */
 export async function analyzeClothingStyle(imageUrl: string): Promise<ClothingStyleAnalysis> {
-  // Use openai instance in the future for real API calls
   console.log("Starting Deep Vision Analysis for image:", imageUrl.substring(0, 50) + "...");
   
-  // Use openai instance to avoid unused warning
-  if (!openai.apiKey) {
-    console.warn("OpenAI API key missing, using mock analysis.");
-  }
+  try {
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
+    const response = await fetch(`${baseUrl}/api/vision`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageUrl }),
+    });
 
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        category: 'tops',
-        subCategory: 'sweatshirt',
-        fitType: 'oversized',
-        material: 'Heavy Cotton',
-        materialType: 'knit',
-        thickness: 7,
-        stretchFactor: 4,
-        drapingFactor: 3,
-        drapingLevel: 3,
-        stretchLevel: 4,
-        description: 'Heavyweight loopback cotton with a drop-shoulder oversized silhouette. The fabric has a substantial feel with moderate stretch.'
-      });
-    }, 2000);
-  });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error analyzing clothing style:", error);
+    throw error;
+  }
 }
 
 import { getSizeChart } from '@/data/sizeCharts';
