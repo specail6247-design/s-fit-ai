@@ -1,0 +1,4 @@
+## 2024-06-23 - Prevent client-side exposure of OpenAI API key
+**Vulnerability:** The lib/visionService.ts file included an instance of the OpenAI client instantiated with dangerouslyAllowBrowser: true and potentially using a NEXT_PUBLIC_OPENAI_API_KEY from environment variables, which could easily expose the API key to users on the client side in production.
+**Learning:** Instantiating the OpenAI client on the browser side is inherently insecure because the secret API keys are compiled into the client bundle and exposed to all users of the app.
+**Prevention:** All server-side operations that require private API keys should be moved to an API route (e.g. app/api/vision/route.ts). Any client code that needs these operations should send a request to the server instead of importing the API library directly.
