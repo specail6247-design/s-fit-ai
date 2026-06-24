@@ -122,6 +122,12 @@ export default function RealLifeFitting() {
               </label>
             </div>
           </div>
+
+          {/* Data Safety Badge */}
+          <div className="mt-6 flex items-center justify-center gap-2 bg-white/5 border border-white/10 rounded-lg p-3">
+            <span className="material-symbols-outlined text-green-400 text-sm">lock</span>
+            <span className="text-[10px] text-gray-400 tracking-widest uppercase font-[family-name:var(--font-space-grotesk)]">Photos are processed securely and not shared.</span>
+          </div>
         </div>
 
         {/* Action Button */}
