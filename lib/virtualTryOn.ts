@@ -2,6 +2,7 @@
 // https://replicate.com/cuuupid/idm-vton
 
 import Replicate from "replicate";
+import RunwayML from "@runwayml/sdk";
 import type { SegmentationResult } from './segmentation';
 
 export interface TryOnRequest {
@@ -198,55 +199,60 @@ export async function upscaleImage(imageUrl: string): Promise<string | null> {
 
 // Unified Video Generation (Runway/SVD)
 export async function generateCinematicVideo(imageUrl: string): Promise<CinematicVideoResult> {
-  const apiToken = process.env.REPLICATE_API_TOKEN;
+  const apiKey = process.env.RUNWAYML_API_SECRET;
 
-  if (!apiToken) {
-    console.error("REPLICATE_API_TOKEN is not set");
+  if (!apiKey) {
+    console.error("RUNWAYML_API_SECRET is not set");
     return {
       success: false,
-      error: 'REPLICATE_API_TOKEN not configured'
+      error: 'RUNWAYML_API_SECRET not configured'
     };
   }
 
-  const replicate = new Replicate({
-    auth: apiToken,
-  });
+  const runway = new RunwayML({ apiKey });
 
   try {
-    console.log("Starting Cinematic Video Generation (SVD)...");
-    const output = await replicate.run(
-      SVD_MODEL,
-      {
-        input: {
-          input_image: imageUrl,
-          video_length: "25_frames_with_svd_xt",
-          sizing_strategy: "maintain_aspect_ratio",
-          motion_bucket_id: 127,
-          frames_per_second: 6,
-          cond_aug: 0.02
+    console.log("Starting Cinematic Video Generation with RunwayML Gen-4...");
+    const imageToVideo = await runway.imageToVideo.create({
+      model: 'gen4_turbo',
+      promptImage: imageUrl,
+      ratio: '1280:720',
+    });
+
+    const taskId = imageToVideo.id;
+    let status = 'PENDING';
+    const maxAttempts = 60;
+    let attempt = 0;
+
+    console.log(`Runway task created: ${taskId}`);
+
+    while (status !== 'SUCCEEDED' && status !== 'FAILED' && status !== 'CANCELLED' && attempt < maxAttempts) {
+      console.log(`Polling task ${taskId}, attempt ${attempt + 1}/${maxAttempts}`);
+      const taskStatus = await runway.tasks.retrieve(taskId);
+      status = taskStatus.status || 'PENDING';
+
+      if (status === 'SUCCEEDED') {
+        const outputArr = (taskStatus as unknown as { output?: string[] }).output;
+        const videoUrl = outputArr && outputArr.length > 0 ? outputArr[0] : null;
+
+        if (videoUrl) {
+           return { success: true, videoUrl };
+        } else {
+           return { success: false, error: 'Task succeeded but no video URL found' };
         }
+      } else if (status === 'FAILED' || status === 'CANCELLED') {
+        return { success: false, error: `Task ended with status: ${status}` };
       }
-    );
 
-    let videoUrl: string | null = null;
-    if (output instanceof ReadableStream) {
-      videoUrl = await consumeStream(output);
-    } else {
-      videoUrl = extractUrlFromOutput(output);
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      attempt++;
     }
 
-    if (videoUrl) {
-      return {
-        success: true,
-        videoUrl: videoUrl
-      };
-    } else {
-      return {
-        success: false,
-        error: "No video URL in output"
-      };
+    if (attempt >= maxAttempts) {
+      return { success: false, error: 'Polling timeout exceeded' };
     }
 
+    return { success: false, error: 'Unknown state reached' };
   } catch (error) {
     console.error('Cinematic video generation error:', error);
     return {
