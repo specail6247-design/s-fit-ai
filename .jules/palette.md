@@ -1,0 +1,3 @@
+## 2023-10-27 - Accessible Icon-Only Buttons
+**Learning:** Icon-only buttons lacking ARIA attributes and focus indicators hinder keyboard and screen reader accessibility; using 'aria-label' on the button, 'aria-hidden="true"' on the icon, and focus-visible utilities resolves this cleanly.
+**Action:** Apply this specific accessibility pattern to all icon-only interactive elements to ensure a seamless accessible experience.
