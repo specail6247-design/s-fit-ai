@@ -89,32 +89,35 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="bg-transparent border border-[#ecab13] text-[#ecab13] px-6 py-2 rounded-full text-xs font-bold tracking-widest hover:bg-[#ecab13] hover:text-black transition-all"
       >
-        LOGIN
+        MEMBER ACCESS
       </button>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
+          <div className="bg-[#050505] border border-[#ecab13]/30 shadow-[0_0_40px_rgba(236,171,19,0.1)] w-full max-w-sm rounded-2xl p-8 relative">
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              className="absolute top-4 right-4 text-gray-500 hover:text-[#ecab13] transition-colors"
             >
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h2>
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-black text-white tracking-widest uppercase" style={{ fontFamily: 'Cinzel, serif' }}>
+                {isLogin ? 'ENTER VIP CLUB' : 'REQUEST ACCESS'}
+              </h2>
+              <div className="h-px w-12 bg-[#ecab13] mx-auto mt-4" />
+            </div>
 
-            <form onSubmit={handleAuth} className="space-y-4 mb-6">
+            <form onSubmit={handleAuth} className="space-y-5 mb-8">
               <input
                 type="email"
-                placeholder="Email"
+                placeholder="Email Address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-black border border-white/10 rounded-none px-4 py-3 text-white text-sm focus:border-[#ecab13] outline-none transition-colors"
                 required
               />
               <input
@@ -122,21 +125,21 @@ export function AuthButton() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-black border border-white/10 rounded-none px-4 py-3 text-white text-sm focus:border-[#ecab13] outline-none transition-colors"
                 required
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="w-full bg-[#ecab13] text-black font-bold tracking-widest uppercase py-3 rounded-none hover:brightness-110 transition-all disabled:opacity-50"
               >
-                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+                {loading ? 'Authenticating...' : (isLogin ? 'Sign In' : 'Join the Club')}
               </button>
             </form>
 
-            <div className="flex items-center gap-2 mb-6">
+            <div className="flex items-center gap-3 mb-6">
               <div className="h-px bg-white/10 flex-1" />
-              <span className="text-xs text-soft-gray">OR SOCIAL LOGIN</span>
+              <span className="text-[10px] tracking-widest text-gray-500 uppercase">External Access</span>
               <div className="h-px bg-white/10 flex-1" />
             </div>
 
