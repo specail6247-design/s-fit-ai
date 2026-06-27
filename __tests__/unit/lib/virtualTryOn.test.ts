@@ -106,8 +106,9 @@ describe('Cinematic Video Generation', () => {
     expect(result.videoUrl).toBe('https://runwayml.com/video.mp4');
     expect(mockRunwayImageToVideoCreate).toHaveBeenCalledWith(
         expect.objectContaining({
-            model: 'gen3a_turbo',
-            promptImage: 'https://runwayml.com/image.jpg'
+            model: 'gen4_turbo',
+            promptImage: 'https://runwayml.com/image.jpg',
+            ratio: '1280:720'
         })
     );
     expect(mockRunwayTasksRetrieve).toHaveBeenCalledWith('task-123');

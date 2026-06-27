@@ -213,8 +213,9 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
   try {
     console.log("Starting Cinematic Video Generation (Runway ML)...");
     const task = await client.imageToVideo.create({
-      model: 'gen3a_turbo',
+      model: 'gen4_turbo',
       promptImage: imageUrl,
+      ratio: '1280:720',
     });
 
     const taskId = task.id;
