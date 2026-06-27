@@ -2,9 +2,6 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { LegalModal } from '@/components/LegalModal';
-import { DataSafetyBadge } from '@/components/DataSafetyBadge';
-import { ShareToStory } from '@/components/ShareToStory';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -19,7 +16,6 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
-  const [activeModal, setActiveModal] = useState<'privacy' | 'terms' | null>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -108,9 +104,6 @@ export default function RealLifeFitting() {
                 </div>
               </label>
             </div>
-            <div className="mt-2">
-              <DataSafetyBadge />
-            </div>
           </div>
 
           {/* Garment Input */}
@@ -163,24 +156,10 @@ export default function RealLifeFitting() {
              <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                Luxury Line
              </a>
-             <a href="/support" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
-               Report Issue
-             </a>
           </div>
 
-          <div className="mt-6 flex justify-center gap-4 text-xs text-gray-500">
-            <button onClick={() => setActiveModal('privacy')} className="hover:text-white transition-colors underline-offset-4 hover:underline">Privacy Policy</button>
-            <span>|</span>
-            <button onClick={() => setActiveModal('terms')} className="hover:text-white transition-colors underline-offset-4 hover:underline">Terms of Service</button>
-          </div>
         </div>
       </div>
-
-      <LegalModal
-        isOpen={activeModal !== null}
-        onClose={() => setActiveModal(null)}
-        type={activeModal || 'privacy'}
-      />
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
@@ -226,9 +205,6 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
-            </div>
-            <div className="mt-4">
-              <ShareToStory resultImage={resultImage} />
             </div>
           </motion.div>
         )}
