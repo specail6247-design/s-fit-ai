@@ -1,0 +1,4 @@
+## 2024-05-20 - Path Traversal in File Reader
+**Vulnerability:** The try-on API endpoint allows users to specify local file paths (like `garmentImageUrl`), which are resolved using `path.join` without verification, leading to a path traversal vulnerability.
+**Learning:** `path.join` does not prevent directory traversal (e.g., `../`). When user input is combined with a base directory to read files, it can allow attackers to read arbitrary files on the server (like `package.json` or environment files) if not properly validated.
+**Prevention:** Always use `path.resolve(baseDir, userInput)` instead of `path.join()`, and explicitly verify that the resolved absolute path starts with the base directory path appended with `path.sep` (e.g., `absolutePath.startsWith(baseDir + path.sep)`).
