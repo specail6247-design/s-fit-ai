@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { AuthButton } from '@/components/AuthButton';
-import { SupportHub } from '@/components/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -189,11 +187,6 @@ export default function RealLifeFitting() {
           </ErrorBoundary>
         </div>
 
-        {/* Auth Button at Top Right */}
-        <div className="absolute top-6 right-8 z-30">
-          <AuthButton />
-        </div>
-
         {/* Result Overlay (If success) */}
         {resultImage && !isProcessing && (
           <motion.div 
@@ -216,8 +209,6 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
-
-      <SupportHub />
     </div>
   );
 }
