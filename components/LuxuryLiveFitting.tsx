@@ -10,7 +10,7 @@ const cinzel = Cinzel({ subsets: ["latin"] });
 
 export default function LuxuryLiveFitting() {
   const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
-  const [selectedBrand, setSelectedBrand] = useState<string | null>("S_FIT AI");
+  const [selectedBrand] = useState<string | null>("S_FIT AI");
   const [isLoading, setIsLoading] = useState(true);
 
   // Gold Ring Custom Cursor

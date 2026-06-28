@@ -9,7 +9,7 @@ interface LuxuryImageDistortionProps {
   className?: string;
 }
 
-export default function LuxuryImageDistortion({ src, alt, className = '' }: LuxuryImageDistortionProps) {
+export default function LuxuryImageDistortion({ src, className = '' }: LuxuryImageDistortionProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
