@@ -224,7 +224,7 @@ export async function generateCinematicVideo(imageUrl: string): Promise<Cinemati
     console.log(`Runway task created: ${taskId}`);
 
     // Poll for task completion
-    let status = task.status || 'PENDING';
+    let status = (task as unknown as Record<string, unknown>).status as string || 'PENDING';
     let videoUrl: string | null = null;
 
     while (status !== 'SUCCEEDED' && status !== 'FAILED') {
