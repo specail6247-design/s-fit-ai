@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateRunwayVideo, upscaleImage } from '@/lib/virtualTryOn';
 
+export const maxDuration = 300; // Prevent timeout during long-running AI video generation tasks
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
