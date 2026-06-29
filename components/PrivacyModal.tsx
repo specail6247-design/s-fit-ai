@@ -51,7 +51,7 @@ export default function PrivacyModal({ isOpen, onClose }: PrivacyModalProps) {
                 <section>
                   <h3 className="text-[#007AFF] font-bold mb-2 uppercase text-xs tracking-wider">2. Terms of Service</h3>
                   <p>
-                    By using this application, you agree to our terms of service. This service is provided "as is"
+                    By using this application, you agree to our terms of service. This service is provided &quot;as is&quot;
                     for demonstration and personal use. M_FIT reserves the right to suspend access in cases of misuse.
                   </p>
                 </section>
