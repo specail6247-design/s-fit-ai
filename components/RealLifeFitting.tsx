@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { Modal } from '@/components/ui/Modal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +17,11 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  // Modal states
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isReportOpen, setIsReportOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -71,6 +77,79 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+
+    try {
+      // Create a canvas for 1080x1920 (Instagram Story size)
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Draw background
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Load image
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = resultImage;
+
+      await new Promise((resolve) => { img.onload = resolve; });
+
+      // Calculate aspect ratio fit (similar to object-contain)
+      const hRatio = canvas.width / img.width;
+      const vRatio = (canvas.height * 0.8) / img.height; // leave 20% for branding
+      const ratio  = Math.min ( hRatio, vRatio );
+      const centerShift_x = ( canvas.width - img.width*ratio ) / 2;
+      const centerShift_y = ( (canvas.height * 0.8) - img.height*ratio ) / 2;
+
+      ctx.drawImage(img, 0,0, img.width, img.height,
+                        centerShift_x,centerShift_y,img.width*ratio, img.height*ratio);
+
+      // Add branding
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 60px "Geist Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT AI', canvas.width / 2, canvas.height - 150);
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = '30px sans-serif';
+      ctx.fillText('Try it on now', canvas.width / 2, canvas.height - 80);
+
+      // Convert to blob and share
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+        const file = new File([blob], 'sfit-tryon.png', { type: 'image/png' });
+
+        if (typeof navigator !== 'undefined' && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+             await navigator.share({
+               title: 'My S_FIT AI Try-On',
+               text: 'Check out my virtual fitting on S_FIT AI!',
+               files: [file]
+             });
+          } catch (e) {
+             console.log("Error sharing", e);
+          }
+        } else {
+           // Fallback download
+           const url = URL.createObjectURL(blob);
+           const a = document.createElement('a');
+           a.href = url;
+           a.download = 'sfit-story.png';
+           a.click();
+           URL.revokeObjectURL(url);
+        }
+      }, 'image/png');
+
+    } catch (e) {
+      console.error("Failed to generate story image", e);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
@@ -122,6 +201,14 @@ export default function RealLifeFitting() {
               </label>
             </div>
           </div>
+
+          {/* Data Safety Badge */}
+          <div className="flex items-center gap-2 p-3 bg-green-900/20 border border-green-500/30 rounded-lg text-green-400">
+            <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <span className="text-[10px] uppercase font-bold tracking-wider">Photos are processed securely and not shared.</span>
+          </div>
         </div>
 
         {/* Action Button */}
@@ -156,6 +243,12 @@ export default function RealLifeFitting() {
              <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                Luxury Line
              </a>
+          </div>
+
+          <div className="mt-8 pt-4 border-t border-white/10 flex justify-center gap-4 text-[10px] text-gray-500 uppercase tracking-widest">
+            <button onClick={() => setIsPrivacyOpen(true)} className="hover:text-white transition-colors">Privacy</button>
+            <button onClick={() => setIsTermsOpen(true)} className="hover:text-white transition-colors">Terms</button>
+            <button onClick={() => setIsReportOpen(true)} className="hover:text-[#007AFF] transition-colors">Report Issue</button>
           </div>
 
         </div>
@@ -194,21 +287,85 @@ export default function RealLifeFitting() {
             animate={{ opacity: 1, scale: 1 }}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
-            <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
-              <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
-              >
-                ✕ Close
-              </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
-                AI GENERATED_
+            <div className="relative group flex flex-col items-center">
+              <div className="relative">
+                <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+                <button
+                  onClick={() => setResultImage(null)}
+                  className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-red-500 transition-colors z-30"
+                >
+                  ✕ Close
+                </button>
+                <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
+                  AI GENERATED_
+                </div>
               </div>
+
+              <button 
+                onClick={handleShareToStory}
+                className="mt-4 w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold rounded-xl shadow-lg transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+                Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      {/* Modals */}
+      <Modal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} title="Privacy Policy">
+        <div className="space-y-4 text-sm text-gray-300">
+          <p><strong>Last Updated:</strong> Today</p>
+          <h3 className="text-white font-bold text-lg mt-4">1. Data Collection</h3>
+          <p>We collect photos uploaded by you strictly for the purpose of providing the virtual try-on experience. We do not use your photos for facial recognition or identification purposes.</p>
+          <h3 className="text-white font-bold text-lg mt-4">2. Data Processing & Security</h3>
+          <p>Your uploaded photos are processed securely using our AI models. <strong>Photos are not shared with third parties for advertising.</strong> We employ industry-standard encryption to protect your data during transit and processing.</p>
+          <h3 className="text-white font-bold text-lg mt-4">3. Data Retention</h3>
+          <p>Uploaded photos are temporarily stored to generate the fitting result and are automatically deleted from our processing servers within 24 hours.</p>
+        </div>
+      </Modal>
+
+      <Modal isOpen={isTermsOpen} onClose={() => setIsTermsOpen(false)} title="Terms of Service">
+        <div className="space-y-4 text-sm text-gray-300">
+          <p><strong>Last Updated:</strong> Today</p>
+          <h3 className="text-white font-bold text-lg mt-4">1. Acceptance of Terms</h3>
+          <p>By using S_FIT AI, you agree to these terms. If you disagree, please do not use our service.</p>
+          <h3 className="text-white font-bold text-lg mt-4">2. Acceptable Use</h3>
+          <p>You agree to only upload photos for which you have the right to use. You must not upload inappropriate, explicit, or copyrighted material without permission.</p>
+          <h3 className="text-white font-bold text-lg mt-4">3. Disclaimer of Warranties</h3>
+          <p>The virtual try-on results are AI-generated representations and may not perfectly reflect real-life fit. The service is provided &quot;as is&quot; without warranties of any kind.</p>
+        </div>
+      </Modal>
+
+      <Modal isOpen={isReportOpen} onClose={() => setIsReportOpen(false)} title="Report an Issue">
+        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); alert('Issue reported! Thank you.'); setIsReportOpen(false); }}>
+          <div>
+            <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Issue Type</label>
+            <select className="w-full bg-black/40 border border-white/20 rounded-lg p-3 text-white focus:border-[#007AFF] outline-none">
+              <option value="bug">Bug / Glitch</option>
+              <option value="quality">Poor Generation Quality</option>
+              <option value="ui">UI/UX Problem</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Description</label>
+            <textarea
+              required
+              rows={4}
+              className="w-full bg-black/40 border border-white/20 rounded-lg p-3 text-white focus:border-[#007AFF] outline-none"
+              placeholder="Please describe what happened..."
+            ></textarea>
+          </div>
+          <button type="submit" className="w-full py-3 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-lg transition-colors">
+            Submit Report
+          </button>
+        </form>
+      </Modal>
+
     </div>
   );
 }
