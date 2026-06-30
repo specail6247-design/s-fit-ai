@@ -239,6 +239,11 @@ body {
   letter-spacing: 0.05em;
 }
 
+/* Luxury Asset Curation */
+.editorial-asset {
+  filter: saturate(0.9) contrast(1.1);
+}
+
 /* Grain Overlay */
 .grain-overlay {
   position: fixed;
