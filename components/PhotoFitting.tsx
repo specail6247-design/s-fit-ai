@@ -7,22 +7,25 @@ const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const [isFitting, setIsFitting] = useState(false);
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
-      {/* Top App Bar */}
-      <div className="z-50 flex items-center justify-between bg-transparent p-4">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
-          <span className="material-symbols-outlined">arrow_back_ios_new</span>
-        </div>
-        <div className="flex flex-col items-center">
-          <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
-        </div>
-        <div className="flex w-12 items-center justify-end">
-          <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
-            <span className="material-symbols-outlined">info</span>
-          </button>
+      <div className={`absolute inset-0 z-10 transition-opacity duration-1000 ${isFitting ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+        {/* Top App Bar */}
+        <div className="z-50 flex items-center justify-between bg-transparent p-4">
+          <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
+            <span className="material-symbols-outlined">arrow_back_ios_new</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
+          </div>
+          <div className="flex w-12 items-center justify-end">
+            <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
+              <span className="material-symbols-outlined">info</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -61,7 +64,7 @@ export default function PhotoFitting() {
       </div>
 
       {/* Processing State (Overlay) */}
-      <div className="absolute inset-x-0 top-1/2 z-30 -translate-y-1/2 px-6">
+      <div className={`absolute inset-x-0 top-1/2 z-30 -translate-y-1/2 px-6 transition-opacity duration-1000 ${isFitting ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         <div className="glass-panel mx-auto max-w-sm rounded-xl p-6 shadow-2xl" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
           <div className="flex flex-col gap-3">
             <div className="flex items-end justify-between gap-6">
@@ -80,7 +83,7 @@ export default function PhotoFitting() {
       </div>
 
       {/* Controls Footer */}
-      <div className="mt-auto space-y-4 p-4 z-40">
+      <div className={`mt-auto space-y-4 p-4 z-40 transition-opacity duration-1000 ${isFitting ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         <div className="flex items-center justify-between px-2">
           <h3 className="text-sm font-bold leading-tight tracking-wider uppercase text-white">Fitting Controls</h3>
           <span className="rounded bg-[#256af4]/20 px-2 py-0.5 text-[10px] text-[#256af4]">ADVANCED</span>
@@ -117,15 +120,15 @@ export default function PhotoFitting() {
             </label>
           </div>
         </div>
-        <button className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-[#256af4] text-base font-bold text-white shadow-lg shadow-[#256af4]/20 transition-colors hover:bg-blue-600">
+        <button onClick={() => setIsFitting(true)} className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-[#256af4] text-base font-bold text-white shadow-lg shadow-[#256af4]/20 transition-colors hover:bg-blue-600 active:scale-95">
           <span className="material-symbols-outlined">check_circle</span>
-          Confirm & Proceed to Checkout
+          Enter Immersive Fitting
         </button>
         <div className="h-4"></div>
       </div>
 
       {/* Heatmap Legend */}
-      <div className="glass-panel absolute bottom-64 left-4 z-40 flex flex-col gap-1.5 rounded-lg p-2" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
+      <div className={`glass-panel absolute bottom-64 left-4 z-40 flex flex-col gap-1.5 rounded-lg p-2 transition-opacity duration-1000 ${isFitting ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
         <div className="flex items-center gap-2">
           <div className="size-2 rounded-full bg-red-500"></div>
           <span className="text-[9px] font-bold uppercase text-white">Tight</span>
