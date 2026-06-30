@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useMemo, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, ThreeEvent } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
@@ -108,8 +108,10 @@ const ImagePlane = ({ imageUrl }: { imageUrl: string }) => {
     }
   });
 
-  const handlePointerMove = (e: any) => {
-    setMouse(new THREE.Vector2(e.uv.x, e.uv.y));
+  const handlePointerMove = (e: ThreeEvent<PointerEvent>) => {
+    if (e.uv) {
+      setMouse(new THREE.Vector2(e.uv.x, e.uv.y));
+    }
   };
 
   return (
