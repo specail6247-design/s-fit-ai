@@ -20,6 +20,8 @@ export interface ClothingItem {
 }
 
 export interface Brand {
+  bannerImage?: string;
+  description?: string;
   id: string;
   name: string;
   logo: string;
@@ -38,6 +40,8 @@ export const brands: Brand[] = [
   },
   {
     id: 'gucci',
+    bannerImage: 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1000&q=80',
+    description: 'Italian luxury house renowned for exceptional craftsmanship, innovative design, and timeless elegance.',
     name: 'GUCCI',
     logo: 'https://placehold.co/100x100?text=GUCCI',
     isLuxury: true,
