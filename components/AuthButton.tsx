@@ -99,7 +99,8 @@ export function AuthButton() {
           <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              className="absolute top-4 right-4 text-soft-gray hover:text-white hover:bg-white/10 w-8 h-8 flex items-center justify-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyber-lime"
+              aria-label="Close modal"
             >
               ✕
             </button>
@@ -112,17 +113,19 @@ export function AuthButton() {
               <input
                 type="email"
                 placeholder="Email"
+                aria-label="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime focus:ring-1 focus:ring-cyber-lime outline-none transition-shadow"
                 required
               />
               <input
                 type="password"
                 placeholder="Password"
+                aria-label="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime focus:ring-1 focus:ring-cyber-lime outline-none transition-shadow"
                 required
               />
               <button
