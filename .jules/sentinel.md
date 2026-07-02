@@ -1,0 +1,4 @@
+## 2025-03-04 - [Fix Path Traversal in localFileToDataUri]
+**Vulnerability:** A path traversal vulnerability existed in the API route (`app/api/try-on/route.ts`) handling file paths to be converted into base64 data URIs. Using just `absolutePath.startsWith(publicDir)` is insufficient for security as it can allow directory name spoofing.
+**Learning:** Using `absolutePath.startsWith(publicDir)` can incorrectly validate a path like `/app/public-secrets/...` because it matches the string prefix of `/app/public`.
+**Prevention:** Always append a path separator (`path.sep`) to the base directory before using `startsWith()` and accommodate exact matches to strictly enforce a boundary check (`absolutePath.startsWith(publicDir + path.sep) || absolutePath === publicDir`).
