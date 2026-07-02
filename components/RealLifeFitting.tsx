@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import PrivacyTermsModal from '@/components/ui/PrivacyTermsModal';
+import ReportIssueModal from '@/components/ui/ReportIssueModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,9 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  const [legalModalType, setLegalModalType] = useState<'privacy' | 'terms' | null>(null);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -71,6 +76,83 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+
+    try {
+      // Create a temporary canvas to draw the branded image
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.src = resultImage;
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      // Story dimensions (9:16)
+      canvas.width = 1080;
+      canvas.height = 1920;
+
+      // Background
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw image centered
+      const scale = Math.min(canvas.width / img.width, canvas.height / img.height) * 0.9;
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (canvas.width - w) / 2;
+      const y = (canvas.height - h) / 2;
+
+      ctx.drawImage(img, x, y, w, h);
+
+      // Branding
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 40px Arial';
+      ctx.fillText('S_FIT AI', 60, 100);
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = '30px Arial';
+      ctx.fillText('VIRTUAL FITTING', 60, 150);
+
+      const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
+      if (!blob) throw new Error("Failed to create image blob");
+
+      const file = new File([blob], 'sfit-story.jpg', { type: 'image/jpeg' });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'My S_FIT AI Virtual Fitting',
+        });
+      } else {
+        // Fallback to download
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/jpeg', 0.9);
+        link.download = 'sfit-story.jpg';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (err) {
+      console.error("Error sharing to story:", err);
+      alert("Could not share image. Trying falling back to download.");
+
+      // Fallback fallback
+      const link = document.createElement('a');
+      link.href = resultImage;
+      link.download = 'sfit-result.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
@@ -103,6 +185,9 @@ export default function RealLifeFitting() {
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
                 </div>
               </label>
+              <div className="text-[10px] text-[#007AFF] mt-3 flex items-center gap-1.5 opacity-80">
+                <span>🔒</span> Photos are processed securely and not shared.
+              </div>
             </div>
           </div>
 
@@ -158,6 +243,21 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Legal & Support Footer */}
+          <div className="mt-8 pt-4 border-t border-white/10 flex flex-col gap-3">
+            <div className="flex items-center justify-center gap-4 text-[10px] text-gray-500 font-mono tracking-widest">
+              <button onClick={() => setLegalModalType('privacy')} className="hover:text-white transition-colors">PRIVACY POLICY</button>
+              <span>|</span>
+              <button onClick={() => setLegalModalType('terms')} className="hover:text-white transition-colors">TERMS OF SERVICE</button>
+            </div>
+            <button
+              onClick={() => setIsReportModalOpen(true)}
+              className="text-[10px] text-gray-600 hover:text-[#007AFF] transition-colors underline underline-offset-2 flex items-center justify-center gap-1"
+            >
+              <span>🐞</span> REPORT ISSUE
+            </button>
+          </div>
+
         </div>
       </div>
 
@@ -205,10 +305,27 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-pink-500 to-orange-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-[0_0_15px_rgba(236,72,153,0.5)] hover:scale-105 transition-transform flex items-center gap-2 border border-white/20"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      {/* Modals */}
+      <PrivacyTermsModal
+        isOpen={legalModalType !== null}
+        onClose={() => setLegalModalType(null)}
+        initialTab={legalModalType || 'privacy'}
+      />
+      <ReportIssueModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+      />
     </div>
   );
 }
