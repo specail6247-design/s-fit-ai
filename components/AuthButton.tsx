@@ -99,7 +99,8 @@ export function AuthButton() {
           <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              aria-label="Close modal"
+              className="absolute top-4 right-4 text-soft-gray hover:text-white focus-visible:ring-2 focus-visible:ring-cyber-lime rounded-full p-1 outline-none"
             >
               ✕
             </button>
@@ -109,22 +110,30 @@ export function AuthButton() {
             </h2>
 
             <form onSubmit={handleAuth} className="space-y-4 mb-6">
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
+              <div>
+                <label htmlFor="email" className="sr-only">Email</label>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="password" className="sr-only">Password</label>
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                  required
+                />
+              </div>
               <button
                 type="submit"
                 disabled={loading}
