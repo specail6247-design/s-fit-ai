@@ -2,6 +2,7 @@
 // https://replicate.com/cuuupid/idm-vton
 
 import Replicate from "replicate";
+import RunwayML from "@runwayml/sdk";
 import type { SegmentationResult } from './segmentation';
 
 export interface TryOnRequest {
@@ -29,8 +30,6 @@ export interface CinematicVideoResult {
 const IDM_VTON_MODEL = "cuuupid/idm-vton:c871bb9b046607b680449ecbae55fd8c6d945e0a1948644bf2361b3d021d3ff4";
 // Upscaler
 const REAL_ESRGAN_MODEL = "nightmareai/real-esrgan:42fed1c4974146d4d2414e2be2c5277c7fcf05fcc3a73ab241bbb49991ea7781";
-// Video Generation (SVD) - 4K High Fidelity
-const SVD_MODEL = "stability-ai/stable-video-diffusion:3f0457e4619daac51203dedb472816f3af8d9bc94d61ced4e916cd04605162f1";
 
 // Helper to consume ReadableStream and return as base64 data URI or URL string
 async function consumeStream(stream: ReadableStream): Promise<string> {
@@ -198,55 +197,72 @@ export async function upscaleImage(imageUrl: string): Promise<string | null> {
 
 // Unified Video Generation (Runway/SVD)
 export async function generateCinematicVideo(imageUrl: string): Promise<CinematicVideoResult> {
-  const apiToken = process.env.REPLICATE_API_TOKEN;
+  const apiKey = process.env.RUNWAYML_API_SECRET;
 
-  if (!apiToken) {
-    console.error("REPLICATE_API_TOKEN is not set");
+  if (!apiKey) {
+    console.error("RUNWAYML_API_SECRET is not set");
     return {
       success: false,
-      error: 'REPLICATE_API_TOKEN not configured'
+      error: 'RUNWAYML_API_SECRET not configured'
     };
   }
 
-  const replicate = new Replicate({
-    auth: apiToken,
+  const client = new RunwayML({
+    apiKey: apiKey,
   });
 
   try {
-    console.log("Starting Cinematic Video Generation (SVD)...");
-    const output = await replicate.run(
-      SVD_MODEL,
-      {
-        input: {
-          input_image: imageUrl,
-          video_length: "25_frames_with_svd_xt",
-          sizing_strategy: "maintain_aspect_ratio",
-          motion_bucket_id: 127,
-          frames_per_second: 6,
-          cond_aug: 0.02
-        }
-      }
-    );
+    console.log("Starting Cinematic Video Generation (RunwayML)...");
+    const task = await client.imageToVideo.create({
+      model: 'gen3a_turbo',
+      promptImage: imageUrl,
+      promptText: 'Cinematic fashion runway shot, hyper-realistic, high-fidelity motion, dynamic lighting',
+      ratio: '1280:720',
+      duration: 5
+    } as unknown as import('@runwayml/sdk').RunwayML.ImageToVideoCreateParams);
 
-    let videoUrl: string | null = null;
-    if (output instanceof ReadableStream) {
-      videoUrl = await consumeStream(output);
-    } else {
-      videoUrl = extractUrlFromOutput(output);
+    const taskId = task.id;
+    console.log("RunwayML Task created with ID:", taskId);
+
+    // Polling task
+    let status = 'PENDING';
+    let polledTask: Record<string, unknown> = {};
+    let attempts = 0;
+    const maxAttempts = 60; // 5 minutes max (60 * 5s)
+
+    while (
+      status !== 'SUCCEEDED' &&
+      status !== 'FAILED' &&
+      status !== 'CANCELLED' &&
+      attempts < maxAttempts
+    ) {
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      polledTask = await client.tasks.retrieve(taskId) as unknown as Record<string, unknown>;
+      status = polledTask.status as string;
+      console.log(`Task ${taskId} status: ${status}, attempt: ${attempts}`);
+      attempts++;
     }
 
-    if (videoUrl) {
-      return {
-        success: true,
-        videoUrl: videoUrl
-      };
+    if (status === 'SUCCEEDED') {
+      const output = polledTask.output as string[] | undefined;
+      const videoUrl = output && output.length > 0 ? output[0] : null;
+      if (videoUrl) {
+        return {
+          success: true,
+          videoUrl: videoUrl
+        };
+      } else {
+         return {
+           success: false,
+           error: "No video URL in output"
+         };
+      }
     } else {
       return {
         success: false,
-        error: "No video URL in output"
+        error: "Video generation failed"
       };
     }
-
   } catch (error) {
     console.error('Cinematic video generation error:', error);
     return {
