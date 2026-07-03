@@ -1,0 +1,4 @@
+## 2025-07-03 - [Fix Path Traversal in localFileToDataUri]
+**Vulnerability:** [The `localFileToDataUri` function in `app/api/try-on/route.ts` lacked proper boundary checks, allowing unauthorized reading of any file on the system (path traversal) via a manipulated `localPath` input.]
+**Learning:** [Using `path.join` with user-controlled input without enforcing boundaries is dangerous. Mitigating path traversal vulnerabilities requires strict boundary checks, ensuring that the resolved absolute path stays within the intended base directory. Avoid using `absolutePath.startsWith(baseDir)` for validation, as it is susceptible to partial directory name spoofing (e.g., allowing access to `/app/public-secrets` when `baseDir` is `/app/public`).]
+**Prevention:** [Enforce strict boundary checks using `absolutePath.startsWith(baseDir + path.sep)` and accommodating exact matches (`absolutePath === baseDir`) to ensure the path remains strictly within the intended directory.]
