@@ -16,14 +16,13 @@ test.describe('Home Page', () => {
   });
 
   test('should display mode selection options', async ({ page }) => {
-    // Check for presence of mode cards
-    await expect(page.getByText('VIBE CHECK')).toBeVisible();
-    await expect(page.getByText('DIGITAL TWIN')).toBeVisible();
-    await expect(page.getByText('EASY FIT')).toBeVisible();
+    // Check for presence of RealLifeFitting elements
+    await expect(page.locator('#user-upload')).toBeAttached();
+    await expect(page.locator('#garment-upload')).toBeAttached();
 
-    // Check continue button
-    const continueBtn = page.getByRole('button', { name: /Continue/i });
-    await expect(continueBtn).toBeVisible();
+    // Check action button
+    const tryItOnBtn = page.locator('button', { hasText: 'TRY IT ON' });
+    await expect(tryItOnBtn).toBeVisible();
   });
 
   test('should match visual snapshot', async ({ page }) => {
