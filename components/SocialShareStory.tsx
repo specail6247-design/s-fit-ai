@@ -1,5 +1,3 @@
-import React from 'react';
-
 export const shareToInstagramStory = async (imageUrl: string) => {
   try {
     // 1. Create a canvas
