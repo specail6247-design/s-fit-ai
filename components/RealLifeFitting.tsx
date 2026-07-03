@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LegalModal } from '@/components/modals/LegalModal';
+import { ReportIssueModal } from '@/components/modals/ReportIssueModal';
+import { shareToInstagramStory } from '@/components/SocialShareStory';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +19,9 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -96,13 +102,18 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? <img src={userImage} alt="User photo" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
                 </div>
               </label>
+            </div>
+            {/* Data Safety Badge */}
+            <div className="mt-2 flex items-center gap-2 text-[10px] text-gray-400 bg-white/5 p-2 rounded-lg border border-white/5">
+              <span className="text-[#007AFF]">🔒</span>
+              <p>Photos are processed securely and not shared.</p>
             </div>
           </div>
 
@@ -113,7 +124,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? <img src={garmentImage} alt="Garment" className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -156,6 +167,15 @@ export default function RealLifeFitting() {
              <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                Luxury Line
              </a>
+          </div>
+
+          <div className="mt-6 flex justify-between items-center text-[10px] text-gray-500 pt-4 border-t border-white/10">
+            <button onClick={() => setIsLegalModalOpen(true)} className="hover:text-white transition-colors">
+              Privacy Policy & Terms
+            </button>
+            <button onClick={() => setIsReportModalOpen(true)} className="hover:text-[#007AFF] transition-colors flex items-center gap-1">
+              <span>⚠️</span> Report Issue
+            </button>
           </div>
 
         </div>
@@ -205,10 +225,41 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={() => shareToInstagramStory(resultImage!)}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      <LegalModal
+        isOpen={isLegalModalOpen}
+        onClose={() => setIsLegalModalOpen(false)}
+        title="Privacy Policy & Terms"
+        content={`PRIVACY POLICY
+Last Updated: Today
+
+1. DATA COLLECTION
+We temporarily collect the photos you upload solely for the purpose of generating the virtual try-on experience.
+
+2. DATA SAFETY & PROCESSING
+Your photos are processed securely using our AI models. We do not store your original photos or the generated results after your session ends, nor do we share them with any third parties.
+
+3. YOUR RIGHTS
+You have the right to request the immediate deletion of any data associated with your session.
+
+TERMS OF SERVICE
+By using S_FIT NEO, you agree to not use the service for any illegal or unauthorized purpose.`}
+      />
+
+      <ReportIssueModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+      />
     </div>
   );
 }
