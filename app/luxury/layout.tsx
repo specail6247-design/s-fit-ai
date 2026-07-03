@@ -1,20 +1,15 @@
-import { Manrope } from 'next/font/google'
-import React from 'react'
+import { Playfair_Display, Cinzel, Inter, Space_Grotesk } from 'next/font/google';
+import React from 'react';
 
-const manrope = Manrope({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-manrope',
-})
+const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' });
+const cinzel = Cinzel({ subsets: ['latin'], variable: '--font-cinzel' });
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space-grotesk' });
 
-export default function LuxuryLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function LuxuryLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={manrope.className}>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <div className={`${playfair.variable} ${cinzel.variable} ${inter.variable} ${spaceGrotesk.variable}`}>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=optional" />
       <style dangerouslySetInnerHTML={{__html: `
         .material-symbols-outlined {
           font-family: 'Material Symbols Outlined';
