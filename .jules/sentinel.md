@@ -1,0 +1,4 @@
+## 2025-03-05 - Path Traversal in Next.js API Routes using `path.join`
+**Vulnerability:** A path traversal vulnerability existed in `app/api/try-on/route.ts` where local files were read based on user input. The code attempted to remove leading slashes and used `path.join(process.cwd(), 'public', relativePath)` which did not resolve relative path sequences like `../`, allowing traversal outside the intended directory.
+**Learning:** `path.join` does not guarantee the resulting path stays within a base directory, especially when the input contains `../`. The previous logic `localPath.startsWith('/') ? localPath.slice(1) : localPath` only removed a single leading slash and did not prevent `../../etc/passwd` or `../public-secrets/file.txt`.
+**Prevention:** Always use `path.resolve(baseDir, normalizedPath)` and strictly check that the resulting absolute path starts with `baseDir + path.sep` (e.g. `publicDir + path.sep`) before reading or writing to the file system.
