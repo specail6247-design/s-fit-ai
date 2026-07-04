@@ -9,7 +9,8 @@ export function SupportHub() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
   }, []);
 
   if (!mounted) return null;
@@ -120,7 +121,7 @@ export function SupportHub() {
                           <span className="transition group-open:rotate-180">▼</span>
                         </summary>
                         <div className="px-4 pb-4 text-xs text-gray-500">
-                          Our AI engine maps clothing to your body shape with ~95% accuracy, but we always recommend checking the brand's specific size guide for final decisions.
+                          Our AI engine maps clothing to your body shape with ~95% accuracy, but we always recommend checking the brand&apos;s specific size guide for final decisions.
                         </div>
                       </details>
                       <details className="group bg-white/5 border border-white/10 rounded-lg">
