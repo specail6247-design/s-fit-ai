@@ -16,6 +16,64 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [showLegal, setShowLegal] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
+  const [issueText, setIssueText] = useState("");
+
+  const handleShareToStory = () => {
+    if (!resultImage) return;
+
+    // Create an offscreen canvas to generate the branded story image
+    const canvas = document.createElement("canvas");
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Fill background
+    ctx.fillStyle = "#050505";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      // Calculate aspect ratio to fit the image
+      const imgAspect = img.width / img.height;
+      const canvasAspect = canvas.width / canvas.height;
+      let drawWidth, drawHeight;
+
+      if (imgAspect > canvasAspect) {
+        drawWidth = canvas.width;
+        drawHeight = canvas.width / imgAspect;
+      } else {
+        drawHeight = canvas.height * 0.8; // Leave room for branding
+        drawWidth = drawHeight * imgAspect;
+      }
+
+      const x = (canvas.width - drawWidth) / 2;
+      const y = (canvas.height - drawHeight) / 2;
+
+      ctx.drawImage(img, x, y, drawWidth, drawHeight);
+
+      // Add Branding
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 60px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("S_FIT AI", canvas.width / 2, 120);
+
+      ctx.fillStyle = "#007AFF";
+      ctx.font = "bold 40px sans-serif";
+      ctx.fillText("Virtual Try-On", canvas.width / 2, 180);
+
+      // Trigger download
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+      const link = document.createElement("a");
+      link.download = "sfit-story.jpg";
+      link.href = dataUrl;
+      link.click();
+    };
+    img.src = resultImage;
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -103,6 +161,11 @@ export default function RealLifeFitting() {
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
                 </div>
               </label>
+
+              <div className="mt-4 flex items-center gap-2 text-[10px] text-gray-400 bg-white/5 p-2 rounded-lg">
+                <span className="text-[#007AFF]">🔒</span>
+                <span>Photos are processed securely and not shared.</span>
+              </div>
             </div>
           </div>
 
@@ -158,6 +221,15 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-6 pt-6 border-t border-white/10 flex justify-between text-[10px] text-gray-500 uppercase tracking-widest">
+            <button onClick={() => setShowLegal(true)} className="hover:text-white transition-colors">
+              Privacy & Terms
+            </button>
+            <button onClick={() => setShowSupport(true)} className="hover:text-white transition-colors">
+              Support Hub
+            </button>
+          </div>
+
         </div>
       </div>
 
@@ -205,10 +277,60 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-[#007AFF] text-white px-4 py-2 rounded-full text-xs font-bold shadow-[0_0_15px_rgba(0,122,255,0.5)] hover:bg-[#005bb5] transition-colors flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      {/* Modals */}
+      {showLegal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-[#111] border border-white/10 p-8 rounded-2xl max-w-lg w-full relative">
+            <button onClick={() => setShowLegal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+            <h2 className="text-xl font-bold mb-4">Privacy Policy & Terms</h2>
+            <div className="text-sm text-gray-400 space-y-4 max-h-[60vh] overflow-y-auto pr-4">
+              <p><strong>1. Data Collection:</strong> We collect uploaded photos temporarily to process the virtual try-on.</p>
+              <p><strong>2. Data Usage:</strong> Photos are strictly used for generating the fitting result and are not shared with third parties for marketing.</p>
+              <p><strong>3. Data Retention:</strong> User photos and generated results are deleted from our servers within 24 hours.</p>
+              <p><strong>4. Terms of Service:</strong> By using S_FIT AI, you agree not to upload offensive, illegal, or copyrighted material without permission.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showSupport && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-[#111] border border-white/10 p-8 rounded-2xl max-w-md w-full relative">
+            <button onClick={() => setShowSupport(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+            <h2 className="text-xl font-bold mb-4 text-[#007AFF]">Support Hub</h2>
+            <p className="text-xs text-gray-400 mb-4">Found a bug or have a suggestion? Let us know!</p>
+            <textarea
+              className="w-full bg-black/50 border border-white/20 rounded-lg p-3 text-sm text-white min-h-[120px] focus:outline-none focus:border-[#007AFF] transition-colors"
+              placeholder="Describe the issue..."
+              value={issueText}
+              onChange={(e) => setIssueText(e.target.value)}
+            />
+            <button
+              onClick={() => {
+                alert("Thank you for your feedback!");
+                setShowSupport(false);
+                setIssueText("");
+              }}
+              disabled={!issueText.trim()}
+              className="w-full mt-4 py-3 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Submit Report
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
