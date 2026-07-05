@@ -1,13 +1,103 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { ReactLenis } from 'lenis/react';
+import { Cinzel } from 'next/font/google';
+import LuxuryImageDistortion from './masterpiece/LuxuryImageDistortion';
+
+const cinzel = Cinzel({ subsets: ['latin'], weight: ['400', '600', '700'] });
+
+const CustomCursor = () => {
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
+
+  const springConfig = { damping: 25, stiffness: 300, mass: 0.5 };
+  const cursorXSpring = useSpring(cursorX, springConfig);
+  const cursorYSpring = useSpring(cursorY, springConfig);
+
+  const [isHovering, setIsHovering] = useState(false);
+
+  useEffect(() => {
+    const moveCursor = (e: MouseEvent) => {
+      cursorX.set(e.clientX - 16);
+      cursorY.set(e.clientY - 16);
+    };
+
+    const handleMouseOver = (e: MouseEvent) => {
+      if ((e.target as HTMLElement).closest('button, a, input, [role="button"]')) {
+        setIsHovering(true);
+      } else {
+        setIsHovering(false);
+      }
+    };
+
+    window.addEventListener('mousemove', moveCursor);
+    window.addEventListener('mouseover', handleMouseOver);
+
+    return () => {
+      window.removeEventListener('mousemove', moveCursor);
+      window.removeEventListener('mouseover', handleMouseOver);
+    };
+  }, [cursorX, cursorY]);
+
+  return (
+    <motion.div
+      className="fixed top-0 left-0 pointer-events-none z-[100] rounded-full border-2 border-[#ecab13] mix-blend-difference"
+      style={{
+        x: cursorXSpring,
+        y: cursorYSpring,
+        width: isHovering ? 48 : 32,
+        height: isHovering ? 48 : 32,
+        marginLeft: isHovering ? -8 : 0,
+        marginTop: isHovering ? -8 : 0,
+      }}
+      animate={{
+        scale: isHovering ? 1.2 : 1,
+      }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+    />
+  );
+};
+
+const StaggeredText = ({ text, className = "" }: { text: string; className?: string }) => {
+  const words = text.split(" ");
+
+  return (
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-100px" }}
+      variants={{
+        visible: { transition: { staggerChildren: 0.05 } },
+        hidden: {},
+      }}
+      className={className}
+    >
+      {words.map((word, i) => (
+        <span key={i} className="inline-block mr-[0.25em] overflow-hidden">
+          <motion.span
+            className="inline-block"
+            variants={{
+              hidden: { y: "100%", opacity: 0 },
+              visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: [0.33, 1, 0.68, 1] } }
+            }}
+          >
+            {word}
+          </motion.span>
+        </span>
+      ))}
+    </motion.div>
+  );
+};
 
 export default function LuxuryGarmentDetail() {
   return (
-    <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
-      {/* Top Navigation */}
+    <ReactLenis root options={{ lerp: 0.1, duration: 1.2, smoothWheel: true }}>
+      <CustomCursor />
+      <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans cursor-none">
+        {/* Top Navigation */}
       <div className="fixed top-0 z-50 w-full bg-[#f8f7f6]/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md">
         <div className="flex items-center p-4 justify-between max-w-md mx-auto">
           <Link href="/" className="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors">
@@ -25,24 +115,29 @@ export default function LuxuryGarmentDetail() {
       {/* Main Content Container (Mobile Optimized) */}
       <main className="max-w-md mx-auto pt-16 pb-32">
         {/* 3D Interactive Viewport (Hero Image) */}
-        <div className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900">
+        <div className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900 group">
+          <div className="absolute inset-0 z-0">
+            <LuxuryImageDistortion imageUrl="https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E" />
+          </div>
           <div 
-            className="absolute inset-0 bg-cover bg-center" 
+            className="absolute inset-0 pointer-events-none z-10 transition-opacity duration-1000 group-hover:opacity-50"
             style={{ 
-              backgroundImage: 'linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' 
+              background: 'linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%)'
             }}
           />
           
           {/* 3D UI Overlays */}
-          <div className="absolute bottom-6 left-4 right-4 flex justify-between items-end">
-            <div className="bg-black/40 backdrop-blur-md rounded-lg p-2 flex flex-col gap-2 border border-white/10">
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">zoom_in</span></button>
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">360</span></button>
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">light_mode</span></button>
+          <div className="absolute bottom-6 left-4 right-4 flex justify-between items-end z-20 pointer-events-none">
+            <div className="bg-black/40 backdrop-blur-md rounded-lg p-2 flex flex-col gap-2 border border-white/10 pointer-events-auto">
+              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded transition-transform active:scale-95"><span className="material-symbols-outlined text-sm">zoom_in</span></button>
+              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded transition-transform active:scale-95"><span className="material-symbols-outlined text-sm">360</span></button>
+              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded transition-transform active:scale-95"><span className="material-symbols-outlined text-sm">light_mode</span></button>
             </div>
-            <div className="text-right">
+            <div className="text-right pointer-events-auto">
               <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mb-1">Authentic Render</p>
-              <h1 className="text-white text-3xl font-extralight leading-tight">Metallic Silk <br/><span className="font-bold">Evening Blazer</span></h1>
+              <h1 className={`text-white text-3xl font-extralight leading-tight ${cinzel.className}`}>
+                Metallic Silk <br/><span className="font-bold">Evening Blazer</span>
+              </h1>
             </div>
           </div>
         </div>
@@ -70,12 +165,14 @@ export default function LuxuryGarmentDetail() {
         {/* Material Science Description */}
         <div className="mt-8 px-4">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-white text-xs font-bold tracking-[0.2em] uppercase">Material Science</h2>
+            <h2 className={`text-white text-xs font-bold tracking-[0.2em] uppercase ${cinzel.className}`}>Material Science</h2>
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
-          <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
-          </p>
+
+          <StaggeredText
+            text="Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting."
+            className="text-zinc-400 text-sm leading-relaxed mb-6"
+          />
           
           {/* Chips */}
           <div className="flex gap-2 flex-wrap mb-8">
@@ -94,10 +191,17 @@ export default function LuxuryGarmentDetail() {
         {/* Macro Gallery */}
         <div className="mb-8">
           <div className="px-4 flex items-center justify-between mb-4">
-            <h2 className="text-white text-xs font-bold tracking-[0.2em] uppercase">Detail Macro View</h2>
+            <h2 className={`text-white text-xs font-bold tracking-[0.2em] uppercase ${cinzel.className}`}>Detail Macro View</h2>
             <p className="text-zinc-500 text-xs">4K Textures</p>
           </div>
-          <div className="flex gap-4 overflow-x-auto px-4 no-scrollbar pb-2">
+
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="flex gap-4 overflow-x-auto px-4 no-scrollbar pb-2"
+          >
             <div 
               className="min-w-[160px] aspect-square rounded-lg bg-zinc-800 bg-cover bg-center border border-[#2d2d2d]" 
               style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDXruL0skVnUrOc5YpZ2nWDsWEX5ZxZ_JP5fjjc87VGL1Or3ZQLYga9h4-5QB_opRCAPjcpA3wXJv0uA2GNRmveI81vtVYwA6M6hy9N0o30Q3Culn7Si9HtP9yc9SCNUIWlqMCFvMgYQvi3T2jxQFFPdPDkhH4Wu4UWLKxrKm1YNIHPQBN5HrffgMF9LqvAmurBbvAOJYWZS8huThjtvEvSDXcccjmAY8SKX4gjtuaGrNd5fNc0Aqd-nIwVSL91bzJVXnNMzrE1xgU")' }}
@@ -110,7 +214,7 @@ export default function LuxuryGarmentDetail() {
               className="min-w-[160px] aspect-square rounded-lg bg-zinc-800 bg-cover bg-center border border-[#2d2d2d]" 
               style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBqkn4HFnxWGVtmWbfYSHCV_0_Eix7IhuazsGoJhX_mZ0YSMRUig_BHDMoHIAapobfGWThLoMAvthdSMIT6zWhWTFp8GxOJe9a0NYtCwiUlYeJgFDX6uf47SweuwPSw0ifCVSal7eP6WDO1pyzOpMYk-TECLTV3Il19DmBV5p8acsIruMpV5hpoay7GQLfUQFZr1AMRddi5grhGdrPXb-TbjULkGcldw5FZg81mGVBmRGEfOT_KrdMTUPs9rPuDcgFxbGZ-rA_imkk")' }}
             />
-          </div>
+          </motion.div>
         </div>
 
         {/* Comparison Table */}
@@ -146,6 +250,7 @@ export default function LuxuryGarmentDetail() {
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
-    </div>
+      </div>
+    </ReactLenis>
   );
 }
