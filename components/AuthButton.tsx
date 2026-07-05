@@ -44,42 +44,24 @@ export function AuthButton() {
     }
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'kakao' | 'apple' | 'discord') => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-      if (error) throw error;
-    } catch (error: unknown) {
-      alert(`${provider} Login Error: ` + (error as Error).message);
-    }
-  };
-
   const handleLogout = async () => {
     await supabase.auth.signOut();
   };
 
   if (user) {
     return (
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         <div className="text-right hidden md:block">
-          <p className="text-xs text-soft-gray">Welcome,</p>
-          <p className="text-sm font-medium text-white max-w-[100px] truncate">
+          <p className="text-[10px] text-[#ecab13] uppercase tracking-widest">VIP Member</p>
+          <p className="text-sm font-light text-white max-w-[120px] truncate font-serif">
             {user.email?.split('@')[0]}
           </p>
         </div>
         <button
           onClick={handleLogout}
-          className="bg-transparent border border-[#C9B037]/30 text-[#C9B037] px-4 py-2 rounded-none text-xs font-bold tracking-widest hover:bg-[#C9B037]/10 transition-all uppercase"
+          className="border border-[#ecab13]/30 hover:border-[#ecab13] text-[#ecab13] px-5 py-2 rounded-none text-xs tracking-widest uppercase transition-all duration-500 hover:bg-[#ecab13]/10"
         >
-          Sign Out
+          Depart
         </button>
       </div>
     );
@@ -89,58 +71,67 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-transparent border border-[#C9B037]/30 text-[#C9B037] px-6 py-2 rounded-none text-xs font-bold tracking-widest hover:bg-[#C9B037]/10 transition-all uppercase"
+        className="text-[#ecab13] px-6 py-2.5 border border-[#ecab13] text-xs font-medium tracking-[0.2em] uppercase hover:bg-[#ecab13] hover:text-black transition-all duration-700"
       >
         MEMBER ACCESS
       </button>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-[#050505] border border-[#C9B037]/30 w-full max-w-sm rounded-none p-8 relative shadow-[0_0_40px_rgba(201,176,55,0.15)]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md p-4">
+          <div className="bg-[#0a0a0a] border border-[#ecab13]/20 w-full max-w-md p-10 relative shadow-[0_0_50px_rgba(236,171,19,0.05)]">
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              className="absolute top-6 right-6 text-zinc-600 hover:text-[#ecab13] transition-colors"
             >
-              ✕
+              <span className="material-symbols-outlined font-light">close</span>
             </button>
             
-            <h2 className="text-xl font-[family-name:var(--font-display)] tracking-[0.2em] uppercase text-[#C9B037] mb-8 text-center">
-              {isLogin ? 'Member Sign In' : 'Request Access'}
-            </h2>
+            <div className="text-center mb-10">
+              <h2 className="text-2xl text-white font-serif tracking-wide mb-2">
+                {isLogin ? 'Enter the Vault' : 'Request Access'}
+              </h2>
+              <div className="w-12 h-[1px] bg-[#ecab13] mx-auto opacity-50"></div>
+            </div>
 
-            <form onSubmit={handleAuth} className="space-y-4 mb-6">
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-transparent border-b border-white/20 rounded-none px-0 py-3 text-white text-sm focus:border-[#C9B037] outline-none transition-colors placeholder:text-gray-600"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-transparent border-b border-white/20 rounded-none px-0 py-3 text-white text-sm focus:border-[#C9B037] outline-none transition-colors placeholder:text-gray-600"
-                required
-              />
+            <form onSubmit={handleAuth} className="space-y-8">
+              <div className="space-y-6">
+                <div>
+                  <input
+                    type="email"
+                    placeholder="EMAIL ADDRESS"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-transparent border-b border-zinc-800 px-0 py-3 text-white text-sm focus:border-[#ecab13] outline-none transition-colors tracking-widest placeholder:text-zinc-700 font-light"
+                    required
+                  />
+                </div>
+                <div>
+                  <input
+                    type="password"
+                    placeholder="PASSPHRASE"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-transparent border-b border-zinc-800 px-0 py-3 text-white text-sm focus:border-[#ecab13] outline-none transition-colors tracking-widest placeholder:text-zinc-700 font-light"
+                    required
+                  />
+                </div>
+              </div>
+
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#C9B037] text-black font-bold py-4 rounded-none hover:bg-[#F4E4BC] tracking-[0.2em] uppercase transition-colors disabled:opacity-50 mt-4"
+                className="w-full bg-[#ecab13] text-black font-medium tracking-[0.2em] py-4 uppercase text-xs hover:bg-white transition-colors duration-500 disabled:opacity-50"
               >
-                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+                {loading ? 'Authenticating...' : (isLogin ? 'Sign In' : 'Submit Request')}
               </button>
             </form>
 
-            <div className="mt-4 text-center">
+            <div className="mt-10 text-center">
               <button
-                type="button"
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-[10px] text-gray-500 uppercase tracking-widest hover:text-[#C9B037] transition-colors"
+                className="text-xs text-zinc-500 hover:text-[#ecab13] tracking-widest uppercase transition-colors"
               >
-                {isLogin ? 'Request Access' : 'Return to Sign In'}
+                {isLogin ? 'Request Membership' : 'Return to Sign In'}
               </button>
             </div>
           </div>

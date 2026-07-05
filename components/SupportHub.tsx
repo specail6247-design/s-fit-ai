@@ -1,32 +1,55 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function SupportHub() {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState<'guide' | 'caution' | 'faq'>('guide');
+  const [guideStep, setGuideStep] = useState(0);
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
-  const steps = [
-    { title: "01. Pose", desc: "Stand straight, arms slightly away from body." },
-    { title: "02. Lighting", desc: "Ensure even lighting without harsh shadows." },
-    { title: "03. Upload", desc: "Select clear front-facing photos." }
+  const guideSteps = [
+    {
+      title: 'Lighting is Key',
+      description: 'Ensure you are in a well-lit room. Avoid harsh shadows across your body.',
+      icon: 'lightbulb'
+    },
+    {
+      title: 'Camera Distance',
+      description: 'Stand 4-6 feet away from your device so your full body is visible.',
+      icon: 'straighten'
+    },
+    {
+      title: 'Pose Naturally',
+      description: 'Stand straight with arms slightly away from your sides. Relax your shoulders.',
+      icon: 'accessibility_new'
+    }
   ];
 
   const faqs = [
-    { q: "How accurate is the fit?", a: "Our AI model analyzes your photo and garment to provide highly accurate 3D visual fitting." },
-    { q: "Can I try different sizes?", a: "Yes, you can toggle between available sizes in the fitting room." },
-    { q: "What photos work best?", a: "Front-facing, full-body photos against a plain background work best." }
+    {
+      q: 'How accurate is the sizing?',
+      a: 'Our AI analyzes over 30 measurement points to recommend sizes with 95% accuracy compared to brand charts.'
+    },
+    {
+      q: 'Is my photo saved?',
+      a: 'No. Your privacy is paramount. Photos are processed instantly and deleted immediately from our servers.'
+    },
+    {
+      q: 'Why did the try-on fail?',
+      a: 'Usually due to poor lighting, loose clothing obscuring your shape, or standing too close/far from the camera.'
+    }
   ];
 
   return (
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 bg-transparent border border-white/20 text-white/70 hover:text-white px-4 py-2 rounded-full text-xs font-mono tracking-widest backdrop-blur-md z-40 transition-all hover:border-white/40"
+        className="fixed right-0 top-[200px] bg-white/10 hover:bg-[#ecab13] text-white hover:text-black transition-all border border-white/20 hover:border-[#ecab13] backdrop-blur-md px-3 py-4 rounded-l-xl z-40 group flex flex-col items-center gap-2"
       >
-        SUPPORT
+        <span className="material-symbols-outlined text-lg">support_agent</span>
+        <span className="text-[10px] uppercase tracking-widest writing-vertical-rl rotate-180">Support</span>
       </button>
 
       <AnimatePresence>
@@ -37,95 +60,181 @@ export function SupportHub() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[45]"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
             />
+
             <motion.div
-              initial={{ x: "100%" }}
+              initial={{ x: '100%' }}
               animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 h-full w-[400px] bg-[#0a0a0a] border-l border-white/10 z-50 p-6 flex flex-col shadow-2xl overflow-y-auto"
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-[#0a0a0a] border-l border-white/10 z-50 flex flex-col shadow-2xl"
             >
-              <div className="flex justify-between items-center mb-8">
-                <h2 className="text-xl font-[family-name:var(--font-display)] tracking-[0.2em] uppercase text-[#C9B037]">Support Hub</h2>
-                <button onClick={() => setIsOpen(false)} className="text-gray-500 hover:text-white transition-colors">
-                  ✕
+              {/* Header */}
+              <div className="p-6 border-b border-white/10 flex justify-between items-center bg-black/50">
+                <h2 className="text-xl font-serif text-white tracking-wide">Support Hub</h2>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="text-zinc-500 hover:text-white transition-colors p-2"
+                >
+                  <span className="material-symbols-outlined font-light">close</span>
                 </button>
               </div>
 
-              {/* User Guide Carousel */}
-              <div className="mb-10">
-                <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-widest">How to Fit</h3>
-                <div className="border border-white/10 rounded-lg p-6 bg-white/5 relative h-[150px] flex flex-col justify-center">
-                  <h4 className="text-[#C9B037] font-mono text-sm font-bold mb-2">{steps[currentStep].title}</h4>
-                  <p className="text-gray-400 text-sm">{steps[currentStep].desc}</p>
-
-                  <div className="absolute bottom-4 left-0 right-0 flex justify-between px-6">
-                    <button
-                      onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))}
-                      disabled={currentStep === 0}
-                      className="text-xs text-gray-500 disabled:opacity-30 hover:text-white transition-colors"
-                    >
-                      ← PREV
-                    </button>
-                    <div className="flex gap-1 items-center">
-                      {steps.map((_, idx) => (
-                        <div key={idx} className={`h-1 rounded-full transition-all ${idx === currentStep ? 'w-4 bg-[#C9B037]' : 'w-1 bg-gray-600'}`} />
-                      ))}
-                    </div>
-                    <button
-                      onClick={() => setCurrentStep(prev => Math.min(steps.length - 1, prev + 1))}
-                      disabled={currentStep === steps.length - 1}
-                      className="text-xs text-gray-500 disabled:opacity-30 hover:text-white transition-colors"
-                    >
-                      NEXT →
-                    </button>
-                  </div>
-                </div>
+              {/* Navigation */}
+              <div className="flex border-b border-white/10">
+                <button
+                  onClick={() => setActiveTab('guide')}
+                  className={`flex-1 py-4 text-xs tracking-widest uppercase transition-colors ${activeTab === 'guide' ? 'text-[#ecab13] border-b-2 border-[#ecab13]' : 'text-zinc-500 hover:text-zinc-300'}`}
+                >
+                  Guide
+                </button>
+                <button
+                  onClick={() => setActiveTab('caution')}
+                  className={`flex-1 py-4 text-xs tracking-widest uppercase transition-colors ${activeTab === 'caution' ? 'text-[#ecab13] border-b-2 border-[#ecab13]' : 'text-zinc-500 hover:text-zinc-300'}`}
+                >
+                  Caution
+                </button>
+                <button
+                  onClick={() => setActiveTab('faq')}
+                  className={`flex-1 py-4 text-xs tracking-widest uppercase transition-colors ${activeTab === 'faq' ? 'text-[#ecab13] border-b-2 border-[#ecab13]' : 'text-zinc-500 hover:text-zinc-300'}`}
+                >
+                  Q&A
+                </button>
               </div>
 
-              {/* Caution Section */}
-              <div className="mb-10 p-4 bg-red-900/10 border border-red-500/20 rounded-lg">
-                <h3 className="text-red-400 text-sm font-bold flex items-center gap-2">
-                  <span className="text-lg">⚠️</span> Requirements
-                </h3>
-                <ul className="text-xs text-gray-400 mt-3 space-y-2 font-mono">
-                  <li className="flex items-center gap-2"><span>👕</span> Do not wear loose clothing</li>
-                  <li className="flex items-center gap-2"><span>📏</span> Stand 2-3 meters from camera</li>
-                  <li className="flex items-center gap-2"><span>🖼️</span> Avoid complex backgrounds</li>
-                </ul>
-              </div>
+              {/* Content Area */}
+              <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
 
-              {/* Q&A Accordion */}
-              <div className="flex-1">
-                <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-widest">FAQ</h3>
-                <div className="space-y-2">
-                  {faqs.map((faq, idx) => (
-                    <div key={idx} className="border border-white/10 rounded-lg overflow-hidden bg-white/5">
-                      <button
-                        onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                        className="w-full text-left p-4 flex justify-between items-center text-sm font-medium text-gray-300 hover:text-white transition-colors"
-                      >
-                        {faq.q}
-                        <span className="text-[#C9B037]">{openFaq === idx ? '−' : '+'}</span>
-                      </button>
-                      <AnimatePresence>
-                        {openFaq === idx && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="px-4 pb-4 text-xs text-gray-500"
-                          >
-                            {faq.a}
-                          </motion.div>
-                        )}
+                {/* Guide Tab */}
+                {activeTab === 'guide' && (
+                  <div className="flex flex-col h-full">
+                    <h3 className="text-sm text-[#ecab13] uppercase tracking-widest mb-8">How to Fit</h3>
+
+                    <div className="flex-1 flex flex-col items-center justify-center relative min-h-[300px]">
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={guideStep}
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -20 }}
+                          className="absolute inset-0 flex flex-col items-center justify-center text-center p-4"
+                        >
+                          <div className="w-20 h-20 rounded-full bg-[#ecab13]/10 border border-[#ecab13]/30 flex items-center justify-center mb-6">
+                            <span className="material-symbols-outlined text-4xl text-[#ecab13]">
+                              {guideSteps[guideStep].icon}
+                            </span>
+                          </div>
+                          <h4 className="text-lg text-white font-medium mb-3">{guideSteps[guideStep].title}</h4>
+                          <p className="text-sm text-zinc-400 leading-relaxed max-w-[250px]">
+                            {guideSteps[guideStep].description}
+                          </p>
+                        </motion.div>
                       </AnimatePresence>
                     </div>
-                  ))}
-                </div>
-              </div>
 
+                    <div className="flex items-center justify-between mt-auto pt-8">
+                      <button
+                        onClick={() => setGuideStep(Math.max(0, guideStep - 1))}
+                        disabled={guideStep === 0}
+                        className="p-2 text-white disabled:opacity-30 transition-opacity"
+                      >
+                        <span className="material-symbols-outlined">chevron_left</span>
+                      </button>
+                      <div className="flex gap-2">
+                        {guideSteps.map((_, i) => (
+                          <div
+                            key={i}
+                            className={`w-2 h-2 rounded-full transition-colors ${i === guideStep ? 'bg-[#ecab13]' : 'bg-white/20'}`}
+                          />
+                        ))}
+                      </div>
+                      <button
+                        onClick={() => setGuideStep(Math.min(guideSteps.length - 1, guideStep + 1))}
+                        disabled={guideStep === guideSteps.length - 1}
+                        className="p-2 text-white disabled:opacity-30 transition-opacity"
+                      >
+                        <span className="material-symbols-outlined">chevron_right</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Caution Tab */}
+                {activeTab === 'caution' && (
+                  <div className="space-y-6">
+                    <h3 className="text-sm text-red-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                      <span className="material-symbols-outlined text-lg">warning</span>
+                      Critical Warnings
+                    </h3>
+
+                    <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-5 flex items-start gap-4">
+                      <div className="text-2xl">📸</div>
+                      <div>
+                        <h4 className="text-white font-medium mb-1">Mirror Selfies Fail</h4>
+                        <p className="text-xs text-zinc-400 leading-relaxed">
+                          Do not use mirror selfies. The phone blocks your torso and distorts proportions, causing the AI analysis to fail completely.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-5 flex items-start gap-4">
+                      <div className="text-2xl">🧥</div>
+                      <div>
+                        <h4 className="text-white font-medium mb-1">Avoid Bulky Clothes</h4>
+                        <p className="text-xs text-zinc-400 leading-relaxed">
+                          Wear form-fitting clothing (like activewear) for the photo. Heavy jackets or baggy sweatpants will result in inaccurate size recommendations.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-5 flex items-start gap-4">
+                      <div className="text-2xl">👤</div>
+                      <div>
+                        <h4 className="text-white font-medium mb-1">Busy Backgrounds</h4>
+                        <p className="text-xs text-zinc-400 leading-relaxed">
+                          Stand against a plain, contrasting background. If your clothes blend into the wall behind you, the body mapping will be flawed.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* FAQ Tab */}
+                {activeTab === 'faq' && (
+                  <div className="space-y-4">
+                    <h3 className="text-sm text-[#ecab13] uppercase tracking-widest mb-6">Frequently Asked</h3>
+
+                    {faqs.map((faq, i) => (
+                      <div key={i} className="border border-white/10 rounded-xl overflow-hidden bg-white/[0.02]">
+                        <button
+                          onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
+                          className="w-full p-4 flex items-center justify-between text-left hover:bg-white/[0.02] transition-colors"
+                        >
+                          <span className="text-sm font-medium text-white pr-4">{faq.q}</span>
+                          <span className={`material-symbols-outlined text-zinc-500 transition-transform ${expandedFaq === i ? 'rotate-180' : ''}`}>
+                            expand_more
+                          </span>
+                        </button>
+                        <AnimatePresence>
+                          {expandedFaq === i && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden"
+                            >
+                              <div className="p-4 pt-0 text-sm text-zinc-400 leading-relaxed border-t border-white/5">
+                                {faq.a}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </motion.div>
           </>
         )}
