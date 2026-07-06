@@ -16,6 +16,9 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [issueDescription, setIssueDescription] = useState("");
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -71,6 +74,70 @@ export default function RealLifeFitting() {
     }
   };
 
+  const shareToStory = async () => {
+    if (!resultImage) return;
+
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = resultImage;
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      // Fill background black just in case image doesn't cover fully
+      ctx.fillStyle = 'black';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw image to cover canvas (maintaining aspect ratio or just fill)
+      // Here we do a simple draw to fill
+      const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+      const x = (canvas.width / 2) - (img.width / 2) * scale;
+      const y = (canvas.height / 2) - (img.height / 2) * scale;
+      ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+
+      // Add branded watermark
+      ctx.font = 'bold 40px Arial';
+      ctx.fillStyle = 'white';
+      ctx.fillText('S_FIT AI', 50, 1850);
+
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+        const file = new File([blob], 'sfit-story.png', { type: 'image/png' });
+
+        if (navigator.share) {
+          await navigator.share({
+            title: 'My S_FIT AI Look',
+            files: [file],
+          });
+        } else {
+          // Fallback download
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'sfit-story.png';
+          a.click();
+          URL.revokeObjectURL(url);
+        }
+      }, 'image/png');
+    } catch (err) {
+      console.error('Error sharing to story:', err);
+      // Fallback if canvas crossOrigin fails or other error
+      const a = document.createElement('a');
+      a.href = resultImage;
+      a.download = 'sfit-result.png';
+      a.click();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
@@ -122,6 +189,10 @@ export default function RealLifeFitting() {
               </label>
             </div>
           </div>
+
+          <div className="mt-4 flex items-center justify-center gap-2 text-[10px] text-gray-500">
+            🔒 Photos are processed securely and not shared.
+          </div>
         </div>
 
         {/* Action Button */}
@@ -156,6 +227,11 @@ export default function RealLifeFitting() {
              <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                Luxury Line
              </a>
+          </div>
+
+          <div className="mt-6 flex justify-center gap-4">
+            <button onClick={() => setIsPrivacyOpen(true)} className="text-xs text-gray-500 hover:text-white underline">Privacy Policy & Terms</button>
+            <button onClick={() => setIsSupportOpen(true)} className="text-xs text-gray-500 hover:text-white underline">Report Issue</button>
           </div>
 
         </div>
@@ -205,10 +281,59 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={shareToStory}
+                className="absolute bottom-4 right-4 bg-[#007AFF] text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-[#005bb5] transition-colors"
+              >
+                Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      {/* Modals */}
+      {isPrivacyOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+          <div className="bg-[#111] border border-white/20 p-6 rounded-2xl max-w-lg w-full relative">
+            <button onClick={() => setIsPrivacyOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+            <h2 className="text-xl font-bold mb-4">Privacy Policy & Terms</h2>
+            <div className="text-sm text-gray-300 space-y-4 max-h-64 overflow-y-auto pr-2">
+              <p>Your privacy is important to us. S_FIT AI processes all uploaded photos securely.</p>
+              <p>Photos are used solely for the purpose of generating the virtual try-on experience and are not shared with third parties or used to train models.</p>
+              <p>By using this service, you agree to our Terms of Service.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isSupportOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+          <div className="bg-[#111] border border-white/20 p-6 rounded-2xl max-w-lg w-full relative">
+            <button onClick={() => setIsSupportOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+            <h2 className="text-xl font-bold mb-4">Report an Issue</h2>
+            <p className="text-xs text-gray-400 mb-4">Describe the issue you&apos;re facing. Our team will review it.</p>
+            <textarea
+              className="w-full bg-black/50 border border-white/20 rounded-xl p-3 text-sm text-white min-h-[100px]"
+              placeholder="What seems to be the problem?"
+              value={issueDescription}
+              onChange={(e) => setIssueDescription(e.target.value)}
+            />
+            <button
+              onClick={() => {
+                // Here we would typically send this to an API
+                console.log("Issue reported:", issueDescription);
+                setIssueDescription("");
+                setIsSupportOpen(false);
+              }}
+              className="mt-4 w-full bg-[#007AFF] text-white py-2 rounded-xl font-bold hover:bg-[#005bb5] transition-colors"
+            >
+              Submit Report
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
