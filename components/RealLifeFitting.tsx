@@ -75,7 +75,7 @@ export default function RealLifeFitting() {
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
       {/* LEFT PANEL: CONTROLS */}
-      <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
+      <div className={`w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative transition-opacity duration-700 ${isProcessing ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
@@ -164,7 +164,7 @@ export default function RealLifeFitting() {
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
         {/* Background Image (Night City Vibe) */}
-        <div className="absolute inset-0 opacity-40 z-0">
+        <div className={`absolute inset-0 opacity-40 z-0 transition-opacity duration-700 ${isProcessing ? 'opacity-0' : 'opacity-40'}`}>
            {/* Placeholder for Night City HDRI background visual */}
            <div className="w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-black to-black"></div>
         </div>
