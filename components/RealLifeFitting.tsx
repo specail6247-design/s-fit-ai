@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import PrivacyTermsModal from './PrivacyTermsModal';
+import SupportHubModal from './SupportHubModal';
+import DataSafetyBadge from './DataSafetyBadge';
+import ShareToStoryButton from './ShareToStoryButton';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +20,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -122,6 +128,8 @@ export default function RealLifeFitting() {
               </label>
             </div>
           </div>
+
+          <DataSafetyBadge />
         </div>
 
         {/* Action Button */}
@@ -158,6 +166,10 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-8 pt-4 border-t border-white/10 flex justify-between text-[10px] text-gray-500 uppercase tracking-widest">
+            <button onClick={() => setIsPrivacyOpen(true)} className="hover:text-white transition-colors">Privacy Policy & Terms</button>
+            <button onClick={() => setIsSupportOpen(true)} className="hover:text-white transition-colors">Report Issue</button>
+          </div>
         </div>
       </div>
 
@@ -205,10 +217,14 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <ShareToStoryButton imageUrl={resultImage} />
             </div>
           </motion.div>
         )}
       </div>
+
+      <PrivacyTermsModal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
+      <SupportHubModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
     </div>
   );
 }
