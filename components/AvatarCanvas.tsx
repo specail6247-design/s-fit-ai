@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Environment, OrbitControls, useGLTF, useAnimations, ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
@@ -33,8 +33,57 @@ function RealisticAvatar() {
 
 // --- MAIN CANVAS EXPORT ---
 export default function AvatarCanvas() {
+  const [isMuted, setIsMuted] = useState(true);
+
+  useEffect(() => {
+    let audioCtx: AudioContext | null = null;
+    let oscillator: OscillatorNode | null = null;
+    let gainNode: GainNode | null = null;
+
+    if (!isMuted) {
+      try {
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+        audioCtx = new AudioContext();
+
+        oscillator = audioCtx.createOscillator();
+        gainNode = audioCtx.createGain();
+
+        // Create a subtle low-frequency hum (e.g., 100Hz sine wave)
+        oscillator.type = 'sine';
+        oscillator.frequency.value = 100;
+
+        // Very low volume
+        gainNode.gain.value = 0.05;
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        oscillator.start();
+      } catch (err) {
+        console.error("Web Audio API error", err);
+      }
+    }
+
+    return () => {
+      if (oscillator) oscillator.stop();
+      if (audioCtx && audioCtx.state !== 'closed') audioCtx.close();
+    };
+  }, [isMuted]);
+
   return (
     <div className="absolute inset-0 z-10">
+      {/* Audio Control */}
+      <div className="absolute bottom-4 right-4 z-50">
+        <button
+          onClick={() => setIsMuted(!isMuted)}
+          className="flex size-10 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-md border border-white/20 hover:bg-black/80 transition-colors"
+        >
+          <span className="material-symbols-outlined text-sm">
+            {isMuted ? 'volume_off' : 'volume_up'}
+          </span>
+        </button>
+      </div>
+
       <Canvas shadows camera={{ position: [0, 0.5, 3], fov: 45 }}>
         <Environment preset="city" />
         
