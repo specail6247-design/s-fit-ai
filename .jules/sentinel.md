@@ -1,0 +1,4 @@
+## 2024-07-08 - Fix Path Traversal in File Access API
+**Vulnerability:** Unsafe use of `path.join` with unsanitized user input (`garmentImageUrl`) in the `/api/try-on/route.ts` API route.
+**Learning:** Even when reading local files using `fs.readFileSync`, user input paths must be securely resolved using `path.resolve` and bounds-checked using `.startsWith()` to prevent reading sensitive files outside the intended public directory.
+**Prevention:** Always use `path.resolve(baseDirectory, userInput)` to get an absolute path, and verify the path remains within the bounds of `baseDirectory` using `.startsWith(baseDirectory + path.sep)`.
