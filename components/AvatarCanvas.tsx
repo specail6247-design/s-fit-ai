@@ -42,23 +42,25 @@ export default function AvatarCanvas() {
 
     if (!isMuted) {
       try {
-        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-        audioCtx = new AudioContext();
+        const AudioContext = window.AudioContext || (window as Window & { webkitAudioContext?: typeof window.AudioContext }).webkitAudioContext;
+        if (AudioContext) {
+          audioCtx = new AudioContext();
 
-        oscillator = audioCtx.createOscillator();
-        gainNode = audioCtx.createGain();
+          oscillator = audioCtx.createOscillator();
+          gainNode = audioCtx.createGain();
 
-        // Create a subtle low-frequency hum (e.g., 100Hz sine wave)
-        oscillator.type = 'sine';
-        oscillator.frequency.value = 100;
+          // Create a subtle low-frequency hum (e.g., 100Hz sine wave)
+          oscillator.type = 'sine';
+          oscillator.frequency.value = 100;
 
-        // Very low volume
-        gainNode.gain.value = 0.05;
+          // Very low volume
+          gainNode.gain.value = 0.05;
 
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
+          oscillator.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
 
-        oscillator.start();
+          oscillator.start();
+        }
       } catch (err) {
         console.error("Web Audio API error", err);
       }
