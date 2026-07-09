@@ -16,66 +16,6 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
-  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
-  const [isSupportOpen, setIsSupportOpen] = useState(false);
-
-  const handleShareToStory = async () => {
-    if (!resultImage) return;
-    try {
-      const canvas = document.createElement('canvas');
-      canvas.width = 1080;
-      canvas.height = 1920;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-
-      // Draw background
-      ctx.fillStyle = '#050505';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Draw branding
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 80px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('S_FIT NEO', canvas.width / 2, 200);
-
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.src = resultImage;
-
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-      });
-
-      // Draw image
-      const scale = Math.min(canvas.width / img.width, (canvas.height - 400) / img.height);
-      const x = (canvas.width / 2) - (img.width / 2) * scale;
-      const y = (canvas.height / 2) - (img.height / 2) * scale;
-      ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-
-      canvas.toBlob(async (blob) => {
-        if (!blob) return;
-        const file = new File([blob], 'sfit-story.png', { type: 'image/png' });
-
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            files: [file],
-            title: 'My S_FIT NEO Try-On',
-          });
-        } else {
-          // Fallback
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'sfit-story.png';
-          a.click();
-          URL.revokeObjectURL(url);
-        }
-      }, 'image/png');
-    } catch (err) {
-      console.error('Error sharing to story:', err);
-    }
-  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -218,16 +158,6 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
-          <div className="mt-6 flex items-center justify-center gap-2 text-[10px] text-gray-500 font-mono">
-            <span>🛡️</span>
-            <span>Photos are processed securely and not shared.</span>
-          </div>
-
-        </div>
-
-        <div className="mt-8 pt-4 border-t border-white/10 flex justify-between text-[10px] text-gray-500 uppercase tracking-wider">
-          <button onClick={() => setIsPrivacyOpen(true)} className="hover:text-white transition-colors">Privacy & Terms</button>
-          <button onClick={() => setIsSupportOpen(true)} className="hover:text-[#007AFF] transition-colors">Report Issue</button>
         </div>
       </div>
 
@@ -266,9 +196,6 @@ export default function RealLifeFitting() {
           >
             <div className="relative group">
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
-              <button onClick={handleShareToStory} className="absolute top-4 right-24 bg-[#007AFF] text-white rounded-full px-4 py-2 text-sm font-bold hover:bg-[#005bb5] transition-colors">
-                📸 Share to Story
-              </button>
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
@@ -282,38 +209,6 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
-
-      {/* Privacy Policy & Terms Modal */}
-      {isPrivacyOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
-          <div className="bg-[#111] border border-white/20 p-8 rounded-2xl max-w-lg w-full relative">
-            <button onClick={() => setIsPrivacyOpen(false)} className="absolute top-4 right-4 text-white hover:text-red-500 transition-colors">✕</button>
-            <h2 className="text-xl font-bold mb-4">Privacy Policy & Terms</h2>
-            <div className="text-sm text-gray-400 space-y-4 max-h-[60vh] overflow-y-auto">
-              <p>Welcome to S_FIT NEO. By using our service, you agree to these terms.</p>
-              <p><strong>1. Data Collection:</strong> We collect and process photos only for the purpose of virtual fitting. We do not store your photos permanently.</p>
-              <p><strong>2. Privacy:</strong> Your data is processed securely and is not shared with third parties.</p>
-              <p><strong>3. Usage:</strong> This service is provided for personal use only.</p>
-              <p><strong>4. Intellectual Property:</strong> All generated content remains the property of S_FIT NEO.</p>
-            </div>
-            <button onClick={() => setIsPrivacyOpen(false)} className="w-full mt-6 py-3 bg-[#007AFF] text-white rounded-xl text-sm font-bold">I Agree</button>
-          </div>
-        </div>
-      )}
-
-      {/* Report Issue Modal */}
-      {isSupportOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
-          <div className="bg-[#111] border border-[#007AFF]/30 p-8 rounded-2xl max-w-lg w-full relative">
-            <button onClick={() => setIsSupportOpen(false)} className="absolute top-4 right-4 text-white hover:text-red-500 transition-colors">✕</button>
-            <h2 className="text-xl font-bold mb-4">Report an Issue</h2>
-            <p className="text-sm text-gray-400">Please describe the problem you encountered.</p>
-            <textarea className="w-full bg-black/50 border border-white/20 rounded-lg p-4 text-sm mt-4 text-white" rows={4} placeholder="Describe the bug or issue..." />
-            <button onClick={() => { alert('Report submitted.'); setIsSupportOpen(false); }} className="w-full mt-4 py-3 bg-[#007AFF] text-white rounded-xl text-sm font-bold">Submit Report</button>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }
