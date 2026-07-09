@@ -3,15 +3,6 @@ import { calculateRecommendedSize, getComplementaryItems, ClothingStyleAnalysis 
 import type { PoseProportions } from '@/lib/mediapipe';
 import { ClothingItem, getAllItems } from '@/data/mockData';
 
-// Mock OpenAI
-vi.mock('openai', () => {
-  return {
-    default: class {
-      apiKey = 'mock-key';
-    }
-  };
-});
-
 describe('Vision Service', () => {
   describe('calculateRecommendedSize', () => {
     const mockProportions: PoseProportions = {
@@ -19,7 +10,10 @@ describe('Vision Service', () => {
       hipWidth: 0.5,
       torsoHeight: 0.5,
       legLength: 0.5,
-      overallRatio: 0.5
+      overallRatio: 0.5,
+      waistWidth: 0.5,
+      armLength: 0.5,
+      shoulderSlope: 0.1
     };
     const userHeight = 175; // cm
 
@@ -106,7 +100,7 @@ describe('Vision Service', () => {
 
     it('should prioritize matching colors (black/white)', () => {
         // Create a mock black item
-        const blackItem = { ...getAllItems()[0], colors: ['Black'], category: 'tops' };
+        const blackItem = { ...getAllItems()[0], colors: ['Black'], category: 'tops' as const };
         const recommendations = getComplementaryItems(blackItem);
         expect(recommendations.length).toBeGreaterThan(0);
     });
