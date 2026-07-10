@@ -1,0 +1,3 @@
+## 2024-07-10 - material-symbols Ligature Accessibility
+**Learning:** Found an accessibility issue pattern where `material-symbols-outlined` spans containing text ligatures (e.g., "arrow_back") are used without `aria-hidden="true"`, causing screen readers to literally announce the icon name instead of its purpose, and interactive parents lack descriptive `aria-label`s.
+**Action:** Always add `aria-hidden="true"` to `material-symbols-outlined` icon spans and add an appropriate `aria-label` to their interactive parent elements (buttons/links).
