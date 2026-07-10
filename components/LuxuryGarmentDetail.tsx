@@ -1,10 +1,47 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+
 
 export default function LuxuryGarmentDetail() {
+  const [isSaved, setIsSaved] = useState(false);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(7200); // 2 hours
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTime = (seconds: number) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const toggleAudio = () => {
+    if (audioRef.current) {
+      if (isAudioPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(e => console.error("Audio playback failed", e));
+      }
+      setIsAudioPlaying(!isAudioPlaying);
+    }
+  };
+
+  // Attempt auto-play on mount if state says so (or let user trigger it)
+  useEffect(() => {
+    if (isAudioPlaying && audioRef.current) {
+       audioRef.current.play().catch(() => setIsAudioPlaying(false));
+    }
+  }, [isAudioPlaying]);
+
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -14,9 +51,16 @@ export default function LuxuryGarmentDetail() {
             <span className="material-symbols-outlined">arrow_back</span>
           </Link>
           <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center">S_FIT AI</h2>
-          <div className="flex w-10 items-center justify-end">
+          <div className="flex items-center justify-end gap-2">
+            <button
+              onClick={() => setIsSaved(!isSaved)}
+              className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+              aria-label={isSaved ? "Remove from Vault" : "Save to Vault"}
+            >
+              <span className="material-symbols-outlined" aria-hidden="true">{isSaved ? 'favorite' : 'favorite_border'}</span>
+            </button>
             <button className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
-              <span className="material-symbols-outlined">share</span>
+              <span className="material-symbols-outlined" aria-hidden="true">share</span>
             </button>
           </div>
         </div>
@@ -36,10 +80,14 @@ export default function LuxuryGarmentDetail() {
           {/* 3D UI Overlays */}
           <div className="absolute bottom-6 left-4 right-4 flex justify-between items-end">
             <div className="bg-black/40 backdrop-blur-md rounded-lg p-2 flex flex-col gap-2 border border-white/10">
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">zoom_in</span></button>
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">360</span></button>
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">light_mode</span></button>
+              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm" aria-hidden="true">zoom_in</span></button>
+              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm" aria-hidden="true">360</span></button>
+              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm" aria-hidden="true">light_mode</span></button>
+              <button onClick={toggleAudio} className="size-8 flex items-center justify-center text-[#ecab13] hover:bg-white/10 rounded">
+                <span className="material-symbols-outlined text-sm" aria-hidden="true">{isAudioPlaying ? 'volume_up' : 'volume_off'}</span>
+              </button>
             </div>
+            <audio ref={audioRef} loop src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=" />
             <div className="text-right">
               <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mb-1">Authentic Render</p>
               <h1 className="text-white text-3xl font-extralight leading-tight">Metallic Silk <br/><span className="font-bold">Evening Blazer</span></h1>
@@ -73,9 +121,10 @@ export default function LuxuryGarmentDetail() {
             <h2 className="text-white text-xs font-bold tracking-[0.2em] uppercase">Material Science</h2>
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
-          <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+          <p className="text-zinc-400 text-sm leading-relaxed mb-2">
+            Engineered with S_FIT AI&#39;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
+          <p className="text-[#ecab13] text-sm italic mb-6">Styling Tip: Pair this with structured denim for a balanced silhouette.</p>
           
           {/* Chips */}
           <div className="flex gap-2 flex-wrap mb-8">
@@ -136,10 +185,10 @@ export default function LuxuryGarmentDetail() {
           <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
           <p className="text-white text-xl font-bold">$2,850</p>
         </div>
-        <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
-          <span className="material-symbols-outlined font-bold">person_add_alt</span>
-          <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
-        </Link>
+        <button disabled className="flex-[2] bg-[#1a1a1a] text-[#52525b] border border-[#2d2d2d] h-14 rounded-xl flex items-center justify-center gap-3 cursor-not-allowed">
+          <span className="material-symbols-outlined font-bold" aria-hidden="true">lock</span>
+          <span className="font-bold text-sm tracking-widest uppercase">Available in {formatTime(timeLeft)}</span>
+        </button>
       </div>
 
       <style jsx global>{`
