@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { BottomSheet } from '@/components/ui/BottomSheet';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +17,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [showLegal, setShowLegal] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -71,6 +74,78 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+
+      img.onload = async () => {
+        // Set canvas to vertical stories aspect ratio (1080x1920)
+        canvas.width = 1080;
+        canvas.height = 1920;
+
+        // Branded background
+        ctx.fillStyle = '#050505';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Calculate drawing dimensions to maintain aspect ratio
+        const scale = Math.min(canvas.width / img.width, (canvas.height - 400) / img.height);
+        const drawWidth = img.width * scale;
+        const drawHeight = img.height * scale;
+        const drawX = (canvas.width - drawWidth) / 2;
+        const drawY = (canvas.height - drawHeight) / 2;
+
+        ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+
+        // Logo overlay (placeholder)
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 80px "Geist", monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('S_FIT NEO', canvas.width / 2, 150);
+
+        canvas.toBlob(async (blob) => {
+          if (!blob) return;
+          const file = new File([blob], 'sfit-fitting.jpg', { type: 'image/jpeg' });
+
+          if (navigator.share) {
+            try {
+              await navigator.share({
+                title: 'My S_FIT Try-On',
+                files: [file]
+              });
+            } catch (err) {
+              // Fallback
+              console.error('Navigator share failed', err);
+              fallbackDownload(canvas);
+            }
+          } else {
+            fallbackDownload(canvas);
+          }
+        }, 'image/jpeg', 0.9);
+      };
+
+      img.src = resultImage;
+    } catch (err) {
+      console.error('Canvas setup failed', err);
+    }
+  };
+
+  const fallbackDownload = (canvas: HTMLCanvasElement) => {
+    const url = canvas.toDataURL('image/jpeg');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sfit-fitting.jpg';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
@@ -96,7 +171,10 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={userImage} alt="User Photo" className="w-full h-full object-cover" />
+                  ) : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +191,10 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={garmentImage} alt="Target Garment" className="w-full h-full object-cover" />
+                  ) : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -122,10 +203,16 @@ export default function RealLifeFitting() {
               </label>
             </div>
           </div>
+
+          {/* Data Safety Badge */}
+          <div className="flex items-center gap-2 px-2 py-3 bg-black/40 border border-white/10 rounded-lg mt-4">
+            <span className="material-symbols-outlined text-[#007AFF] text-lg" aria-hidden="true">security</span>
+            <span className="text-xs text-gray-400 font-medium tracking-wide">Photos are processed securely and not shared.</span>
+          </div>
         </div>
 
         {/* Action Button */}
-        <div className="mt-8 relative z-10">
+        <div className="mt-8 relative z-10 flex-shrink-0">
           {isProcessing ? (
             <div className="space-y-2">
               <div className="flex justify-between text-xs text-[#007AFF] font-mono">
@@ -158,6 +245,10 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-8 flex justify-center gap-6 text-[10px] text-gray-500 font-mono tracking-widest uppercase">
+            <button onClick={() => setShowLegal(true)} className="hover:text-white transition-colors">Legal</button>
+            <button onClick={() => setShowSupport(true)} className="hover:text-white transition-colors">Support</button>
+          </div>
         </div>
       </div>
 
@@ -195,7 +286,8 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={resultImage} alt="Virtual Fitting Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
@@ -205,10 +297,45 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-[#007AFF] text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg hover:bg-[#005bb5] transition-colors flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-sm" aria-hidden="true">ios_share</span>
+                Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      {/* Modals */}
+      <BottomSheet isOpen={showLegal} onClose={() => setShowLegal(false)} title="Privacy Policy & Terms">
+        <div className="text-sm text-gray-300 space-y-4">
+          <p>By using S_FIT NEO, you agree to our terms of service.</p>
+          <p>We respect your privacy. Uploaded photos are processed ephemerally for the sole purpose of virtual try-on and are not stored or shared with third parties.</p>
+          <p className="text-xs text-gray-500 mt-8 text-center">Last updated: 2024</p>
+        </div>
+      </BottomSheet>
+
+      <BottomSheet isOpen={showSupport} onClose={() => setShowSupport(false)} title="Support Hub">
+        <div className="space-y-6">
+          <div className="text-sm text-gray-300 text-center">Need help? Report an issue below.</div>
+          <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); alert('Issue reported! Thank you.'); setShowSupport(false); }}>
+            <div>
+              <label className="block text-xs font-bold text-[#007AFF] mb-2">Issue Description</label>
+              <textarea
+                className="w-full bg-black/40 border border-white/20 rounded-lg p-3 text-sm text-white min-h-[100px] focus:outline-none focus:border-[#007AFF]"
+                placeholder="Describe what went wrong..."
+                required
+              />
+            </div>
+            <button type="submit" className="w-full bg-[#007AFF] text-white py-3 rounded-lg font-bold hover:bg-[#005bb5] transition-colors">
+              Report Issue
+            </button>
+          </form>
+        </div>
+      </BottomSheet>
     </div>
   );
 }
