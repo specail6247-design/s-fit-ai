@@ -1,0 +1,4 @@
+## 2024-07-11 - Path Traversal Vulnerability in Local File Reading
+**Vulnerability:** A path traversal vulnerability was present in the `app/api/try-on/route.ts` API endpoint where user-supplied file paths were constructed using `path.join` without verification, allowing an attacker to read arbitrary files from the filesystem.
+**Learning:** `path.join` does not resolve absolute paths and doesn't verify if the resulting path breaks out of the intended directory. Simply stripping a leading slash is not sufficient protection against directory traversal attacks like `../`.
+**Prevention:** Always use `path.resolve` to generate an absolute path from the base directory and user input, and strictly verify that the resulting absolute path is contained within the base directory by using `absolutePath.startsWith(baseDirectory + path.sep)`.
