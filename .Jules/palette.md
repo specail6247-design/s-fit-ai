@@ -1,0 +1,3 @@
+## 2025-03-09 - Add aria-hidden to Google Material Symbols
+**Learning:** Google Material Symbols use ligatures (e.g. `<span>arrow_back</span>`), which screen readers will literally read aloud ("arrow back") if not hidden, creating a confusing and redundant experience, especially when placed inside interactive elements like icon-only buttons.
+**Action:** Always add `aria-hidden="true"` to the `<span>` containing the Material Symbol ligature, and place an `aria-label` on the parent `<button>` or `<Link>` to provide the accessible name.
