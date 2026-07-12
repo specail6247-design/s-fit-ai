@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import LegalModal from './LegalModal';
+import SupportModal from './SupportModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -68,6 +72,85 @@ export default function RealLifeFitting() {
       setResultImage("https://pub-83c5db439b40468498f97946200806f7.r2.dev/mock-result-sfit.png"); // Fallback
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+
+    try {
+      // 1. Create a canvas to draw the image + branding
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Could not get canvas context');
+
+      // 2. Load the image
+      const img = new Image();
+      img.crossOrigin = 'anonymous'; // Important for external images
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = resultImage;
+      });
+
+      // 3. Set canvas dimensions to a vertical 9:16 aspect ratio (standard for Stories)
+      // We'll base the width on the image width for quality, or use a fixed width.
+      const canvasWidth = 1080;
+      const canvasHeight = 1920;
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+
+      // 4. Draw background (black)
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+      // 5. Draw the image, centered and scaled to fit the width while maintaining aspect ratio
+      const scale = canvasWidth / img.width;
+      const drawWidth = canvasWidth;
+      const drawHeight = img.height * scale;
+      const drawY = (canvasHeight - drawHeight) / 2; // Center vertically
+
+      ctx.drawImage(img, 0, drawY, drawWidth, drawHeight);
+
+      // 6. Draw the S_FIT NEO branding at the bottom
+      ctx.fillStyle = '#007AFF';
+      ctx.font = 'bold 48px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT NEO', canvasWidth / 2, canvasHeight - 100);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '24px sans-serif';
+      ctx.fillText('Virtual Try-On Result', canvasWidth / 2, canvasHeight - 50);
+
+      // 7. Convert canvas to Blob
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+      if (!blob) throw new Error('Failed to create image blob');
+
+      const file = new File([blob], 'sfit-story.png', { type: 'image/png' });
+
+      // 8. Attempt Web Share API (native sharing to Instagram, etc.)
+      if (navigator.share && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'My Virtual Try-On',
+          text: 'Check out my virtual fit from S_FIT NEO!'
+        });
+      } else {
+        // Fallback: Download the image
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'sfit-story.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert('Image downloaded! You can now share it to your Story.');
+      }
+    } catch (err) {
+      console.error('Share to story failed:', err);
+      alert('Failed to share image. Please try again.');
     }
   };
 
@@ -158,6 +241,19 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-8 flex flex-col items-center gap-4">
+            <div className="flex items-center gap-2 text-[10px] text-gray-500 bg-black/40 px-3 py-1.5 rounded-full border border-white/5">
+              <span className="text-[#007AFF]">🛡️</span>
+              <span>Photos are processed securely and not shared.</span>
+            </div>
+
+            <div className="flex gap-4 text-[10px] text-gray-500 uppercase tracking-widest">
+              <button onClick={() => setIsLegalModalOpen(true)} className="hover:text-white transition-colors">Privacy & Terms</button>
+              <span>|</span>
+              <button onClick={() => setIsSupportModalOpen(true)} className="hover:text-white transition-colors">Support Hub</button>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -205,10 +301,19 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-[#007AFF] text-white px-4 py-2 rounded-lg text-xs font-bold shadow-[0_0_15px_rgba(0,122,255,0.4)] hover:bg-[#005bb5] transition-colors flex items-center gap-2"
+              >
+                <span>📱</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      <LegalModal isOpen={isLegalModalOpen} onClose={() => setIsLegalModalOpen(false)} />
+      <SupportModal isOpen={isSupportModalOpen} onClose={() => setIsSupportModalOpen(false)} />
     </div>
   );
 }
