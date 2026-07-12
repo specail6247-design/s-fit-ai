@@ -47,13 +47,23 @@
   --color-gold-primary: #ecab13;
   --color-surface-dark: #1a1a1a;
   --color-border-dark: #2d2d2d;
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-cinzel);
   --font-mono: var(--font-geist-mono);
+}
+
+@utility font-cinzel {
+  font-family: var(--font-cinzel);
+}
+
+@utility font-inter {
+  font-family: var(--font-inter);
 }
 
 /* Base Styles */
 * {
   box-sizing: border-box;
+  cursor: none;
 }
 
 html {
