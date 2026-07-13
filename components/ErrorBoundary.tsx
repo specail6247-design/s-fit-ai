@@ -1,6 +1,7 @@
 'use client';
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 interface Props {
   children?: ReactNode;
