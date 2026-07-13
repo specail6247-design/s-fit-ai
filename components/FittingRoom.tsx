@@ -329,9 +329,10 @@ interface ClothingProps {
   shapeScale?: { shoulders: number; waist: number; hips: number };
   fabricType?: FabricType;
   useMasterpiece?: boolean;
+  isMacroView?: boolean;
 }
 
-function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacroView = false }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -346,12 +347,12 @@ function TopClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist:
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacroView={isMacroView} />
     </SoftBodyPlane>
   );
 }
 
-function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacroView = false }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -366,12 +367,12 @@ function BottomsClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, wa
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacroView={isMacroView} />
     </SoftBodyPlane>
   );
 }
 
-function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacroView = false }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -386,12 +387,12 @@ function DressClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, wais
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacroView={isMacroView} />
     </SoftBodyPlane>
   );
 }
 
-function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton' }: ClothingProps) {
+function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacroView = false }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
@@ -406,25 +407,30 @@ function OuterwearClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, 
       renderOrder={zIndex}
       {...physics}
     >
-      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} />
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacroView={isMacroView} />
     </SoftBodyPlane>
   );
 }
 
-function AccessoryClothing({ item }: ClothingProps) {
+function AccessoryClothing({ item, widthScale = 1, shapeScale = { shoulders: 1, waist: 1, hips: 1 }, fabricType = 'cotton', isMacroView = false }: ClothingProps) {
   const texture = useTexture(item.textureUrl || item.imageUrl);
   const img = texture.image as HTMLImageElement;
   const aspect = img ? img.width / img.height : 1;
   const zIndex = layeringEngine.getItemZIndex(item);
+  const physics = PHYSICS_PRESETS[fabricType] || PHYSICS_PRESETS['default'];
   
   const baseWidth = item.subCategory === 'bag' ? 0.4 : 0.2;
   const position: [number, number, number] = item.subCategory === 'bag' ? [0.35, 0.8, 0.2] : [0, 1.45, 0.15];
 
   return (
-    <mesh position={position} renderOrder={zIndex} castShadow receiveShadow>
-      <planeGeometry args={[baseWidth, baseWidth / aspect, 32, 32]} />
-      <meshStandardMaterial map={texture} transparent side={THREE.DoubleSide} roughness={0.4} metalness={item.isLuxury ? 0.5 : 0.2} alphaTest={0.5} />
-    </mesh>
+    <SoftBodyPlane
+      position={position}
+      args={[baseWidth * widthScale, (baseWidth * widthScale) / aspect, 32, 32]}
+      renderOrder={zIndex}
+      {...physics}
+    >
+      <FabricMaterial textureUrl={item.textureUrl || item.imageUrl} fabricType={fabricType} isMacroView={isMacroView} />
+    </SoftBodyPlane>
   );
 }
 
@@ -433,23 +439,26 @@ function ClothingOverlay({
   widthScale,
   shapeScale,
   clothingAnalysis,
+  useMasterpiece,
+  isMacroView
 }: {
   item: ClothingItem | null;
   widthScale: number;
   shapeScale: { shoulders: number; waist: number; hips: number };
   clothingAnalysis?: ClothingStyleAnalysis | null; 
   useMasterpiece: boolean;
+  isMacroView?: boolean;
 }) {
   if (!item) return null;
   const fabricType = mapToFabricType(clothingAnalysis?.materialType);
 
   return (
     <Suspense fallback={null}>
-      {item.category === 'tops' && <TopClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'bottoms' && <BottomsClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'dresses' && <DressClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'outerwear' && <OuterwearClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} />}
-      {item.category === 'accessories' && <AccessoryClothing item={item} widthScale={widthScale} shapeScale={shapeScale} />}
+      {item.category === 'tops' && <TopClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacroView={isMacroView} />}
+      {item.category === 'bottoms' && <BottomsClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacroView={isMacroView} />}
+      {item.category === 'dresses' && <DressClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacroView={isMacroView} />}
+      {item.category === 'outerwear' && <OuterwearClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacroView={isMacroView} />}
+      {item.category === 'accessories' && <AccessoryClothing item={item} widthScale={widthScale} shapeScale={shapeScale} fabricType={fabricType} isMacroView={isMacroView} />}
     </Suspense>
   );
 }
@@ -561,6 +570,7 @@ function Scene({
           shapeScale={{ shoulders: 1, waist: 1, hips: 1 }}
           clothingAnalysis={clothingAnalysis}
           useMasterpiece={isMasterpieceMode}
+          isMacroView={isMacroView}
         />
       </group>
     </>

@@ -1,0 +1,3 @@
+## 2025-03-04 - High Fidelity Textures and Physics
+**Learning:** Ammo.js can be effectively combined with React Three Fiber's standard `meshPhysicalMaterial` displacement properties to create highly responsive soft-body physics while simulating high-frequency material details through dynamic texture scaling when zooming in.
+**Action:** Updated `SoftBodyPlane` to support macro-view toggling. Passed down the `isMacroView` boolean to `FabricMaterial` which dynamically scales the `displacementScale` and `normalScale` properties for closer inspection of luxury textiles. Also upgraded `AccessoryClothing` to use standard physics props from the existing `PHYSICS_PRESETS`.

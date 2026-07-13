@@ -8,13 +8,15 @@ interface FabricMaterialProps {
   fabricType: FabricType;
   opacity?: number;
   transparent?: boolean;
+  isMacroView?: boolean;
 }
 
 export function FabricMaterial({
   textureUrl,
   fabricType = 'cotton',
   opacity = 1,
-  transparent = true
+  transparent = true,
+  isMacroView = false
 }: FabricMaterialProps) {
   const baseTexture = useTexture(textureUrl);
   const texture = useMemo(() => {
@@ -29,6 +31,9 @@ export function FabricMaterial({
 
   const config = FABRIC_PRESETS[fabricType];
 
+  const displacementScale = isMacroView ? config.displacementScale * 2 : config.displacementScale;
+  const normalScale = isMacroView ? config.normalScale * 1.5 : config.normalScale;
+
   return (
     <meshPhysicalMaterial
       map={texture}
@@ -40,13 +45,13 @@ export function FabricMaterial({
       // We use the texture itself as a height map proxy.
       // Ideally this would be a real depth map.
       displacementMap={texture}
-      displacementScale={config.displacementScale}
-      displacementBias={-config.displacementScale / 2}
+      displacementScale={displacementScale}
+      displacementBias={-displacementScale / 2}
 
       // Micro-surface details
       // Using the texture as a normal map adds surface detail corresponding to the visual pattern.
       normalMap={texture}
-      normalScale={new THREE.Vector2(config.normalScale, config.normalScale)}
+      normalScale={new THREE.Vector2(normalScale, normalScale)}
 
       // Advanced Fabric features
       sheen={config.sheen || 0}
