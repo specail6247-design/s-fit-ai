@@ -1,0 +1,3 @@
+## 2024-07-14 - Hiding Decorative Icon Text in Material Symbols
+**Learning:** Google Material Symbols use exact text (like "arrow_back" or "share") inside a `span` to render icons. If left as is, screen readers will read this literal text instead of the interactive element's intended purpose, and worse, sometimes the text may not exactly describe the action or context of the button.
+**Action:** When using Material Symbols (or any icon font using ligatures) inside interactive elements like buttons or links, always add an `aria-label` to the parent interactive element and explicitly set `aria-hidden="true"` on the icon `span` to hide the literal ligature text from assistive technologies.
