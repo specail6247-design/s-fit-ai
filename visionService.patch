@@ -1,0 +1,29 @@
+<<<<<<< SEARCH
+    const mockProportions: PoseProportions = {
+      shoulderWidth: 0.5,
+      hipWidth: 0.5,
+      torsoHeight: 0.5,
+      legLength: 0.5,
+      overallRatio: 0.5
+    };
+=======
+    const mockProportions: PoseProportions = {
+      shoulderWidth: 0.5,
+      hipWidth: 0.5,
+      torsoHeight: 0.5,
+      legLength: 0.5,
+      overallRatio: 0.5,
+      waistWidth: 0.5,
+      armLength: 0.5,
+      shoulderSlope: 0.5
+    };
+>>>>>>> REPLACE
+<<<<<<< SEARCH
+        // Create a mock black item
+        const blackItem = { ...getAllItems()[0], colors: ['Black'], category: 'tops' };
+        const recommendations = getComplementaryItems(blackItem);
+=======
+        // Create a mock black item
+        const blackItem: ClothingItem = { ...getAllItems()[0], colors: ['Black'], category: 'tops' };
+        const recommendations = getComplementaryItems(blackItem);
+>>>>>>> REPLACE
