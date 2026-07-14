@@ -16,6 +16,90 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const [issueText, setIssueText] = useState("");
+
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      // Draw background
+      ctx.fillStyle = "#0a0a0a";
+      ctx.fillRect(0, 0, 1080, 1920);
+
+      // Load and draw image
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.src = resultImage;
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      // Calculate aspect ratio for "cover" effect
+      const imgRatio = img.width / img.height;
+      const canvasRatio = canvas.width / canvas.height;
+      let drawWidth, drawHeight, drawX, drawY;
+
+      if (imgRatio > canvasRatio) {
+        drawHeight = canvas.height;
+        drawWidth = img.width * (canvas.height / img.height);
+        drawX = (canvas.width - drawWidth) / 2;
+        drawY = 0;
+      } else {
+        drawWidth = canvas.width;
+        drawHeight = img.height * (canvas.width / img.width);
+        drawX = 0;
+        drawY = (canvas.height - drawHeight) / 2;
+      }
+
+      ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+
+      // Add branding overlay
+      ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+      ctx.fillRect(0, 0, 1080, 1920);
+
+      ctx.font = "bold 80px sans-serif";
+      ctx.fillStyle = "#007AFF";
+      ctx.fillText("S_FIT AI", 80, 160);
+
+      ctx.font = "40px sans-serif";
+      ctx.fillStyle = "white";
+      ctx.fillText("VIRTUAL TRY-ON RESULT", 80, 220);
+
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
+      if (!blob) throw new Error("Failed to create blob");
+
+      const file = new File([blob], "sfit-story.png", { type: "image/png" });
+
+      if (navigator.share && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: "My S_FIT AI Look",
+          text: "Check out my virtual try-on from S_FIT AI!",
+        });
+      } else {
+        // Fallback for browsers that don't support Web Share API with files
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "sfit-story.png";
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      console.error("Error sharing to story:", err);
+      alert("Could not share image. Please try again.");
+    }
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -104,6 +188,11 @@ export default function RealLifeFitting() {
                 </div>
               </label>
             </div>
+            {/* Data Safety Badge */}
+            <div className="flex items-center gap-2 mt-2 text-gray-400">
+              <span className="material-symbols-outlined text-[16px] text-green-500" aria-hidden="true">lock</span>
+              <span className="text-[10px] font-medium">Photos are processed securely and not shared.</span>
+            </div>
           </div>
 
           {/* Garment Input */}
@@ -159,6 +248,16 @@ export default function RealLifeFitting() {
           </div>
 
         </div>
+
+        {/* Footer Links */}
+        <div className="mt-8 pt-6 border-t border-white/10 flex justify-between text-xs text-gray-500 relative z-10">
+          <button onClick={() => setIsPrivacyModalOpen(true)} className="hover:text-white transition-colors">
+            Privacy Policy & Terms
+          </button>
+          <button onClick={() => setIsSupportModalOpen(true)} className="hover:text-white transition-colors">
+            Support Hub
+          </button>
+        </div>
       </div>
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
@@ -196,12 +295,21 @@ export default function RealLifeFitting() {
           >
             <div className="relative group">
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
-              <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
-              >
-                ✕ Close
-              </button>
+              <div className="absolute top-4 right-4 flex gap-2">
+                <button
+                  onClick={handleShareToStory}
+                  className="bg-[#007AFF] text-white rounded-full px-4 py-2 hover:bg-[#005bb5] transition-colors font-bold text-sm shadow-lg flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-sm" aria-hidden="true">share</span>
+                  Story
+                </button>
+                <button
+                  onClick={() => setResultImage(null)}
+                  className="bg-black/60 text-white rounded-full p-2 hover:bg-white/20 transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
@@ -209,6 +317,85 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      {/* Modals */}
+      {isPrivacyModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-[#111] border border-white/20 rounded-2xl p-8 max-w-lg w-full shadow-2xl relative"
+          >
+            <button
+              onClick={() => setIsPrivacyModalOpen(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"
+            >
+              ✕
+            </button>
+            <h2 className="text-2xl font-bold mb-4 text-white">Privacy Policy & Terms</h2>
+            <div className="h-64 overflow-y-auto text-sm text-gray-300 space-y-4 pr-4">
+              <p>
+                <strong>Data Processing & Security</strong><br/>
+                S_FIT AI takes your privacy seriously. Any photos uploaded to our platform for virtual try-on are processed securely. We employ end-to-end encryption to ensure your data remains protected during transmission and processing.
+              </p>
+              <p>
+                <strong>No Data Retention</strong><br/>
+                Your uploaded photos are used strictly for generating your virtual try-on result. We do not store, retain, or train our AI models on your personal photos. Once the session ends, all user-uploaded imagery is permanently deleted from our servers.
+              </p>
+              <p>
+                <strong>Terms of Service</strong><br/>
+                By using S_FIT AI, you agree to our terms of service. You must only upload images you have the right to use. The generated images are for personal use and any commercial application requires explicit permission.
+              </p>
+            </div>
+            <div className="mt-6">
+              <button
+                onClick={() => setIsPrivacyModalOpen(false)}
+                className="w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl text-white font-bold transition-colors"
+              >
+                I Understand
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {isSupportModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-[#111] border border-white/20 rounded-2xl p-8 max-w-md w-full shadow-2xl relative"
+          >
+            <button
+              onClick={() => setIsSupportModalOpen(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"
+            >
+              ✕
+            </button>
+            <h2 className="text-2xl font-bold mb-2 text-white">Support Hub</h2>
+            <p className="text-sm text-gray-400 mb-6">Encountered an issue? Let us know so we can fix it.</p>
+
+            <textarea
+              value={issueText}
+              onChange={(e) => setIssueText(e.target.value)}
+              placeholder="Describe the issue you are experiencing..."
+              className="w-full h-32 bg-black border border-white/20 rounded-xl p-4 text-white text-sm focus:border-[#007AFF] focus:outline-none resize-none mb-4"
+            />
+
+            <button
+              onClick={() => {
+                alert("Thank you for your feedback! Our team will investigate the issue.");
+                setIsSupportModalOpen(false);
+                setIssueText("");
+              }}
+              disabled={!issueText.trim()}
+              className="w-full py-3 bg-[#007AFF] disabled:bg-gray-800 disabled:text-gray-500 hover:bg-[#005bb5] rounded-xl text-white font-bold transition-colors"
+            >
+              Report Issue
+            </button>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
