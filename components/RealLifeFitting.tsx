@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import MemberAccess from '@/components/MemberAccess';
+import SupportHub from '@/components/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isMemberAccessOpen, setIsMemberAccessOpen] = useState(false);
+  const [isSupportHubOpen, setIsSupportHubOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -96,7 +100,14 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={userImage} alt="User Upload" className="w-full h-full object-cover" />
+                    </>
+                  ) : (
+                    <span className="text-2xl">👤</span>
+                  )}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +124,14 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={garmentImage} alt="Garment Upload" className="w-full h-full object-cover" />
+                    </>
+                  ) : (
+                    <span className="text-2xl">👕</span>
+                  )}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -187,6 +205,29 @@ export default function RealLifeFitting() {
           </ErrorBoundary>
         </div>
 
+        {/* Floating Actions */}
+        <motion.div
+          animate={{ opacity: isProcessing ? 0 : 1 }}
+          className="fixed top-6 right-6 z-30 flex gap-4"
+        >
+          <button
+            onClick={() => setIsMemberAccessOpen(true)}
+            className="px-6 py-2 bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-xs font-cinzel font-bold tracking-widest uppercase transition-colors"
+          >
+            VIP Login
+          </button>
+          <button
+            onClick={() => setIsSupportHubOpen(true)}
+            className="w-10 h-10 bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-sm transition-colors"
+          >
+            ?
+          </button>
+        </motion.div>
+
+        {/* Modals */}
+        <MemberAccess isOpen={isMemberAccessOpen} onClose={() => setIsMemberAccessOpen(false)} />
+        <SupportHub isOpen={isSupportHubOpen} onClose={() => setIsSupportHubOpen(false)} />
+
         {/* Result Overlay (If success) */}
         {resultImage && !isProcessing && (
           <motion.div 
@@ -195,6 +236,7 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
