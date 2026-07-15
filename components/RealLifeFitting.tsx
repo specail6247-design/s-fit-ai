@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import MemberAccess from '@/components/MemberAccess';
+import SupportHub from '@/components/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isMemberAccessOpen, setIsMemberAccessOpen] = useState(false);
+  const [isSupportHubOpen, setIsSupportHubOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -186,6 +190,29 @@ export default function RealLifeFitting() {
             <AvatarCanvas />
           </ErrorBoundary>
         </div>
+
+        {/* Floating Actions */}
+        <motion.div
+          animate={{ opacity: isProcessing ? 0 : 1 }}
+          className="fixed top-6 right-6 z-30 flex gap-4"
+        >
+          <button
+            onClick={() => setIsMemberAccessOpen(true)}
+            className="px-6 py-2 bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-xs font-cinzel font-bold tracking-widest uppercase transition-colors"
+          >
+            VIP Login
+          </button>
+          <button
+            onClick={() => setIsSupportHubOpen(true)}
+            className="w-10 h-10 bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-sm transition-colors"
+          >
+            ?
+          </button>
+        </motion.div>
+
+        {/* Modals */}
+        <MemberAccess isOpen={isMemberAccessOpen} onClose={() => setIsMemberAccessOpen(false)} />
+        <SupportHub isOpen={isSupportHubOpen} onClose={() => setIsSupportHubOpen(false)} />
 
         {/* Result Overlay (If success) */}
         {resultImage && !isProcessing && (
