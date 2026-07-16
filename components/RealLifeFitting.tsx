@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { PrivacyModal } from './PrivacyModal';
+import { ReportIssueModal } from './ReportIssueModal';
+import { ShareStoryModal } from './ShareStoryModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +19,11 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  // Modal states
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+  const [showShareStory, setShowShareStory] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -96,7 +104,12 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={userImage} alt="User Upload" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-2xl">👤</span>
+                  )}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +126,12 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={garmentImage} alt="Garment Upload" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-2xl">👕</span>
+                  )}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -121,6 +139,14 @@ export default function RealLifeFitting() {
                 </div>
               </label>
             </div>
+          </div>
+
+          {/* Data Safety Badge */}
+          <div className="flex items-center gap-2 p-3 bg-[#007AFF]/10 border border-[#007AFF]/20 rounded-lg text-[#007AFF]">
+            <span className="material-symbols-outlined text-sm" aria-hidden="true">security</span>
+            <p className="text-[10px] font-medium tracking-wide">
+              Photos are processed securely and not shared.
+            </p>
           </div>
         </div>
 
@@ -156,6 +182,16 @@ export default function RealLifeFitting() {
              <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                Luxury Line
              </a>
+          </div>
+
+          {/* Trust & Support Footer Links */}
+          <div className="mt-8 pt-4 border-t border-white/10 flex justify-between items-center text-[10px] text-gray-500">
+            <button onClick={() => setShowPrivacy(true)} className="hover:text-white transition-colors">
+              Privacy Policy & Terms
+            </button>
+            <button onClick={() => setShowReport(true)} className="hover:text-white transition-colors">
+              Support Hub
+            </button>
           </div>
 
         </div>
@@ -195,6 +231,7 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
@@ -205,10 +242,23 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={() => setShowShareStory(true)}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg transition-transform hover:scale-105"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      {/* Modals */}
+      {showPrivacy && <PrivacyModal onClose={() => setShowPrivacy(false)} />}
+      {showReport && <ReportIssueModal onClose={() => setShowReport(false)} />}
+      {showShareStory && resultImage && (
+        <ShareStoryModal resultImage={resultImage} onClose={() => setShowShareStory(false)} />
+      )}
     </div>
   );
 }
