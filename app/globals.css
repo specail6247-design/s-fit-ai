@@ -49,6 +49,21 @@
   --color-border-dark: #2d2d2d;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-cinzel: var(--font-cinzel);
+  --font-space: var(--font-space);
+  --font-inter: var(--font-inter);
+}
+
+@utility font-cinzel {
+  font-family: var(--font-cinzel);
+}
+
+@utility font-space {
+  font-family: var(--font-space);
+}
+
+@utility font-inter {
+  font-family: var(--font-inter);
 }
 
 /* Base Styles */
