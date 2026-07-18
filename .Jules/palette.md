@@ -1,0 +1,3 @@
+## 2025-01-20 - [Accessibility] Material Symbols Screen Reader Announcement
+**Learning:** Using Google Material Symbols as ligatures (e.g., `zoom_in`) causes screen readers to literally announce the icon name text, confusing users of icon-only buttons.
+**Action:** Always apply `aria-hidden="true"` to the material symbols span, and add a descriptive `aria-label` to the parent interactive element to provide correct context.
