@@ -71,10 +71,10 @@ export default function LuxuryGarmentDetail() {
         <div className="mt-8 px-4">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-white text-xs font-bold tracking-[0.2em] uppercase">Material Science</h2>
-            <span className="text-[#ecab13] material-symbols-outlined">info</span>
+            <span className="text-[#ecab13] material-symbols-outlined" aria-hidden="true">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
