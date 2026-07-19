@@ -1,0 +1,4 @@
+## 2025-02-25 - [Fix Path Traversal in Virtual Try-On API]
+**Vulnerability:** Path traversal via an un-sanitized relative path parameter combined with `path.join` allowing arbitrary file reading (e.g., `/etc/passwd`).
+**Learning:** `path.join` alone does not normalize and validate relative paths traversing up the directory tree. It simply joins strings together. When resolving absolute paths derived from user input against a base directory, `path.resolve` must be used along with a strict containment check (e.g., `.startsWith()`).
+**Prevention:** Always validate that paths derived from external or user-provided input explicitly remain bounded to the intended directory by resolving both the base directory and the target absolute path using `path.resolve`, then ensuring the resulting absolute path begins with the base directory's absolute path.
