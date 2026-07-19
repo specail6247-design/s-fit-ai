@@ -16,7 +16,7 @@ function localFileToDataUri(localPath: string): string | null {
     const absolutePath = path.resolve(publicDir, relativePath);
     
     // Security: Prevent Path Traversal
-    if (!absolutePath.startsWith(publicDir)) {
+    if (!absolutePath.startsWith(publicDir + path.sep)) {
       console.error('Security error: Path traversal attempt detected', absolutePath);
       return null;
     }
