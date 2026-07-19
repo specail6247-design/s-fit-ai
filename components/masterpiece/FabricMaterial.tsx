@@ -1,7 +1,8 @@
 import { useTexture } from '@react-three/drei';
 import { FabricType, FABRIC_PRESETS } from './types';
 import * as THREE from 'three';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 
 interface FabricMaterialProps {
   textureUrl: string;
@@ -28,9 +29,25 @@ export function FabricMaterial({
   }, [baseTexture]);
 
   const config = FABRIC_PRESETS[fabricType];
+  const materialRef = useRef<THREE.MeshPhysicalMaterial>(null);
+
+  useFrame(({ camera }) => {
+    if (!materialRef.current) return;
+    // Calculate camera distance to the garment (approximate center 0, 0.5, 0)
+    const dist = camera.position.distanceTo(new THREE.Vector3(0, 0.5, 0));
+
+    // Normal view dist is ~2.8, Macro view dist is ~1.26
+    const zoomFactor = THREE.MathUtils.clamp((2.8 - dist) / (2.8 - 1.2), 0, 1);
+
+    // Hyper-Zoom: amplify displacement and normal scales based on proximity
+    materialRef.current.displacementScale = config.displacementScale * (1 + zoomFactor * 2);
+    const amplifiedNormal = config.normalScale * (1 + zoomFactor * 1.5);
+    materialRef.current.normalScale.set(amplifiedNormal, amplifiedNormal);
+  });
 
   return (
     <meshPhysicalMaterial
+      ref={materialRef}
       map={texture}
       // Physics based properties
       roughness={config.roughness}
