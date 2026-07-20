@@ -1,7 +1,8 @@
 import { useTexture } from '@react-three/drei';
 import { FabricType, FABRIC_PRESETS } from './types';
 import * as THREE from 'three';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 
 interface FabricMaterialProps {
   textureUrl: string;
@@ -17,6 +18,7 @@ export function FabricMaterial({
   transparent = true
 }: FabricMaterialProps) {
   const baseTexture = useTexture(textureUrl);
+  const materialRef = useRef<THREE.MeshPhysicalMaterial>(null);
   const texture = useMemo(() => {
     const cloned = baseTexture.clone();
     cloned.colorSpace = THREE.SRGBColorSpace;
@@ -29,8 +31,22 @@ export function FabricMaterial({
 
   const config = FABRIC_PRESETS[fabricType];
 
+  useFrame(({ camera }) => {
+    if (materialRef.current) {
+      const distance = camera.position.length();
+      const zoomFactor = Math.max(1, 3 / Math.max(0.1, distance));
+
+      materialRef.current.displacementScale = config.displacementScale * zoomFactor;
+      materialRef.current.normalScale.set(
+        config.normalScale * zoomFactor,
+        config.normalScale * zoomFactor
+      );
+    }
+  });
+
   return (
     <meshPhysicalMaterial
+      ref={materialRef}
       map={texture}
       // Physics based properties
       roughness={config.roughness}
