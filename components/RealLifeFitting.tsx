@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import LegalModal from '@/components/ui/LegalModal';
+import ReportIssueModal from '@/components/ui/ReportIssueModal';
+import StoryShareModal from '@/components/ui/StoryShareModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +19,9 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [isStoryShareModalOpen, setIsStoryShareModalOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -104,6 +110,9 @@ export default function RealLifeFitting() {
                 </div>
               </label>
             </div>
+            <div className="mt-2 flex items-center justify-center gap-1.5 text-[9px] text-[#007AFF] font-mono opacity-80">
+              <span>🔒</span> Photos are processed securely and not shared.
+            </div>
           </div>
 
           {/* Garment Input */}
@@ -158,6 +167,15 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Footer Links */}
+          <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-[10px] text-gray-500 font-mono">
+            <button onClick={() => setIsLegalModalOpen(true)} className="hover:text-white transition-colors">
+              Privacy & Terms
+            </button>
+            <button onClick={() => setIsReportModalOpen(true)} className="hover:text-[#007AFF] transition-colors">
+              Report Issue
+            </button>
+          </div>
         </div>
       </div>
 
@@ -202,6 +220,12 @@ export default function RealLifeFitting() {
               >
                 ✕ Close
               </button>
+              <button
+                onClick={() => setIsStoryShareModalOpen(true)}
+                className="absolute top-4 left-4 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F77737] text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg transition-transform transform hover:scale-[1.02]"
+              >
+                Share to Story 📱
+              </button>
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
@@ -209,6 +233,11 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      {/* Modals */}
+      <LegalModal isOpen={isLegalModalOpen} onClose={() => setIsLegalModalOpen(false)} />
+      <ReportIssueModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} />
+      <StoryShareModal isOpen={isStoryShareModalOpen} onClose={() => setIsStoryShareModalOpen(false)} resultImage={resultImage} />
     </div>
   );
 }
