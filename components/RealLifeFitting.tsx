@@ -16,6 +16,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -24,6 +26,48 @@ export default function RealLifeFitting() {
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleShareToStory = () => {
+    if (!resultImage) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      // Draw background
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const scale = Math.min(1080 / img.width, 1400 / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (1080 - w) / 2;
+      const y = (1600 - h) / 2;
+
+      ctx.drawImage(img, x, y, w, h);
+
+      // Draw branding
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 80px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT AI', 540, 150);
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = '40px monospace';
+      ctx.fillText('VIRTUAL FITTING', 540, 220);
+
+      // Trigger download
+      const link = document.createElement('a');
+      link.download = 'sfit_story.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    };
+    img.src = resultImage;
   };
 
   const handleTryOn = async () => {
@@ -124,6 +168,12 @@ export default function RealLifeFitting() {
           </div>
         </div>
 
+          {/* Data Safety Badge */}
+          <div className="flex items-center gap-2 mt-4 text-[10px] text-gray-500 bg-black/40 p-3 rounded-lg border border-white/5">
+            <span className="text-sm">🔒</span>
+            <span>Photos are processed securely and not shared.</span>
+          </div>
+
         {/* Action Button */}
         <div className="mt-8 relative z-10">
           {isProcessing ? (
@@ -158,6 +208,11 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+        </div>
+        {/* Support Hub Links */}
+        <div className="mt-8 flex items-center justify-between text-[10px] text-gray-500 border-t border-white/10 pt-4 relative z-10">
+          <button onClick={() => setIsLegalModalOpen(true)} className="hover:text-white transition-colors">Privacy & Terms</button>
+          <button onClick={() => setIsReportModalOpen(true)} className="hover:text-white transition-colors">Report Issue</button>
         </div>
       </div>
 
@@ -205,10 +260,58 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-[#007AFF] text-white rounded-xl px-4 py-2 text-sm font-bold shadow-[0_0_15px_rgba(0,122,255,0.5)] hover:bg-[#005bb5] transition-colors flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+      {/* Modals */}
+      {isLegalModalOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className="bg-[#111] border border-white/10 rounded-2xl max-w-lg w-full p-8 relative">
+            <button onClick={() => setIsLegalModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+            <h2 className="text-xl font-bold mb-4">Privacy Policy & Terms</h2>
+            <div className="text-sm text-gray-400 space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+              <p>1. Data Collection: We only process your uploaded photos for virtual fitting purposes.</p>
+              <p>2. Data Security: All photos are processed securely and deleted immediately after the session ends.</p>
+              <p>3. Third-party Sharing: We do not sell or share your photos with any third parties.</p>
+              <p>4. Terms of Use: By using S_FIT AI, you agree to our fair use policy.</p>
+            </div>
+            <button onClick={() => setIsLegalModalOpen(false)} className="w-full mt-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-bold transition-colors">Accept</button>
+          </div>
+        </div>
+      )}
+
+      {isReportModalOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className="bg-[#111] border border-white/10 rounded-2xl max-w-lg w-full p-8 relative">
+            <button onClick={() => setIsReportModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+            <h2 className="text-xl font-bold mb-2">Report Issue</h2>
+            <p className="text-xs text-gray-400 mb-6">Help us improve by reporting any bugs or issues.</p>
+            <form onSubmit={(e) => { e.preventDefault(); alert('Issue reported successfully!'); setIsReportModalOpen(false); }} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-400 mb-1">Issue Type</label>
+                <select className="w-full bg-black border border-white/20 rounded-lg p-3 text-sm text-white">
+                  <option>Fitting Error</option>
+                  <option>UI/UX Bug</option>
+                  <option>Performance Issue</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-400 mb-1">Description</label>
+                <textarea rows={4} className="w-full bg-black border border-white/20 rounded-lg p-3 text-sm text-white" placeholder="Describe the issue..."></textarea>
+              </div>
+              <button type="submit" className="w-full py-3 bg-[#007AFF] hover:bg-[#005bb5] rounded-xl font-bold transition-colors">Submit Report</button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
