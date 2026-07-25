@@ -1,0 +1,4 @@
+## 2024-05-24 - Path Traversal in Node.js Local File Resolution
+**Vulnerability:** The `localFileToDataUri` helper in the try-on API used `path.join` with user-supplied input to construct an absolute path, without validating that the final path stayed within the intended `public` directory. This allowed directory traversal attacks (e.g., passing `/../../../etc/passwd`).
+**Learning:** When resolving local paths based on user input, simply removing leading slashes and using `path.join` is insufficient for security. Attackers can still use `../` sequences to escape the base directory.
+**Prevention:** Always use `path.resolve` to get the absolute path, and then strictly verify that the resulting absolute path starts with the intended base directory (using `absolutePath.startsWith(baseDir + path.sep)` to prevent partial matching issues).
