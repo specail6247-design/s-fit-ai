@@ -1,7 +1,8 @@
 import { useTexture } from '@react-three/drei';
 import { FabricType, FABRIC_PRESETS } from './types';
 import * as THREE from 'three';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 
 interface FabricMaterialProps {
   textureUrl: string;
@@ -28,9 +29,21 @@ export function FabricMaterial({
   }, [baseTexture]);
 
   const config = FABRIC_PRESETS[fabricType];
+  const materialRef = useRef<THREE.MeshPhysicalMaterial>(null);
+
+  useFrame((state) => {
+    if (materialRef.current) {
+      const distance = state.camera.position.length();
+      // Hyper-Zoom logic: as camera gets closer (distance < 3), scale up the displacement
+      const zoomFactor = distance < 3 ? (3 - distance) * 2 : 0;
+      materialRef.current.displacementScale = config.displacementScale * (1 + zoomFactor);
+    }
+  });
 
   return (
     <meshPhysicalMaterial
+      ref={materialRef}
+
       map={texture}
       // Physics based properties
       roughness={config.roughness}
