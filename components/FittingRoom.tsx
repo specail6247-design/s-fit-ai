@@ -306,7 +306,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
@@ -634,7 +634,7 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
     <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="absolute inset-0 bg-void-black/80 backdrop-blur-sm" onClick={onClose} />
       <motion.div className="relative glass-card p-6 max-w-sm w-full" initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}>
-        <h3 className="text-lg font-bold text-center mb-4">Share Your Fit! 📸</h3>
+        <h3 className="text-lg font-bold text-center mb-4">Cinematic Share 📸</h3>
         <p className="text-soft-gray text-xs mb-6 text-center">{shareText}</p>
         <div className="grid grid-cols-2 gap-3 mb-4">
           <button onClick={() => handleShare('twitter')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#1DA1F2] text-xs"><span>𝕏</span> Twitter</button>

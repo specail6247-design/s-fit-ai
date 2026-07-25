@@ -7,7 +7,7 @@ export interface ClothingItem {
   name: string;
   brand: 'ZARA' | 'Gucci' | 'Uniqlo' | 'H&M' | 'COS' | 'GAP' | 'Chanel' | 'Supreme' | 'Tiffany';
   category: 'tops' | 'bottoms' | 'outerwear' | 'dresses' | 'accessories';
-  subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses';
+  subCategory?: 'bag' | 'hat' | 'jewelry' | 'scarf' | 'glasses' | 'ring' | 'necklace';
   zIndex?: number;
   price: number;
   currency: string;
@@ -24,7 +24,7 @@ export interface Brand {
   name: string;
   logo: string;
   isLuxury: boolean;
-  tier: 'mass' | 'luxury' | 'basic';
+  tier: 'mass' | 'luxury' | 'basic' | 'High-End Luxury' | 'K-Fashion Leaders';
 }
 
 // Brand Data
@@ -34,14 +34,14 @@ export const brands: Brand[] = [
     name: 'ZARA',
     logo: 'https://placehold.co/100x100?text=ZARA',
     isLuxury: false,
-    tier: 'mass',
+    tier: 'K-Fashion Leaders',
   },
   {
     id: 'gucci',
     name: 'GUCCI',
     logo: 'https://placehold.co/100x100?text=GUCCI',
     isLuxury: true,
-    tier: 'luxury',
+    tier: 'High-End Luxury',
   },
   {
     id: 'uniqlo',
@@ -76,7 +76,7 @@ export const brands: Brand[] = [
     name: 'Chanel',
     logo: 'https://placehold.co/100x100?text=CHANEL',
     isLuxury: true,
-    tier: 'luxury',
+    tier: 'High-End Luxury',
   },
   {
     id: 'supreme',
@@ -90,7 +90,7 @@ export const brands: Brand[] = [
     name: 'Tiffany',
     logo: 'https://placehold.co/100x100?text=TIFFANY',
     isLuxury: true,
-    tier: 'luxury',
+    tier: 'High-End Luxury',
   },
 ];
 
