@@ -625,6 +625,25 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
     else if (platform === 'facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${encodedText}`;
     else if (platform === 'instagram') { navigator.clipboard.writeText(shareText); alert('Text copied for Instagram! 📱'); return; }
     else if (platform === 'kakao') shareUrl = `https://story.kakao.com/share?url=${url}&text=${encodedText}`;
+    else if (platform === 'story') {
+      import('html2canvas').then((html2canvas) => {
+        const captureArea = document.getElementById('sfit-capture-area');
+        if (captureArea) {
+          html2canvas.default(captureArea, {
+            backgroundColor: '#0a0a0a',
+            scale: 2, // higher resolution
+          }).then(canvas => {
+            const dataUrl = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = 'sfit-story.png';
+            link.href = dataUrl;
+            link.click();
+            alert('Branded story image saved to your device!');
+          });
+        }
+      });
+      return;
+    }
     
     if (shareUrl) window.open(shareUrl, '_blank', 'width=600,height=400');
     onClose();
@@ -633,14 +652,15 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
   return (
     <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="absolute inset-0 bg-void-black/80 backdrop-blur-sm" onClick={onClose} />
-      <motion.div className="relative glass-card p-6 max-w-sm w-full" initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}>
+      <motion.div id="share-modal-content" className="relative glass-card p-6 max-w-sm w-full" initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}>
         <h3 className="text-lg font-bold text-center mb-4">Share Your Fit! 📸</h3>
         <p className="text-soft-gray text-xs mb-6 text-center">{shareText}</p>
-        <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="grid grid-cols-2 gap-3 mb-4">
           <button onClick={() => handleShare('twitter')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#1DA1F2] text-xs"><span>𝕏</span> Twitter</button>
           <button onClick={() => handleShare('facebook')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#1877F2] text-xs"><span>📘</span> Facebook</button>
           <button onClick={() => handleShare('instagram')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-[#833AB4] to-[#F77737] text-xs"><span>📷</span> Instagram</button>
           <button onClick={() => handleShare('kakao')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#FEE500] text-black text-xs"><span>💬</span> KakaoStory</button>
+          <button onClick={() => handleShare('story')} className="col-span-2 flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-pink-500 to-orange-400 text-xs font-bold shadow-lg"><span>📱</span> Share to Story</button>
         </div>
         <div className="pt-4 border-t border-border-color">
           {hasPublished ? (
