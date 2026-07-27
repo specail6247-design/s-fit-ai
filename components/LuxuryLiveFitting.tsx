@@ -53,7 +53,7 @@ export default function LuxuryLiveFitting() {
              <span className={`text-[#ecab13] text-sm tracking-[0.2em] uppercase ${playfair.className}`}>S_FIT</span>
           </div>
         </div>
-        <style jsx>{`
+        <style global jsx>{`
           @keyframes traceTop { 0% { width: 0; } 25% { width: 100%; } 100% { width: 100%; } }
           @keyframes traceRight { 0% { height: 0; } 25% { height: 0; } 50% { height: 100%; } 100% { height: 100%; } }
           @keyframes traceBottom { 0% { width: 0; } 50% { width: 0; } 75% { width: 100%; } 100% { width: 100%; } }
