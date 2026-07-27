@@ -77,7 +77,7 @@ export function AuthButton() {
         </div>
         <button
           onClick={handleLogout}
-          className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-xs font-medium transition-colors border border-white/10"
+          className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-xs font-medium transition-colors border border-white/10 focus-visible:ring-2 focus-visible:ring-cyber-lime focus:outline-none"
         >
           Sign Out
         </button>
@@ -89,7 +89,7 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-void-black focus:outline-none"
       >
         LOGIN
       </button>
@@ -99,7 +99,8 @@ export function AuthButton() {
           <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              aria-label="Close modal"
+              className="absolute top-4 right-4 text-soft-gray hover:text-white focus-visible:ring-2 focus-visible:ring-cyber-lime focus:outline-none rounded-full"
             >
               ✕
             </button>
