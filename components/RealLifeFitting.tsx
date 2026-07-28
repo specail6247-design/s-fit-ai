@@ -11,7 +11,6 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
-  const [showSupportHub, setShowSupportHub] = useState(false);
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -150,16 +149,6 @@ export default function RealLifeFitting() {
             </button>
           )}
           
-
-            {/* Data Safety Badge */}
-            <div className="mt-4 flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg p-3">
-              <span className="text-xl">🛡️</span>
-              <p className="text-[10px] text-gray-400 leading-tight">
-                <strong className="text-white block mb-0.5">Secure Processing</strong>
-                Photos are processed securely and not shared.
-              </p>
-            </div>
-
           <div className="mt-4 flex gap-2">
              <a href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                SPA Line
@@ -205,64 +194,21 @@ export default function RealLifeFitting() {
             animate={{ opacity: 1, scale: 1 }}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
-            <div className="relative group" id="fitting-result-container">
+            <div className="relative group">
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
-                data-html2canvas-ignore="true"
               >
                 ✕ Close
               </button>
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
-              <button
-                onClick={async () => {
-                  try {
-                    const html2canvas = (await import('html2canvas')).default;
-                    const element = document.getElementById('fitting-result-container');
-                    if (!element) return;
-                    const canvas = await html2canvas(element, { useCORS: true, scale: 2, backgroundColor: '#0a0a0a' }).then((canvas: HTMLCanvasElement) => canvas);
-                    const link = document.createElement('a');
-                    link.download = 'sfit-story.png';
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                  } catch (e) { console.error(e); }
-                }}
-                className="absolute bottom-4 right-4 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-500 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-2"
-                data-html2canvas-ignore="true"
-              >
-                <span>📸</span> Share to Story
-              </button>
             </div>
           </motion.div>
         )}
       </div>
-
-      {/* Support Hub - Report Issue */}
-      <button onClick={() => setShowSupportHub(true)} className="fixed bottom-4 right-4 z-50 bg-black/60 backdrop-blur-md p-3 rounded-full border border-white/10 hover:bg-white/10 transition-colors group flex items-center gap-2">
-        <span>🎧</span>
-        <span className="text-xs font-bold w-0 overflow-hidden group-hover:w-20 transition-all whitespace-nowrap">Support Hub</span>
-      </button>
-
-      {showSupportHub && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" onClick={() => setShowSupportHub(false)}>
-          <div className="bg-[#111] border border-white/10 rounded-2xl max-w-sm w-full p-6 flex flex-col gap-4" onClick={e => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-2">
-              <h2 className="text-lg font-bold">Report Issue</h2>
-              <button onClick={() => setShowSupportHub(false)} className="text-gray-500 hover:text-white">✕</button>
-            </div>
-            <p className="text-xs text-gray-400">Help us improve by reporting any bugs or issues you encounter.</p>
-            <textarea className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-sm min-h-[100px] outline-none focus:border-[#007AFF]" placeholder="Describe the issue..."></textarea>
-            <button className="w-full py-3 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-lg transition-colors mt-2" onClick={() => {
-                alert('Issue reported successfully!');
-                setShowSupportHub(false);
-            }}>Submit Report</button>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }

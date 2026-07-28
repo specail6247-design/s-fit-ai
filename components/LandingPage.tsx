@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { ModeSelector } from './ModeSelector';
 
 export function LandingPage() {
-  const [showPrivacyModal, setShowPrivacyModal] = React.useState(false);
   return (
     <div className="min-h-screen bg-void-black text-pure-white overflow-hidden relative selection:bg-cyber-lime selection:text-black">
       
@@ -50,42 +49,6 @@ export function LandingPage() {
         <ModeSelector />
 
       </main>
-
-      {/* Privacy & Terms */}
-      <div className="fixed bottom-4 left-4 z-50 flex gap-4 text-xs text-soft-gray">
-        <button onClick={() => setShowPrivacyModal(true)} className="hover:text-white transition-colors">Privacy Policy & Terms</button>
-      </div>
-
-      {showPrivacyModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" onClick={() => setShowPrivacyModal(false)}>
-          <div className="bg-void-black border border-white/10 rounded-2xl max-w-lg w-full max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
-            <div className="p-6 border-b border-white/10 flex justify-between items-center">
-              <h2 className="text-xl font-bold">Privacy Policy & Terms</h2>
-              <button onClick={() => setShowPrivacyModal(false)} className="text-soft-gray hover:text-white">✕</button>
-            </div>
-            <div className="p-6 overflow-y-auto text-sm text-soft-gray space-y-4">
-              <h3 className="text-white font-bold">1. Data Privacy</h3>
-              <p>We respect your privacy. Photos uploaded for virtual fitting are processed securely and are never shared or sold to third parties.</p>
-
-              <h3 className="text-white font-bold">2. Data Safety</h3>
-              <div className="flex items-center gap-3 bg-white/5 p-3 rounded-lg border border-white/10">
-                <span className="text-2xl">🛡️</span>
-                <p className="text-xs">
-                  <strong className="text-white block">Secure Processing</strong>
-                  Photos are processed securely and not shared. Built for trust.
-                </p>
-              </div>
-
-              <h3 className="text-white font-bold">3. Terms of Service</h3>
-              <p>By using S_FIT, you agree to our terms of service regarding acceptable use and intellectual property.</p>
-            </div>
-            <div className="p-4 border-t border-white/10 flex justify-end">
-              <button onClick={() => setShowPrivacyModal(false)} className="px-6 py-2 bg-white text-black font-bold rounded-lg hover:bg-gray-200 transition-colors">Accept & Close</button>
-            </div>
-          </div>
-        </div>
-      )}
-
 
       {/* Footer / Social Proof */}
       <footer className="w-full border-t border-white/5 bg-black/50 backdrop-blur-md py-8 mt-20">
