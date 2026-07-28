@@ -95,42 +95,53 @@ export function AuthButton() {
       </button>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
+          <div className="bg-[#0a0a0a] border border-white/20 w-full max-w-sm rounded-2xl p-8 relative shadow-2xl overflow-hidden group">
+            {/* VIP Club Glow Effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#c9b037]/10 to-transparent pointer-events-none group-hover:from-[#c9b037]/20 transition-all duration-700" />
+
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              className="absolute top-4 right-4 text-white/40 hover:text-white transition-colors z-10"
+              aria-label="Close"
             >
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h2>
+            <div className="mb-8 text-center relative z-10">
+              <p className="text-[10px] text-[#c9b037] uppercase tracking-[0.3em] font-bold mb-2">Member Access</p>
+              <h2 className="text-3xl font-serif italic text-white tracking-wide">
+                {isLogin ? 'Sign In' : 'Join'}
+              </h2>
+            </div>
 
             <form onSubmit={handleAuth} className="space-y-4 mb-6">
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
+              <div className="relative">
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white text-sm focus:border-[#c9b037] outline-none transition-colors placeholder:text-white/30 font-mono"
+                  required
+                />
+              </div>
+              <div className="relative">
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white text-sm focus:border-[#c9b037] outline-none transition-colors placeholder:text-white/30 font-mono"
+                  required
+                />
+              </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="w-full bg-white text-black font-bold py-3 mt-4 hover:bg-[#c9b037] hover:text-white transition-all disabled:opacity-50 tracking-widest text-xs uppercase relative overflow-hidden group"
               >
-                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+                <span className="relative z-10">{loading ? 'Processing...' : (isLogin ? 'Enter' : 'Join')}</span>
               </button>
             </form>
 
