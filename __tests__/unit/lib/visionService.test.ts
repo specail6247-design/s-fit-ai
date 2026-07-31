@@ -15,7 +15,7 @@ vi.mock('openai', () => {
 describe('Vision Service', () => {
   describe('calculateRecommendedSize', () => {
     const mockProportions: PoseProportions = {
-      shoulderWidth: 0.5, waistWidth: 0.3, armLength: 0.3, shoulderSlope: 0.1,
+      shoulderWidth: 0.5,
       hipWidth: 0.5,
       torsoHeight: 0.5,
       legLength: 0.5,
@@ -64,7 +64,7 @@ describe('Vision Service', () => {
 
         // With high stretch
         const mockAnalysis: ClothingStyleAnalysis = {
-            category: 'tops' as const,
+            category: 'tops',
             subCategory: 'sweatshirt',
             fitType: 'oversized',
             material: 'Heavy Cotton',
@@ -106,7 +106,7 @@ describe('Vision Service', () => {
 
     it('should prioritize matching colors (black/white)', () => {
         // Create a mock black item
-        const blackItem = { ...getAllItems()[0], colors: ['Black'], category: 'tops' as const };
+        const blackItem = { ...getAllItems()[0], colors: ['Black'], category: 'tops' };
         const recommendations = getComplementaryItems(blackItem);
         expect(recommendations.length).toBeGreaterThan(0);
     });
