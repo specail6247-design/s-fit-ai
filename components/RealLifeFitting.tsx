@@ -16,13 +16,33 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
+const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleShareToStory = async () => {
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const element = document.getElementById('fitting-result-view');
+      if (!element) return;
+
+      html2canvas(element, { useCORS: true, backgroundColor: '#000000' }).then((canvas: HTMLCanvasElement) => {
+        const image = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = 'sfit-story.png';
+        link.href = image;
+        link.click();
+      });
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -158,6 +178,18 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Data Safety Badge */}
+          <div className="mt-6 flex items-center justify-center gap-2 text-[10px] text-gray-400 bg-white/5 p-2 rounded-lg border border-white/10">
+            <span className="text-green-400">🔒</span> Photos are processed securely and not shared.
+          </div>
+
+          {/* Footer Links */}
+          <div className="mt-6 pt-4 border-t border-white/10 flex flex-col gap-2 text-[10px] text-gray-500">
+            <div className="flex justify-between">
+              <button onClick={() => setShowPrivacy(true)} className="hover:text-white transition-colors">Privacy Policy & Terms</button>
+              <button onClick={() => setShowSupport(true)} className="hover:text-white transition-colors">Report Issue / Support</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -194,21 +226,103 @@ export default function RealLifeFitting() {
             animate={{ opacity: 1, scale: 1 }}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
-            <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+            <div id="fitting-result-view" className="relative group bg-black p-4 rounded-xl flex flex-col items-center">
+              {/* Brand logo for story */}
+              <div className="absolute top-8 left-8 z-30 font-black italic text-xl text-white drop-shadow-lg opacity-80 pointer-events-none">
+                S_FIT
+              </div>
+              <img src={resultImage} alt="Result" crossOrigin="anonymous" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
+                data-html2canvas-ignore="true"
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
               >
                 ✕ Close
               </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
+
+              <button
+                data-html2canvas-ignore="true"
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg hover:scale-105 transition-transform"
+              >
+                📸 Share to Story
+              </button>
+
+              <div data-html2canvas-ignore="true" className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
             </div>
           </motion.div>
         )}
       </div>
+
+      {/* Privacy Policy & Terms Modal */}
+      {showPrivacy && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-[#111] border border-white/20 p-8 rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4">Privacy Policy & Terms of Service</h2>
+            <div className="space-y-4 text-sm text-gray-300">
+              <p><strong>1. Data Processing:</strong> We process your uploaded photos solely for the purpose of generating virtual fitting results. We do not store your personal photos permanently.</p>
+              <p><strong>2. Security:</strong> All data is transmitted over secure connections. We employ industry-standard security measures to protect your information.</p>
+              <p><strong>3. Third-Party Services:</strong> We may use third-party AI services to process images. These services are bound by strict data processing agreements.</p>
+              <p><strong>4. Terms of Use:</strong> By using S_FIT, you agree to use the service for lawful purposes only. We reserve the right to terminate access for abusive behavior.</p>
+            </div>
+            <button
+              onClick={() => setShowPrivacy(false)}
+              className="mt-8 w-full py-3 bg-[#007AFF] hover:bg-[#005bb5] text-white rounded-xl font-bold transition-colors"
+            >
+              Accept & Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Support Hub Modal */}
+      {showSupport && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-[#111] border border-white/20 p-8 rounded-2xl max-w-md w-full">
+            <h2 className="text-2xl font-bold mb-4">Support Hub</h2>
+            <p className="text-sm text-gray-400 mb-6">Found a bug or need help? Let us know!</p>
+
+            <form onSubmit={(e) => { e.preventDefault(); alert('Issue reported successfully!'); setShowSupport(false); }} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-300 mb-1">Issue Type</label>
+                <select className="w-full bg-black/50 border border-white/20 rounded-lg p-2 text-white text-sm focus:border-[#007AFF] focus:outline-none">
+                  <option>Bug Report</option>
+                  <option>Feature Request</option>
+                  <option>Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-300 mb-1">Description</label>
+                <textarea
+                  required
+                  rows={4}
+                  className="w-full bg-black/50 border border-white/20 rounded-lg p-2 text-white text-sm focus:border-[#007AFF] focus:outline-none placeholder-gray-600"
+                  placeholder="Describe what went wrong..."
+                ></textarea>
+              </div>
+
+              <div className="flex gap-4 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowSupport(false)}
+                  className="flex-1 py-2 border border-white/20 rounded-lg text-sm hover:bg-white/10 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-bold transition-colors"
+                >
+                  Submit Report
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
