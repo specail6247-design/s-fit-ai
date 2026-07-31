@@ -34,7 +34,7 @@ const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: 
       const element = document.getElementById('fitting-result-view');
       if (!element) return;
 
-      html2canvas(element, { useCORS: true, backgroundColor: '#000000' }).then((canvas: HTMLCanvasElement) => {
+      html2canvas(element, { useCORS: true, background: '#000000' }).then((canvas: HTMLCanvasElement) => {
         const image = canvas.toDataURL('image/png');
         const link = document.createElement('a');
         link.download = 'sfit-story.png';
