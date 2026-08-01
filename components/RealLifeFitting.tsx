@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import MemberAccessModal from './service-essentials/MemberAccessModal';
+import SupportHubDrawer from './service-essentials/SupportHubDrawer';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isSupportHubOpen, setIsSupportHubOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -150,6 +154,15 @@ export default function RealLifeFitting() {
           )}
           
           <div className="mt-4 flex gap-2">
+             <button onClick={() => setIsLoginModalOpen(true)} className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors text-white cursor-pointer">
+               Member Access
+             </button>
+             <button onClick={() => setIsSupportHubOpen(true)} className="flex-1 py-3 border border-[#007AFF]/30 bg-[#007AFF]/10 hover:bg-[#007AFF]/20 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors text-[#007AFF] cursor-pointer">
+               Support Hub
+             </button>
+          </div>
+
+          <div className="mt-4 flex gap-2">
              <a href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                SPA Line
              </a>
@@ -209,6 +222,9 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      <MemberAccessModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+      <SupportHubDrawer isOpen={isSupportHubOpen} onClose={() => setIsSupportHubOpen(false)} />
     </div>
   );
 }
