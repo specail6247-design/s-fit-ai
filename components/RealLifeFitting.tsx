@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import LegalModal from '@/components/LegalModal';
+import DataSafetyBadge from '@/components/DataSafetyBadge';
+import SupportHubModal from '@/components/SupportHub/SupportHubModal';
+import SupportHubIcon from '@/components/SupportHubIcon';
+import html2canvas from 'html2canvas';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +21,9 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [legalModalOpen, setLegalModalOpen] = useState(false);
+  const [legalType, setLegalType] = useState<'privacy' | 'terms' | null>(null);
+  const [supportHubOpen, setSupportHubOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -23,6 +31,28 @@ export default function RealLifeFitting() {
       const reader = new FileReader();
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleShareToStory = async () => {
+    const resultContainer = document.getElementById('result-container');
+    if (!resultContainer) return;
+    try {
+      const canvas = await html2canvas(resultContainer, {
+        useCORS: true,
+        backgroundColor: '#000000',
+        scale: 2 // High quality
+      });
+      const dataUrl = canvas.toDataURL('image/jpeg');
+
+      // Creating a temporary link to download
+      const link = document.createElement('a');
+      link.download = 'sfit_story.jpg';
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error("Failed to generate story image", err);
+      alert("Failed to create shareable image. Please try again.");
     }
   };
 
@@ -124,6 +154,13 @@ export default function RealLifeFitting() {
           </div>
         </div>
 
+          <DataSafetyBadge />
+          <div className="flex justify-center gap-4 text-xs text-white/40 mt-4">
+            <button onClick={() => { setLegalType('privacy'); setLegalModalOpen(true); }} className="hover:text-white transition-colors">Privacy Policy</button>
+            <span>|</span>
+            <button onClick={() => { setLegalType('terms'); setLegalModalOpen(true); }} className="hover:text-white transition-colors">Terms of Service</button>
+          </div>
+
         {/* Action Button */}
         <div className="mt-8 relative z-10">
           {isProcessing ? (
@@ -193,14 +230,23 @@ export default function RealLifeFitting() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
+            id="result-container"
           >
             <div className="relative group">
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                data-html2canvas-ignore="true"
               >
                 ✕ Close
+              </button>
+              <button
+                onClick={handleShareToStory}
+                className="absolute top-4 right-24 bg-[#007AFF] text-white font-bold rounded-lg px-4 py-2 hover:bg-[#005bb5] transition-colors flex items-center gap-2"
+                data-html2canvas-ignore="true"
+              >
+                <span>📸</span> Share to Story
               </button>
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
@@ -209,6 +255,11 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      {/* MODALS & FLOATING BUTTONS */}
+      <LegalModal isOpen={legalModalOpen} onClose={() => setLegalModalOpen(false)} type={legalType} />
+      <SupportHubModal isOpen={supportHubOpen} onClose={() => setSupportHubOpen(false)} />
+      <SupportHubIcon onClick={() => setSupportHubOpen(true)} />
     </div>
   );
 }
