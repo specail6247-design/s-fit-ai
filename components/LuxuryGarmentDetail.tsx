@@ -5,6 +5,31 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 export default function LuxuryGarmentDetail() {
+  const [isSaved, setIsSaved] = React.useState(false);
+  const [vaultOpen, setVaultOpen] = React.useState(false);
+  const [isImmersive, setIsImmersive] = React.useState(false);
+  const [audioMuted, setAudioMuted] = React.useState(false);
+  const audioRef = React.useRef<HTMLAudioElement | null>(null);
+
+  React.useEffect(() => {
+    if (isImmersive && !audioMuted) {
+      if (!audioRef.current) {
+        audioRef.current = new Audio('https://cdn.pixabay.com/download/audio/2022/01/18/audio_03d92fb138.mp3?filename=drone-ambient-noise-9769.mp3');
+        audioRef.current.loop = true;
+        audioRef.current.volume = 0.2;
+      }
+      audioRef.current.play().catch(e => console.log('Audio play failed', e));
+    } else {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    }
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, [isImmersive, audioMuted]);
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -33,12 +58,20 @@ export default function LuxuryGarmentDetail() {
             }}
           />
           
+          {/* Exclusive Access Badge */}
+          <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md rounded-lg p-2 border border-[#ecab13]/30 text-center flex flex-col items-center">
+            <span className="material-symbols-outlined text-[#ecab13] text-sm mb-1">lock</span>
+            <p className="text-[#ecab13] text-[9px] font-bold tracking-widest uppercase">Available in 02:00:00</p>
+          </div>
+
           {/* 3D UI Overlays */}
           <div className="absolute bottom-6 left-4 right-4 flex justify-between items-end">
             <div className="bg-black/40 backdrop-blur-md rounded-lg p-2 flex flex-col gap-2 border border-white/10">
               <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">zoom_in</span></button>
               <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">360</span></button>
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">light_mode</span></button>
+              <button onClick={() => setIsImmersive(!isImmersive)} className={`size-8 flex items-center justify-center rounded transition-colors ${isImmersive ? 'bg-[#ecab13] text-black' : 'text-white hover:bg-white/10'}`}>
+                <span className="material-symbols-outlined text-sm">{isImmersive ? '3d_rotation' : 'light_mode'}</span>
+              </button>
             </div>
             <div className="text-right">
               <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mb-1">Authentic Render</p>
@@ -46,6 +79,21 @@ export default function LuxuryGarmentDetail() {
             </div>
           </div>
         </div>
+
+        {/* Immersive Fitting State Audio Overlay */}
+        {isImmersive && (
+          <div className="fixed inset-x-0 top-16 z-40 p-4 pointer-events-none">
+            <div className="flex justify-between items-center bg-black/80 backdrop-blur-lg border border-[#ecab13]/30 rounded-xl p-3 pointer-events-auto">
+              <div className="flex items-center gap-2">
+                <div className="size-2 bg-[#ecab13] rounded-full animate-pulse" />
+                <span className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase">Immersive Fitting State</span>
+              </div>
+              <button onClick={() => setAudioMuted(!audioMuted)} className="text-white hover:text-[#ecab13] transition-colors">
+                <span className="material-symbols-outlined text-sm">{audioMuted ? 'volume_off' : 'volume_up'}</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Material Stats */}
         <div className="px-4 -mt-4 relative z-10">
@@ -74,7 +122,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
@@ -113,6 +161,17 @@ export default function LuxuryGarmentDetail() {
           </div>
         </div>
 
+        {/* AI Stylist Note */}
+        <div className="px-4 mb-8">
+          <div className="bg-[#1a1a1a]/60 backdrop-blur-xl border border-[#ecab13]/30 p-4 rounded-xl flex items-start gap-4">
+            <span className="material-symbols-outlined text-[#ecab13] mt-0.5">auto_awesome</span>
+            <div>
+              <h3 className="text-white text-xs font-bold tracking-[0.2em] uppercase mb-1">AI Stylist Note</h3>
+              <p className="text-zinc-400 text-sm italic">Pair this with structured denim for a balanced silhouette.</p>
+            </div>
+          </div>
+        </div>
+
         {/* Comparison Table */}
         <div className="px-4 py-4 bg-[#1a1a1a]/30 border-y border-[#2d2d2d] mb-8">
           <div className="flex justify-between items-center py-2">
@@ -136,11 +195,47 @@ export default function LuxuryGarmentDetail() {
           <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
           <p className="text-white text-xl font-bold">$2,850</p>
         </div>
+
+        <button
+          onClick={() => { setIsSaved(!isSaved); if(!isSaved) setVaultOpen(true); }}
+          className={`flex-[1] h-14 rounded-xl border flex items-center justify-center gap-2 transition-all ${isSaved ? 'bg-white/10 border-white/20 text-white' : 'border-[#ecab13]/50 text-[#ecab13] hover:bg-[#ecab13]/10'}`}
+        >
+          <span className="material-symbols-outlined font-bold">{isSaved ? 'bookmark_added' : 'bookmark_add'}</span>
+          <span className="font-bold text-[10px] tracking-widest uppercase flex flex-col leading-tight"><span>Save</span><span>Look</span></span>
+        </button>
+
         <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
           <span className="material-symbols-outlined font-bold">person_add_alt</span>
           <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
         </Link>
       </div>
+
+      {/* The Vault (Digital Wardrobe) Drawer */}
+      {vaultOpen && (
+        <div className="fixed inset-0 z-[60] flex items-end justify-center pointer-events-none">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm pointer-events-auto" onClick={() => setVaultOpen(false)} />
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            className="w-full max-w-md bg-[#1a1a1a] border-t border-[#2d2d2d] rounded-t-3xl p-6 pb-12 pointer-events-auto relative shadow-[0_-10px_40px_rgba(0,0,0,0.5)]"
+          >
+            <div className="w-12 h-1 bg-[#2d2d2d] rounded-full mx-auto mb-6" />
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-white text-sm font-bold tracking-[0.2em] uppercase">The Vault</h3>
+              <button onClick={() => setVaultOpen(false)} className="text-zinc-500 hover:text-white">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <div className="flex items-center gap-4 bg-black/40 border border-[#2d2d2d] rounded-xl p-3">
+              <div className="w-16 h-16 rounded-lg bg-zinc-800 bg-cover bg-center border border-[#ecab13]/30" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' }} />
+              <div>
+                <h4 className="text-white font-extralight">Metallic Silk <span className="font-bold">Evening Blazer</span></h4>
+                <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mt-1">Saved for Comparison</p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       <style jsx global>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
