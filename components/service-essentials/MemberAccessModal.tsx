@@ -12,14 +12,14 @@ export default function MemberAccessModal({ isOpen, onClose }: MemberAccessModal
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login submitted:', { email, password });
+    // Submit login
     onClose();
   };
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
+        <motion.div key="member-modal" className="fixed inset-0 z-[100]">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -93,7 +93,7 @@ export default function MemberAccessModal({ isOpen, onClose }: MemberAccessModal
               </form>
             </motion.div>
           </div>
-        </>
+        </motion.div>
       )}
     </AnimatePresence>
   );

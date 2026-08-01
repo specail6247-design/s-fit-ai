@@ -28,7 +28,7 @@ export default function SupportHubDrawer({ isOpen, onClose }: SupportHubDrawerPr
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
+        <motion.div key="support-drawer" className="fixed inset-0 z-[100]">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -123,7 +123,7 @@ export default function SupportHubDrawer({ isOpen, onClose }: SupportHubDrawerPr
                <p className="text-[10px] text-gray-600 uppercase tracking-widest">S_FIT AI Support Team</p>
             </div>
           </motion.div>
-        </>
+        </motion.div>
       )}
     </AnimatePresence>
   );
