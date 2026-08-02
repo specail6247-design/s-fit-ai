@@ -1,3 +1,6 @@
+vi.mock('next/font/google', () => ({
+  Playfair_Display: () => ({ className: 'mock-playfair' })
+}));
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import RealLifeFitting from '@/components/RealLifeFitting';
