@@ -159,7 +159,8 @@ export function VibeCheckMode({ onComplete }: VibeCheckModeProps) {
                 handleReset();
               }}
               className="absolute top-4 right-4 w-8 h-8 rounded-full bg-void-black/50 
-                         flex items-center justify-center text-pure-white hover:bg-void-black/80"
+                         flex items-center justify-center text-pure-white hover:bg-void-black/80 focus-visible:ring-2 focus-visible:ring-cyber-lime"
+              aria-label="Remove photo"
             >
               ✕
             </button>
