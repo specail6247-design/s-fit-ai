@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { MemberAccessModal } from './MemberAccessModal';
+import { SupportHub } from './SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,7 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -80,6 +83,12 @@ export default function RealLifeFitting() {
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
         <header className="mb-10 relative z-10">
+          <div className="absolute top-0 right-0">
+            <button onClick={() => setIsAuthModalOpen(true)} className="px-4 py-2 border border-[#C9B037]/50 text-[#C9B037] text-xs font-mono uppercase tracking-widest hover:bg-[#C9B037]/10 transition-colors">
+              Member Access
+            </button>
+          </div>
+
           <h1 className="text-4xl font-black tracking-tighter italic">
             S_FIT <span className="text-[#007AFF]">NEO</span>
           </h1>
@@ -209,6 +218,8 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+      <MemberAccessModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+      <SupportHub />
     </div>
   );
 }
