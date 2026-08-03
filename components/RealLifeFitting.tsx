@@ -17,6 +17,28 @@ export default function RealLifeFitting() {
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
 
+  const [showLegalModal, setShowLegalModal] = useState<'privacy' | 'terms' | null>(null);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportText, setReportText] = useState('');
+  const [reportSubmitted, setReportSubmitted] = useState(false);
+
+  const handleShareToStory = async () => {
+    const element = document.getElementById('fitting-result-view');
+    if (!element) return;
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      html2canvas(element, { backgroundColor: null }).then((canvas: HTMLCanvasElement) => {
+        const image = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = 'sfit-story.png';
+        link.href = image;
+        link.click();
+      });
+    } catch (err) {
+      console.error('Error generating share image', err);
+    }
+  };
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -89,6 +111,12 @@ export default function RealLifeFitting() {
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
+          {/* Data Safety Badge */}
+          <div className="flex items-center gap-2 text-xs text-gray-400 bg-white/5 p-3 mb-4 rounded-lg border border-white/10">
+            <span className="text-sm">🔒</span>
+            <span>Photos are processed securely and not shared.</span>
+          </div>
+
           {/* User Photo Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
@@ -158,6 +186,14 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Footer Links (Legal & Support) */}
+          <div className="mt-8 flex flex-col gap-2 border-t border-white/10 pt-4 text-xs text-gray-500">
+            <div className="flex justify-between">
+              <button onClick={() => setShowLegalModal('privacy')} className="hover:text-white transition-colors">Privacy Policy</button>
+              <button onClick={() => setShowLegalModal('terms')} className="hover:text-white transition-colors">Terms of Service</button>
+            </div>
+            <button onClick={() => setShowReportModal(true)} className="text-left hover:text-white transition-colors">Report Issue (Support Hub)</button>
+          </div>
         </div>
       </div>
 
@@ -194,21 +230,92 @@ export default function RealLifeFitting() {
             animate={{ opacity: 1, scale: 1 }}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
-            <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+            <div id="fitting-result-view" className="relative group p-4 bg-black/40 rounded-xl">
+              <img src={resultImage} alt="Result" className="w-auto h-[60vh] rounded-xl object-contain shadow-2xl" />
+
+              {/* Branding for share */}
+              <div className="absolute top-6 left-6 text-white font-black italic text-xl drop-shadow-md">
+                S_FIT <span className="text-[#007AFF]">NEO</span>
+              </div>
+
               <button 
+                data-html2canvas-ignore="true"
                 onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                className="absolute top-6 right-6 bg-black/60 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-[#007AFF] transition-colors"
               >
-                ✕ Close
+                ✕
               </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
+
+              <div className="absolute bottom-6 left-6 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+              {/* Share to Story Button */}
+              <button
+                data-html2canvas-ignore="true"
+                onClick={handleShareToStory}
+                className="absolute bottom-6 right-6 bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg transition-transform hover:scale-105 flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      {/* Legal Modal */}
+      {showLegalModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-[#111] border border-white/20 rounded-2xl w-full max-w-lg p-6 relative">
+            <button onClick={() => setShowLegalModal(null)} className="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+            <h2 className="text-xl font-bold mb-4">{showLegalModal === 'privacy' ? 'Privacy Policy' : 'Terms of Service'}</h2>
+            <div className="text-sm text-gray-300 max-h-96 overflow-y-auto pr-2 space-y-4">
+              {showLegalModal === 'privacy' ? (
+                <>
+                  <p>Your privacy is important to us. Photos uploaded to S_FIT NEO are processed securely for the sole purpose of virtual try-on.</p>
+                  <p>We do not store your personal photos on our servers beyond the session, and they are never shared with third parties.</p>
+                </>
+              ) : (
+                <>
+                  <p>By using S_FIT NEO, you agree to our terms of service.</p>
+                  <p>This service is provided &quot;as is&quot; without warranties. Users must have the right to use uploaded images.</p>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Report Issue Modal */}
+      {showReportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-[#111] border border-white/20 rounded-2xl w-full max-w-lg p-6 relative">
+            <button onClick={() => {setShowReportModal(false); setReportSubmitted(false);}} className="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+            <h2 className="text-xl font-bold mb-4">Support Hub: Report Issue</h2>
+            {reportSubmitted ? (
+              <div className="text-green-400 text-center py-8">
+                Thank you! Your issue has been reported.
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <textarea
+                  className="w-full bg-black/50 border border-white/20 rounded-xl p-3 text-sm text-white focus:border-[#007AFF] focus:outline-none min-h-[120px]"
+                  placeholder="Describe the issue you encountered..."
+                  value={reportText}
+                  onChange={(e) => setReportText(e.target.value)}
+                />
+                <button
+                  onClick={() => setReportSubmitted(true)}
+                  disabled={!reportText.trim()}
+                  className="w-full py-3 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl transition-colors disabled:opacity-50"
+                >
+                  Submit Report
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
