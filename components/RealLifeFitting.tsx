@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import CinematicViewer from './CinematicViewer';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +17,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [resultVideo, setResultVideo] = useState<string | null>(null);
+  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -23,6 +26,29 @@ export default function RealLifeFitting() {
       const reader = new FileReader();
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleGenerateVideo = async () => {
+    if (!resultImage) return;
+    setIsGeneratingVideo(true);
+    try {
+      const res = await fetch('/api/cinematic-try-on', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: resultImage })
+      });
+      const data = await res.json();
+      if (data.success && data.videoUrl) {
+        setResultVideo(data.videoUrl);
+      } else {
+        throw new Error(data.error || "Video Generation Failed");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to generate cinematic video. Please try again.");
+    } finally {
+      setIsGeneratingVideo(false);
     }
   };
 
@@ -205,8 +231,22 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleGenerateVideo}
+                disabled={isGeneratingVideo}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-[0_0_15px_rgba(168,85,247,0.5)] hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed border border-white/20"
+              >
+                {isGeneratingVideo ? 'GENERATING...' : '🎬 Cinematic Mode'}
+              </button>
             </div>
           </motion.div>
+        )}
+
+        {resultVideo && (
+          <CinematicViewer
+            videoUrl={resultVideo}
+            onClose={() => setResultVideo(null)}
+          />
         )}
       </div>
     </div>
