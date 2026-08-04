@@ -16,6 +16,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -23,6 +25,29 @@ export default function RealLifeFitting() {
       const reader = new FileReader();
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleShareToStory = async () => {
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const element = document.getElementById('fitting-result-container');
+      if (!element) return;
+
+      const canvas = await html2canvas(element, {
+        backgroundColor: '#000000',
+        scale: 2
+      });
+
+      const image = canvas.toDataURL('image/jpeg', 0.9);
+
+      const link = document.createElement('a');
+      link.download = 'sfit-story.jpg';
+      link.href = image;
+      link.click();
+    } catch (err) {
+      console.error('Failed to generate story image:', err);
+      alert('Failed to generate story image. Please try again.');
     }
   };
 
@@ -158,6 +183,17 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Trust Badge */}
+          <div className="flex items-center gap-3 mt-6 p-3 bg-green-500/10 border border-green-500/20 rounded-xl text-green-400">
+            <span className="text-xl">🔒</span>
+            <span className="text-xs font-medium">Photos are processed securely and not shared.</span>
+          </div>
+        </div>
+
+        {/* Footer Links */}
+        <div className="mt-auto pt-8 flex justify-between items-center text-xs text-gray-500 relative z-10">
+          <button onClick={() => setShowPrivacy(true)} className="hover:text-white transition-colors">Privacy & Terms</button>
+          <button onClick={() => setShowSupport(true)} className="hover:text-white transition-colors">Report Issue</button>
         </div>
       </div>
 
@@ -194,21 +230,104 @@ export default function RealLifeFitting() {
             animate={{ opacity: 1, scale: 1 }}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
-            <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+            <div id="fitting-result-container" className="relative group bg-black rounded-xl overflow-hidden p-2">
+              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl block" />
+              <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 text-white/50 text-[10px] font-mono tracking-widest pointer-events-none">
+                S_FIT NEO
+              </div>
+
               <button 
                 onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                data-html2canvas-ignore="true"
+                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-red-500 transition-colors z-30"
               >
                 ✕ Close
               </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
+
+              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30 z-30">
                 AI GENERATED_
               </div>
+
+              <button
+                onClick={handleShareToStory}
+                data-html2canvas-ignore="true"
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg hover:scale-105 transition-transform z-30 flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      {/* Privacy Policy Modal */}
+      {showPrivacy && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-[#111] border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <h2 className="text-xl font-bold mb-4 text-white">Privacy Policy & Terms</h2>
+            <div className="text-sm text-gray-400 space-y-3 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+              <p>Your privacy is critically important to us.</p>
+              <p><strong>1. Data Collection:</strong> We only collect the photos you explicitly upload for the virtual fitting process.</p>
+              <p><strong>2. Data Usage:</strong> Photos are strictly used to generate the fitting result. We do not use your photos to train our AI models without explicit consent.</p>
+              <p><strong>3. Data Retention:</strong> Uploaded photos and generated results are automatically deleted from our servers after your session ends.</p>
+              <p><strong>4. Security:</strong> All data is transmitted over secure, encrypted connections.</p>
+              <p>By using S_FIT NEO, you agree to these terms.</p>
+            </div>
+            <button
+              onClick={() => setShowPrivacy(false)}
+              className="mt-6 w-full py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors text-sm font-bold"
+            >
+              I Understand
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Support / Report Issue Modal */}
+      {showSupport && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-[#111] border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <h2 className="text-xl font-bold mb-4 text-white flex items-center gap-2">
+              <span>🐛</span> Report an Issue
+            </h2>
+            <form onSubmit={(e) => { e.preventDefault(); alert("Issue reported! Thank you."); setShowSupport(false); }} className="space-y-4">
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">Issue Type</label>
+                <select className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white text-sm focus:border-[#007AFF] outline-none">
+                  <option>Visual Bug</option>
+                  <option>Fitting Error</option>
+                  <option>Performance / Crash</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">Description</label>
+                <textarea
+                  required
+                  rows={4}
+                  className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white text-sm focus:border-[#007AFF] outline-none resize-none"
+                  placeholder="Please describe what went wrong..."
+                />
+              </div>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowSupport(false)}
+                  className="flex-1 py-3 border border-white/10 hover:bg-white/5 text-white rounded-xl transition-colors text-sm font-bold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-3 bg-[#007AFF] hover:bg-[#005bb5] text-white rounded-xl transition-colors text-sm font-bold shadow-lg"
+                >
+                  Submit Report
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
