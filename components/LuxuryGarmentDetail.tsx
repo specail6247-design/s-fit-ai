@@ -3,8 +3,25 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import LuxuryImageDistortion from './masterpiece/LuxuryImageDistortion';
 
 export default function LuxuryGarmentDetail() {
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" as const } }
+  };
+
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -24,14 +41,16 @@ export default function LuxuryGarmentDetail() {
 
       {/* Main Content Container (Mobile Optimized) */}
       <main className="max-w-md mx-auto pt-16 pb-32">
+      <motion.div variants={containerVariants} initial="hidden" animate="visible">
         {/* 3D Interactive Viewport (Hero Image) */}
         <div className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900">
-          <div 
-            className="absolute inset-0 bg-cover bg-center" 
-            style={{ 
-              backgroundImage: 'linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' 
-            }}
-          />
+          {/* Image Distortion replaced background */}
+          <div className="absolute inset-0">
+             <LuxuryImageDistortion
+               imageUrl="https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E"
+             />
+             <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent pointer-events-none" />
+          </div>
           
           {/* 3D UI Overlays */}
           <div className="absolute bottom-6 left-4 right-4 flex justify-between items-end">
@@ -42,11 +61,12 @@ export default function LuxuryGarmentDetail() {
             </div>
             <div className="text-right">
               <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mb-1">Authentic Render</p>
-              <h1 className="text-white text-3xl font-extralight leading-tight">Metallic Silk <br/><span className="font-bold">Evening Blazer</span></h1>
+              <h1 className="text-white text-3xl font-extralight leading-tight font-cinzel">Metallic Silk <br/><span className="font-bold">Evening Blazer</span></h1>
             </div>
           </div>
         </div>
 
+        <motion.div variants={itemVariants}>
         {/* Material Stats */}
         <div className="px-4 -mt-4 relative z-10">
           <div className="flex flex-wrap gap-3 bg-[#1a1a1a]/60 backdrop-blur-xl border border-[#2d2d2d] p-4 rounded-xl">
@@ -67,6 +87,9 @@ export default function LuxuryGarmentDetail() {
           </div>
         </div>
 
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
         {/* Material Science Description */}
         <div className="mt-8 px-4">
           <div className="flex items-center justify-between mb-4">
@@ -74,7 +97,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
@@ -91,6 +114,9 @@ export default function LuxuryGarmentDetail() {
           </div>
         </div>
 
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
         {/* Macro Gallery */}
         <div className="mb-8">
           <div className="px-4 flex items-center justify-between mb-4">
@@ -113,6 +139,9 @@ export default function LuxuryGarmentDetail() {
           </div>
         </div>
 
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
         {/* Comparison Table */}
         <div className="px-4 py-4 bg-[#1a1a1a]/30 border-y border-[#2d2d2d] mb-8">
           <div className="flex justify-between items-center py-2">
@@ -128,6 +157,8 @@ export default function LuxuryGarmentDetail() {
             <span className="text-white text-sm">12,400 Polygons</span>
           </div>
         </div>
+      </motion.div>
+      </motion.div>
       </main>
 
       {/* Bottom Action Bar */}
@@ -136,9 +167,10 @@ export default function LuxuryGarmentDetail() {
           <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
           <p className="text-white text-xl font-bold">$2,850</p>
         </div>
-        <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
+        <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[0.98] active:scale-95 transition-transform overflow-hidden relative group">
           <span className="material-symbols-outlined font-bold">person_add_alt</span>
-          <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
+          <span className="font-bold text-sm tracking-widest uppercase relative z-10">Try on Mannequin</span>
+          <div className="absolute inset-0 bg-white/20 opacity-0 group-active:opacity-100 group-active:scale-150 transition-all duration-300 rounded-full scale-0" />
         </Link>
       </div>
 

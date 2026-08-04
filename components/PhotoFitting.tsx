@@ -1,15 +1,17 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Space_Grotesk } from "next/font/google";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const [isFitting, setIsFitting] = useState(false);
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
+      <div className={`transition-opacity duration-1000 ease-in-out ${isFitting ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
       {/* Top App Bar */}
       <div className="z-50 flex items-center justify-between bg-transparent p-4">
         <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
@@ -26,12 +28,14 @@ export default function PhotoFitting() {
         </div>
       </div>
 
+      </div>
+
       {/* Main Viewport (Photo Fitting Canvas) */}
       <div className="absolute inset-0 z-0">
         <div
           className="relative h-full w-full bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCGfKW7fSSx0BbN4w9CP-cPpb_GgcZgK3IAWtBDg18Z4EDDIvAvw0CYBp2ynyLSCTfQa3XtdTA5PTl7gZiCiugdiuuJGRvvmUlvjBFrWthED8dEe3CP3REf2b2s3LD1jlGYxcOkEBqgVsRXmY3sN7_6LsADaLzbcd5SrJPyiMiop4OSdYyRPcnzNh9Boe6dav_PUsJn_t0Fo1urrSzWCUnXU8cLgZY7rJmKnal8LfghoMed8GtjDMO9ruztSGEQMUNqhhkDtR0k60g")',
+            backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCGfKW7fSSx0BbN4w9CP-cPpb_GgcZgK3IAWtBDg18Z4EDDIvAvw0CYBp2ynyLSCTfQa3XtdTA5PTl7gZiCiugdiuuJGRvvmUlvjBFrWthED8dEe3CP3REf2b2s3LD1jlGYxcOkEBqgVsRXmY3sN7_6LsADaLzbcd5SrJPyiMiop4OSdYyRPcnzNh9Boe6dav_PUsJn_t0Fo1urrSzWCUnXU8cLgZY7rJmKnal8LfghoMed8GtjDMO9ruztSGEQMUNqhhkDtR0k60g")', filter: "saturate(0.9) contrast(1.1)",
           }}
         >
           {/* Scanning Effect */}
@@ -43,6 +47,7 @@ export default function PhotoFitting() {
             }}
           ></div>
 
+          <div className={`transition-opacity duration-1000 ease-in-out ${isFitting ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
           {/* HUD Overlays */}
           <div className="glass-panel absolute left-4 top-24 rounded-lg p-3" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
             <div className="flex items-center gap-2">
@@ -58,8 +63,10 @@ export default function PhotoFitting() {
             <p className="mt-1 text-xs">42,000 Polygons</p>
           </div>
         </div>
+        </div>
       </div>
 
+      <div className={`transition-opacity duration-1000 ease-in-out ${isFitting ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
       {/* Processing State (Overlay) */}
       <div className="absolute inset-x-0 top-1/2 z-30 -translate-y-1/2 px-6">
         <div className="glass-panel mx-auto max-w-sm rounded-xl p-6 shadow-2xl" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
@@ -78,7 +85,9 @@ export default function PhotoFitting() {
           </div>
         </div>
       </div>
+      </div>
 
+      <div className={`transition-opacity duration-1000 ease-in-out ${isFitting ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
       {/* Controls Footer */}
       <div className="mt-auto space-y-4 p-4 z-40">
         <div className="flex items-center justify-between px-2">
@@ -117,13 +126,15 @@ export default function PhotoFitting() {
             </label>
           </div>
         </div>
-        <button className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-[#256af4] text-base font-bold text-white shadow-lg shadow-[#256af4]/20 transition-colors hover:bg-blue-600">
+        <button onClick={() => setIsFitting(true)} className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-[#256af4] text-base font-bold text-white shadow-lg shadow-[#256af4]/20 transition-colors hover:bg-blue-600">
           <span className="material-symbols-outlined">check_circle</span>
           Confirm & Proceed to Checkout
         </button>
         <div className="h-4"></div>
       </div>
+      </div>
 
+      <div className={`transition-opacity duration-1000 ease-in-out ${isFitting ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
       {/* Heatmap Legend */}
       <div className="glass-panel absolute bottom-64 left-4 z-40 flex flex-col gap-1.5 rounded-lg p-2" style={{ background: "rgba(16, 22, 35, 0.8)", backdropFilter: "blur(12px)", border: "1px solid rgba(49, 67, 104, 0.5)" }}>
         <div className="flex items-center gap-2">
@@ -138,6 +149,7 @@ export default function PhotoFitting() {
           <div className="size-2 rounded-full bg-blue-500"></div>
           <span className="text-[9px] font-bold uppercase text-white">Loose</span>
         </div>
+      </div>
       </div>
     </div>
   );
