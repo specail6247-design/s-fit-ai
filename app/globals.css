@@ -36,6 +36,8 @@
 }
 
 @theme inline {
+  --font-cinzel: var(--font-cinzel);
+  --font-space-grotesk: var(--font-space-grotesk);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-void-black: var(--void-black);
@@ -289,4 +291,9 @@ body {
   .mode-card {
     padding: var(--spacing-lg);
   }
+}
+
+
+.luxury-saturate img {
+  filter: saturate(0.9) contrast(1.1);
 }
