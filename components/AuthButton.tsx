@@ -77,7 +77,7 @@ export function AuthButton() {
         </div>
         <button
           onClick={handleLogout}
-          className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-xs font-medium transition-colors border border-white/10"
+          className="bg-transparent hover:bg-white/10 text-[#C9B037] px-4 py-2 border border-[#C9B037]/50 text-xs font-mono tracking-widest transition-colors"
         >
           Sign Out
         </button>
@@ -89,14 +89,14 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="bg-transparent border border-white/20 text-white px-6 py-2 text-xs font-mono tracking-widest hover:border-[#C9B037] hover:text-[#C9B037] transition-all"
       >
-        LOGIN
+        MEMBER ACCESS
       </button>
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
+          <div className="bg-[#0a0a0a] border border-white/20 w-full max-w-sm p-8 relative shadow-2xl">
             <button
               onClick={() => setShowModal(false)}
               className="absolute top-4 right-4 text-soft-gray hover:text-white"
@@ -104,8 +104,8 @@ export function AuthButton() {
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
+            <h2 className="text-2xl font-serif text-white mb-8 text-center tracking-widest">
+              {isLogin ? 'MEMBER ACCESS' : 'REQUEST ACCESS'}
             </h2>
 
             <form onSubmit={handleAuth} className="space-y-4 mb-6">
@@ -114,7 +114,7 @@ export function AuthButton() {
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white text-sm focus:border-[#C9B037] outline-none transition-colors rounded-none placeholder-gray-500"
                 required
               />
               <input
@@ -122,15 +122,15 @@ export function AuthButton() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white text-sm focus:border-[#C9B037] outline-none transition-colors rounded-none placeholder-gray-500"
                 required
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="w-full mt-4 bg-transparent border border-[#C9B037] text-[#C9B037] font-mono tracking-widest py-3 hover:bg-[#C9B037] hover:text-black transition-all disabled:opacity-50"
               >
-                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+                {loading ? 'PROCESSING...' : (isLogin ? 'AUTHENTICATE' : 'INITIALIZE')}
               </button>
             </form>
 
@@ -159,7 +159,7 @@ export function AuthButton() {
               {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
               <button
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-cyber-lime hover:underline ml-1"
+                className="text-[#C9B037] hover:underline ml-1"
               >
                 {isLogin ? 'Sign up' : 'Log in'}
               </button>
