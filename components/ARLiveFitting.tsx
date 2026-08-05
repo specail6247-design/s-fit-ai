@@ -123,7 +123,7 @@ export default function ARLiveFitting() {
 
           {/* Capture Controls */}
           <div className="flex items-center justify-center gap-10 p-4">
-            <button className="flex size-12 shrink-0 items-center justify-center rounded-full text-white" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+            <button className="flex size-12 shrink-0 items-center justify-center rounded-full text-white" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }} aria-label="Photo library">
               <span className="material-symbols-outlined">photo_library</span>
             </button>
             <div className="relative flex items-center justify-center">
@@ -137,7 +137,7 @@ export default function ARLiveFitting() {
                 <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#2b8cee]">Fit Snap</span>
               </div>
             </div>
-            <button className="flex size-12 shrink-0 items-center justify-center rounded-full text-white" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+            <button className="flex size-12 shrink-0 items-center justify-center rounded-full text-white" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }} aria-label="Refresh">
               <span className="material-symbols-outlined">refresh</span>
             </button>
           </div>
