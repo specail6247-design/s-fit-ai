@@ -199,6 +199,7 @@ export default function RealLifeFitting() {
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                aria-label="Close"
               >
                 ✕ Close
               </button>
