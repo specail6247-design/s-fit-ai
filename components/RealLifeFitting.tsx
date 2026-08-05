@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { AuthButton } from '@/components/AuthButton';
+import { BottomSheet } from '@/components/ui/BottomSheet';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,7 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -79,13 +82,24 @@ export default function RealLifeFitting() {
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+                <header className="mb-10 relative z-10 flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-black tracking-tighter italic">
+              S_FIT <span className="text-[#007AFF]">NEO</span>
+            </h1>
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+              Professional Virtual Fitting
+            </p>
+          </div>
+          <div className="flex flex-col items-end gap-2">
+            <AuthButton />
+            <button
+              onClick={() => setIsHelpOpen(true)}
+              className="px-3 py-1 bg-white/5 border border-white/10 hover:bg-white/10 rounded-full text-xs font-mono transition-colors"
+            >
+              ? HELP
+            </button>
+          </div>
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
@@ -96,7 +110,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? <img src={userImage} alt="User Upload" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +127,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? <img src={garmentImage} alt="Garment Upload" className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -195,6 +209,7 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
@@ -209,6 +224,67 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      {/* Support Hub Drawer */}
+      <BottomSheet isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} title="Support Hub">
+        <div className="space-y-6 text-sm text-gray-300">
+
+          <div className="space-y-2">
+            <h4 className="font-bold text-white flex items-center gap-2">
+              <span className="text-[#007AFF]">01</span> How to Fit
+            </h4>
+            <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory hide-scrollbar">
+              <div className="min-w-[200px] h-[120px] bg-black/40 border border-white/10 rounded-xl flex flex-col items-center justify-center p-4 snap-center">
+                <span className="text-2xl mb-2">📸</span>
+                <span className="text-xs text-center font-bold">1. Take a clear photo</span>
+              </div>
+              <div className="min-w-[200px] h-[120px] bg-black/40 border border-white/10 rounded-xl flex flex-col items-center justify-center p-4 snap-center">
+                <span className="text-2xl mb-2">👕</span>
+                <span className="text-xs text-center font-bold">2. Upload your garment</span>
+              </div>
+              <div className="min-w-[200px] h-[120px] bg-black/40 border border-white/10 rounded-xl flex flex-col items-center justify-center p-4 snap-center">
+                <span className="text-2xl mb-2">✨</span>
+                <span className="text-xs text-center font-bold">3. Generate AI Fit</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-orange-500/10 border border-orange-500/20 p-4 rounded-xl flex items-start gap-3">
+            <span className="text-xl">⚠️</span>
+            <div>
+              <h4 className="font-bold text-orange-400 mb-1">Caution</h4>
+              <p className="text-xs text-orange-200/70">For best results, ensure good lighting and stand 2-3 meters from the camera. Avoid loose clothing in your base photo.</p>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <h4 className="font-bold text-white flex items-center gap-2">
+              <span className="text-[#007AFF]">02</span> Q&A
+            </h4>
+            <div className="space-y-2">
+              <details className="group bg-black/40 border border-white/10 rounded-lg open:bg-black/60 transition-colors">
+                <summary className="p-3 font-medium cursor-pointer text-xs uppercase tracking-wider select-none flex justify-between items-center">
+                  What formats are supported?
+                  <span className="group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <div className="p-3 pt-0 text-xs text-gray-400 border-t border-white/5 mt-2">
+                  We support JPG and PNG formats up to 5MB in size.
+                </div>
+              </details>
+              <details className="group bg-black/40 border border-white/10 rounded-lg open:bg-black/60 transition-colors">
+                <summary className="p-3 font-medium cursor-pointer text-xs uppercase tracking-wider select-none flex justify-between items-center">
+                  How accurate is the AI?
+                  <span className="group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <div className="p-3 pt-0 text-xs text-gray-400 border-t border-white/5 mt-2">
+                  Our IDM-VTON model preserves fabric texture and drapes naturally based on your body shape.
+                </div>
+              </details>
+            </div>
+          </div>
+
+        </div>
+      </BottomSheet>
     </div>
   );
 }
