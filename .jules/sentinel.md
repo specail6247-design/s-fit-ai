@@ -1,0 +1,4 @@
+## 2026-08-06 - Fix Path Traversal Vulnerability in localFileToDataUri
+**Vulnerability:** Path traversal vulnerability in `app/api/try-on/route.ts` where `localFileToDataUri` reads files using `fs.readFileSync(absolutePath)` without validating that the final absolute path is confined within the `public` directory. User input `localPath` is prepended with `public`, but using `../` segments allows escaping the directory to read sensitive files (like `.env`).
+**Learning:** `path.join` resolves `../` automatically. If a user supplies a path like `../../.env`, `path.join(process.cwd(), 'public', '../../.env')` resolves to `/app/.env`, allowing arbitrary file reads since there are no checks.
+**Prevention:** Always validate resolved absolute paths to ensure they begin exactly with the intended base directory using `absolutePath.startsWith(publicDir + path.sep)` or `absolutePath === publicDir`.
