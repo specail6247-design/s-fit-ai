@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import LegalModal from '@/components/LegalModal';
+import ReportModal from '@/components/ReportModal';
+import DataSafetyBadge from '@/components/DataSafetyBadge';
+import ShareToStory from '@/components/ShareToStory';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -12,6 +16,8 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
   const [userImage, setUserImage] = useState<string | null>(null);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
@@ -158,8 +164,18 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <DataSafetyBadge />
+
+          <div className="mt-8 flex justify-center gap-4 text-xs text-gray-500">
+            <button onClick={() => setIsLegalModalOpen(true)} className="hover:text-white transition-colors">Privacy & Terms</button>
+            <span>|</span>
+            <button onClick={() => setIsReportModalOpen(true)} className="hover:text-white transition-colors">Report Issue</button>
+          </div>
         </div>
       </div>
+
+      <LegalModal isOpen={isLegalModalOpen} onClose={() => setIsLegalModalOpen(false)} />
+      <ReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} />
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
@@ -190,21 +206,25 @@ export default function RealLifeFitting() {
         {/* Result Overlay (If success) */}
         {resultImage && !isProcessing && (
           <motion.div 
+            id="fitting-result-container"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
-            <div className="relative group">
+            <div className="relative group" id="fitting-result-content">
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                data-html2canvas-ignore="true"
               >
                 ✕ Close
               </button>
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+              <ShareToStory targetId="fitting-result-content" />
             </div>
           </motion.div>
         )}
