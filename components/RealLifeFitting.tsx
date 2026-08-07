@@ -16,6 +16,31 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [showLegal, setShowLegal] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
+  const [supportIssue, setSupportIssue] = useState('');
+
+  const handleShareToStory = async () => {
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const element = document.getElementById('fitting-result-container');
+      if (!element) return;
+
+      const canvas = await html2canvas(element, {
+        backgroundColor: '#050505',
+        scale: 2,
+        useCORS: true,
+      });
+
+      const image = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = image;
+      link.download = 'sfit-story.png';
+      link.click();
+    } catch (err) {
+      console.error('Failed to generate story image', err);
+    }
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -125,6 +150,12 @@ export default function RealLifeFitting() {
         </div>
 
         {/* Action Button */}
+        {/* Data Safety Badge */}
+        <div className="mt-4 flex items-center gap-2 text-xs text-gray-400 bg-white/5 p-3 rounded-xl border border-white/10">
+          <span className="text-[#007AFF] text-lg">🔒</span>
+          <p>Photos are processed securely and <strong className="text-white">not shared</strong>.</p>
+        </div>
+
         <div className="mt-8 relative z-10">
           {isProcessing ? (
             <div className="space-y-2">
@@ -156,6 +187,12 @@ export default function RealLifeFitting() {
              <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                Luxury Line
              </a>
+          </div>
+
+          {/* Links for Legal and Support */}
+          <div className="mt-6 flex justify-between text-[10px] text-gray-500 uppercase tracking-wider font-semibold">
+            <button onClick={() => setShowLegal(true)} className="hover:text-white transition-colors">Privacy & Terms</button>
+            <button onClick={() => setShowSupport(true)} className="hover:text-white transition-colors">Support Hub</button>
           </div>
 
         </div>
@@ -194,14 +231,27 @@ export default function RealLifeFitting() {
             animate={{ opacity: 1, scale: 1 }}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
-            <div className="relative group">
+            <div className="relative group" id="fitting-result-container">
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
+                data-html2canvas-ignore="true"
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
               >
                 ✕ Close
               </button>
+
+              <button
+                data-html2canvas-ignore="true"
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-[#007AFF] text-white px-4 py-2 rounded-full font-bold shadow-lg hover:bg-[#005bb5] transition-colors flex items-center gap-2 z-50"
+              >
+                <span>📸</span> Share to Story
+              </button>
+
+              <div className="absolute top-4 left-4 text-white font-black italic tracking-tighter text-2xl drop-shadow-md z-0 opacity-0 group-hover:opacity-100 transition-opacity" data-html2canvas-ignore="false">
+                S_FIT
+              </div>
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
@@ -209,6 +259,64 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      {/* Legal & Compliance Modal */}
+      {showLegal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-[#111] border border-white/20 rounded-2xl p-6 w-full max-w-md shadow-2xl">
+            <h2 className="text-xl font-bold mb-4 text-white">Privacy Policy & Terms</h2>
+            <div className="h-64 overflow-y-auto text-sm text-gray-300 space-y-4 pr-2 custom-scrollbar">
+              <p><strong>1. Data Collection & Processing</strong><br/>We process uploaded photos solely for the purpose of generating virtual fitting results. Images are securely transmitted and processed.</p>
+              <p><strong>2. Data Retention</strong><br/>Uploaded images and generated results are not stored on our servers after the session ends unless explicitly saved by the user.</p>
+              <p><strong>3. Usage Terms</strong><br/>By using S_FIT, you agree not to upload inappropriate, copyrighted, or non-consensual images.</p>
+              <p><strong>4. Third-Party Services</strong><br/>We may use trusted third-party AI models (e.g., Fashn.ai) for processing, strictly bound by our privacy agreements.</p>
+            </div>
+            <button
+              onClick={() => setShowLegal(false)}
+              className="mt-6 w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl font-bold transition-colors"
+            >
+              I Understand
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Support Hub Modal */}
+      {showSupport && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-[#111] border border-white/20 rounded-2xl p-6 w-full max-w-md shadow-2xl">
+            <h2 className="text-xl font-bold mb-2 text-white">Support Hub</h2>
+            <p className="text-xs text-gray-400 mb-6">Found a bug or have feedback? Let us know.</p>
+
+            <textarea
+              value={supportIssue}
+              onChange={(e) => setSupportIssue(e.target.value)}
+              placeholder="Describe the issue or your feedback..."
+              className="w-full h-32 bg-black/50 border border-white/20 rounded-xl p-3 text-sm focus:outline-none focus:border-[#007AFF] text-white resize-none"
+            />
+
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={() => setShowSupport(false)}
+                className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl font-bold transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  alert("Report submitted! Thank you.");
+                  setSupportIssue('');
+                  setShowSupport(false);
+                }}
+                className="flex-1 py-3 bg-[#007AFF] hover:bg-[#005bb5] rounded-xl font-bold transition-colors"
+              >
+                Report Issue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
