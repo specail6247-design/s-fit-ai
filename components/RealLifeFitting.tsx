@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import html2canvas from 'html2canvas';
+import LegalModal from '@/components/LegalModal';
+import SupportHub from '@/components/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +19,50 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [legalContent, setLegalContent] = useState<{ title: string; content: React.ReactNode }>({ title: '', content: null });
+  const [isSupportHubOpen, setIsSupportHubOpen] = useState(false);
+
+  const handleShareToStory = async () => {
+    const element = document.getElementById('fitting-result-container');
+    if (!element) return;
+    try {
+      const canvas = await html2canvas(element, { useCORS: true, backgroundColor: '#0a0a0a' });
+      const image = canvas.toDataURL('image/jpeg', 0.9);
+      const link = document.createElement('a');
+      link.href = image;
+      link.download = 'sfit_story.jpg';
+      link.click();
+    } catch (err) {
+      console.error("Error generating story image", err);
+    }
+  };
+
+  const openLegal = (type: 'privacy' | 'terms') => {
+    if (type === 'privacy') {
+      setLegalContent({
+        title: 'Privacy Policy',
+        content: (
+          <div>
+            <p>Your privacy is important to us. S_FIT AI does not store your photos permanently. They are processed securely for the sole purpose of generating your virtual try-on experience and are immediately discarded from our active servers after processing.</p>
+            <p className="mt-4">We do not sell your personal data or facial features to third parties.</p>
+          </div>
+        )
+      });
+    } else {
+      setLegalContent({
+        title: 'Terms of Service',
+        content: (
+          <div>
+            <p>By using S_FIT AI, you agree to our Terms of Service. This service is provided &quot;as is&quot; without warranty. Do not upload inappropriate, explicit, or copyrighted materials.</p>
+            <p className="mt-4">We reserve the right to suspend accounts violating these terms.</p>
+          </div>
+        )
+      });
+    }
+    setIsLegalModalOpen(true);
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -106,6 +153,12 @@ export default function RealLifeFitting() {
             </div>
           </div>
 
+          {/* Data Safety Badge */}
+          <div className="flex items-center gap-2 text-[10px] text-green-400/80 bg-green-900/20 p-2 rounded-lg border border-green-500/20">
+            <span>🔒</span>
+            <span>Photos are processed securely and not shared.</span>
+          </div>
+
           {/* Garment Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">02. Target Garment</label>
@@ -158,6 +211,17 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Trust & Growth Footer Links */}
+          <div className="mt-8 flex flex-col items-center gap-3">
+             <div className="flex items-center justify-center gap-4 text-[10px] text-gray-500 uppercase tracking-wider">
+               <button onClick={() => openLegal('privacy')} className="hover:text-white transition-colors">Privacy</button>
+               <span>|</span>
+               <button onClick={() => openLegal('terms')} className="hover:text-white transition-colors">Terms</button>
+             </div>
+             <button onClick={() => setIsSupportHubOpen(true)} className="text-[10px] text-gray-400 hover:text-[#007AFF] transition-colors border border-gray-800 hover:border-[#007AFF]/50 px-3 py-1 rounded-full flex items-center gap-1">
+               <span>🐛</span> Report Issue
+             </button>
+          </div>
         </div>
       </div>
 
@@ -194,21 +258,49 @@ export default function RealLifeFitting() {
             animate={{ opacity: 1, scale: 1 }}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
-            <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+            <div id="fitting-result-container" className="relative group bg-[#0a0a0a] p-4 rounded-xl flex flex-col items-center">
+              {/* Added a title/logo for the branded story share */}
+              <div className="w-full flex justify-between items-center mb-4 px-2">
+                 <h2 className="text-xl font-black italic text-white">S_FIT <span className="text-[#007AFF]">NEO</span></h2>
+                 <span className="text-[10px] text-gray-400 tracking-widest uppercase">Virtual Fitting</span>
+              </div>
+              <img src={resultImage} alt="Result" crossOrigin="anonymous" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
+                data-html2canvas-ignore="true"
                 onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-red-500 transition-colors z-30"
               >
-                ✕ Close
+                ✕
               </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
-                AI GENERATED_
+
+              <div className="w-full flex justify-between items-end mt-4 px-2">
+                <div className="bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
+                  AI GENERATED_
+                </div>
+                {/* Share to Story Button - ignored in canvas generation to prevent infinite recursion/UI artifacts */}
+                <button
+                  data-html2canvas-ignore="true"
+                  onClick={handleShareToStory}
+                  className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 hover:opacity-90 text-white font-bold py-2 px-4 rounded-full text-xs shadow-lg flex items-center gap-2 transition-transform transform hover:scale-105 z-30"
+                >
+                  <span>📸</span> Share to Story
+                </button>
               </div>
             </div>
           </motion.div>
         )}
       </div>
+
+      <LegalModal
+        isOpen={isLegalModalOpen}
+        onClose={() => setIsLegalModalOpen(false)}
+        title={legalContent.title}
+        content={legalContent.content}
+      />
+      <SupportHub
+        isOpen={isSupportHubOpen}
+        onClose={() => setIsSupportHubOpen(false)}
+      />
     </div>
   );
 }
