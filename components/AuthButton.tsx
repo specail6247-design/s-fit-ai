@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { User } from '@supabase/supabase-js';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function AuthButton() {
   const [user, setUser] = useState<User | null>(null);
@@ -70,16 +71,16 @@ export function AuthButton() {
     return (
       <div className="flex items-center gap-3">
         <div className="text-right hidden md:block">
-          <p className="text-xs text-soft-gray">Welcome,</p>
-          <p className="text-sm font-medium text-white max-w-[100px] truncate">
+          <p className="text-xs text-gray-400">VIP Member,</p>
+          <p className="text-sm font-serif italic text-[#C9B037] max-w-[100px] truncate">
             {user.email?.split('@')[0]}
           </p>
         </div>
         <button
           onClick={handleLogout}
-          className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-xs font-medium transition-colors border border-white/10"
+          className="bg-transparent hover:bg-[#111] text-[#C9B037] px-4 py-2 rounded-full text-xs font-serif italic transition-colors border border-[#C9B037]/30 hover:border-[#C9B037]"
         >
-          Sign Out
+          Exit
         </button>
       </div>
     );
@@ -89,84 +90,102 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="bg-transparent text-[#C9B037] px-5 py-2 rounded-full text-sm font-serif italic border border-[#C9B037]/30 hover:border-[#C9B037] hover:bg-[#C9B037]/10 transition-all shadow-[0_0_15px_rgba(201,176,55,0.15)]"
       >
-        LOGIN
+        Member Access
       </button>
 
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
-            <button
-              onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="bg-[#0A0A0A] border border-[#C9B037]/20 shadow-[0_0_40px_rgba(201,176,55,0.1)] w-full max-w-sm rounded-lg p-8 relative overflow-hidden"
             >
-              ✕
-            </button>
-            
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h2>
+              {/* Decorative corner accents */}
+              <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-[#C9B037]/30 m-2" />
+              <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-[#C9B037]/30 m-2" />
+              <div className="absolute bottom-0 left-0 w-8 h-8 border-b border-l border-[#C9B037]/30 m-2" />
+              <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-[#C9B037]/30 m-2" />
 
-            <form onSubmit={handleAuth} className="space-y-4 mb-6">
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
               <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                onClick={() => setShowModal(false)}
+                className="absolute top-5 right-5 text-gray-500 hover:text-[#C9B037] transition-colors z-10"
               >
-                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+                ✕
               </button>
-            </form>
 
-            <div className="flex items-center gap-2 mb-6">
-              <div className="h-px bg-white/10 flex-1" />
-              <span className="text-xs text-soft-gray">OR SOCIAL LOGIN</span>
-              <div className="h-px bg-white/10 flex-1" />
-            </div>
+              <div className="text-center mb-8 relative z-10">
+                <h2 className="text-3xl text-[#C9B037] font-serif italic mb-1 tracking-wider">
+                  {isLogin ? 'Sign In' : 'Join'}
+                </h2>
+                <div className="w-12 h-px bg-[#C9B037]/40 mx-auto mt-4 mb-2" />
+                <p className="text-xs text-gray-500 uppercase tracking-[0.2em]">Exclusive Access</p>
+              </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <button onClick={() => handleSocialLogin('google')} className="bg-white/5 hover:bg-white/10 border border-white/10 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🇬</span> <span className="text-xs text-white">Google</span>
-              </button>
-              <button onClick={() => handleSocialLogin('kakao')} className="bg-[#FAE100] hover:bg-[#FADB00] text-[#371D1E] py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">💬</span> <span className="text-xs font-bold">Kakao</span>
-              </button>
-              <button onClick={() => handleSocialLogin('apple')} className="bg-white hover:bg-gray-100 text-black py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🍎</span> <span className="text-xs font-bold">Apple</span>
-              </button>
-              <button onClick={() => handleSocialLogin('discord')} className="bg-[#5865F2] hover:bg-[#4752C4] text-white py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🎮</span> <span className="text-xs font-bold">Discord</span>
-              </button>
-            </div>
+              <form onSubmit={handleAuth} className="space-y-5 mb-8 relative z-10">
+                <div className="space-y-1">
+                  <input
+                    type="email"
+                    placeholder="EMAIL ADDRESS"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-transparent border-b border-gray-800 px-2 py-3 text-white text-sm placeholder:text-gray-700 focus:border-[#C9B037] outline-none transition-colors font-mono tracking-widest"
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <input
+                    type="password"
+                    placeholder="PASSWORD"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-transparent border-b border-gray-800 px-2 py-3 text-white text-sm placeholder:text-gray-700 focus:border-[#C9B037] outline-none transition-colors font-mono tracking-widest"
+                    required
+                  />
+                </div>
 
-            <p className="mt-6 text-center text-xs text-soft-gray">
-              {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
-              <button
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-cyber-lime hover:underline ml-1"
-              >
-                {isLogin ? 'Sign up' : 'Log in'}
-              </button>
-            </p>
-          </div>
-        </div>
-      )}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-[#C9B037] text-black font-serif italic text-lg py-3 mt-4 hover:bg-[#F4E4BC] transition-colors disabled:opacity-50"
+                >
+                  {loading ? 'Authenticating...' : (isLogin ? 'Enter' : 'Register')}
+                </button>
+              </form>
+
+              <div className="flex flex-col items-center gap-4 relative z-10">
+                <button
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="text-[10px] text-gray-500 hover:text-[#C9B037] uppercase tracking-[0.1em] transition-colors"
+                >
+                  {isLogin ? 'Request Membership' : 'Existing Member? Sign In'}
+                </button>
+
+                {/* Minimalist social options for VIP feel */}
+                {isLogin && (
+                  <div className="flex gap-4 mt-2">
+                    <button type="button" onClick={() => handleSocialLogin('apple')} className="w-8 h-8 rounded-full border border-gray-800 flex items-center justify-center text-gray-400 hover:border-[#C9B037] hover:text-[#C9B037] transition-all">
+                      <span className="text-sm">🍎</span>
+                    </button>
+                    <button type="button" onClick={() => handleSocialLogin('google')} className="w-8 h-8 rounded-full border border-gray-800 flex items-center justify-center text-gray-400 hover:border-[#C9B037] hover:text-[#C9B037] transition-all">
+                      <span className="text-sm">G</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
