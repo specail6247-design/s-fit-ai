@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React, { useState } from 'react';
 
 const SFitAIProject = () => {
@@ -62,17 +63,17 @@ const SFitAIProject = () => {
         <div style={styles.grid}>
           <div style={styles.card}>
             <h3>User Photo</h3>
-            <div style={styles.uploadBox}>
+            <div style={{ ...styles.uploadBox, position: "relative" }}>
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} />
-              {userImage && <img src={userImage} style={styles.preview} alt="User" />}
+              {userImage && <Image src={userImage} fill style={styles.preview} alt="User" />}
             </div>
           </div>
 
           <div style={styles.card}>
             <h3>Garment</h3>
-            <div style={styles.uploadBox}>
+            <div style={{ ...styles.uploadBox, position: "relative" }}>
               <input type="file" onChange={(e) => handleFileUpload(e, setClothingImage)} />
-              {clothingImage && <img src={clothingImage} style={styles.preview} alt="Cloth" />}
+              {clothingImage && <Image src={clothingImage} fill style={styles.preview} alt="Cloth" />}
             </div>
           </div>
         </div>
@@ -88,9 +89,9 @@ const SFitAIProject = () => {
 
         {/* 결과 영역 */}
         {finalResult && (
-          <div style={styles.resultContainer}>
+          <div style={{ ...styles.resultContainer, position: "relative" }}>
             <h2 style={styles.resultTitle}>Fitting Result</h2>
-            <img src={finalResult} style={styles.finalImg} alt="Result" />
+            <Image src={finalResult} fill style={styles.finalImg} alt="Result" />
           </div>
         )}
       </main>
