@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Simulate analysis
-    return new Promise((resolve) => {
+    return new Promise<NextResponse>((resolve) => {
       setTimeout(() => {
         resolve(NextResponse.json({
           category: 'tops',
