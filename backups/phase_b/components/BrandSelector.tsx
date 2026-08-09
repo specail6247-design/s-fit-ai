@@ -1,6 +1,6 @@
 'use client';
 
-// S_FIT AI - Brand Selector Component
+// M_FIT AI - Brand Selector Component
 // Displays brand logos and allows selection
 
 import { motion } from 'framer-motion';

@@ -37,7 +37,7 @@ def run():
         ], check=True, stderr=subprocess.DEVNULL)
 
         # Apply overlay to thumbnail
-        overlay_generator.create_thumbnail(thumb_raw, thumb_final, text="S_FIT AI Demo")
+        overlay_generator.create_thumbnail(thumb_raw, thumb_final, text="M_FIT AI Demo")
         if os.path.exists(thumb_raw):
             os.remove(thumb_raw)
     except Exception as e:

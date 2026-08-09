@@ -16,7 +16,7 @@ export default function PhotoFitting() {
           <span className="material-symbols-outlined">arrow_back_ios_new</span>
         </div>
         <div className="flex flex-col items-center">
-          <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
+          <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">M_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
         <div className="flex w-12 items-center justify-end">

@@ -1,6 +1,6 @@
 'use client';
 
-// S_FIT AI - Digital Twin Mode Component
+// M_FIT AI - Digital Twin Mode Component
 // Selfie + Full Body for 360° fitting
 
 import { useState, useRef, useCallback } from 'react';

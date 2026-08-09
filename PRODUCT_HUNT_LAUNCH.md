@@ -1,10 +1,10 @@
-# S_FIT AI - Product Hunt 런칭 자료
+# M_FIT AI - Product Hunt 런칭 자료
 
 ## 📝 기본 정보
 
 ### Product Name
 
-**S_FIT AI**
+**M_FIT AI**
 
 ### Tagline (선택 1개)
 
@@ -15,7 +15,7 @@
 ### Short Description (160자 이내)
 
 ```
-S_FIT AI uses MediaPipe body scanning to let you try on clothes virtually. Upload a photo or use your camera - our AI analyzes your body proportions and shows you exactly how garments will fit. No more size guessing!
+M_FIT AI uses MediaPipe body scanning to let you try on clothes virtually. Upload a photo or use your camera - our AI analyzes your body proportions and shows you exactly how garments will fit. No more size guessing!
 ```
 
 ### Full Description
@@ -23,7 +23,7 @@ S_FIT AI uses MediaPipe body scanning to let you try on clothes virtually. Uploa
 ```markdown
 # 👔 Virtual Try-On Powered by AI
 
-S_FIT AI solves the #1 problem with online shopping: **"Will it fit me?"**
+M_FIT AI solves the #1 problem with online shopping: **"Will it fit me?"**
 
 ## How it works:
 
@@ -80,12 +80,12 @@ https://www.producthunt.com/@your_username
 ### English Version
 
 ```
-👋 Hey everyone! I'm the maker of S_FIT AI.
+👋 Hey everyone! I'm the maker of M_FIT AI.
 
 I built this because I was frustrated with online shopping returns.
 Every time I ordered clothes, the sizes never matched!
 
-S_FIT AI uses MediaPipe to scan your body and show exactly how clothes will fit.
+M_FIT AI uses MediaPipe to scan your body and show exactly how clothes will fit.
 
 Would love your feedback! What features would make this more useful for you?
 ```
@@ -93,7 +93,7 @@ Would love your feedback! What features would make this more useful for you?
 ### 한국어 버전 (Korean)
 
 ```
-👋 안녕하세요! S_FIT AI를 만든 개발자입니다.
+👋 안녕하세요! M_FIT AI를 만든 개발자입니다.
 
 온라인 쇼핑을 할 때마다 사이즈가 안 맞아서 반품하는 게 너무 불편했어요.
 "이 옷 나한테 맞을까?" 고민하면서 주문하고, 막상 받으면 안 맞고...
@@ -137,12 +137,12 @@ ZARA, H&M, Gucci 등 다양한 브랜드 옷을
 ### Maker 댓글 전략
 
 ```
-👋 Hey everyone! I'm [Name], maker of S_FIT AI.
+👋 Hey everyone! I'm [Name], maker of M_FIT AI.
 
 I built this because I was frustrated with online shopping returns.
 Every time I ordered clothes, the sizes never matched!
 
-S_FIT AI uses MediaPipe to scan your body and show exactly how clothes will fit.
+M_FIT AI uses MediaPipe to scan your body and show exactly how clothes will fit.
 
 Would love your feedback! What features would make this more useful for you?
 ```
@@ -150,7 +150,7 @@ Would love your feedback! What features would make this more useful for you?
 ### 투표 요청 메시지 (친구/커뮤니티용)
 
 ```
-🚀 Just launched S_FIT AI on Product Hunt!
+🚀 Just launched M_FIT AI on Product Hunt!
 
 It's an AI virtual fitting room - upload a photo, try on clothes virtually.
 

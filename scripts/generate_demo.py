@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-S_FIT AI Cinematic Demo Generator
+M_FIT AI Cinematic Demo Generator
 Captures a hyper-realistic 360-degree video of the fitting room.
 
 Usage:

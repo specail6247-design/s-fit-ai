@@ -1,4 +1,4 @@
-// S_FIT AI - Daily Limit Hook
+// M_FIT AI - Daily Limit Hook
 
 import { useStore, DAILY_LIMIT } from '@/store/useStore';
 import { useCallback } from 'react';

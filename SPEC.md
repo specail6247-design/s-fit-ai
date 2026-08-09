@@ -1,4 +1,4 @@
-# SPEC — S_FIT AI
+# SPEC — M_FIT AI
 
 ## 0) One-liner
 

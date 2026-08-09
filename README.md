@@ -1,14 +1,14 @@
-# S_FIT AI - Virtual Try-On Experience
+# M_FIT AI - Virtual Try-On Experience
 
 > **Snap, Smart, Style.** The ultimate virtual fitting room for global fashion.
 
-![S_FIT AI](https://img.shields.io/badge/S_FIT-AI-black?style=for-the-badge)
+![M_FIT AI](https://img.shields.io/badge/M_FIT-AI-black?style=for-the-badge)
 ![Next.js](https://img.shields.io/badge/Next.js-16.1.4-000000?style=flat-square&logo=next.js)
 ![React Three Fiber](https://img.shields.io/badge/R3F-3D%20Fitting-00FF00?style=flat-square)
 
 ## 🎯 Overview
 
-S_FIT AI is a mobile-first virtual try-on web app that scales from mass brands (ZARA, Uniqlo) to luxury fashion (Gucci, Chanel). Our goal is **Zero Barrier** - users see results within 10 seconds.
+M_FIT AI is a mobile-first virtual try-on web app that scales from mass brands (ZARA, Uniqlo) to luxury fashion (Gucci, Chanel). Our goal is **Zero Barrier** - users see results within 10 seconds.
 
 ## ✨ Features
 
@@ -142,4 +142,4 @@ MIT License - feel free to use for your projects!
 
 ---
 
-Made with ❤️ by S_FIT AI Team
+Made with ❤️ by M_FIT AI Team

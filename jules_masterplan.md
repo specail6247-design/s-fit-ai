@@ -1,9 +1,9 @@
-# S_FIT AI: The Hollywood-Grade Masterplan
+# M_FIT AI: The Hollywood-Grade Masterplan
 
 > **Vision**: "소비자가 옷을 사지 않아도, 그 옷을 입은 '나'의 가장 멋진 순간을 소장하게 한다."
 > **Quality Standard**: 4K Resolution, Fluid Motion (60fps), Hyper-Realistic Textures.
 
-이 문서는 S_FIT AI를 단순한 가상 피팅 앱이 아닌, **세계 최고 수준의 디지털 패션 경험(Digital Fashion Experience)**으로 만들기 위한 기술적 로드맵입니다.
+이 문서는 M_FIT AI를 단순한 가상 피팅 앱이 아닌, **세계 최고 수준의 디지털 패션 경험(Digital Fashion Experience)**으로 만들기 위한 기술적 로드맵입니다.
 
 ---
 
@@ -62,4 +62,4 @@
 ---
 
 > **"This is not just Tech, This is Art."**
-> 우리는 기술을 팔지만, 사용자는 '새로운 나'를 경험합니다. 이 마스터플랜은 S_FIT AI를 단순 유틸리티 앱에서 **"소장하고 싶은 디지털 럭셔리 플랫폼"**으로 만들 것입니다.
+> 우리는 기술을 팔지만, 사용자는 '새로운 나'를 경험합니다. 이 마스터플랜은 M_FIT AI를 단순 유틸리티 앱에서 **"소장하고 싶은 디지털 럭셔리 플랫폼"**으로 만들 것입니다.

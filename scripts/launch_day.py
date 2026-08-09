@@ -87,7 +87,7 @@ class ProductHuntLaunch:
 def main():
     launch = ProductHuntLaunch()
 
-    print("--- S_FIT AI Launch Day Automation ---")
+    print("--- M_FIT AI Launch Day Automation ---")
     launch.pre_launch_checks()
 
     # In a real scenario, these might be triggered by arguments or a menu

@@ -22,7 +22,7 @@ def create_placeholder(path, width, height, title, subtitle=None, bg_color=(20, 
         draw.text((50, 120), subtitle, font=font_sub, fill=(200, 200, 200))
 
     # Draw branding corner
-    draw.text((width - 150, height - 50), "S_FIT AI", font=font_sub, fill=(0, 255, 0))
+    draw.text((width - 150, height - 50), "M_FIT AI", font=font_sub, fill=(0, 255, 0))
 
     # Ensure directory exists
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -56,7 +56,7 @@ def main():
 
     # 3. Press Kit
     press_assets = [
-        ("public/press/press_logo.png", 500, 500, "S_FIT AI Logo", "Press Kit Asset"),
+        ("public/press/press_logo.png", 500, 500, "M_FIT AI Logo", "Press Kit Asset"),
         ("public/press/founder_photo.png", 400, 400, "Founder Photo", "Jules - Maker"),
     ]
 

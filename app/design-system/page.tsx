@@ -15,7 +15,7 @@ export default function DesignSystemPage() {
     <div className="min-h-screen p-8 space-y-12 pb-32">
       <header className="mb-12">
         <h1 className="font-[family-name:var(--font-display)] text-4xl font-bold mb-4">
-          S_FIT AI <span className="text-[var(--color-primary)]">Design System</span>
+          M_FIT AI <span className="text-[var(--color-primary)]">Design System</span>
         </h1>
         <p className="text-[var(--color-text-secondary)]">
           Premium component library and style guide.

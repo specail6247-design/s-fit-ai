@@ -1,4 +1,4 @@
-# S_FIT AI - Fitting Algorithm & Rendering Engine
+# M_FIT AI - Fitting Algorithm & Rendering Engine
 
 ## 1. AI Size Recommendation Engine
 

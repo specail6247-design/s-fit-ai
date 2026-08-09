@@ -81,7 +81,7 @@ export default function RealLifeFitting() {
         
         <header className="mb-10 relative z-10">
           <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
+            M_FIT <span className="text-[#007AFF]">NEO</span>
           </h1>
           <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
             Professional Virtual Fitting

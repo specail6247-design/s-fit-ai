@@ -1,6 +1,6 @@
 'use client';
 
-// S_FIT AI - Premium Modal Component
+// M_FIT AI - Premium Modal Component
 // Shown when user exceeds daily free limit
 
 import { motion, AnimatePresence } from 'framer-motion';

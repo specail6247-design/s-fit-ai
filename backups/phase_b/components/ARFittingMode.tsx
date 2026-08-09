@@ -297,7 +297,7 @@ export function ARFittingMode({ onBack }: ARFittingModeProps) {
       // 3. Add Watermark
       ctx.font = 'bold 24px Arial';
       ctx.fillStyle = '#CCFF00';
-      ctx.fillText('S_FIT AI RUNWAY', 40, height - 40);
+      ctx.fillText('M_FIT AI RUNWAY', 40, height - 40);
 
       // 4. Save
       const dataUrl = offscreen.toDataURL('image/png');

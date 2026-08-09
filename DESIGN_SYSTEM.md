@@ -1,7 +1,7 @@
-# S_FIT AI Premium Design System
+# M_FIT AI Premium Design System
 
 ## Overview
-The S_FIT AI Design System is built to convey a luxury, high-fashion aesthetic while maintaining a clean, user-centric interface. It utilizes a sophisticated dark mode palette by default, with gold accents and minimalist typography.
+The M_FIT AI Design System is built to convey a luxury, high-fashion aesthetic while maintaining a clean, user-centric interface. It utilizes a sophisticated dark mode palette by default, with gold accents and minimalist typography.
 
 ## Design Tokens
 

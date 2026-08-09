@@ -1,4 +1,4 @@
-// S_FIT AI - Global State Store (Zustand)
+// M_FIT AI - Global State Store (Zustand)
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';

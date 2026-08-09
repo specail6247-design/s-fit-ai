@@ -1,10 +1,10 @@
-# S_FIT AI - AGENTS.md
+# M_FIT AI - AGENTS.md
 
 > 이 파일은 AI 에이전트(Jules, Claude, Gemini 등)가 프로젝트를 이해하는 데 사용됩니다.
 
 ## 📋 프로젝트 개요
 
-**S_FIT AI**는 AI 기반 가상 피팅 서비스입니다.
+**M_FIT AI**는 AI 기반 가상 피팅 서비스입니다.
 사용자가 옷을 가상으로 착용해볼 수 있는 웹 애플리케이션입니다.
 
 ## 🛠️ 기술 스택

@@ -53,7 +53,7 @@ const SFitAIProject = () => {
   return (
     <div style={styles.container}>
       <header style={styles.header}>
-        <h1 style={styles.logo}>S_FIT AI</h1>
+        <h1 style={styles.logo}>M_FIT AI</h1>
         <p style={styles.subtitle}>SIMPLE MODE ACTIVATED (Verified)</p>
       </header>
 

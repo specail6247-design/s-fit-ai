@@ -1,6 +1,6 @@
 'use client';
 
-// S_FIT AI - Easy Fit Mode Component
+// M_FIT AI - Easy Fit Mode Component
 // Stats-based fitting without camera
 
 import { useState } from 'react';

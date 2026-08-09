@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "S_FIT AI | Virtual Try-On Experience",
+  title: "M_FIT AI | Virtual Try-On Experience",
   description:
     "Snap, Smart, Style. The ultimate virtual fitting room for global fashion. Try before you buy with AI-powered 3D fitting.",
   keywords: [
@@ -28,9 +28,9 @@ export const metadata: Metadata = {
     "Gucci",
     "Uniqlo",
   ],
-  authors: [{ name: "S_FIT AI" }],
+  authors: [{ name: "M_FIT AI" }],
   openGraph: {
-    title: "S_FIT AI | Virtual Try-On Experience",
+    title: "M_FIT AI | Virtual Try-On Experience",
     description: "The ultimate virtual fitting room. Try before you buy.",
     type: "website",
   },

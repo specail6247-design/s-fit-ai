@@ -1,6 +1,6 @@
 'use client';
 
-// S_FIT AI - Vibe Check Mode Component
+// M_FIT AI - Vibe Check Mode Component
 // Face selfie only - quick style match
 
 import { useState, useRef, useCallback } from 'react';

@@ -1,4 +1,4 @@
-# S_FIT AI Scraper Documentation
+# M_FIT AI Scraper Documentation
 
 This directory contains production-ready web scrapers for 8 fashion brands.
 
