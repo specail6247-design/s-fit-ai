@@ -6,7 +6,7 @@
 
 ## 🎬 Prompt 1: The Hollywood AI Video Engine (영상/모션)
 
-**목표**: S_FIT AI를 단순 이미지 합성이 아닌, Runway 스타일의 '패션 필름' 생성기로 변신.
+**목표**: M_FIT AI를 단순 이미지 합성이 아닌, Runway 스타일의 '패션 필름' 생성기로 변신.
 
 ```markdown
 Jules, 우리 앱의 시각적 경험을 '헐리우드 영화' 수준으로 끌어올리고 싶어.

@@ -1,4 +1,4 @@
-// S_FIT AI - Mock Data
+// M_FIT AI - Mock Data
 // 15 items: 5 Mass Market (ZARA), 5 Luxury (Gucci), 5 Basic (Uniqlo)
 // Updated with real product images
 

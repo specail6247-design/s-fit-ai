@@ -21,7 +21,7 @@ export function LandingPage() {
           className="mb-12 text-center"
         >
           <h1 className="text-[10vw] leading-[0.85] font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-gray-200 to-gray-600 drop-shadow-2xl">
-            S_FIT
+            M_FIT
           </h1>
           <div className="flex items-center justify-center gap-4 mt-4">
             <span className="h-[1px] w-12 bg-cyber-lime/50"></span>

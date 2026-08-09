@@ -1,6 +1,6 @@
 'use client';
 
-// S_FIT AI - Mode Selector Component
+// M_FIT AI - Mode Selector Component
 // 3-Tier Entry System: Vibe Check, Digital Twin, Easy Fit
 
 import { motion } from 'framer-motion';

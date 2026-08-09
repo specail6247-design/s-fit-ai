@@ -1,7 +1,7 @@
 import os
 from PIL import Image, ImageDraw, ImageFont
 
-def create_thumbnail(source_image_path, output_path, text="S_FIT AI"):
+def create_thumbnail(source_image_path, output_path, text="M_FIT AI"):
     try:
         img = Image.open(source_image_path).convert("RGBA")
         draw = ImageDraw.Draw(img)
@@ -59,7 +59,7 @@ def generate_ffmpeg_filters(config):
     steps = config.get('steps', [])
 
     # 1. Watermark (Permanent)
-    watermark_text = overlay_config.get('watermark_text', 'S_FIT AI')
+    watermark_text = overlay_config.get('watermark_text', 'M_FIT AI')
     # Escape special characters for ffmpeg
     watermark_text = watermark_text.replace(":", "\\:").replace("'", "")
 

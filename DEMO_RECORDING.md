@@ -1,4 +1,4 @@
-# S_FIT AI Demo Recording System
+# M_FIT AI Demo Recording System
 
 This directory contains the automated system for generating Product Hunt demo assets.
 

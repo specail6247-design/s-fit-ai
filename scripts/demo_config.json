@@ -13,7 +13,7 @@
     "filename": "raw_recording.mp4"
   },
   "steps": [
-    { "name": "landing", "duration": 2000, "label": "Welcome to S_FIT AI" },
+    { "name": "landing", "duration": 2000, "label": "Welcome to M_FIT AI" },
     { "name": "mode_selection", "duration": 1000, "label": "Select Mode" },
     { "name": "measurements", "duration": 1000, "label": "Input Stats" },
     { "name": "brand_selection", "duration": 1000, "label": "Choose Brand" },
@@ -24,7 +24,7 @@
   "overlay": {
     "font_path": null,
     "font_size": 32,
-    "watermark_text": "S_FIT AI",
+    "watermark_text": "M_FIT AI",
     "watermark_position": "bottom-right",
     "step_color": "white",
     "watermark_color": "rgba(255, 255, 255, 128)"

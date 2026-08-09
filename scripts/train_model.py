@@ -67,7 +67,7 @@ def train_model():
         data = load_data('s-fit-training-data.json')
     except FileNotFoundError:
         print("Error: 's-fit-training-data.json' not found.")
-        print("Please export data from the S_FIT AI app and place it in this folder.")
+        print("Please export data from the M_FIT AI app and place it in this folder.")
         return
 
     X, y = preprocess_data(data)

@@ -31,7 +31,7 @@ export default function PressPage() {
             Press <span className="text-cyber-lime">Kit</span>
           </h1>
           <p className="text-xl text-gray-400 max-w-2xl leading-relaxed">
-            Everything you need to cover S_FIT AI. High-resolution logos, product screenshots, and founder information.
+            Everything you need to cover M_FIT AI. High-resolution logos, product screenshots, and founder information.
           </p>
         </div>
 
@@ -63,7 +63,7 @@ export default function PressPage() {
                 <div className="relative w-64 h-64">
                    <Image
                     src="/press/press_logo.png"
-                    alt="S_FIT AI Logo"
+                    alt="M_FIT AI Logo"
                     fill
                     className="object-contain"
                    />
@@ -145,7 +145,7 @@ export default function PressPage() {
                 <h3 className="text-2xl font-bold mb-2">Jules</h3>
                 <p className="text-cyber-lime mb-4">Founder & Lead Engineer</p>
                 <p className="text-gray-400 max-w-xl leading-relaxed mb-6">
-                    &ldquo;I built S_FIT AI to solve the &apos;return walk of shame&apos;. Fashion should be about expression, not guessing sizes. We&apos;re using MediaPipe and WebGL to bring the fitting room to your browser.&rdquo;
+                    &ldquo;I built M_FIT AI to solve the &apos;return walk of shame&apos;. Fashion should be about expression, not guessing sizes. We&apos;re using MediaPipe and WebGL to bring the fitting room to your browser.&rdquo;
                 </p>
                 <div className="flex gap-4">
                      <a href="#" className="text-sm text-gray-500 hover:text-white transition-colors">Twitter / X</a>
@@ -169,7 +169,7 @@ export default function PressPage() {
        {/* Footer */}
        <footer className="py-8 text-center border-t border-white/10 bg-black">
         <p className="text-xs text-gray-600">
-          © 2026 S_FIT AI. All rights reserved.
+          © 2026 M_FIT AI. All rights reserved.
         </p>
       </footer>
     </div>

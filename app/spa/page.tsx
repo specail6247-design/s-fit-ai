@@ -6,7 +6,7 @@ export default function SPAPage() {
     <div className="min-h-screen bg-[#f5f6f8] text-gray-900 flex flex-col items-center justify-center p-6">
       <div className="max-w-md w-full text-center space-y-8">
         <div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-[#2b8cee]">S_FIT SPA</h1>
+          <h1 className="text-4xl font-extrabold tracking-tight text-[#2b8cee]">M_FIT SPA</h1>
           <p className="mt-2 text-sm text-gray-500 uppercase tracking-widest">Everyday Essentials • AR Try-On</p>
         </div>
 

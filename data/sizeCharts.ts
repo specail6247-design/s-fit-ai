@@ -1,4 +1,4 @@
-// S_FIT AI - Brand Size Charts (Dimensions in cm)
+// M_FIT AI - Brand Size Charts (Dimensions in cm)
 
 export interface SizeDimensions {
   chest?: number;

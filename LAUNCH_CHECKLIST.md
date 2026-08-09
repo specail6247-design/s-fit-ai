@@ -1,4 +1,4 @@
-# 🚀 S_FIT AI Launch Day Checklist
+# 🚀 M_FIT AI Launch Day Checklist
 
 > **Target Launch Time**: Today, 5:00 PM KST (12:01 AM PST)
 > **Goal**: Top 5 Product of the Day
@@ -16,7 +16,7 @@
 ## 🏁 Launch Hour (T-0) - 12:01 AM PST
 
 - [ ] **Product Hunt**: Submit the product.
-    - Title: **S_FIT AI**
+    - Title: **M_FIT AI**
     - Tagline: **"Try clothes virtually with AI body scanning"**
     - Gallery: Upload 6 images from `public/product-hunt/`
     - Video: Upload Demo Video.

@@ -1,6 +1,6 @@
-# S_FIT AI - Testing Documentation
+# M_FIT AI - Testing Documentation
 
-This document outlines the testing strategy, tools, and procedures for the S_FIT AI project.
+This document outlines the testing strategy, tools, and procedures for the M_FIT AI project.
 
 ## 🛠 Tools
 
@@ -87,6 +87,6 @@ import { test, expect } from '@playwright/test';
 
 test('basic flow', async ({ page }) => {
   await page.goto('/');
-  await expect(page).toHaveTitle(/S_FIT/);
+  await expect(page).toHaveTitle(/M_FIT/);
 });
 ```

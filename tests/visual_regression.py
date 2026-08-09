@@ -18,8 +18,8 @@ def run():
             page.goto("http://localhost:3000", timeout=60000)
 
             # Wait for any text that signifies load
-            page.wait_for_selector("text=S_FIT", timeout=10000)
-            print("Landing page loaded (found S_FIT).")
+            page.wait_for_selector("text=M_FIT", timeout=10000)
+            print("Landing page loaded (found M_FIT).")
             page.screenshot(path="tests/screenshots/1_landing.png")
 
             # 1. Select Easy Fit Mode

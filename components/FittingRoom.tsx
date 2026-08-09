@@ -1,6 +1,6 @@
 'use client';
 
-// S_FIT AI - 3D Fitting Room Component
+// M_FIT AI - 3D Fitting Room Component
 // Consolidated Version: Masterpiece Engine + Physics (Ammo.js) + Full UI Features
 // Includes: Accessory & Layering, Cinematic Video, AI Stylist, Comparison, Sharing
 
@@ -306,7 +306,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
@@ -614,8 +614,8 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
   if (!isOpen) return null;
 
   const safeItemName = itemName ?? 'this fit';
-  const safeBrandName = brandName ?? 'S_FIT AI';
-  const shareText = `I just tried on ${safeItemName} from ${safeBrandName} using S_FIT AI! Fit score ${fitScore}% ${recommendedSize ? `(Size ${recommendedSize})` : ''} #SFIT #VirtualTryOn #Fashion`;
+  const safeBrandName = brandName ?? 'M_FIT AI';
+  const shareText = `I just tried on ${safeItemName} from ${safeBrandName} using M_FIT AI! Fit score ${fitScore}% ${recommendedSize ? `(Size ${recommendedSize})` : ''} #SFIT #VirtualTryOn #Fashion`;
 
   const handleShare = (platform: string) => {
     const encodedText = encodeURIComponent(shareText);
