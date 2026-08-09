@@ -7,6 +7,45 @@ const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export default function PhotoFitting() {
   const [isChecked, setIsChecked] = useState(true);
+  const [isAudioMuted, setIsAudioMuted] = useState(true);
+
+  useEffect(() => {
+    let audioCtx: AudioContext | null = null;
+    let oscillator: OscillatorNode | null = null;
+    let gainNode: GainNode | null = null;
+
+    if (!isAudioMuted) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      oscillator = audioCtx.createOscillator();
+      gainNode = audioCtx.createGain();
+
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(65, audioCtx.currentTime); // Low hum C2
+
+      // Slight detune for fullness
+      const osc2 = audioCtx.createOscillator();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(65.5, audioCtx.currentTime);
+
+      gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.05, audioCtx.currentTime + 2); // Soft volume
+
+      oscillator.connect(gainNode);
+      osc2.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      oscillator.start();
+      osc2.start();
+    }
+
+    return () => {
+      if (audioCtx) {
+        gainNode?.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
+        setTimeout(() => audioCtx?.close(), 1000);
+      }
+    };
+  }, [isAudioMuted]);
 
   return (
     <div className={`relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-white dark:bg-[#101622] ${spaceGrotesk.className}`}>
@@ -19,7 +58,13 @@ export default function PhotoFitting() {
           <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-white">S_FIT AI</h2>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#256af4]">Photo Fitting v1.0</span>
         </div>
-        <div className="flex w-12 items-center justify-end">
+        <div className="flex items-center justify-end gap-2">
+          <button
+            onClick={() => setIsAudioMuted(!isAudioMuted)}
+            className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md"
+          >
+            <span className="material-symbols-outlined">{isAudioMuted ? 'volume_off' : 'volume_up'}</span>
+          </button>
           <button className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-[#101622]/40 text-white backdrop-blur-md">
             <span className="material-symbols-outlined">info</span>
           </button>
