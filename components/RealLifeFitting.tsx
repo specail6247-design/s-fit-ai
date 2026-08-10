@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import MemberAccessModal from './masterpiece/MemberAccessModal';
+import SupportHub from './masterpiece/SupportHub';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -11,6 +13,8 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
+  const [showMemberAccess, setShowMemberAccess] = useState(false);
+  const [showSupportHub, setShowSupportHub] = useState(false);
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -72,7 +76,10 @@ export default function RealLifeFitting() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
+    <>
+      <MemberAccessModal isOpen={showMemberAccess} onClose={() => setShowMemberAccess(false)} />
+      <SupportHub isOpen={showSupportHub} onClose={() => setShowSupportHub(false)} />
+      <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
       {/* LEFT PANEL: CONTROLS */}
       <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
@@ -83,9 +90,15 @@ export default function RealLifeFitting() {
           <h1 className="text-4xl font-black tracking-tighter italic">
             S_FIT <span className="text-[#007AFF]">NEO</span>
           </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+          <div className="flex justify-between items-center mt-2">
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase">
+              Professional Virtual Fitting
+            </p>
+            <div className="flex gap-4">
+              <button onClick={() => setShowSupportHub(true)} className="text-xs text-[#007AFF] hover:text-white font-mono uppercase tracking-widest transition-colors">Support</button>
+              <button onClick={() => setShowMemberAccess(true)} className="text-xs text-[#C9B037] hover:text-white font-mono uppercase tracking-widest transition-colors">VIP Access</button>
+            </div>
+          </div>
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
@@ -210,5 +223,6 @@ export default function RealLifeFitting() {
         )}
       </div>
     </div>
+    </>
   );
 }
