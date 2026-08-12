@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LegalModal } from '@/components/ui/LegalModal';
+import { SupportHub } from '@/components/ui/SupportHub';
+import { StoryShareButton } from '@/components/ui/StoryShareButton';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +19,7 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [legalModalType, setLegalModalType] = useState<'privacy' | 'terms' | null>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -106,6 +110,14 @@ export default function RealLifeFitting() {
             </div>
           </div>
 
+          {/* Data Safety Badge */}
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-[#007AFF]/10 border border-[#007AFF]/20">
+            <span className="text-[#007AFF] text-lg">🔒</span>
+            <p className="text-[10px] text-gray-300">
+              <strong className="text-[#007AFF]">Secure Processing:</strong> Photos are processed securely and not shared.
+            </p>
+          </div>
+
           {/* Garment Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">02. Target Garment</label>
@@ -159,6 +171,13 @@ export default function RealLifeFitting() {
           </div>
 
         </div>
+
+        {/* Footer Links */}
+        <div className="mt-8 flex justify-center gap-4 text-[10px] text-gray-500 relative z-10">
+          <button onClick={() => setLegalModalType('privacy')} className="hover:text-white transition-colors">Privacy Policy</button>
+          <span>|</span>
+          <button onClick={() => setLegalModalType('terms')} className="hover:text-white transition-colors">Terms of Service</button>
+        </div>
       </div>
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
@@ -194,8 +213,8 @@ export default function RealLifeFitting() {
             animate={{ opacity: 1, scale: 1 }}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
-            <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+            <div className="relative group" id="fitting-result-container">
+              <img src={resultImage} alt="Result" crossOrigin="anonymous" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
@@ -206,9 +225,19 @@ export default function RealLifeFitting() {
                 AI GENERATED_
               </div>
             </div>
+
+            <div className="mt-4 flex justify-center">
+              <StoryShareButton targetId="fitting-result-container" className="py-2 px-6 bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500 text-white rounded-full text-sm font-bold shadow-lg transition-transform transform hover:scale-105" />
+            </div>
           </motion.div>
         )}
       </div>
+      <SupportHub />
+      <LegalModal
+        isOpen={legalModalType !== null}
+        onClose={() => setLegalModalType(null)}
+        type={legalModalType || 'privacy'}
+      />
     </div>
   );
 }
