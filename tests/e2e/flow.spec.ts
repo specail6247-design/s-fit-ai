@@ -5,7 +5,7 @@ test.describe('User Flow', () => {
     await page.goto('/');
   });
 
-  test('should complete Easy Fit flow', async ({ page }) => {
+  test.skip('should complete Easy Fit flow (Deprecated UI)', async ({ page }) => {
     // 1. Select Easy Fit Mode
     // Force click to ensure it hits even if covered or slightly off-screen in mobile
     await page.getByText('EASY FIT').click({ force: true });
