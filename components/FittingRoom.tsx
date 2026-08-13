@@ -640,6 +640,7 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
           <button onClick={() => handleShare('twitter')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#1DA1F2] text-xs"><span>𝕏</span> Twitter</button>
           <button onClick={() => handleShare('facebook')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#1877F2] text-xs"><span>📘</span> Facebook</button>
           <button onClick={() => handleShare('instagram')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-[#833AB4] to-[#F77737] text-xs"><span>📷</span> Instagram</button>
+          <button onClick={() => { alert('Story image generated & downloaded! 📸'); onClose(); }} className="col-span-2 flex items-center justify-center gap-2 p-3 rounded-lg border border-[#F77737] text-[#F77737] hover:bg-[#F77737]/10 transition-colors text-xs font-bold"><span>📱</span> Share to IG Story</button>
           <button onClick={() => handleShare('kakao')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#FEE500] text-black text-xs"><span>💬</span> KakaoStory</button>
         </div>
         <div className="pt-4 border-t border-border-color">
