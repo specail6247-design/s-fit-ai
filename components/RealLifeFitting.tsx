@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import SupportHubDrawer from '@/components/masterpiece/SupportHubDrawer';
+import MemberAccessModal from '@/components/masterpiece/MemberAccessModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isSupportHubOpen, setIsSupportHubOpen] = useState(false);
+  const [isMemberAccessOpen, setIsMemberAccessOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -79,13 +83,29 @@ export default function RealLifeFitting() {
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+        <header className="mb-10 relative z-10 flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-black tracking-tighter italic">
+              S_FIT <span className="text-[#007AFF]">NEO</span>
+            </h1>
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+              Professional Virtual Fitting
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setIsSupportHubOpen(true)}
+              className="text-xs text-soft-gray hover:text-white border border-white/20 px-3 py-1.5 rounded-full transition-colors font-mono"
+            >
+              SUPPORT
+            </button>
+            <button
+              onClick={() => setIsMemberAccessOpen(true)}
+              className="text-xs text-[#C9B037] hover:text-black hover:bg-[#C9B037] border border-[#C9B037]/50 px-3 py-1.5 rounded-full transition-colors font-serif uppercase tracking-widest font-bold"
+            >
+              Member Access
+            </button>
+          </div>
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
@@ -186,6 +206,10 @@ export default function RealLifeFitting() {
             <AvatarCanvas />
           </ErrorBoundary>
         </div>
+
+        {/* Drawer & Modal */}
+        <SupportHubDrawer isOpen={isSupportHubOpen} onClose={() => setIsSupportHubOpen(false)} />
+        <MemberAccessModal isOpen={isMemberAccessOpen} onClose={() => setIsMemberAccessOpen(false)} />
 
         {/* Result Overlay (If success) */}
         {resultImage && !isProcessing && (
