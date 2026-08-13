@@ -25,6 +25,8 @@ export interface Brand {
   logo: string;
   isLuxury: boolean;
   tier: 'mass' | 'luxury' | 'basic';
+  bannerImage?: string;
+  description?: string;
 }
 
 // Brand Data
@@ -42,6 +44,8 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=GUCCI',
     isLuxury: true,
     tier: 'luxury',
+    bannerImage: 'https://images.unsplash.com/photo-1542295669297-4d352b042bce?auto=format&fit=crop&q=80&w=1000',
+    description: 'Italian luxury house renowned for exceptional craftsmanship, innovative design, and timeless elegance.'
   },
   {
     id: 'uniqlo',
