@@ -100,6 +100,7 @@ export function AuthButton() {
             <button
               onClick={() => setShowModal(false)}
               className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              aria-label="Close modal"
             >
               ✕
             </button>
@@ -116,6 +117,7 @@ export function AuthButton() {
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
                 required
+                aria-label="Email"
               />
               <input
                 type="password"
@@ -124,6 +126,7 @@ export function AuthButton() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
                 required
+                aria-label="Password"
               />
               <button
                 type="submit"
