@@ -1,7 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LegalModal } from './LegalModal';
+import { SupportHub } from './SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +19,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [legalModal, setLegalModal] = useState<{isOpen: boolean, type: 'privacy' | 'terms'}>({isOpen: false, type: 'privacy'});
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -89,6 +94,14 @@ export default function RealLifeFitting() {
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
+          {/* Data Safety Badge */}
+          <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-3 flex items-center gap-3">
+            <span className="text-xl">🔒</span>
+            <div>
+              <div className="text-xs font-bold text-green-400">Data Safety</div>
+              <div className="text-[10px] text-gray-400">Photos are processed securely and not shared.</div>
+            </div>
+          </div>
           {/* User Photo Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
@@ -96,7 +109,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? <img src={userImage} className="w-full h-full object-cover" alt="User" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +126,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" alt="Garment" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -159,7 +172,24 @@ export default function RealLifeFitting() {
           </div>
 
         </div>
+
+        {/* Footer Links */}
+        <div className="mt-8 pt-4 border-t border-white/10 flex justify-center gap-4 text-[10px] text-gray-500 relative z-10">
+          <button onClick={() => setLegalModal({isOpen: true, type: 'privacy'})} className="hover:text-white transition-colors">Privacy Policy</button>
+          <button onClick={() => setLegalModal({isOpen: true, type: 'terms'})} className="hover:text-white transition-colors">Terms of Service</button>
+          <button onClick={() => setIsSupportOpen(true)} className="hover:text-white transition-colors text-red-400/80">Report Issue</button>
+        </div>
       </div>
+
+      <LegalModal
+        isOpen={legalModal.isOpen}
+        type={legalModal.type}
+        onClose={() => setLegalModal({...legalModal, isOpen: false})}
+      />
+      <SupportHub
+        isOpen={isSupportOpen}
+        onClose={() => setIsSupportOpen(false)}
+      />
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">

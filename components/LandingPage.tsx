@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ModeSelector } from './ModeSelector';
+import { LegalModal } from './LegalModal';
+import { SupportHub } from './SupportHub';
 
 export function LandingPage() {
+  const [legalModal, setLegalModal] = useState<{isOpen: boolean, type: 'privacy' | 'terms'}>({isOpen: false, type: 'privacy'});
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
   return (
     <div className="min-h-screen bg-void-black text-pure-white overflow-hidden relative selection:bg-cyber-lime selection:text-black">
       
@@ -52,7 +56,7 @@ export function LandingPage() {
 
       {/* Footer / Social Proof */}
       <footer className="w-full border-t border-white/5 bg-black/50 backdrop-blur-md py-8 mt-20">
-        <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-soft-gray">
+        <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-soft-gray mb-4">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
             <span>System Operational</span>
@@ -65,7 +69,23 @@ export function LandingPage() {
           </div>
           <p>© 2026 Antigravity. All rights reserved.</p>
         </div>
+
+        <div className="container mx-auto px-4 flex justify-center gap-6 text-xs text-gray-500 mt-4 border-t border-white/5 pt-4">
+          <button onClick={() => setLegalModal({isOpen: true, type: 'privacy'})} className="hover:text-white transition-colors">Privacy Policy</button>
+          <button onClick={() => setLegalModal({isOpen: true, type: 'terms'})} className="hover:text-white transition-colors">Terms of Service</button>
+          <button onClick={() => setIsSupportOpen(true)} className="hover:text-white transition-colors">Report Issue</button>
+        </div>
       </footer>
+
+      <LegalModal
+        isOpen={legalModal.isOpen}
+        type={legalModal.type}
+        onClose={() => setLegalModal({...legalModal, isOpen: false})}
+      />
+      <SupportHub
+        isOpen={isSupportOpen}
+        onClose={() => setIsSupportOpen(false)}
+      />
     </div>
   );
 }
