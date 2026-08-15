@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import MemberAccessModal from './VIP/MemberAccessModal';
+import SupportDrawer from './VIP/SupportDrawer';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
+  const [isSupportDrawerOpen, setIsSupportDrawerOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -158,6 +162,22 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Hidden UI Triggers */}
+          <div className="mt-8 pt-8 border-t border-white/10 flex justify-between items-center opacity-50 hover:opacity-100 transition-opacity">
+            <button
+              onClick={() => setIsMemberModalOpen(true)}
+              className="text-[10px] font-serif tracking-widest uppercase text-[#C9B037] hover:text-[#F4E4BC]"
+            >
+              VIP Access
+            </button>
+            <button
+              onClick={() => setIsSupportDrawerOpen(true)}
+              className="text-[10px] tracking-widest uppercase text-gray-500 hover:text-white"
+            >
+              Support Hub
+            </button>
+          </div>
+
         </div>
       </div>
 
@@ -209,6 +229,9 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      <MemberAccessModal isOpen={isMemberModalOpen} onClose={() => setIsMemberModalOpen(false)} />
+      <SupportDrawer isOpen={isSupportDrawerOpen} onClose={() => setIsSupportDrawerOpen(false)} />
     </div>
   );
 }
