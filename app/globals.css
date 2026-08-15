@@ -28,6 +28,7 @@
   /* Typography */
   --font-display: "Geist", -apple-system, sans-serif;
   --font-mono: "Geist Mono", monospace;
+  --font-serif: "Playfair Display", serif;
 
   /* Transitions */
   --transition-fast: 150ms ease;
@@ -49,6 +50,7 @@
   --color-border-dark: #2d2d2d;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-playfair: var(--font-playfair);
 }
 
 /* Base Styles */
@@ -289,4 +291,7 @@ body {
   .mode-card {
     padding: var(--spacing-lg);
   }
+}
+.cursor-custom {
+  cursor: url('data:image/svg+xml;utf8,<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="14" stroke="%23ecab13" stroke-width="2"/></svg>') 16 16, auto;
 }
