@@ -25,6 +25,8 @@ export interface Brand {
   logo: string;
   isLuxury: boolean;
   tier: 'mass' | 'luxury' | 'basic';
+  bannerImage?: string;
+  description?: string;
 }
 
 // Brand Data
