@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateCinematicVideo } from '@/lib/virtualTryOn';
 
+export const runtime = 'nodejs';
+export const maxDuration = 120;
+
+
 export async function POST(req: NextRequest) {
   try {
     const { imageUrl } = await req.json();
