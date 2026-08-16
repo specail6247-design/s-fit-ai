@@ -1,7 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LegalModal } from '@/components/legal/LegalModal';
+import { ReportIssueModal } from '@/components/support/ReportIssueModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +19,9 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [legalModalOpen, setLegalModalOpen] = useState(false);
+  const [legalModalType, setLegalModalType] = useState<'privacy' | 'terms'>('privacy');
+  const [reportIssueModalOpen, setReportIssueModalOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -23,6 +29,87 @@ export default function RealLifeFitting() {
       const reader = new FileReader();
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
+    }
+  };
+
+
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+
+    try {
+      // 1. Create a temporary canvas
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Vertical format for IG Story (1080x1920)
+      canvas.width = 1080;
+      canvas.height = 1920;
+
+      // 2. Load the image (handle CORS if external)
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = resultImage;
+      });
+
+      // 3. Draw background
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 4. Draw image (centered, cover style)
+      const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+      const scaledW = img.width * scale;
+      const scaledH = img.height * scale;
+      const dx = (canvas.width - scaledW) / 2;
+      const dy = (canvas.height - scaledH) / 2;
+      ctx.drawImage(img, dx, dy, scaledW, scaledH);
+
+      // 5. Add Brand Overlay/Logo
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.fillRect(0, canvas.height - 200, canvas.width, 200);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 60px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT NEO', canvas.width / 2, canvas.height - 100);
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = '40px monospace';
+      ctx.fillText('AI GENERATED', canvas.width / 2, canvas.height - 50);
+
+      // 6. Get Data URL and trigger download (or Web Share API)
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+
+      if (navigator.share) {
+         try {
+             // Convert base64 to blob for sharing
+             const res = await fetch(dataUrl);
+             const blob = await res.blob();
+             const file = new File([blob], 'sfit-story.jpg', { type: 'image/jpeg' });
+             await navigator.share({
+                 title: 'My S_FIT Style',
+                 files: [file]
+             });
+             return;
+         } catch(e) {
+             console.error("Share failed", e);
+             // fallback to download
+         }
+      }
+
+      // Fallback: Download the image
+      const link = document.createElement('a');
+      link.download = 'sfit-story.jpg';
+      link.href = dataUrl;
+      link.click();
+
+    } catch (err) {
+      console.error('Failed to generate story image', err);
+      alert('Could not generate story image.');
     }
   };
 
@@ -86,6 +173,9 @@ export default function RealLifeFitting() {
           <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
             Professional Virtual Fitting
           </p>
+                  <div className="text-[10px] text-gray-500 mt-2 flex items-center gap-1">
+            <span className="text-green-500">🔒</span> Photos are processed securely and not shared.
+          </div>
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
@@ -96,7 +186,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? <img src={userImage} className="w-full h-full object-cover" alt="User Photo" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +203,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" alt="Garment Image" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -202,13 +292,30 @@ export default function RealLifeFitting() {
               >
                 ✕ Close
               </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
+                            <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={() => {
+                  handleShareToStory();
+                }}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-pink-500 to-orange-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+          <div className="absolute bottom-4 left-8 z-20 flex gap-4 text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+        <button onClick={() => { setLegalModalType('privacy'); setLegalModalOpen(true); }} className="hover:text-white transition-colors">Privacy</button>
+        <button onClick={() => { setLegalModalType('terms'); setLegalModalOpen(true); }} className="hover:text-white transition-colors">Terms</button>
+        <button onClick={() => setReportIssueModalOpen(true)} className="hover:text-white transition-colors">Report Issue</button>
+      </div>
+
+      {/* Modals */}
+      <LegalModal isOpen={legalModalOpen} onClose={() => setLegalModalOpen(false)} type={legalModalType} />
+      <ReportIssueModal isOpen={reportIssueModalOpen} onClose={() => setReportIssueModalOpen(false)} />
     </div>
   );
 }
