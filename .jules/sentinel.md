@@ -1,0 +1,4 @@
+## 2025-02-12 - OpenAI API Key Client-Side Exposure
+**Vulnerability:** The `NEXT_PUBLIC_OPENAI_API_KEY` and `dangerouslyAllowBrowser: true` were found in `lib/visionService.ts`, which is imported directly by client-side Next.js React components. This exposes the secret API key in the browser environment.
+**Learning:** In Next.js, any environment variable prefixed with `NEXT_PUBLIC_` is inlined into the client-side JavaScript bundle during the build process, making it readable to anyone inspecting the source code.
+**Prevention:** Always isolate secret API keys to the backend. Move sensitive logic like OpenAI calls to Next.js API routes (e.g., `/api/vision/analyze`) and keep keys out of `NEXT_PUBLIC_` variables. Ensure `dangerouslyAllowBrowser: true` is never used for actual production API keys.
