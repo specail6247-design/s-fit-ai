@@ -26,7 +26,8 @@
   --border-color: rgba(255, 255, 255, 0.1);
 
   /* Typography */
-  --font-display: "Geist", -apple-system, sans-serif;
+  --font-display: var(--font-cinzel), -apple-system, serif;
+  --font-sans: var(--font-inter), -apple-system, sans-serif;
   --font-mono: "Geist Mono", monospace;
 
   /* Transitions */
@@ -47,13 +48,24 @@
   --color-gold-primary: #ecab13;
   --color-surface-dark: #1a1a1a;
   --color-border-dark: #2d2d2d;
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-cinzel);
   --font-mono: var(--font-geist-mono);
 }
 
 /* Base Styles */
 * {
   box-sizing: border-box;
+}
+
+@media (pointer: fine) {
+  body, button, a, input, [role="button"] {
+    cursor: none !important;
+  }
+}
+
+img {
+  filter: saturate(0.9) contrast(1.1);
 }
 
 html {
@@ -177,6 +189,10 @@ body {
   background: var(--cyber-lime);
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(204, 255, 0, 0.3);
+}
+
+.btn-primary:active {
+  transform: scale(0.95);
 }
 
 .btn-secondary {

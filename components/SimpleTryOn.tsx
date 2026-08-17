@@ -51,7 +51,7 @@ const SFitAIProject = () => {
   };
 
   return (
-    <div style={styles.container}>
+    <div style={{ ...styles.container, opacity: isProcessing ? 0 : 1, transition: 'opacity 1s ease' }}>
       <header style={styles.header}>
         <h1 style={styles.logo}>S_FIT AI</h1>
         <p style={styles.subtitle}>SIMPLE MODE ACTIVATED (Verified)</p>
