@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { AuthButton } from '@/components/AuthButton';
+import { SupportHub } from '@/components/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,7 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -79,7 +82,17 @@ export default function RealLifeFitting() {
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
+        <div className="absolute top-8 right-8 z-20 flex gap-4">
+          <AuthButton />
+          <button
+            onClick={() => setIsSupportOpen(true)}
+            className="text-[#C9B037] font-[family-name:var(--font-display)] text-sm italic font-bold tracking-widest uppercase hover:text-white transition-colors"
+          >
+            SUPPORT
+          </button>
+        </div>
+
+        <header className="mb-10 relative z-10 mt-8">
           <h1 className="text-4xl font-black tracking-tighter italic">
             S_FIT <span className="text-[#007AFF]">NEO</span>
           </h1>
@@ -186,6 +199,8 @@ export default function RealLifeFitting() {
             <AvatarCanvas />
           </ErrorBoundary>
         </div>
+
+        <SupportHub isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
 
         {/* Result Overlay (If success) */}
         {resultImage && !isProcessing && (
