@@ -16,6 +16,7 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -101,6 +102,10 @@ export default function RealLifeFitting() {
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
+                  <div className="mt-2 flex items-center gap-1 text-[9px] text-[#007AFF] font-bold">
+                    <span className="material-symbols-outlined text-[10px]">lock</span>
+                    Photos are processed securely and not shared.
+                  </div>
                 </div>
               </label>
             </div>
@@ -158,6 +163,21 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-8 flex flex-col gap-2 border-t border-white/10 pt-6">
+            <button
+              onClick={() => setShowPrivacyModal(true)}
+              className="text-xs text-gray-400 hover:text-white transition-colors text-left flex items-center gap-2"
+            >
+              <span>📄</span> Privacy Policy & Terms
+            </button>
+            <a
+              href="mailto:support@s-fit.ai?subject=Report%20Issue"
+              className="text-xs text-gray-400 hover:text-[#007AFF] transition-colors text-left flex items-center gap-2"
+            >
+              <span>🐛</span> Report Issue
+            </a>
+          </div>
+
         </div>
       </div>
 
@@ -205,10 +225,54 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText("Check out my fit on S_FIT AI! #SFIT #VirtualTryOn");
+                  alert("Image ready! Share this look on your Instagram Story. (Text copied to clipboard)");
+                }}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-[#833AB4] to-[#F77737] text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 hover:opacity-90 transition-opacity shadow-lg"
+              >
+                <span>📷</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      {/* Privacy Policy Modal */}
+      {showPrivacyModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-[#111] border border-white/20 rounded-2xl p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto relative">
+            <button
+              onClick={() => setShowPrivacyModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              ✕
+            </button>
+            <h2 className="text-xl font-bold mb-4 text-[#007AFF]">Privacy Policy & Terms</h2>
+            <div className="space-y-4 text-sm text-gray-300">
+              <p>
+                <strong>1. Data Collection & Processing</strong><br/>
+                Photos uploaded for virtual try-on are processed securely by our AI models. We do not store your photos permanently, nor do we share them with third parties for marketing purposes.
+              </p>
+              <p>
+                <strong>2. Terms of Service</strong><br/>
+                By using S_FIT AI, you agree to use the service for personal, non-commercial purposes only. Generated images are provided &quot;as is&quot; and may vary in accuracy.
+              </p>
+              <p>
+                <strong>3. User Rights</strong><br/>
+                You have the right to request deletion of any temporary data associated with your session. For support, please use the &quot;Report Issue&quot; link in the menu.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowPrivacyModal(false)}
+              className="mt-6 w-full py-3 bg-[#007AFF] hover:bg-[#005bb5] rounded-xl font-bold transition-colors text-white"
+            >
+              I Understand
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
