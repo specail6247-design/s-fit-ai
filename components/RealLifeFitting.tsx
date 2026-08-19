@@ -104,6 +104,10 @@ export default function RealLifeFitting() {
                 </div>
               </label>
             </div>
+            <div className="flex items-center gap-1.5 mt-2 text-[10px] text-green-400 bg-green-400/10 p-2 rounded-lg border border-green-400/20">
+              <span className="material-symbols-outlined text-[12px]">lock</span>
+              <span>Photos are processed securely and not shared.</span>
+            </div>
           </div>
 
           {/* Garment Input */}
@@ -205,6 +209,12 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={() => alert('Opening Instagram Stories intent...')}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white rounded-xl px-4 py-2 text-xs font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-1"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}

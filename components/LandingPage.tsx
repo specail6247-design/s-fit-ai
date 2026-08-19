@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ModeSelector } from './ModeSelector';
+import { LegalModal } from './ui/LegalModal';
+import Link from 'next/link';
 
 export function LandingPage() {
+  const [showLegal, setShowLegal] = useState(false);
   return (
     <div className="min-h-screen bg-void-black text-pure-white overflow-hidden relative selection:bg-cyber-lime selection:text-black">
       
@@ -63,9 +66,15 @@ export function LandingPage() {
             <span className="text-white">Three.js</span>
             <span className="text-white">Next.js 15</span>
           </div>
+          <div className="flex gap-4 items-center">
+            <button onClick={() => setShowLegal(true)} className="hover:text-white transition-colors underline decoration-white/20 underline-offset-4">Legal & Privacy</button>
+            <Link href="/support" className="hover:text-white transition-colors underline decoration-white/20 underline-offset-4">Support Hub</Link>
+          </div>
           <p>© 2026 Antigravity. All rights reserved.</p>
         </div>
       </footer>
+
+      <LegalModal isOpen={showLegal} onClose={() => setShowLegal(false)} />
     </div>
   );
 }
