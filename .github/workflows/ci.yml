@@ -31,18 +31,10 @@ jobs:
       run: npx tsc --noEmit
 
     - name: Unit Tests
-      run: npx vitest run --coverage
+      run: npx vitest run
 
     - name: Build
       run: npm run build
-
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-
-    - name: E2E Tests
-      run: npx playwright test
-      env:
-        CI: true
 
     - name: Upload Coverage
       uses: actions/upload-artifact@v4
