@@ -89,6 +89,12 @@ export default function RealLifeFitting() {
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
+          {/* Data Safety Badge */}
+          <div className="flex items-center justify-center gap-2 text-[10px] text-gray-500 bg-black/40 border border-white/5 rounded-lg py-2 px-3">
+            <span className="text-green-500">🔒</span>
+            <span>Photos are processed securely and not shared.</span>
+          </div>
+
           {/* User Photo Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
@@ -205,6 +211,15 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={() => {
+                  // In a real app, this would use Web Share API or generate an IG story specific image
+                  alert('Generating IG Story template with S_FIT AI branding...');
+                }}
+                className="absolute bottom-4 right-4 bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white px-4 py-2 rounded-lg text-xs font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
