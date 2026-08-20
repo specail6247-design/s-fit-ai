@@ -112,6 +112,10 @@ interface StoreState {
 
   // Reset
   resetSession: () => void;
+
+  // The Vault (Digital Wardrobe)
+  savedItems: string[];
+  toggleSavedItem: (id: string) => void;
 }
 
 const DAILY_LIMIT = 5;
@@ -235,6 +239,14 @@ export const useStore = create<StoreState>()(
       showPremiumModal: false,
       setShowPremiumModal: (show) => set({ showPremiumModal: show }),
 
+      // The Vault (Digital Wardrobe)
+      savedItems: [],
+      toggleSavedItem: (id) => set((state) => ({
+        savedItems: state.savedItems.includes(id)
+          ? state.savedItems.filter(itemId => itemId !== id)
+          : [...state.savedItems, id]
+      })),
+
       // Reset Session
       resetSession: () =>
         set({
@@ -257,6 +269,7 @@ export const useStore = create<StoreState>()(
         userStats: state.userStats,
         selectedAIModels: state.selectedAIModels,
         trainingData: state.trainingData,
+        savedItems: state.savedItems,
       }),
     }
   )
