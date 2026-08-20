@@ -17,6 +17,9 @@ export interface ClothingItem {
   sizes: string[];
   colors: string[];
   description: string;
+  styleTip?: string;
+  isLocked?: boolean;
+  unlockDate?: string;
 }
 
 export interface Brand {
@@ -110,6 +113,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy', 'Beige'],
     description: 'Relaxed fit blazer with structured shoulders',
+    styleTip: 'Pair this with structured denim for a balanced silhouette.',
   },
   {
     id: 'zara-002',
@@ -124,6 +128,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'White', 'Camel'],
     description: 'Elegant wide leg trousers with pleats',
+    styleTip: 'Tuck in a fitted silk blouse to accentuate the high waist.',
   },
   {
     id: 'zara-003',
@@ -138,6 +143,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L'],
     colors: ['Cream', 'Black', 'Sage'],
     description: 'Minimalist cropped sweater',
+    styleTip: 'Layer over a crisp white button-down for an effortless preppy look.',
   },
   {
     id: 'zara-004',
@@ -505,6 +511,8 @@ export const mockClothingItems: ClothingItem[] = [
   },
   {
     id: 'supreme-hat-001',
+    isLocked: true,
+    unlockDate: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
     name: 'Box Logo Camp Cap',
     brand: 'Supreme',
     category: 'accessories',

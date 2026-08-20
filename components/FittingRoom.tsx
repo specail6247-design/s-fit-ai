@@ -16,7 +16,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '@/store/useStore';
 import type { UserStats } from '@/store/useStore';
-import { getItemsByBrand, ClothingItem } from '@/data/mockData';
+import { getItemsByBrand, ClothingItem, mockClothingItems } from '@/data/mockData';
 import type { PoseProportions } from '@/lib/mediapipe';
 import { 
   calculateRecommendedSize, 
@@ -306,7 +306,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
@@ -829,7 +829,7 @@ function AITryOnModal({
 
 export function FittingRoom() {
   const {
-    userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis, savedItems, toggleSavedItem
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
@@ -842,6 +842,52 @@ export function FittingRoom() {
   const [isMacroView, setIsMacroView] = useState(false);
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [webglFailed, setWebglFailed] = useState(false);
+  const [isVaultOpen, setIsVaultOpen] = useState(false);
+  const [isAudioMuted, setIsAudioMuted] = useState(true);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [timeLeft, setTimeLeft] = useState<string>('');
+  const currentItem = selectedItem || null;
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !audioRef.current) {
+      audioRef.current = new Audio('https://cdn.pixabay.com/download/audio/2022/02/10/audio_03d98992c6.mp3');
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.2;
+    }
+    if (isMasterpieceMode && !isAudioMuted && audioRef.current) {
+      audioRef.current.play().catch(e => console.error("Audio play failed", e));
+    } else if (audioRef.current) {
+      audioRef.current.pause();
+    }
+  }, [isMasterpieceMode, isAudioMuted]);
+
+  useEffect(() => {
+    if (!currentItem?.isLocked || !currentItem?.unlockDate) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setTimeLeft('');
+      return;
+    }
+
+    const calculateTimeLeft = () => {
+      if (!currentItem.unlockDate) return '';
+      const difference = new Date(currentItem.unlockDate).getTime() - new Date().getTime();
+      if (difference <= 0) return 'AVAILABLE NOW';
+
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+      return `Available in ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    };
+
+    setTimeLeft(calculateTimeLeft());
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [currentItem]);
+
   const [autoCycleEnabled, setAutoCycleEnabled] = useState(() => {
     if (typeof window !== 'undefined') {
       return window.localStorage.getItem('sfit-ai-auto-cycle') === 'true';
@@ -858,7 +904,7 @@ export function FittingRoom() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
   const brandItems = useMemo(() => selectedBrand ? getItemsByBrand(selectedBrand) : [], [selectedBrand]);
-  const currentItem = selectedItem || null;
+
 
   const fitScore = useMemo(() => {
     if (selectedMode === 'vibe-check' && faceAnalysis) return Math.round(Math.min(95, 60 + faceAnalysis.score * 0.4));
@@ -991,9 +1037,14 @@ export function FittingRoom() {
         
         {/* Controls Overlay */}
         <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
-            <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
-                {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
-            </button>
+            <div className="flex gap-2 justify-end">
+              <button onClick={() => setIsAudioMuted(!isAudioMuted)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${!isAudioMuted ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                  {!isAudioMuted ? '🔊 Unmuted' : '🔇 Muted'}
+              </button>
+              <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                  {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
+              </button>
+            </div>
             <button onClick={() => setIsMacroView(!isMacroView)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMacroView ? 'bg-white text-black border-white' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 🔍 Macro View
             </button>
@@ -1011,15 +1062,70 @@ export function FittingRoom() {
         )}
 
         <div className="absolute top-4 left-4 flex gap-2 z-20">
-            <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
+            <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors" title="Share">
                 <span>📤</span>
             </button>
+            {currentItem && (
+              <button onClick={() => toggleSavedItem(currentItem.id)} className={`bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border transition-colors ${savedItems.includes(currentItem.id) ? 'border-cyber-lime text-cyber-lime' : 'border-white/10 hover:bg-charcoal/80'}`} title="Save Look">
+                  <span className={savedItems.includes(currentItem.id) ? "material-symbols-outlined filled" : "material-symbols-outlined"}>bookmark</span>
+              </button>
+            )}
+            <button onClick={() => setIsVaultOpen(true)} className="bg-charcoal/60 backdrop-blur-md px-3 py-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors flex items-center gap-2">
+                <span className="material-symbols-outlined">inventory_2</span>
+                <span className="text-xs font-bold uppercase tracking-wider">Vault</span>
+            </button>
+
             <motion.button onClick={() => setShowAITryOnModal(true)} 
-                           className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
-                           whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                           className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20 ml-2"
+                           whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                           disabled={currentItem?.isLocked}>
                 <span>✨</span> AI 피팅 <span className="text-[0.6rem] bg-white/20 px-1.5 py-0.5 rounded-full">NEW</span>
             </motion.button>
         </div>
+
+        <AnimatePresence>
+          {isVaultOpen && (
+            <motion.div
+              initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }} transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="absolute inset-y-0 left-0 w-64 bg-void-black/95 backdrop-blur-xl border-r border-white/10 z-50 flex flex-col p-4 shadow-2xl"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-sm font-bold tracking-[0.2em] uppercase text-cyber-lime">The Vault</h3>
+                <button onClick={() => setIsVaultOpen(false)} className="text-soft-gray hover:text-white"><span className="material-symbols-outlined text-sm">close</span></button>
+              </div>
+
+              {savedItems.length === 0 ? (
+                <div className="flex-1 flex flex-col items-center justify-center text-center text-soft-gray">
+                  <span className="material-symbols-outlined text-4xl mb-2 opacity-20">inventory_2</span>
+                  <p className="text-xs">Your vault is empty.</p>
+                  <p className="text-[10px] mt-1">Save looks to compare luxury pieces.</p>
+                </div>
+              ) : (
+                <div className="flex-1 overflow-y-auto pr-2 space-y-3 scrollbar-hide">
+                  {savedItems.map(id => {
+                    const item = mockClothingItems.find(i => i.id === id);
+                    if (!item) return null;
+                    return (
+                      <div key={item.id} className="flex gap-3 bg-charcoal/30 p-2 rounded-xl border border-white/5 relative group cursor-pointer hover:border-cyber-lime/30 transition-colors" onClick={() => { setSelectedItem(item); setIsVaultOpen(false); }}>
+                        <div className="w-12 h-12 bg-charcoal/50 rounded-lg flex items-center justify-center overflow-hidden relative">
+                           <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[10px] text-pure-white truncate font-medium">{item.name}</p>
+                          <p className="text-[9px] text-soft-gray">{item.brand}</p>
+                          <p className="text-[9px] text-cyber-lime mt-0.5">${item.price}</p>
+                        </div>
+                        <button onClick={(e) => { e.stopPropagation(); toggleSavedItem(item.id); }} className="absolute top-2 right-2 text-soft-gray hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <span className="material-symbols-outlined text-[14px]">delete</span>
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {topPicks.length > 0 && (
           <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-20">
@@ -1105,12 +1211,25 @@ export function FittingRoom() {
       {/* AI Stylist & Complementary Items */}
       {currentItem && (
         <div className="p-4 bg-charcoal/30 border-t border-border-color">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <span className="text-xs">🎨</span>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-cyber-lime">AI Stylist&apos;s Choice</span>
+          <div className="flex flex-col mb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xs">🎨</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-cyber-lime">AI Stylist&apos;s Choice</span>
+              </div>
+              <span className="text-[8px] text-soft-gray italic">Complete the Look</span>
             </div>
-            <span className="text-[8px] text-soft-gray italic">Complete the Look</span>
+            {currentItem.styleTip && (
+              <div className="mt-2 text-[10px] text-soft-gray italic bg-void-black/50 p-2 rounded border-l-2 border-cyber-lime">
+                &quot;{currentItem.styleTip}&quot;
+              </div>
+            )}
+            {currentItem.isLocked && (
+              <div className="mt-2 text-[10px] text-red-500 italic bg-red-500/10 p-2 rounded border-l-2 border-red-500 flex items-center gap-1 w-max">
+                <span className="material-symbols-outlined text-[12px]">lock</span>
+                {timeLeft}
+              </div>
+            )}
           </div>
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {/* These would normally come from lib/visionService.getComplementaryItems */}
