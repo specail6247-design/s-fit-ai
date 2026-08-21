@@ -96,7 +96,7 @@ export function AuthButton() {
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
+          <div className="bg-black/90 border border-luxury-gold/30 shadow-[0_0_50px_rgba(201,176,55,0.15)] w-full max-w-sm rounded-3xl p-8 relative overflow-hidden">
             <button
               onClick={() => setShowModal(false)}
               className="absolute top-4 right-4 text-soft-gray hover:text-white"
@@ -104,7 +104,7 @@ export function AuthButton() {
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
+            <h2 className="text-2xl font-black font-mono tracking-[0.2em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-luxury-gold via-[#e8d282] to-luxury-gold mb-8 text-center drop-shadow-sm">
               {isLogin ? 'Welcome Back' : 'Create Account'}
             </h2>
 
@@ -114,7 +114,7 @@ export function AuthButton() {
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white text-sm focus:border-luxury-gold outline-none transition-colors placeholder:text-soft-gray/50"
                 required
               />
               <input
@@ -122,13 +122,13 @@ export function AuthButton() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white text-sm focus:border-luxury-gold outline-none transition-colors placeholder:text-soft-gray/50"
                 required
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="w-full bg-gradient-to-r from-luxury-gold to-[#e8d282] text-black font-black py-4 rounded-xl hover:brightness-110 transition-all disabled:opacity-50 tracking-widest uppercase text-sm mt-4"
               >
                 {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
               </button>
@@ -136,7 +136,7 @@ export function AuthButton() {
 
             <div className="flex items-center gap-2 mb-6">
               <div className="h-px bg-white/10 flex-1" />
-              <span className="text-xs text-soft-gray">OR SOCIAL LOGIN</span>
+              <span className="text-[10px] uppercase tracking-widest text-soft-gray">VIP Access</span>
               <div className="h-px bg-white/10 flex-1" />
             </div>
 
@@ -159,7 +159,7 @@ export function AuthButton() {
               {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
               <button
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-cyber-lime hover:underline ml-1"
+                className="text-luxury-gold hover:underline ml-1 font-bold"
               >
                 {isLogin ? 'Sign up' : 'Log in'}
               </button>

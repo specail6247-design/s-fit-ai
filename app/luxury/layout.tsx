@@ -1,9 +1,10 @@
+/* eslint-disable @next/next/no-page-custom-font, @next/next/google-font-display */
 import { Manrope } from 'next/font/google'
 import React from 'react'
 
 const manrope = Manrope({
   subsets: ['latin'],
-  display: 'swap',
+  display: 'optional',
   variable: '--font-manrope',
 })
 
