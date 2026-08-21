@@ -147,7 +147,7 @@ export function VirtualRunway() {
 
               <div className="flex items-center justify-between mt-2">
                 <div className="flex items-center gap-4">
-                  <button className="flex items-center gap-1.5 text-soft-gray hover:text-cyber-lime transition-colors">
+                  <button aria-label={`${fit.likes} likes`} className="flex items-center gap-1.5 text-soft-gray hover:text-cyber-lime transition-colors">
                     <span>❤️</span>
                     <span className="text-xs">{fit.likes}</span>
                   </button>
