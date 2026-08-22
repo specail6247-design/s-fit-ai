@@ -1,7 +1,15 @@
 'use client';
 
-import RealLifeFitting from '@/components/RealLifeFitting';
+import { useStore } from '@/store/useStore';
+import { LandingPage } from '@/components/LandingPage';
+import { FittingRoom } from '@/components/FittingRoom';
 
 export default function Home() {
-  return <RealLifeFitting />;
+  const { selectedMode } = useStore();
+
+  if (selectedMode) {
+    return <FittingRoom />;
+  }
+
+  return <LandingPage />;
 }

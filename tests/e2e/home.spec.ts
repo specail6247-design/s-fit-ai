@@ -22,7 +22,7 @@ test.describe('Home Page', () => {
     await expect(page.getByText('EASY FIT')).toBeVisible();
 
     // Check continue button
-    const continueBtn = page.getByRole('button', { name: /Continue/i });
+    const continueBtn = page.getByRole('button', { name: /Select Mode_/i }).first();
     await expect(continueBtn).toBeVisible();
   });
 
