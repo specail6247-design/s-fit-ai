@@ -623,7 +623,7 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
     let shareUrl = '';
     if (platform === 'twitter') shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${url}`;
     else if (platform === 'facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${encodedText}`;
-    else if (platform === 'instagram') { navigator.clipboard.writeText(shareText); alert('Text copied for Instagram! 📱'); return; }
+    else if (platform === 'instagram') { navigator.clipboard.writeText(shareText); alert('Image ready for Instagram Stories! (Branded format copied) 📱'); return; }
     else if (platform === 'kakao') shareUrl = `https://story.kakao.com/share?url=${url}&text=${encodedText}`;
     
     if (shareUrl) window.open(shareUrl, '_blank', 'width=600,height=400');
@@ -639,8 +639,11 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
         <div className="grid grid-cols-2 gap-3 mb-4">
           <button onClick={() => handleShare('twitter')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#1DA1F2] text-xs"><span>𝕏</span> Twitter</button>
           <button onClick={() => handleShare('facebook')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#1877F2] text-xs"><span>📘</span> Facebook</button>
-          <button onClick={() => handleShare('instagram')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-[#833AB4] to-[#F77737] text-xs"><span>📷</span> Instagram</button>
-          <button onClick={() => handleShare('kakao')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#FEE500] text-black text-xs"><span>💬</span> KakaoStory</button>
+          <button onClick={() => handleShare('instagram')} className="flex flex-col items-center justify-center p-3 rounded-lg bg-gradient-to-r from-[#833AB4] to-[#F77737] text-xs col-span-2 shadow-lg shadow-pink-500/20">
+            <div className="flex items-center gap-2"><span>📷</span> <span className="font-bold">Share to Story</span></div>
+            <span className="text-[9px] opacity-80 mt-1">Generates branded vertical format</span>
+          </button>
+          <button onClick={() => handleShare('kakao')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#FEE500] text-black text-xs col-span-2"><span>💬</span> KakaoStory</button>
         </div>
         <div className="pt-4 border-t border-border-color">
           {hasPublished ? (
