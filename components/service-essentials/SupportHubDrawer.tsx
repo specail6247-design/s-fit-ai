@@ -38,13 +38,10 @@ const faqs = [
 export default function SupportHubDrawer({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
   const [activeStep, setActiveStep] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // Removed synchronous setState in useEffect
 
-  if (!mounted) return null;
+
 
   return (
     <AnimatePresence>

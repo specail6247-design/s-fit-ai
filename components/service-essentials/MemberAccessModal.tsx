@@ -8,12 +8,12 @@ export default function MemberAccessModal({ isOpen, onClose }: { isOpen: boolean
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const [message, setMessage] = useState<{type: 'error' | 'success', text: string} | null>(null);
+    const [message, setMessage] = useState<{type: 'error' | 'success', text: string} | null>(null);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // Removed synchronous setState in useEffect to prevent cascading renders.
+  // Use useLayoutEffect or handle mounting differently if hydration errors occur.
+  // Given this is a client component relying on standard React mounting, we can just remove it.
+
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,8 +29,8 @@ export default function MemberAccessModal({ isOpen, onClose }: { isOpen: boolean
         setTimeout(() => onClose(), 2000);
       }
       onClose();
-    } catch (error: any) {
-      setMessage({ type: 'error', text: error.message });
+    } catch (error: unknown) {
+      setMessage({ type: 'error', text: (error as Error).message });
     } finally {
       setLoading(false);
     }
@@ -45,12 +45,11 @@ export default function MemberAccessModal({ isOpen, onClose }: { isOpen: boolean
         },
       });
       if (error) throw error;
-    } catch (error: any) {
-      setMessage({ type: 'error', text: `${provider} Login Error: ` + error.message });
+    } catch (error: unknown) {
+      setMessage({ type: 'error', text: `${provider} Login Error: ` + (error as Error).message });
     }
   };
 
-  if (!mounted) return null;
 
   return (
     <AnimatePresence>
