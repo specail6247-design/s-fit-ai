@@ -1,0 +1,3 @@
+## 2024-08-22 - Google Material Symbols ARIA Requirements
+**Learning:** When using Google Material Symbols (`material-symbols-outlined`) for interactive elements like buttons, screen readers will literally announce the inner text string (e.g., "zoom in" or "light mode"). Since these icons are frequently used in our application interfaces without accompanying text, the lack of `aria-label`s makes these critical actions inaccessible to screen reader users.
+**Action:** Always provide explicit, descriptive `aria-label`s on the parent `<button>` or `<Link>` element when its content relies solely on a `<span className="material-symbols-outlined">` tag, ensuring screen readers announce the element's actual function instead of its ligature string.
