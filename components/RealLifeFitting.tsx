@@ -1,7 +1,11 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LegalModal } from './ui/LegalModal';
+import { ReportIssueModal } from './ui/ReportIssueModal';
+import { DataSafetyBadge } from './ui/DataSafetyBadge';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +20,9 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -96,7 +103,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? <img src={userImage} className="w-full h-full object-cover" alt="User Photo" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +120,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" alt="Garment" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -124,6 +131,7 @@ export default function RealLifeFitting() {
           </div>
         </div>
 
+        <DataSafetyBadge />
         {/* Action Button */}
         <div className="mt-8 relative z-10">
           {isProcessing ? (
@@ -149,6 +157,16 @@ export default function RealLifeFitting() {
             </button>
           )}
           
+          <div className="mt-8 pt-4 border-t border-white/10 flex justify-between items-center text-[10px] text-gray-500">
+            <div className="flex gap-4">
+              <button onClick={() => setShowPrivacy(true)} className="hover:text-[#007AFF] transition-colors">Privacy Policy</button>
+              <button onClick={() => setShowTerms(true)} className="hover:text-[#007AFF] transition-colors">Terms of Service</button>
+            </div>
+            <button onClick={() => setShowReport(true)} className="text-red-500/70 hover:text-red-500 flex items-center gap-1 transition-colors">
+              <span>🐛</span> Report Issue
+            </button>
+          </div>
+
           <div className="mt-4 flex gap-2">
              <a href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                SPA Line
@@ -196,6 +214,77 @@ export default function RealLifeFitting() {
           >
             <div className="relative group">
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              <button
+                onClick={async () => {
+                  try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 1080;
+                    canvas.height = 1920;
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) return;
+
+                    // Background
+                    ctx.fillStyle = '#0a0a0a';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    // Draw Image
+                    const img = new window.Image();
+                    img.crossOrigin = 'anonymous';
+                    img.src = resultImage;
+                    await new Promise((resolve, reject) => {
+                      img.onload = resolve;
+                      img.onerror = reject;
+                    });
+
+                    const imgRatio = img.width / img.height;
+                    const canvasRatio = canvas.width / canvas.height;
+
+                    let drawWidth = canvas.width;
+                    let drawHeight = canvas.height;
+                    let offsetX = 0;
+                    let offsetY = 0;
+
+                    if (imgRatio > canvasRatio) {
+                      drawHeight = canvas.width / imgRatio;
+                      offsetY = (canvas.height - drawHeight) / 2;
+                    } else {
+                      drawWidth = canvas.height * imgRatio;
+                      offsetX = (canvas.width - drawWidth) / 2;
+                    }
+
+                    ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+
+                    // Draw Branding overlay
+                    // Gradient bottom
+                    const grd = ctx.createLinearGradient(0, canvas.height - 400, 0, canvas.height);
+                    grd.addColorStop(0, 'transparent');
+                    grd.addColorStop(1, 'rgba(0,0,0,0.9)');
+                    ctx.fillStyle = grd;
+                    ctx.fillRect(0, canvas.height - 400, canvas.width, 400);
+
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = 'bold 80px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('S_FIT AI', canvas.width / 2, canvas.height - 150);
+
+                    ctx.fillStyle = '#007AFF';
+                    ctx.font = '40px monospace';
+                    ctx.fillText('VIRTUAL TRY-ON RESULT', canvas.width / 2, canvas.height - 80);
+
+                    const dataUrl = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.download = 'sfit_story.png';
+                    link.href = dataUrl;
+                    link.click();
+                  } catch (e) {
+                    console.error('Failed to generate story image', e);
+                    alert('Could not generate story image.');
+                  }
+                }}
+                className="absolute top-4 right-28 bg-gradient-to-r from-[#833AB4] to-[#F77737] text-white rounded-full px-4 py-2 hover:opacity-90 transition-opacity flex items-center gap-2 text-sm font-bold shadow-lg"
+              >
+                <span>📷</span> Share to Story
+              </button>
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
@@ -209,6 +298,9 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+      <LegalModal isOpen={showPrivacy} onClose={() => setShowPrivacy(false)} type="privacy" />
+      <LegalModal isOpen={showTerms} onClose={() => setShowTerms(false)} type="terms" />
+      <ReportIssueModal isOpen={showReport} onClose={() => setShowReport(false)} />
     </div>
   );
 }
