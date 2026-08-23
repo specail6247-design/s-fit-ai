@@ -581,21 +581,51 @@ function ItemCard({
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
+
+  const [timeLeft, setTimeLeft] = useState(7200); // 2 hours in seconds
+
+  useEffect(() => {
+    if (item.isLocked) {
+      const interval = setInterval(() => {
+        setTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [item.isLocked]);
+
+  const formatTime = (seconds: number) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
   return (
     <motion.button
-      onClick={onSelect}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      onClick={item.isLocked ? undefined : onSelect}
+      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start relative ${item.isLocked ? 'opacity-50 cursor-not-allowed border-red-500/50' : isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
+      whileHover={item.isLocked ? undefined : { scale: 1.05 }}
+      whileTap={item.isLocked ? undefined : { scale: 0.95 }}
     >
       <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
         <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
         {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
-        {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
+        {isRecommended && !item.isLocked && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
+        {item.isLocked && (
+           <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded">
+              <span className="text-white text-xs">🔒</span>
+           </div>
+        )}
       </div>
       <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
       <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
       <p className="text-[0.55rem] text-cyber-lime">Fit {fitScore}%</p>
+
+      {item.isLocked && (
+        <div className="absolute top-0 left-0 right-0 -mt-3 bg-red-500 text-white text-[8px] text-center font-bold px-1 rounded-t-md">
+           Available in {formatTime(timeLeft)}
+        </div>
+      )}
     </motion.button>
   );
 }
@@ -830,14 +860,54 @@ function AITryOnModal({
 export function FittingRoom() {
   const {
     userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    vaultItems, saveToVault, removeFromVault,
   } = useStore();
   
+  const [showVault, setShowVault] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
   const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
   const [aiTryOnLoading, setAITryOnLoading] = useState(false);
   const [userPhotoPreview, setUserPhotoPreview] = useState<string | null>(null);
+
+  const [isAudioMuted, setIsAudioMuted] = useState(false);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const oscillatorRef = useRef<OscillatorNode | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+
+  useEffect(() => {
+    if (!audioContextRef.current) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      gainNodeRef.current = audioContextRef.current.createGain();
+      gainNodeRef.current.connect(audioContextRef.current.destination);
+
+      oscillatorRef.current = audioContextRef.current.createOscillator();
+      oscillatorRef.current.type = 'sine';
+      oscillatorRef.current.frequency.setValueAtTime(100, audioContextRef.current.currentTime);
+      oscillatorRef.current.connect(gainNodeRef.current);
+      oscillatorRef.current.start();
+    }
+
+    if (isAudioMuted) {
+      gainNodeRef.current!.gain.setValueAtTime(0, audioContextRef.current!.currentTime);
+    } else {
+      gainNodeRef.current!.gain.setValueAtTime(0.02, audioContextRef.current!.currentTime);
+    }
+
+    return () => {
+      if (oscillatorRef.current) {
+        oscillatorRef.current.stop();
+        oscillatorRef.current.disconnect();
+        oscillatorRef.current = null;
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+        audioContextRef.current = null;
+      }
+    };
+  }, [isAudioMuted]);
   const [isMasterpieceMode, setIsMasterpieceMode] = useState(true);
   const [isMacroView, setIsMacroView] = useState(false);
   const [showHeatmap, setShowHeatmap] = useState(false);
@@ -991,6 +1061,12 @@ export function FittingRoom() {
         
         {/* Controls Overlay */}
         <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
+            <button onClick={() => setIsAudioMuted(!isAudioMuted)} className="px-3 py-1 rounded-full text-[10px] font-bold transition-all border bg-black/50 text-gray-400 border-gray-600 hover:text-white">
+                {isAudioMuted ? '🔇 Unmute Ambience' : '🔊 Mute Ambience'}
+            </button>
+            <button onClick={() => setShowVault(!showVault)} className="px-3 py-1 rounded-full text-[10px] font-bold transition-all border bg-black/50 text-gray-400 border-gray-600 hover:text-white">
+                🔒 Vault ({vaultItems.length})
+            </button>
             <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 {isMasterpieceMode ? '✨ Masterpiece ON' : '🌑 Masterpiece OFF'}
             </button>
@@ -1084,11 +1160,59 @@ export function FittingRoom() {
         </div>
       </div>
 
+      {/* Vault Drawer Overlay */}
+      <AnimatePresence>
+        {showVault && (
+          <motion.div
+            key="vault-drawer"
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            className="absolute inset-x-0 bottom-0 bg-void-black/95 backdrop-blur-xl border-t border-white/20 z-50 p-6 flex flex-col h-1/2"
+          >
+             <div className="flex justify-between items-center mb-4">
+                <h2 className="text-sm font-bold tracking-widest uppercase text-cyber-lime">The Vault</h2>
+                <button onClick={() => setShowVault(false)} className="text-white text-xs hover:text-gray-400">Close</button>
+             </div>
+             {vaultItems.length === 0 ? (
+                <div className="flex-1 flex items-center justify-center text-xs text-soft-gray">
+                   Your vault is empty.
+                </div>
+             ) : (
+                <div className="flex-1 overflow-y-auto space-y-4">
+                  {vaultItems.map(item => (
+                    <div key={item.id} className="flex items-center justify-between p-3 border border-white/10 rounded-lg">
+                       <div className="flex items-center gap-3">
+                          <span className="text-2xl">{getCategoryIcon(item.category)}</span>
+                          <div>
+                            <p className="text-xs font-bold text-white">{item.name}</p>
+                            <p className="text-[10px] text-soft-gray">{item.brand} - ${item.price}</p>
+                          </div>
+                       </div>
+                       <div className="flex gap-2">
+                           <button onClick={() => { setSelectedItem(item); setShowVault(false); }} className="text-[10px] px-3 py-1 bg-white/10 rounded-md hover:bg-white/20">Equip</button>
+                           <button onClick={() => removeFromVault(item.id)} className="text-[10px] px-3 py-1 bg-red-500/20 text-red-400 rounded-md hover:bg-red-500/40">Remove</button>
+                       </div>
+                    </div>
+                  ))}
+                </div>
+             )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Item Selector Footer */}
-      <div className="p-4 border-t border-border-color bg-void-black">
+      <div className="p-4 border-t border-border-color bg-void-black relative">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-[10px] uppercase tracking-widest text-soft-gray">{selectedBrand} Collection</h3>
-          <button onClick={() => setShowCompareModal(true)} className="text-[10px] text-cyber-lime hover:underline">Compare Picks →</button>
+          <div className="flex gap-3">
+             {currentItem && (
+               <button onClick={() => saveToVault(currentItem)} className="text-[10px] px-2 py-1 bg-cyber-lime/10 text-cyber-lime border border-cyber-lime/30 rounded-md hover:bg-cyber-lime/20">
+                  Save Look
+               </button>
+             )}
+             <button onClick={() => setShowCompareModal(true)} className="text-[10px] text-cyber-lime hover:underline">Compare Picks →</button>
+          </div>
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
             {brandItems.map((item) => (
@@ -1112,6 +1236,11 @@ export function FittingRoom() {
             </div>
             <span className="text-[8px] text-soft-gray italic">Complete the Look</span>
           </div>
+          {currentItem.stylingTip && (
+             <div className="mb-3 px-3 py-2 bg-white/5 border border-white/10 rounded-lg">
+                <p className="text-[10px] text-white italic">&quot;{currentItem.stylingTip}&quot;</p>
+             </div>
+          )}
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {/* These would normally come from lib/visionService.getComplementaryItems */}
             {brandItems.filter(i => i.id !== currentItem.id).slice(0, 3).map((compItem) => (
