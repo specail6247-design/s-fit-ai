@@ -17,6 +17,8 @@ export interface ClothingItem {
   sizes: string[];
   colors: string[];
   description: string;
+  stylingTip?: string;
+  isLocked?: boolean;
 }
 
 export interface Brand {
@@ -182,6 +184,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 44', 'IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Beige/Ebony'],
     description: 'Iconic GG pattern wool blazer with silk lining',
+    stylingTip: 'Pair this with structured denim for a balanced silhouette.',
   },
   {
     id: 'gucci-002',
@@ -238,6 +241,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Black'],
     description: 'Genuine leather bomber with embroidered patches',
+    isLocked: true,
   },
 
   // UNIQLO - Basic (5 items)
