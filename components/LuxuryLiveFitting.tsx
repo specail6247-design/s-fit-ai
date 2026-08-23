@@ -4,7 +4,6 @@ import React from "react";
 import { Playfair_Display } from "next/font/google";
 import GoldRingCursor from "./GoldRingCursor";
 import LuxuryImageDistortion from "./LuxuryImageDistortion";
-import { useState, useEffect } from "react";
 
 const playfair = Playfair_Display({ subsets: ["latin"] });
 
