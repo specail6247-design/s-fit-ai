@@ -1,0 +1,4 @@
+## 2025-02-09 - Path Traversal Vulnerability
+**Vulnerability:** Found a path traversal vulnerability in `app/api/try-on/route.ts` where unvalidated user input (`garmentImageUrl`) could be used to read arbitrary files from the filesystem via `localFileToDataUri`. The code was using `path.join(process.cwd(), 'public', relativePath)` which allows `../` traversal.
+**Learning:** `path.join` does not resolve absolute paths and fails to protect against directory traversal payloads (e.g. `../../etc/passwd`). The codebase incorrectly assumed stripping leading slashes was sufficient validation.
+**Prevention:** Always use `path.resolve` to normalize the resulting absolute path and explicitly verify that the resolved path starts with the intended base directory strictly appended with `path.sep` (e.g., `absolutePath.startsWith(baseDir + path.sep)`).
