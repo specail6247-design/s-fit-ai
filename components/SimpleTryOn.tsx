@@ -65,7 +65,7 @@ const SFitAIProject = () => {
             <h3>User Photo</h3>
             <div style={styles.uploadBox}>
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} />
-              {userImage && <div style={{position: 'relative', width: '100px', height: '100px', marginTop: '10px'}}><Image src={userImage} fill style={{objectFit: 'cover', borderRadius: '8px'}} alt="User" /></div>}
+              {userImage && <div style={{position: 'relative', width: '100px', height: '100px', marginTop: '10px'}}><Image src={userImage} fill style={{objectFit: 'cover', borderRadius: '8px'}} alt="User" unoptimized={true} /></div>}
             </div>
           </div>
 
@@ -73,7 +73,7 @@ const SFitAIProject = () => {
             <h3>Garment</h3>
             <div style={styles.uploadBox}>
               <input type="file" onChange={(e) => handleFileUpload(e, setClothingImage)} />
-              {clothingImage && <div style={{position: 'relative', width: '100px', height: '100px', marginTop: '10px'}}><Image src={clothingImage} fill style={{objectFit: 'cover', borderRadius: '8px'}} alt="Cloth" /></div>}
+              {clothingImage && <div style={{position: 'relative', width: '100px', height: '100px', marginTop: '10px'}}><Image src={clothingImage} fill style={{objectFit: 'cover', borderRadius: '8px'}} alt="Cloth" unoptimized={true} /></div>}
             </div>
           </div>
         </div>
@@ -91,7 +91,7 @@ const SFitAIProject = () => {
         {finalResult && (
           <div style={styles.resultContainer}>
             <h2 style={styles.resultTitle}>Fitting Result</h2>
-            <div style={{position: 'relative', width: '300px', height: '400px'}}><Image src={finalResult} fill style={{objectFit: 'cover', borderRadius: '15px'}} alt="Result" /></div>
+            <div style={{position: 'relative', width: '300px', height: '400px'}}><Image src={finalResult} fill style={{objectFit: 'cover', borderRadius: '15px'}} alt="Result" unoptimized={true} /></div>
           </div>
         )}
       </main>
