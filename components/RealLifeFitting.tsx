@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { AuthButton } from '@/components/AuthButton';
+import { SupportHub } from '@/components/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -72,8 +74,14 @@ export default function RealLifeFitting() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
+    <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden relative">
       
+      {/* TOP RIGHT NAVIGATION / ACTIONS */}
+      <div className="absolute top-8 right-8 z-50 flex items-center gap-4">
+        <AuthButton />
+        <SupportHub />
+      </div>
+
       {/* LEFT PANEL: CONTROLS */}
       <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
         {/* Background Ambience */}
