@@ -16,6 +16,11 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [category, setCategory] = useState<string>('tops');
+  const [brandTier, setBrandTier] = useState<string>('mass');
+  const [isHoveringImage, setIsHoveringImage] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -26,11 +31,48 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setMousePos({ x, y });
+  };
+
+  const generateMotion = async () => {
+    if (!resultImage) return;
+    setIsProcessing(true);
+    setProgress(0);
+    const interval = setInterval(() => setProgress((prev) => prev >= 90 ? prev : prev + 10), 500);
+    try {
+      const res = await fetch('/api/cinematic-try-on', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: resultImage })
+      });
+      const data = await res.json();
+      clearInterval(interval);
+      setProgress(100);
+      if (data.success && data.videoUrl) {
+        setVideoUrl(data.videoUrl);
+      } else {
+        alert("Motion generation failed: " + (data.error || "Unknown error"));
+      }
+    } catch (err) {
+      clearInterval(interval);
+      console.error(err);
+      alert("Failed to generate motion clip");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const handleTryOn = async () => {
     if (!userImage || !garmentImage) return alert("Please upload both User Photo and Garment.");
     
     setIsProcessing(true);
     setProgress(0);
+    setResultImage(null);
+    setVideoUrl(null);
 
     // Simulate progress bar
     const interval = setInterval(() => {
@@ -48,7 +90,8 @@ export default function RealLifeFitting() {
         body: JSON.stringify({
           userPhotoUrl: userImage,
           garmentImageUrl: garmentImage,
-          category: 'tops' // Default for demo
+          category: category,
+          brandTier: brandTier
         })
       });
       const data = await res.json();
@@ -126,6 +169,39 @@ export default function RealLifeFitting() {
 
         {/* Action Button */}
         <div className="mt-8 relative z-10">
+          {/* Settings: Category & Brand Tier */}
+          <div className="space-y-4 mb-8 relative z-10">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-[#007AFF] uppercase">03. Category (Accessory Layer)</label>
+              <div className="flex gap-2">
+                {['tops', 'bottoms', 'dresses', 'accessories'].map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setCategory(cat)}
+                    className={`px-3 py-1.5 text-[10px] rounded border uppercase font-mono transition-colors ${category === cat ? 'bg-[#007AFF] border-[#007AFF] text-white' : 'border-white/20 hover:border-white/50 text-gray-400'}`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-[#007AFF] uppercase">04. Brand Aesthetic</label>
+              <div className="flex gap-2">
+                {['mass', 'luxury', 'k-fashion'].map(tier => (
+                  <button
+                    key={tier}
+                    onClick={() => setBrandTier(tier)}
+                    className={`px-3 py-1.5 text-[10px] rounded border uppercase font-mono transition-colors ${brandTier === tier ? (tier === 'luxury' ? 'bg-[#c9b037] border-[#c9b037] text-black' : 'bg-[#007AFF] border-[#007AFF] text-white') : 'border-white/20 hover:border-white/50 text-gray-400'}`}
+                  >
+                    {tier}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
           {isProcessing ? (
             <div className="space-y-2">
               <div className="flex justify-between text-xs text-[#007AFF] font-mono">
@@ -192,19 +268,89 @@ export default function RealLifeFitting() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
+            className="absolute inset-4 z-20 flex items-center justify-center pointer-events-none"
           >
-            <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
-              <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
-              >
-                ✕ Close
-              </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
-                AI GENERATED_
+            <div className="relative group bg-black/80 backdrop-blur-xl p-6 rounded-3xl border border-white/10 shadow-2xl pointer-events-auto flex flex-col md:flex-row gap-8 max-w-6xl w-full">
+
+              {/* Visual Display: Image with Hyper-Zoom or Video */}
+              <div className="relative flex-1 rounded-2xl overflow-hidden bg-[#0a0a0a] border border-white/5 flex items-center justify-center min-h-[60vh]">
+                {videoUrl ? (
+                  <video src={videoUrl} autoPlay loop muted playsInline className="w-full h-full object-contain" />
+                ) : (
+                  <div
+                    className="relative w-full h-full cursor-crosshair overflow-hidden"
+                    onMouseEnter={() => setIsHoveringImage(true)}
+                    onMouseLeave={() => setIsHoveringImage(false)}
+                    onMouseMove={handleMouseMove}
+                  >
+                    <img src={resultImage} alt="Result" className="w-full h-full object-contain" />
+                    {isHoveringImage && (
+                      <div
+                        className="absolute inset-0 pointer-events-none"
+                        style={{
+                          backgroundImage: `url(${resultImage})`,
+                          backgroundPosition: `${mousePos.x}% ${mousePos.y}%`,
+                          backgroundSize: '250%',
+                          backgroundRepeat: 'no-repeat',
+                          clipPath: `circle(100px at ${mousePos.x}% ${mousePos.y}%)`,
+                          filter: 'contrast(1.2) saturate(1.1) brightness(1.1)'
+                        }}
+                      />
+                    )}
+                    {isHoveringImage && (
+                      <div className="absolute top-4 left-4 bg-black/60 text-white px-2 py-1 rounded text-[10px] font-mono tracking-widest border border-white/20 pointer-events-none backdrop-blur-md">
+                        HYPER-ZOOM ACTIVE_
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
+
+              {/* Personal Digital Atelier Controls */}
+              <div className="w-full md:w-72 flex flex-col gap-6">
+                <div>
+                  <h3 className="text-xl font-bold font-serif italic mb-1">Your Masterpiece</h3>
+                  <p className="text-xs text-gray-400 font-mono">DIGITAL ATELIER</p>
+                </div>
+
+                <div className="space-y-3">
+                  {!videoUrl && (
+                    <button
+                      onClick={generateMotion}
+                      disabled={isProcessing}
+                      className="w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-gray-200 disabled:opacity-50 transition-colors flex items-center justify-center gap-2 text-sm shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+                    >
+                      <span className="text-lg">🎬</span> {isProcessing ? 'Generating...' : 'Generate Motion Clip'}
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => alert("Sharing 4K clip to social media...")}
+                    className="w-full py-3 bg-transparent border border-white/20 text-white font-bold rounded-xl hover:bg-white/10 transition-colors flex items-center justify-center gap-2 text-sm"
+                  >
+                    <span className="text-lg">📤</span> Cinematic Share
+                  </button>
+
+                  <button
+                    onClick={() => { setResultImage(null); setVideoUrl(null); }}
+                    className="w-full py-3 bg-transparent text-gray-500 font-bold rounded-xl hover:text-white transition-colors flex items-center justify-center gap-2 text-xs uppercase tracking-widest mt-8"
+                  >
+                    Start Over
+                  </button>
+                </div>
+
+                <div className="mt-auto pt-4 border-t border-white/10">
+                  <div className="flex justify-between items-center text-[10px] font-mono text-gray-500">
+                    <span>QUALITY</span>
+                    <span className="text-white">4K ULTRA</span>
+                  </div>
+                  <div className="flex justify-between items-center text-[10px] font-mono text-gray-500 mt-1">
+                    <span>PHYSICS</span>
+                    <span className="text-white">ENABLED</span>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </motion.div>
         )}
