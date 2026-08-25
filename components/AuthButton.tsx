@@ -104,44 +104,33 @@ export function AuthButton() {
               ✕
             </button>
             
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-[family-name:var(--font-geist-sans)] text-[var(--color-primary)] mb-2">
-                Member Access
-              </h2>
-              <p className="text-xs tracking-[0.2em] text-[var(--color-surface)]/50 uppercase">
-                {isLogin ? 'Welcome Back' : 'VIP Registration'}
-              </p>
-            </div>
+            <h2 className="text-xl font-bold text-white mb-6 text-center">
+              {isLogin ? 'Welcome Back' : 'Create Account'}
+            </h2>
 
-            <form onSubmit={handleAuth} className="space-y-5 mb-8">
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold tracking-widest text-[var(--color-surface)]/50 uppercase ml-1">Email</label>
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-transparent border-b border-[var(--color-surface)]/20 px-1 py-3 text-[var(--color-surface)] text-sm focus:border-[var(--color-primary)] outline-none transition-colors"
-                  required
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold tracking-widest text-[var(--color-surface)]/50 uppercase ml-1">Password</label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-transparent border-b border-[var(--color-surface)]/20 px-1 py-3 text-[var(--color-surface)] text-sm focus:border-[var(--color-primary)] outline-none transition-colors"
-                  required
-                />
-              </div>
+            <form onSubmit={handleAuth} className="space-y-4 mb-6">
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                required
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                required
+              />
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-4 bg-[var(--color-primary)] text-[var(--color-secondary)] font-[family-name:var(--font-geist-sans)] text-lg py-4 rounded-lg hover:brightness-110 transition-all disabled:opacity-50"
+                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
               >
-                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Create Account')}
+                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
               </button>
             </form>
 
