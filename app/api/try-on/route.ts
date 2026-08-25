@@ -12,10 +12,17 @@ function localFileToDataUri(localPath: string): string | null {
   try {
     // Remove leading slash and resolve to public directory
     const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
-    const absolutePath = path.join(process.cwd(), 'public', relativePath);
+    const publicDir = path.resolve(process.cwd(), 'public');
+    const absolutePath = path.resolve(publicDir, relativePath);
     
     console.log('Reading local file:', absolutePath);
     
+    // Path traversal prevention
+    if (!absolutePath.startsWith(publicDir + path.sep)) {
+      console.error('Invalid file path (path traversal attempt):', absolutePath);
+      return null;
+    }
+
     if (!fs.existsSync(absolutePath)) {
       console.error('File not found:', absolutePath);
       return null;
