@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import CinematicViewer from '@/components/ui/CinematicViewer';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +17,9 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [isVideoLoading, setIsVideoLoading] = useState(false);
+  const [videoError, setVideoError] = useState<string | null>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -194,16 +198,103 @@ export default function RealLifeFitting() {
             animate={{ opacity: 1, scale: 1 }}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
-            <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+            <div className="relative group flex flex-col gap-4 max-h-[85vh]">
+              {videoUrl ? (
+                <div className="h-[70vh]">
+                  <CinematicViewer videoUrl={videoUrl} posterUrl={resultImage} className="h-full w-auto" />
+                </div>
+              ) : (
+                <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              )}
               <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                onClick={() => {
+                  setResultImage(null);
+                  setVideoUrl(null);
+                  setVideoError(null);
+                }}
+                className="absolute top-4 right-4 z-50 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
               >
                 ✕ Close
               </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
-                AI GENERATED_
+
+              <div className="flex flex-col gap-2 w-full">
+                {videoError && (
+                  <div className="text-red-400 text-xs font-bold text-center bg-red-900/20 p-2 rounded-lg">
+                    {videoError}
+                  </div>
+                )}
+                <div className="flex gap-2 w-full">
+                  {!videoUrl && (
+                    <button
+                      onClick={async () => {
+                        setIsVideoLoading(true);
+                        setVideoError(null);
+                        try {
+                          const res = await fetch('/api/cinematic-try-on', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ imageUrl: resultImage })
+                          });
+                          const data = await res.json();
+                          if (data.success && data.videoUrl) {
+                            setVideoUrl(data.videoUrl);
+                          } else {
+                            console.error('Video generation failed:', data.error);
+                            setVideoError('Failed to generate cinematic video.');
+                          }
+                        } catch (err) {
+                          console.error(err);
+                          setVideoError('An error occurred while generating the video.');
+                        } finally {
+                          setIsVideoLoading(false);
+                        }
+                      }}
+                      disabled={isVideoLoading}
+                      className="flex-1 py-3 bg-gradient-to-r from-[#007AFF] to-purple-600 hover:from-[#005bb5] hover:to-purple-700 text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                      {isVideoLoading ? (
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      ) : '🎬 Generate Cinematic Video (4K)'}
+                    </button>
+                  )}
+                  {videoUrl && (
+                    <button
+                      onClick={() => {
+                        if (navigator.share) {
+                          navigator.share({
+                            title: 'My S_FIT AI Cinematic Try-On',
+                            text: 'Check out my Hollywood-style virtual try-on!',
+                            url: videoUrl,
+                          }).catch((error) => console.log('Error sharing', error));
+                        } else {
+                          navigator.clipboard.writeText(videoUrl);
+                          setVideoError('Video link copied to clipboard!');
+                          setTimeout(() => setVideoError(null), 3000);
+                        }
+                      }}
+                      className="flex-1 py-3 bg-white text-black hover:bg-gray-200 font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
+                    >
+                      <span>🔗</span> Cinematic Share
+                    </button>
+                  )}
+                  {videoUrl && (
+                    <a
+                      href={videoUrl}
+                      download="sfit_cinematic.mp4"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-6 py-3 bg-gray-800 text-white hover:bg-gray-700 font-bold rounded-xl shadow-lg transition-all flex items-center justify-center"
+                    >
+                      ↓
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              <div className="absolute bottom-4 left-4 z-50 pointer-events-none">
+                <div className="bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
+                  AI GENERATED_
+                </div>
               </div>
             </div>
           </motion.div>
