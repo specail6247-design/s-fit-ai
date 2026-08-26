@@ -91,7 +91,7 @@ export default function DesignSystemPage() {
           originalImage=""
           resultImage="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=2000&auto=format&fit=crop"
           matchScore={98}
-          onShare={() => console.log('Share')}
+
           onRetake={() => console.log('Retake')}
         />
       </section>
