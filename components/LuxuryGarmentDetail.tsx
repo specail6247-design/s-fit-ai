@@ -1,22 +1,69 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function LuxuryGarmentDetail() {
+  const [isVaultOpen, setIsVaultOpen] = useState(false);
+  const [savedLooks, setSavedLooks] = useState<string[]>([]);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    // A subtle synth/white noise hum for sensory ambience
+    audioRef.current = new Audio('/audio/ambient-hum.mp3');
+    audioRef.current.loop = true;
+    audioRef.current.volume = 0.2;
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  const toggleAudio = () => {
+    if (audioRef.current) {
+      if (isAudioPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(e => console.error("Audio play failed", e));
+      }
+      setIsAudioPlaying(!isAudioPlaying);
+    }
+  };
+
+  const handleSaveLook = () => {
+    if (!savedLooks.includes('Metallic Silk Evening Blazer')) {
+      setSavedLooks([...savedLooks, 'Metallic Silk Evening Blazer']);
+    }
+    setIsVaultOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
       <div className="fixed top-0 z-50 w-full bg-[#f8f7f6]/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md">
         <div className="flex items-center p-4 justify-between max-w-md mx-auto">
-          <Link href="/" className="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors">
-            <span className="material-symbols-outlined">arrow_back</span>
+          <Link href="/" aria-label="Go back" className="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors">
+            <span aria-hidden="true" className="material-symbols-outlined">arrow_back</span>
           </Link>
           <h2 className="text-slate-900 dark:text-white text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center">S_FIT AI</h2>
-          <div className="flex w-10 items-center justify-end">
-            <button className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
-              <span className="material-symbols-outlined">share</span>
+          <div className="flex items-center justify-end gap-2">
+            <button aria-label="Toggle sensory ambience audio" onClick={toggleAudio} className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
+              <span aria-hidden="true" className="material-symbols-outlined">{isAudioPlaying ? 'volume_up' : 'volume_off'}</span>
+            </button>
+            <button aria-label={`The Vault. ${savedLooks.length} saved looks`} onClick={() => setIsVaultOpen(true)} className="relative flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
+              <span aria-hidden="true" className="material-symbols-outlined">inventory_2</span>
+              {savedLooks.length > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#ecab13] text-[9px] font-bold text-black">
+                  {savedLooks.length}
+                </span>
+              )}
+            </button>
+            <button aria-label="Share" className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
+              <span aria-hidden="true" className="material-symbols-outlined">share</span>
             </button>
           </div>
         </div>
@@ -74,7 +121,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
@@ -113,6 +160,36 @@ export default function LuxuryGarmentDetail() {
           </div>
         </div>
 
+        {/* Exclusive Access (Drops) */}
+        <div className="px-4 mb-8">
+          <div className="rounded-xl border border-[#ecab13]/30 bg-[#1a1a1a]/60 p-4 relative overflow-hidden">
+             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#ecab13] to-transparent opacity-50" />
+             <div className="flex justify-between items-center mb-2">
+               <h3 className="text-white text-xs font-bold tracking-[0.2em] uppercase flex items-center gap-2">
+                 <span aria-hidden="true" className="material-symbols-outlined text-[#ecab13] text-sm">lock</span>
+                 Exclusive Drop
+               </h3>
+               <span className="text-[#ecab13] text-xs font-mono bg-[#ecab13]/10 px-2 py-1 rounded">02:00:00</span>
+             </div>
+             <p className="text-zinc-400 text-sm">
+               The Obsidian Variant unlocks in 2 hours. Reserve your position in the queue.
+             </p>
+          </div>
+        </div>
+
+        {/* AI Stylist Note */}
+        <div className="px-4 mb-8">
+          <div className="flex items-start gap-3 bg-[#1a1a1a]/40 p-4 rounded-xl border border-white/5">
+            <span aria-hidden="true" className="material-symbols-outlined text-[#ecab13]">auto_awesome</span>
+            <div>
+              <h3 className="text-white text-xs font-bold tracking-[0.2em] uppercase mb-1">AI Stylist Note</h3>
+              <p className="text-zinc-400 text-sm italic">
+                &quot;Pair this with structured denim or tailored black trousers for a balanced, high-contrast silhouette.&quot;
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Comparison Table */}
         <div className="px-4 py-4 bg-[#1a1a1a]/30 border-y border-[#2d2d2d] mb-8">
           <div className="flex justify-between items-center py-2">
@@ -131,16 +208,79 @@ export default function LuxuryGarmentDetail() {
       </main>
 
       {/* Bottom Action Bar */}
-      <div className="fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex gap-4 items-center z-50">
-        <div className="flex flex-col flex-1">
+      <div className="fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex gap-4 items-center z-40">
+        <button aria-label={savedLooks.includes('Metallic Silk Evening Blazer') ? 'Look saved' : 'Save Look'} onClick={handleSaveLook} className="flex size-14 shrink-0 items-center justify-center rounded-xl border border-[#2d2d2d] bg-[#1a1a1a] text-white hover:bg-white/10 transition-colors">
+          <span aria-hidden="true" className="material-symbols-outlined">{savedLooks.includes('Metallic Silk Evening Blazer') ? 'bookmark_added' : 'bookmark_add'}</span>
+        </button>
+        <div className="flex flex-col flex-1 pl-2">
           <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
           <p className="text-white text-xl font-bold">$2,850</p>
         </div>
-        <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
-          <span className="material-symbols-outlined font-bold">person_add_alt</span>
+        <Link aria-label="Try on Mannequin" href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
+          <span aria-hidden="true" className="material-symbols-outlined font-bold">person_add_alt</span>
           <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
         </Link>
       </div>
+
+      {/* The Vault (Digital Wardrobe Drawer) */}
+      <AnimatePresence>
+        {isVaultOpen && (
+          <React.Fragment key="vault">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsVaultOpen(false)}
+              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed bottom-0 left-0 right-0 z-50 mx-auto max-w-md rounded-t-3xl border-t border-[#2d2d2d] bg-[#0a0a0a] pb-8 pt-4 shadow-2xl"
+            >
+              <div className="mx-auto mb-6 h-1 w-12 rounded-full bg-[#2d2d2d]" />
+              <div className="px-6">
+                <div className="mb-6 flex items-center justify-between">
+                  <h3 className="text-white text-lg font-light tracking-widest uppercase flex items-center gap-2">
+                    <span aria-hidden="true" className="material-symbols-outlined text-[#ecab13]">inventory_2</span>
+                    The Vault
+                  </h3>
+                  <button aria-label="Close vault" onClick={() => setIsVaultOpen(false)} className="text-zinc-500 hover:text-white">
+                    <span aria-hidden="true" className="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+
+                {savedLooks.length === 0 ? (
+                  <div className="py-8 text-center text-zinc-500 text-sm">
+                    Your vault is empty. Save looks to compare.
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-4">
+                    {savedLooks.map((look, idx) => (
+                      <div key={idx} className="flex items-center gap-4 rounded-xl border border-[#2d2d2d] bg-[#1a1a1a]/50 p-3">
+                        <div className="size-16 rounded-lg bg-zinc-800 bg-cover bg-center" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDXruL0skVnUrOc5YpZ2nWDsWEX5ZxZ_JP5fjjc87VGL1Or3ZQLYga9h4-5QB_opRCAPjcpA3wXJv0uA2GNRmveI81vtVYwA6M6hy9N0o30Q3Culn7Si9HtP9yc9SCNUIWlqMCFvMgYQvi3T2jxQFFPdPDkhH4Wu4UWLKxrKm1YNIHPQBN5HrffgMF9LqvAmurBbvAOJYWZS8huThjtvEvSDXcccjmAY8SKX4gjtuaGrNd5fNc0Aqd-nIwVSL91bzJVXnNMzrE1xgU")' }} />
+                        <div className="flex-1">
+                          <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mb-1">Saved Look</p>
+                          <p className="text-white text-sm font-medium">{look}</p>
+                        </div>
+                        <button aria-label={`More options for ${look}`} className="text-zinc-500 hover:text-white px-2">
+                           <span aria-hidden="true" className="material-symbols-outlined">more_vert</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <button className="mt-6 w-full rounded-xl border border-[#2d2d2d] py-3 text-sm font-bold uppercase tracking-widest text-white hover:bg-white/5 transition-colors">
+                  Compare Selections
+                </button>
+              </div>
+            </motion.div>
+          </React.Fragment>
+        )}
+      </AnimatePresence>
 
       <style jsx global>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
