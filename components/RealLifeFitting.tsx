@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 // Dynamically import the 3D scene with SSR disabled
@@ -16,6 +16,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -24,6 +26,45 @@ export default function RealLifeFitting() {
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleShareToStory = () => {
+    if (!resultImage) return;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const img = new window.Image();
+    img.crossOrigin = "Anonymous";
+    img.onload = () => {
+      canvas.width = 1080;
+      canvas.height = 1920;
+
+      // Draw background
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Calculate scaling to fit image nicely
+      const scale = Math.min(canvas.width / img.width, (canvas.height - 200) / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (canvas.width - w) / 2;
+      const y = (canvas.height - h) / 2;
+
+      ctx.drawImage(img, x, y, w, h);
+
+      // Add Brand Logo text
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 60px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT AI', canvas.width / 2, canvas.height - 80);
+
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = 's_fit_story.jpg';
+      a.click();
+    };
+    img.src = resultImage;
   };
 
   const handleTryOn = async () => {
@@ -104,6 +145,10 @@ export default function RealLifeFitting() {
                 </div>
               </label>
             </div>
+            <div className="flex items-center gap-1.5 mt-2 opacity-60">
+              <span className="text-[10px]">🔒</span>
+              <span className="text-[9px] text-gray-400">Photos are processed securely and not shared.</span>
+            </div>
           </div>
 
           {/* Garment Input */}
@@ -158,6 +203,12 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-8 flex justify-center gap-4 text-[10px] text-gray-500">
+            <button onClick={() => setIsLegalModalOpen(true)} className="hover:text-white transition-colors">Privacy Policy & Terms</button>
+            <span>|</span>
+            <button onClick={() => setIsReportModalOpen(true)} className="hover:text-white transition-colors">Report Issue</button>
+          </div>
+
         </div>
       </div>
 
@@ -205,10 +256,43 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-[#007AFF] to-[#005bb5] text-white px-4 py-2 rounded-lg text-xs font-bold shadow-lg hover:scale-105 transition-transform"
+              >
+                Share to Story 📸
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      {/* Modals */}
+      <AnimatePresence>
+        {isLegalModalOpen && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="bg-[#111] border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl relative">
+              <button onClick={() => setIsLegalModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+              <h2 className="text-xl font-bold mb-4">Privacy Policy & Terms</h2>
+              <div className="text-sm text-gray-400 h-64 overflow-y-auto pr-2 space-y-4">
+                <p>Your privacy is important to us. Photos uploaded are processed securely in real-time and are never shared or stored permanently without your consent.</p>
+                <p>By using S_FIT Neo, you agree to our terms of service regarding virtual try-on usage.</p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {isReportModalOpen && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="bg-[#111] border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl relative">
+              <button onClick={() => setIsReportModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+              <h2 className="text-xl font-bold mb-4">Report an Issue</h2>
+              <textarea placeholder="Describe the bug or issue you encountered..." className="w-full h-32 bg-black/50 border border-white/20 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#007AFF] mb-4"></textarea>
+              <button onClick={() => { setIsReportModalOpen(false); }} className="w-full py-3 bg-[#007AFF] text-white font-bold rounded-xl hover:bg-[#005bb5] transition-colors">Submit Report</button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
