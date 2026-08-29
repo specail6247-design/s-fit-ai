@@ -1,0 +1,4 @@
+## 2024-05-24 - Path Traversal in Local File Read
+**Vulnerability:** The API endpoint reading local image files (`app/api/try-on/route.ts`) was vulnerable to path traversal because it used `path.join(process.cwd(), 'public', relativePath)` without validating if the resolved path stayed inside the `public` directory.
+**Learning:** `path.join` does not prevent path traversal if the user input contains `../`. We need to use `path.resolve` and explicitly verify that the result starts with the intended base directory.
+**Prevention:** Always validate resolved paths against a base directory using `startsWith(baseDir + path.sep)` when reading local files based on user input.
