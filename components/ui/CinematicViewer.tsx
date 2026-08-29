@@ -47,6 +47,28 @@ export default function CinematicViewer({ videoUrl, posterUrl, className = '' }:
     }
   };
 
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'My Masterpiece Fit',
+          text: 'Check out my Hollywood-style try-on video!',
+          url: videoUrl,
+        });
+      } catch (err) {
+        console.error('Error sharing:', err);
+      }
+    } else {
+      // Fallback for browsers that don't support native share
+      const a = document.createElement('a');
+      a.href = videoUrl;
+      a.download = 'masterpiece_fit.mp4';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  };
+
   // Handle Fullscreen Change Events
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -112,6 +134,14 @@ export default function CinematicViewer({ videoUrl, posterUrl, className = '' }:
             // Play Icon
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M5 3.86967C5 2.54013 6.47645 1.74233 7.59253 2.46876L20.0925 10.6031C21.1398 11.2848 21.1398 12.8093 20.0925 13.4909L7.59253 21.6253C6.47645 22.3517 5 21.5539 5 20.2244V3.86967Z"/></svg>
           )}
+        </button>
+
+        <button
+          onClick={handleShare}
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full text-sm font-bold tracking-wide transition-all backdrop-blur-md border border-white/20 shadow-lg transform hover:scale-105"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+          <span className="hidden sm:inline">SHARE</span>
         </button>
 
         <button
