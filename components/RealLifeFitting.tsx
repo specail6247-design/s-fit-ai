@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { PrivacyTermsModal } from '@/components/legal/PrivacyTermsModal';
+import { ShareToStory } from '@/components/social/ShareToStory';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,7 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -90,6 +93,13 @@ export default function RealLifeFitting() {
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
           {/* User Photo Input */}
+          <div className="flex items-center gap-2 mb-4 p-2 bg-[#007AFF]/10 border border-[#007AFF]/30 rounded-lg">
+            <span className="text-lg">🛡️</span>
+            <p className="text-[10px] text-[#007AFF] font-medium leading-tight">
+              Photos are processed securely and not shared.
+            </p>
+          </div>
+
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
@@ -158,6 +168,12 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-6 text-center">
+             <button onClick={() => setIsPrivacyModalOpen(true)} className="text-[10px] text-gray-500 hover:text-white transition-colors underline">
+               Privacy Policy & Terms
+             </button>
+          </div>
+
         </div>
       </div>
 
@@ -205,10 +221,14 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <div className="absolute bottom-4 right-4 z-30">
+                <ShareToStory imageUrl={resultImage} />
+              </div>
             </div>
           </motion.div>
         )}
       </div>
+      <PrivacyTermsModal isOpen={isPrivacyModalOpen} onClose={() => setIsPrivacyModalOpen(false)} />
     </div>
   );
 }
