@@ -89,48 +89,57 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="bg-transparent border border-white/20 text-white px-5 py-2 rounded-full text-xs font-mono tracking-[0.2em] uppercase hover:bg-white/10 transition-all flex items-center gap-2"
       >
-        LOGIN
+        <span className="w-1.5 h-1.5 bg-cyber-lime rounded-full animate-pulse"></span>
+        MEMBER ACCESS
       </button>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
+          <div className="bg-[#0a0a0a] border border-white/10 w-full max-w-md rounded-xl p-8 relative shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyber-lime to-transparent opacity-50"></div>
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              className="absolute top-6 right-6 text-soft-gray hover:text-white transition-colors"
             >
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h2>
+            <div className="mb-8 text-center">
+              <h2 className="text-3xl font-black font-display tracking-tighter text-white uppercase mb-2">
+                {isLogin ? 'SIGN IN' : 'JOIN CLUB'}
+              </h2>
+              <p className="text-xs font-mono text-cyber-lime tracking-[0.3em] uppercase">VIP ACCESS ONLY</p>
+            </div>
 
-            <form onSubmit={handleAuth} className="space-y-4 mb-6">
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
+            <form onSubmit={handleAuth} className="space-y-4 mb-8">
+              <div>
+                <input
+                  type="email"
+                  placeholder="EMAIL ADDRESS"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white text-sm font-mono focus:border-cyber-lime outline-none placeholder:text-gray-600 transition-colors"
+                  required
+                />
+              </div>
+              <div>
+                <input
+                  type="password"
+                  placeholder="PASSWORD"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white text-sm font-mono focus:border-cyber-lime outline-none placeholder:text-gray-600 transition-colors"
+                  required
+                />
+              </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="w-full bg-white text-black font-bold font-mono tracking-widest uppercase py-4 rounded-sm hover:bg-gray-200 transition-colors disabled:opacity-50 mt-4"
               >
-                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+                {loading ? 'PROCESSING...' : (isLogin ? 'ENTER' : 'APPLY')}
               </button>
             </form>
 
