@@ -29,16 +29,16 @@ export default function ARLiveFitting() {
 
         {/* Top Navigation Bar */}
         <div className="z-10 flex items-center justify-between p-4 pt-8">
-          <div className="flex size-12 items-center justify-center rounded-full" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
-            <span className="material-symbols-outlined text-white">close</span>
-          </div>
+          <button aria-label="Close" className="flex size-12 items-center justify-center rounded-full" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+            <span className="material-symbols-outlined text-white" aria-hidden="true">close</span>
+          </button>
           <div className="flex items-center gap-2 rounded-full px-4 py-2" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
             <div className="size-2 animate-pulse rounded-full bg-red-500"></div>
             <h2 className="text-sm font-bold tracking-widest uppercase text-white">Live Fit AI</h2>
           </div>
-          <div className="flex size-12 items-center justify-center rounded-full" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
-            <span className="material-symbols-outlined text-white">flash_on</span>
-          </div>
+          <button aria-label="Toggle flash" className="flex size-12 items-center justify-center rounded-full" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+            <span className="material-symbols-outlined text-white" aria-hidden="true">flash_on</span>
+          </button>
         </div>
 
         {/* Upper HUD: Stability & AI Status */}
@@ -123,22 +123,22 @@ export default function ARLiveFitting() {
 
           {/* Capture Controls */}
           <div className="flex items-center justify-center gap-10 p-4">
-            <button className="flex size-12 shrink-0 items-center justify-center rounded-full text-white" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
-              <span className="material-symbols-outlined">photo_library</span>
+            <button aria-label="Open photo library" className="flex size-12 shrink-0 items-center justify-center rounded-full text-white" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+              <span className="material-symbols-outlined" aria-hidden="true">photo_library</span>
             </button>
             <div className="relative flex items-center justify-center">
               <div className="absolute inset-0 animate-pulse rounded-full bg-[#2b8cee]/30 blur-xl"></div>
-              <button className="relative flex size-20 shrink-0 items-center justify-center rounded-full border-4 border-[#2b8cee] bg-white">
+              <button aria-label="Take photo" className="relative flex size-20 shrink-0 items-center justify-center rounded-full border-4 border-[#2b8cee] bg-white">
                 <div className="flex size-16 items-center justify-center rounded-full border-2 border-[#101922]/10">
-                  <span className="material-symbols-outlined text-4xl text-[#101922]">camera</span>
+                  <span className="material-symbols-outlined text-4xl text-[#101922]" aria-hidden="true">camera</span>
                 </div>
               </button>
               <div className="absolute -bottom-6 flex flex-col items-center">
                 <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#2b8cee]">Fit Snap</span>
               </div>
             </div>
-            <button className="flex size-12 shrink-0 items-center justify-center rounded-full text-white" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
-              <span className="material-symbols-outlined">refresh</span>
+            <button aria-label="Refresh view" className="flex size-12 shrink-0 items-center justify-center rounded-full text-white" style={{ background: "rgba(16, 25, 34, 0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+              <span className="material-symbols-outlined" aria-hidden="true">refresh</span>
             </button>
           </div>
         </div>
