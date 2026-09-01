@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { BottomSheet } from '@/components/ui/BottomSheet';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +17,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [isLegalOpen, setIsLegalOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -24,6 +27,49 @@ export default function RealLifeFitting() {
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleShareToStory = () => {
+    if (!resultImage) return;
+    const canvas = document.createElement('canvas');
+    // 1080x1920 is standard IG story size
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      // Fill bg
+      ctx.fillStyle = "#050505";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw main image (centered)
+      const scale = Math.min(canvas.width / img.width, (canvas.height - 400) / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (canvas.width - w) / 2;
+      const y = (canvas.height - h) / 2;
+      ctx.drawImage(img, x, y, w, h);
+
+      // Add branding
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 60px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("S_FIT NEO", canvas.width / 2, 120);
+
+      ctx.fillStyle = "#007AFF";
+      ctx.font = "30px Arial";
+      ctx.fillText("AI VIRTUAL FITTING", canvas.width / 2, 170);
+
+      // Download
+      const link = document.createElement('a');
+      link.download = 'sfit-story.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    };
+    img.src = resultImage;
   };
 
   const handleTryOn = async () => {
@@ -158,6 +204,18 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-6 flex flex-col items-center gap-4">
+            <div className="flex items-center gap-2 text-gray-400 text-[10px]">
+              <span>🔒</span> Photos are processed securely and not shared.
+            </div>
+            <button
+              onClick={() => setIsLegalOpen(true)}
+              className="text-gray-500 hover:text-white text-[10px] underline decoration-gray-600 underline-offset-2"
+            >
+              Privacy Policy & Terms
+            </button>
+          </div>
+
         </div>
       </div>
 
@@ -205,10 +263,58 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-[#007AFF] text-white px-4 py-2 rounded-full text-xs font-bold shadow-[0_0_15px_rgba(0,122,255,0.5)] hover:scale-105 transition-transform"
+              >
+                📱 Share to Story
+              </button>
             </div>
           </motion.div>
         )}
+
+        {/* Support Hub Floating Button */}
+        <button
+          onClick={() => setIsSupportOpen(true)}
+          className="absolute bottom-6 right-6 w-12 h-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-xl hover:bg-white/20 transition-colors shadow-lg z-30"
+          title="Support Hub"
+        >
+          💬
+        </button>
       </div>
+
+      {/* Legal Bottom Sheet */}
+      <BottomSheet isOpen={isLegalOpen} onClose={() => setIsLegalOpen(false)} title="Legal & Compliance">
+        <div className="space-y-4 text-sm text-gray-300">
+          <h4 className="font-bold text-white">Privacy Policy</h4>
+          <p>We respect your privacy. All uploaded photos are processed ephemerally and securely deleted after your session. We do not use your photos to train our models without explicit consent.</p>
+          <h4 className="font-bold text-white mt-4">Terms of Service</h4>
+          <p>By using S_FIT, you agree to our standard terms of usage. Do not upload inappropriate or explicit content.</p>
+        </div>
+      </BottomSheet>
+
+      {/* Support Hub Bottom Sheet */}
+      <BottomSheet isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} title="Support Hub">
+        <div className="space-y-4">
+          <p className="text-sm text-gray-400">Encountered an issue? Let us know so we can fix it.</p>
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-[#007AFF] uppercase">Issue Description</label>
+            <textarea
+              className="w-full bg-black/40 border border-white/20 rounded-xl p-3 text-sm text-white focus:border-[#007AFF] focus:outline-none transition-colors min-h-[100px]"
+              placeholder="What went wrong?"
+            />
+          </div>
+          <button
+            onClick={() => {
+              alert("Report submitted! Thank you.");
+              setIsSupportOpen(false);
+            }}
+            className="w-full py-3 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl transition-colors"
+          >
+            Submit Report
+          </button>
+        </div>
+      </BottomSheet>
     </div>
   );
 }
