@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 export default function LuxuryGarmentDetail() {
-  const [isVaultOpen, setIsVaultOpen] = useState(false);
-
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -68,17 +67,6 @@ export default function LuxuryGarmentDetail() {
           </div>
         </div>
 
-        {/* AI Stylist Tip */}
-        <div className="px-4 mt-8">
-          <div className="bg-[#1a1a1a]/60 backdrop-blur-xl border border-[#ecab13]/30 p-4 rounded-xl flex items-start gap-3">
-            <span className="material-symbols-outlined text-[#ecab13]">auto_awesome</span>
-            <div>
-              <p className="text-[#ecab13] text-xs font-bold uppercase tracking-wider mb-1">Styling Tip</p>
-              <p className="text-zinc-300 text-sm">Pair this with structured denim for a balanced silhouette.</p>
-            </div>
-          </div>
-        </div>
-
         {/* Material Science Description */}
         <div className="mt-8 px-4">
           <div className="flex items-center justify-between mb-4">
@@ -86,7 +74,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
@@ -100,19 +88,6 @@ export default function LuxuryGarmentDetail() {
             <div className="flex h-8 items-center justify-center rounded-full border border-[#2d2d2d] bg-[#1a1a1a] px-4">
               <p className="text-zinc-300 text-[11px] font-bold uppercase tracking-wider">Silk Blend</p>
             </div>
-          </div>
-        </div>
-
-        {/* Exclusive Drops */}
-        <div className="mb-8 px-4">
-          <h2 className="text-white text-xs font-bold tracking-[0.2em] uppercase mb-4">Complete the Look</h2>
-          <div className="relative rounded-xl overflow-hidden bg-zinc-900 border border-[#2d2d2d] aspect-[2/1] flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/60 z-10 flex flex-col items-center justify-center">
-              <span className="material-symbols-outlined text-white mb-2">lock</span>
-              <p className="text-white text-sm font-bold uppercase tracking-widest">Exclusive Drop</p>
-              <p className="text-[#ecab13] text-xs font-bold uppercase tracking-widest mt-2">Available in 02:00:00</p>
-            </div>
-            <div className="absolute inset-0 opacity-40 bg-cover bg-center" style={{ backgroundImage: 'url("/images/placeholder.jpg")' }} />
           </div>
         </div>
 
@@ -155,41 +130,15 @@ export default function LuxuryGarmentDetail() {
         </div>
       </main>
 
-      {/* The Vault Drawer */}
-      {isVaultOpen && (
-        <div className="fixed inset-0 z-[60] bg-black/80 flex items-end justify-center" onClick={() => setIsVaultOpen(false)}>
-          <div className="w-full max-w-md bg-[#0a0a0a] border-t border-[#2d2d2d] rounded-t-2xl p-6 h-[50vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-white text-sm font-bold tracking-[0.2em] uppercase">The Vault</h2>
-              <button onClick={() => setIsVaultOpen(false)} className="text-zinc-500 hover:text-white">
-                <span className="material-symbols-outlined">close</span>
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto">
-              <div className="flex gap-4 p-4 border border-[#2d2d2d] rounded-xl bg-[#1a1a1a]/50">
-                <div className="w-16 h-20 bg-zinc-800 rounded bg-cover bg-center" style={{ backgroundImage: 'url("/images/placeholder.jpg")' }} />
-                <div>
-                  <p className="text-white text-sm font-bold">Metallic Silk Evening Blazer</p>
-                  <p className="text-zinc-500 text-xs mt-1">Saved to Vault</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Bottom Action Bar */}
       <div className="fixed bottom-0 w-full p-4 pb-8 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-[#2d2d2d] flex gap-4 items-center z-50">
-        <button onClick={() => setIsVaultOpen(true)} className="flex size-14 shrink-0 items-center justify-center rounded-xl border border-[#2d2d2d] bg-[#1a1a1a] text-white hover:bg-[#2d2d2d] transition-colors">
-          <span className="material-symbols-outlined">bookmark</span>
-        </button>
-        <div className="flex flex-col flex-1 pl-2">
+        <div className="flex flex-col flex-1">
           <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Starting at</span>
-          <p className="text-white text-lg font-bold">$2,850</p>
+          <p className="text-white text-xl font-bold">$2,850</p>
         </div>
-        <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform px-2">
+        <Link href="/luxury/fitting" className="flex-[2] bg-gradient-to-br from-[#ecab13] to-[#c48a0a] text-[#0a0a0a] h-14 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(236,171,19,0.3)] hover:scale-[1.02] transition-transform">
           <span className="material-symbols-outlined font-bold">person_add_alt</span>
-          <span className="font-bold text-xs tracking-widest uppercase">Try on Mannequin</span>
+          <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
         </Link>
       </div>
 
