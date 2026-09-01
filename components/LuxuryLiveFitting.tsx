@@ -9,7 +9,7 @@ const playfair = Playfair_Display({ subsets: ["latin"] });
 
 export default function LuxuryLiveFitting() {
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedBrand, setSelectedBrand] = useState<string | null>("Prada");
+  const [selectedBrand] = useState<string | null>("Prada");
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 2000);
