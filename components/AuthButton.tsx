@@ -89,32 +89,37 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="bg-void-black text-white border border-white/20 px-6 py-2 rounded-full text-xs font-bold tracking-widest uppercase hover:bg-white/10 hover:border-white transition-all"
       >
-        LOGIN
+        Member Access
       </button>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
+          <div className="bg-void-black/95 border border-white/20 w-full max-w-sm rounded-2xl p-8 relative shadow-[0_0_40px_rgba(255,255,255,0.05)]">
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              className="absolute top-4 right-4 text-soft-gray hover:text-white transition-colors"
             >
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h2>
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-serif italic text-white mb-1">
+                {isLogin ? 'Member Sign In' : 'Join the Club'}
+              </h2>
+              <p className="text-xs text-soft-gray tracking-widest uppercase">
+                {isLogin ? 'Welcome back to S_FIT' : 'Exclusive Access'}
+              </p>
+            </div>
 
-            <form onSubmit={handleAuth} className="space-y-4 mb-6">
+            <form onSubmit={handleAuth} className="space-y-5 mb-8">
               <input
                 type="email"
-                placeholder="Email"
+                placeholder="Email Address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white text-sm focus:border-white outline-none transition-colors placeholder:text-white/30"
                 required
               />
               <input
@@ -122,15 +127,15 @@ export function AuthButton() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white text-sm focus:border-white outline-none transition-colors placeholder:text-white/30"
                 required
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="w-full bg-white text-void-black font-bold py-3.5 rounded-full hover:bg-gray-200 transition-colors disabled:opacity-50 tracking-widest uppercase text-xs mt-2"
               >
-                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Request Access')}
               </button>
             </form>
 
