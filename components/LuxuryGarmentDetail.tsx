@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 
 export default function LuxuryGarmentDetail() {
   const [isVaultOpen, setIsVaultOpen] = useState(false);
