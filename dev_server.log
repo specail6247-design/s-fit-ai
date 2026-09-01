@@ -1,0 +1,26 @@
+
+> s-fit-ai@0.1.0 dev
+> next dev --webpack
+
+▲ Next.js 16.1.4 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+
+✓ Starting...
+✓ Ready in 2.5s
+○ Compiling /luxury ...
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /luxury 200 in 9.3s (compile: 8.9s, render: 418ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+ GET /images/placeholder.jpg 404 in 3.3s (compile: 3.1s, render: 270ms)
+ GET /luxury 200 in 58ms (compile: 20ms, render: 38ms)
+ GET /images/placeholder.jpg 404 in 59ms (compile: 7ms, render: 52ms)
+⚠️ [ENV CHECK] Missing or invalid environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_APP_URL, REPLICATE_API_TOKEN
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /luxury/fitting 200 in 1007ms (compile: 794ms, render: 212ms)
+ GET /audio/placeholder.mp3 404 in 73ms (compile: 14ms, render: 59ms)
+ GET /luxury 200 in 106ms (compile: 12ms, render: 94ms)
+ GET /images/placeholder.jpg 404 in 85ms (compile: 21ms, render: 64ms)
+ GET /images/placeholder.jpg 404 in 72ms (compile: 15ms, render: 57ms)
+ GET /luxury/fitting 200 in 322ms (compile: 80ms, render: 241ms)
+ GET /audio/placeholder.mp3 404 in 128ms (compile: 39ms, render: 89ms)
