@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LegalModal } from './LegalModal';
+import { SupportHubModal } from './SupportHubModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,10 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
+  const resultImgRef = useRef<HTMLImageElement>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -71,6 +77,98 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleShareToStory = async () => {
+    if (!resultImage || !resultImgRef.current) return;
+
+    setIsSharing(true);
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Instagram Story optimal dimensions
+      canvas.width = 1080;
+      canvas.height = 1920;
+
+      // Draw background
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Add a subtle gradient
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      gradient.addColorStop(0, '#111');
+      gradient.addColorStop(1, '#001a33');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw the result image in the center
+      const img = resultImgRef.current;
+      const aspectRatio = img.width / img.height;
+
+      // Calculate drawing dimensions to fit nicely within story
+      let drawWidth = canvas.width * 0.85;
+      let drawHeight = drawWidth / aspectRatio;
+
+      if (drawHeight > canvas.height * 0.7) {
+        drawHeight = canvas.height * 0.7;
+        drawWidth = drawHeight * aspectRatio;
+      }
+
+      const x = (canvas.width - drawWidth) / 2;
+      const y = (canvas.height - drawHeight) / 2;
+
+      // Add glow effect
+      ctx.shadowColor = 'rgba(0, 122, 255, 0.5)';
+      ctx.shadowBlur = 40;
+
+      // Draw image
+      ctx.drawImage(img, x, y, drawWidth, drawHeight);
+
+      // Reset shadow for text
+      ctx.shadowBlur = 0;
+
+      // Draw Logo/Branding
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 80px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT AI', canvas.width / 2, 180);
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = 'italic 40px Arial';
+      ctx.fillText('Virtual Try-On Protocol', canvas.width / 2, 240);
+
+      // Draw match/info pill
+      const pillWidth = 400;
+      const pillHeight = 80;
+      const pillX = (canvas.width - pillWidth) / 2;
+      const pillY = canvas.height - 250;
+
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+      ctx.beginPath();
+      ctx.roundRect(pillX, pillY, pillWidth, pillHeight, 40);
+      ctx.fill();
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = 'bold 32px monospace';
+      ctx.fillText('AI GENERATED FIT', canvas.width / 2, pillY + 52);
+
+      // Trigger download
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+      const link = document.createElement('a');
+      link.download = 'sfit-story-fit.jpg';
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error('Failed to generate story image:', err);
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
@@ -103,6 +201,13 @@ export default function RealLifeFitting() {
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
                 </div>
               </label>
+            </div>
+            {/* Data Safety Badge */}
+            <div className="flex items-center gap-2 mt-2 px-2">
+              <span className="text-[#007AFF] text-lg">🛡️</span>
+              <p className="text-[10px] text-gray-400 font-medium">
+                Photos are processed securely and not shared.
+              </p>
             </div>
           </div>
 
@@ -158,6 +263,17 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Support & Legal Links */}
+          <div className="mt-6 flex justify-center gap-4 border-t border-white/10 pt-4">
+             <button onClick={() => setIsLegalModalOpen(true)} className="text-[10px] text-gray-500 hover:text-white uppercase tracking-widest transition-colors">
+               Privacy &amp; Terms
+             </button>
+             <span className="text-gray-700">|</span>
+             <button onClick={() => setIsSupportModalOpen(true)} className="text-[10px] text-gray-500 hover:text-white uppercase tracking-widest transition-colors">
+               Support Hub
+             </button>
+          </div>
+
         </div>
       </div>
 
@@ -195,20 +311,33 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              <img ref={resultImgRef} src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" crossOrigin="anonymous" />
+
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
               >
                 ✕ Close
               </button>
+
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+              <button
+                onClick={handleShareToStory}
+                disabled={isSharing}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F56040] text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg hover:opacity-90 transition-opacity flex items-center gap-2 disabled:opacity-50"
+              >
+                <span>📷</span> {isSharing ? 'Generating...' : 'Share to Story'}
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      <LegalModal isOpen={isLegalModalOpen} onClose={() => setIsLegalModalOpen(false)} />
+      <SupportHubModal isOpen={isSupportModalOpen} onClose={() => setIsSupportModalOpen(false)} />
     </div>
   );
 }
