@@ -1,0 +1,3 @@
+## 2024-05-15 - Icon Ligature Accessibility
+**Learning:** Icon font ligatures (like Material Symbols `<span className="material-symbols-outlined">zoom_in</span>`) can cause screen readers to literally read out "zoom in" out of context, or worse, announce the ligature text confusingly when nested inside interactive elements. For icon-only buttons, this leads to a poor accessibility experience.
+**Action:** Always add `aria-hidden="true"` to the icon element (e.g., `<span aria-hidden="true">...</span>`) to hide the ligature text from assistive technologies, and provide an explicit `aria-label` (e.g., `aria-label="Zoom in"`) on the parent interactive element (button or link).
