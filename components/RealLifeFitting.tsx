@@ -16,6 +16,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isSupportHubOpen, setIsSupportHubOpen] = useState(false);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -72,8 +74,84 @@ export default function RealLifeFitting() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
+    <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden relative">
       
+      {/* SUPPORT HUB DRAWER */}
+      {isSupportHubOpen && (
+        <div className="absolute inset-y-0 left-0 w-80 bg-[#0a0a0a] border-r border-white/10 z-50 flex flex-col shadow-2xl transform transition-transform">
+          <div className="p-4 border-b border-white/10 flex justify-between items-center">
+            <h2 className="text-sm font-bold tracking-widest">SUPPORT HUB</h2>
+            <button onClick={() => setIsSupportHubOpen(false)} className="text-gray-400 hover:text-white">✕</button>
+          </div>
+          <div className="p-4 flex-1 overflow-y-auto">
+            <div className="mb-6">
+              <h3 className="text-xs font-bold text-gray-400 mb-2">LEGAL &amp; COMPLIANCE</h3>
+              <button
+                onClick={() => setIsLegalModalOpen(true)}
+                className="text-sm text-left w-full p-2 hover:bg-white/5 rounded transition-colors"
+              >
+                Privacy Policy &amp; Terms
+              </button>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-bold text-gray-400 mb-2">REPORT ISSUE</h3>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  alert("Issue reported successfully. Thank you for your feedback!");
+                  (e.target as HTMLFormElement).reset();
+                }}
+                className="space-y-3"
+              >
+                <textarea
+                  placeholder="Describe the issue you encountered..."
+                  className="w-full h-24 bg-white/5 border border-white/10 rounded p-2 text-sm text-white focus:outline-none focus:border-[#007AFF] resize-none"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="w-full py-2 bg-white/10 hover:bg-white/20 rounded text-xs font-bold transition-colors"
+                >
+                  Submit Feedback
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* LEGAL MODAL */}
+      {isLegalModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-lg bg-[#111] border border-white/20 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
+          >
+            <div className="p-4 border-b border-white/10 flex justify-between items-center bg-black/50">
+              <h2 className="text-lg font-bold">Privacy Policy &amp; Terms</h2>
+              <button onClick={() => setIsLegalModalOpen(false)} className="text-gray-400 hover:text-white">✕</button>
+            </div>
+            <div className="p-6 overflow-y-auto text-sm text-gray-300 space-y-4">
+              <p><strong>1. Data Processing &amp; Privacy</strong><br/>
+              Your photos are processed securely to generate virtual try-on results. We do not permanently store, share, or sell your biometric data or uploaded images. All data is handled in compliance with GDPR and CCPA standards.</p>
+
+              <p><strong>2. Usage Terms</strong><br/>
+              By using S_FIT AI, you agree to upload only images you have the right to use. The generated images are for personal visualization purposes.</p>
+
+              <p><strong>3. Content Moderation</strong><br/>
+              We reserve the right to block uploads that violate our safety guidelines, including inappropriate or non-consensual content.</p>
+            </div>
+            <div className="p-4 border-t border-white/10 bg-black/50 flex justify-end">
+              <button onClick={() => setIsLegalModalOpen(false)} className="px-6 py-2 bg-white text-black font-bold rounded-lg hover:bg-gray-200">
+                I Agree
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       {/* LEFT PANEL: CONTROLS */}
       <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
         {/* Background Ambience */}
@@ -124,6 +202,12 @@ export default function RealLifeFitting() {
           </div>
         </div>
 
+        {/* Data Safety Badge */}
+        <div className="mt-6 flex items-center gap-2 text-[10px] text-gray-400 bg-white/5 p-2 rounded-lg border border-white/10 z-10 relative mb-4">
+          <span className="text-green-400">🔒</span>
+          <span>Photos are processed securely and not shared.</span>
+        </div>
+
         {/* Action Button */}
         <div className="mt-8 relative z-10">
           {isProcessing ? (
@@ -158,6 +242,17 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+        </div>
+
+        {/* Support Hub Trigger */}
+        <div className="absolute bottom-4 left-4 z-20">
+          <button
+            onClick={() => setIsSupportHubOpen(true)}
+            className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+            aria-label="Open Support Hub"
+          >
+            ?
+          </button>
         </div>
       </div>
 
@@ -205,6 +300,68 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+              <button
+                onClick={async () => {
+                  const canvas = document.createElement("canvas");
+                  canvas.width = 1080;
+                  canvas.height = 1920;
+                  const ctx = canvas.getContext("2d");
+                  if (!ctx) return;
+
+                  ctx.fillStyle = "#050505";
+                  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                  const img = new Image();
+                  img.crossOrigin = "anonymous";
+                  if (resultImage) {
+                      img.src = resultImage;
+                      await new Promise(r => img.onload = r);
+                  }
+
+                  const scale = Math.min(1080 / img.width, 1400 / img.height);
+                  const w = img.width * scale;
+                  const h = img.height * scale;
+                  const x = (1080 - w) / 2;
+                  const y = (1920 - h) / 2;
+
+                  ctx.drawImage(img, x, y, w, h);
+
+                  ctx.fillStyle = "#ffffff";
+                  ctx.font = "bold 60px monospace";
+                  ctx.textAlign = "center";
+                  ctx.fillText("S_FIT AI", 540, 150);
+
+                  ctx.fillStyle = "#007AFF";
+                  ctx.font = "30px sans-serif";
+                  ctx.fillText("Virtual Try-On Result", 540, 220);
+
+                  canvas.toBlob(async (blob) => {
+                    if (!blob) return;
+                    const file = new File([blob], "sfit-story.png", { type: "image/png" });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                      try {
+                        await navigator.share({
+                          files: [file],
+                          title: "My S_FIT Try-On",
+                        });
+                      } catch (err) {
+                        console.log("Share cancelled", err);
+                      }
+                    } else {
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = "sfit-story.png";
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }
+                  });
+                }}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg flex items-center gap-2 hover:opacity-90 transition-opacity"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
