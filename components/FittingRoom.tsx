@@ -611,11 +611,65 @@ interface ShareModalProps {
 
 function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize }: ShareModalProps) {
   const [hasPublished, setHasPublished] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   if (!isOpen) return null;
 
   const safeItemName = itemName ?? 'this fit';
   const safeBrandName = brandName ?? 'S_FIT AI';
   const shareText = `I just tried on ${safeItemName} from ${safeBrandName} using S_FIT AI! Fit score ${fitScore}% ${recommendedSize ? `(Size ${recommendedSize})` : ''} #SFIT #VirtualTryOn #Fashion`;
+
+  const handleBrandedShare = async () => {
+    setIsGenerating(true);
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1080;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      ctx.fillStyle = '#0A0A0A';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 80px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT AI', canvas.width / 2, 200);
+
+      ctx.fillStyle = '#CCFF00';
+      ctx.font = 'bold 60px sans-serif';
+      ctx.fillText(`Fit Score: ${fitScore}%`, canvas.width / 2, 400);
+
+      ctx.fillStyle = '#8A8A8A';
+      ctx.font = '40px sans-serif';
+      ctx.fillText(`Item: ${safeItemName}`, canvas.width / 2, 550);
+      ctx.fillText(`Brand: ${safeBrandName}`, canvas.width / 2, 650);
+
+      canvas.toBlob(async (blob) => {
+        if (!blob) {
+          setIsGenerating(false);
+          return;
+        }
+        const file = new File([blob], 'sfit-branded-share.png', { type: 'image/png' });
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            title: 'My S_FIT Style',
+            text: shareText,
+            files: [file]
+          });
+        } else {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = 'sfit-branded-share.png';
+          a.click();
+        }
+        setIsGenerating(false);
+        onClose();
+      }, 'image/png');
+    } catch (e) {
+      console.error(e);
+      setIsGenerating(false);
+    }
+  };
 
   const handleShare = (platform: string) => {
     const encodedText = encodeURIComponent(shareText);
@@ -642,7 +696,10 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
           <button onClick={() => handleShare('instagram')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-[#833AB4] to-[#F77737] text-xs"><span>📷</span> Instagram</button>
           <button onClick={() => handleShare('kakao')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#FEE500] text-black text-xs"><span>💬</span> KakaoStory</button>
         </div>
-        <div className="pt-4 border-t border-border-color">
+        <div className="pt-4 border-t border-border-color space-y-3">
+          <button onClick={handleBrandedShare} disabled={isGenerating} className="w-full py-2 bg-charcoal text-white font-bold rounded-lg border border-white/20 hover:bg-white/10 transition-colors text-xs flex items-center justify-center gap-2">
+            {isGenerating ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <span>🎨 Share Branded Image</span>}
+          </button>
           {hasPublished ? (
             <div className="bg-cyber-lime/10 border border-cyber-lime/30 rounded-lg p-2 text-center text-[10px] text-cyber-lime font-bold">✨ Published to Community Runway!</div>
           ) : (
@@ -778,7 +835,36 @@ function AITryOnModal({
                                 {result && <button onClick={() => { const a = document.createElement('a'); a.href = result; a.download = 'sfit-result.png'; a.click(); }} className="text-[9px] text-cyber-lime hover:underline">Download Image</button>}
                             </div>
                             {videoUrl ? (
-                              <CinematicViewer videoUrl={videoUrl} posterUrl={result || undefined} className="w-full aspect-[9/16] rounded-xl shadow-2xl" />
+                              <div className="space-y-4">
+                                <CinematicViewer videoUrl={videoUrl} posterUrl={result || undefined} className="w-full aspect-[9/16] rounded-xl shadow-2xl" />
+                                <button
+                                  onClick={async () => {
+                                    try {
+                                      if (navigator.share) {
+                                        await navigator.share({
+                                          title: 'S_FIT Cinematic Try-On',
+                                          text: 'Check out my 4K cinematic try-on!',
+                                          url: videoUrl,
+                                        });
+                                      } else {
+                                        const a = document.createElement('a');
+                                        a.href = videoUrl;
+                                        a.download = 'sfit-cinematic-4k.mp4';
+                                        a.click();
+                                      }
+                                    } catch (err) {
+                                      console.error('Error sharing cinematic video:', err);
+                                      const a = document.createElement('a');
+                                      a.href = videoUrl;
+                                      a.download = 'sfit-cinematic-4k.mp4';
+                                      a.click();
+                                    }
+                                  }}
+                                  className="w-full py-4 bg-gradient-to-r from-yellow-400 to-amber-600 text-white font-bold rounded-xl shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center gap-2 text-xs"
+                                >
+                                  <span>🎬</span> Cinematic Share (Export 4K)
+                                </button>
+                              </div>
                             ) : result && (
                                 <div className="relative w-full aspect-[9/16] rounded-xl border-2 border-cyber-lime/20 shadow-xl overflow-hidden">
                                   <Image
