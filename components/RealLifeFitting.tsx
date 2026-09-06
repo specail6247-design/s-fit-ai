@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { ShareToStory } from './social/ShareToStory';
+import { ReportIssueForm } from './support/ReportIssueForm';
+import { PrivacyTermsModal } from './legal/PrivacyTermsModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +19,7 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -158,6 +162,19 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-6 flex flex-col items-center gap-3">
+            <div className="flex items-center gap-2 text-xs text-gray-400 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+              <span className="text-green-400">🔒</span>
+              Photos are processed securely and not shared.
+            </div>
+            <button
+              onClick={() => setShowPrivacyModal(true)}
+              className="text-xs text-gray-500 hover:text-white transition-colors underline decoration-white/30"
+            >
+              Privacy Policy & Terms
+            </button>
+          </div>
+
         </div>
       </div>
 
@@ -205,10 +222,16 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <div className="absolute bottom-4 right-4">
+                <ShareToStory imageUrl={resultImage} />
+              </div>
             </div>
           </motion.div>
         )}
       </div>
+
+      <ReportIssueForm />
+      <PrivacyTermsModal isOpen={showPrivacyModal} onClose={() => setShowPrivacyModal(false)} />
     </div>
   );
 }
