@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 const SFitAIProject = () => {
   const [userImage, setUserImage] = useState<string | null>(null);
@@ -64,7 +65,7 @@ const SFitAIProject = () => {
             <h3>User Photo</h3>
             <div style={styles.uploadBox}>
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} />
-              {userImage && <img src={userImage} style={styles.preview} alt="User" />}
+              {userImage && <div style={{position: 'relative', width: '100px', height: '100px'}}><Image src={userImage} fill unoptimized style={{objectFit: 'cover'}} alt="User" /></div>}
             </div>
           </div>
 
@@ -72,7 +73,7 @@ const SFitAIProject = () => {
             <h3>Garment</h3>
             <div style={styles.uploadBox}>
               <input type="file" onChange={(e) => handleFileUpload(e, setClothingImage)} />
-              {clothingImage && <img src={clothingImage} style={styles.preview} alt="Cloth" />}
+              {clothingImage && <div style={{position: 'relative', width: '100px', height: '100px'}}><Image src={clothingImage} fill unoptimized style={{objectFit: 'cover'}} alt="Cloth" /></div>}
             </div>
           </div>
         </div>
@@ -90,7 +91,7 @@ const SFitAIProject = () => {
         {finalResult && (
           <div style={styles.resultContainer}>
             <h2 style={styles.resultTitle}>Fitting Result</h2>
-            <img src={finalResult} style={styles.finalImg} alt="Result" />
+            <div style={{position: 'relative', width: '100%', maxWidth: '300px', aspectRatio: '3/4', margin: '0 auto'}}><Image src={finalResult} fill unoptimized style={{objectFit: 'cover', borderRadius: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.5)'}} alt="Result" /></div>
           </div>
         )}
       </main>
