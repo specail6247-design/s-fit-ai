@@ -1,0 +1,4 @@
+- Finished resolving the memory leak in Lenis smooth scrolling inside `LuxuryGarmentDetail.tsx` (missing cleanup `cancelAnimationFrame`).
+- Addressed squashed `planeGeometry` inside `LuxuryImageDistortion.tsx` by stretching UV aspect ratio.
+- Restructured `CustomCursor.tsx` to utilize Framer Motion's `useMotionValue` and `useSpring` to avoid expensive React renders on `mousemove`.
+- Addressed font usage by removing unneeded `@fontsource` packages and instead leveraging `next/font/google`.
