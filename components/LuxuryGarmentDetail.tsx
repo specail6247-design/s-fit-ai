@@ -1,12 +1,40 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import Lenis from 'lenis';
+import { LuxuryImageDistortion } from './masterpiece/LuxuryImageDistortion';
 
 export default function LuxuryGarmentDetail() {
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      touchMultiplier: 2,
+    });
+
+    let rafId: number;
+
+    function raf(time: number) {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    }
+
+    rafId = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      lenis.destroy();
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
+    <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-[family-name:var(--font-inter)]">
       {/* Top Navigation */}
       <div className="fixed top-0 z-50 w-full bg-[#f8f7f6]/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md">
         <div className="flex items-center p-4 justify-between max-w-md mx-auto">
@@ -25,25 +53,34 @@ export default function LuxuryGarmentDetail() {
       {/* Main Content Container (Mobile Optimized) */}
       <main className="max-w-md mx-auto pt-16 pb-32">
         {/* 3D Interactive Viewport (Hero Image) */}
-        <div className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900">
-          <div 
-            className="absolute inset-0 bg-cover bg-center" 
-            style={{ 
-              backgroundImage: 'linear-gradient(to bottom, rgba(10,10,10,0) 70%, rgba(10,10,10,1) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' 
-            }}
+        <div className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900 group">
+          {/* Fluid Distortion Hover Effect */}
+          <LuxuryImageDistortion
+            imageUrl="https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E"
+            className="absolute inset-0"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
           
           {/* 3D UI Overlays */}
-          <div className="absolute bottom-6 left-4 right-4 flex justify-between items-end">
-            <div className="bg-black/40 backdrop-blur-md rounded-lg p-2 flex flex-col gap-2 border border-white/10">
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">zoom_in</span></button>
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">360</span></button>
-              <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">light_mode</span></button>
+          <div className="absolute bottom-6 left-4 right-4 flex justify-between items-end pointer-events-none">
+            <div className="bg-black/40 backdrop-blur-md rounded-lg p-2 flex flex-col gap-2 border border-white/10 pointer-events-auto">
+              <motion.button whileTap={{ scale: 0.9 }} className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">zoom_in</span></motion.button>
+              <motion.button whileTap={{ scale: 0.9 }} className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">360</span></motion.button>
+              <motion.button whileTap={{ scale: 0.9 }} className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">light_mode</span></motion.button>
             </div>
-            <div className="text-right">
-              <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mb-1">Authentic Render</p>
-              <h1 className="text-white text-3xl font-extralight leading-tight">Metallic Silk <br/><span className="font-bold">Evening Blazer</span></h1>
-            </div>
+            <motion.div
+              className="text-right font-[family-name:var(--font-cinzel)]"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={{
+                hidden: { opacity: 0 },
+                visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
+              }}
+            >
+              <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="text-[#ecab13] text-[10px] font-[family-name:var(--font-inter)] font-bold tracking-widest uppercase mb-1">Authentic Render</motion.p>
+              <motion.h1 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-white text-3xl font-extralight leading-tight">Metallic Silk <br/><span className="font-bold">Evening Blazer</span></motion.h1>
+            </motion.div>
           </div>
         </div>
 
@@ -74,7 +111,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
