@@ -104,33 +104,48 @@ export function AuthButton() {
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h2>
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-black italic tracking-tighter text-white uppercase">
+                {isLogin ? 'MEMBER ACCESS' : 'BECOME A MEMBER'}
+              </h2>
+              <p className="text-xs text-soft-gray tracking-[0.3em] uppercase mt-2">
+                {isLogin ? 'Authenticate Identity' : 'VIP Access Only'}
+              </p>
+            </div>
 
-            <form onSubmit={handleAuth} className="space-y-4 mb-6">
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
+            <form onSubmit={handleAuth} className="space-y-5 mb-8">
+              <div className="relative group">
+                <input
+                  type="email"
+                  placeholder=" "
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white text-sm focus:border-cyber-lime outline-none peer transition-colors"
+                  required
+                />
+                <label className="absolute left-0 top-3 text-soft-gray text-sm transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-cyber-lime peer-valid:-top-4 peer-valid:text-xs">
+                  Email Address
+                </label>
+              </div>
+              <div className="relative group">
+                <input
+                  type="password"
+                  placeholder=" "
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white text-sm focus:border-cyber-lime outline-none peer transition-colors"
+                  required
+                />
+                <label className="absolute left-0 top-3 text-soft-gray text-sm transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-cyber-lime peer-valid:-top-4 peer-valid:text-xs">
+                  Password
+                </label>
+              </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="w-full bg-cyber-lime text-void-black font-black italic tracking-widest py-4 rounded-none hover:bg-white transition-colors disabled:opacity-50 mt-4 uppercase text-lg"
               >
-                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+                {loading ? 'Authenticating...' : (isLogin ? 'Enter' : 'Join')}
               </button>
             </form>
 
