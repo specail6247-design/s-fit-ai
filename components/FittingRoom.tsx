@@ -25,7 +25,6 @@ import {
 } from '@/lib/visionService';
 import * as THREE from 'three';
 import { AvatarLoader } from './AvatarLoader';
-import { usePinch } from '@use-gesture/react';
 
 // Masterpiece Components
 import { FabricMaterial } from './masterpiece/FabricMaterial';
@@ -850,10 +849,6 @@ export function FittingRoom() {
     return false;
   });
   const cycleIndexRef = useRef(0);
-  const bindPinch = usePinch(({ offset: [s] }) => {
-    if (s > 1.2 && !isMacroView) setIsMacroView(true);
-    else if (s < 1.2 && isMacroView) setIsMacroView(false);
-  });
   const [isMiniBarCollapsed, setMiniBarCollapsed] = useState(() => {
     if (typeof window !== 'undefined') {
       return window.localStorage.getItem('sfit-ai-picks-collapsed') === 'true';
@@ -937,8 +932,8 @@ export function FittingRoom() {
   }, [poseAnalysis, currentItem, resolvedHeight]);
 
   return (
-    <div className="w-full h-full flex flex-col bg-void-black text-pure-white" {...bindPinch()}>
-      <div className="flex-1 relative min-h-[350px]" style={{ touchAction: 'none' }}>
+    <div className="w-full h-full flex flex-col bg-void-black text-pure-white">
+      <div className="flex-1 relative min-h-[350px]">
         {webglFailed ? (
           /* 2D Fallback View */
           <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-[#0a0a0a] to-[#1a1a1a]">
