@@ -118,6 +118,11 @@ class TextureUpscaler:
         clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8,8))
         disp = clahe.apply(gray)
 
+        # Add high-frequency noise to simulate micro-texture details
+        noise = np.random.normal(0, 15, disp.shape).astype(np.float32)
+        disp = cv2.addWeighted(disp.astype(np.float32), 0.8, noise, 0.2, 0)
+        disp = np.clip(disp, 0, 255).astype(np.uint8)
+
         # Invert if lighter colors should be "closer" (height map conventions vary, usually white=high)
         # Assuming input image shading: darker is usually shadow/deep. So standard is fine.
         return disp
