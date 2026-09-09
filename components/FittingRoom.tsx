@@ -607,11 +607,49 @@ interface ShareModalProps {
   brandName?: string;
   fitScore: number;
   recommendedSize?: string;
+  tryOnImage?: string | null;
 }
 
-function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize }: ShareModalProps) {
+function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize, tryOnImage }: ShareModalProps) {
   const [hasPublished, setHasPublished] = useState(false);
+  const [isGeneratingCinematic, setIsGeneratingCinematic] = useState(false);
   if (!isOpen) return null;
+
+  const handleCinematicShare = async () => {
+    if (!tryOnImage) return;
+    setIsGeneratingCinematic(true);
+    try {
+      const response = await fetch('/api/cinematic-try-on', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: tryOnImage }),
+      });
+      const data = await response.json();
+      if (data.success && data.videoUrl) {
+        if (navigator.share) {
+            await navigator.share({
+                title: 'My Cinematic Fit',
+                text: 'Check out my Hollywood-style virtual try-on!',
+                url: data.videoUrl,
+            });
+        } else {
+             const a = document.createElement('a');
+             a.href = data.videoUrl;
+             a.download = 'cinematic-fit.mp4';
+             document.body.appendChild(a);
+             a.click();
+             document.body.removeChild(a);
+        }
+      } else {
+        alert('Failed to generate cinematic video.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('An error occurred while generating the video.');
+    } finally {
+      setIsGeneratingCinematic(false);
+    }
+  };
 
   const safeItemName = itemName ?? 'this fit';
   const safeBrandName = brandName ?? 'S_FIT AI';
@@ -642,6 +680,22 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
           <button onClick={() => handleShare('instagram')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-[#833AB4] to-[#F77737] text-xs"><span>📷</span> Instagram</button>
           <button onClick={() => handleShare('kakao')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#FEE500] text-black text-xs"><span>💬</span> KakaoStory</button>
         </div>
+        {tryOnImage && (
+          <div className="mb-4">
+             <button
+                onClick={handleCinematicShare}
+                disabled={isGeneratingCinematic}
+                className={`w-full flex items-center justify-center gap-2 p-3 rounded-lg font-bold text-xs transition-all ${isGeneratingCinematic ? 'bg-neutral-600 cursor-not-allowed text-white/50' : 'bg-gradient-to-r from-purple-500 to-pink-600 text-white hover:scale-105 shadow-[0_0_15px_rgba(236,72,153,0.4)]'}`}
+             >
+                {isGeneratingCinematic ? (
+                  <>
+                    <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Rendering 4K Video...</span>
+                  </>
+                ) : '🎬 Export Cinematic Share (4K)'}
+             </button>
+          </div>
+        )}
         <div className="pt-4 border-t border-border-color">
           {hasPublished ? (
             <div className="bg-cyber-lime/10 border border-cyber-lime/30 rounded-lg p-2 text-center text-[10px] text-cyber-lime font-bold">✨ Published to Community Runway!</div>
@@ -1133,6 +1187,7 @@ export function FittingRoom() {
         brandName={currentItem?.brand} 
         fitScore={fitScore}
         recommendedSize={recommendedFit?.recommendedSize}
+        tryOnImage={aiTryOnResult}
       />
       <CompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} picks={topPicks} onSelect={setSelectedItem} />
       <AITryOnModal
