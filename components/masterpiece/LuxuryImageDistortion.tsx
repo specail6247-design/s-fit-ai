@@ -84,7 +84,8 @@ function ImageDistortionPlane({ imageUrl }: { imageUrl: string }) {
   const texture = useTexture(imageUrl);
 
   // Adjust plane size based on image aspect ratio
-  const aspect = texture.image ? texture.image.width / texture.image.height : 1;
+  // Type assertion needed because three.js Texture.image type is generic
+  const aspect = texture.image ? (texture.image as HTMLImageElement).width / (texture.image as HTMLImageElement).height : 1;
 
   const uniforms = useMemo(
     () => ({
