@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LuxuryImageDistortion } from '@/components/masterpiece/LuxuryImageDistortion';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -75,17 +76,28 @@ export default function RealLifeFitting() {
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
       {/* LEFT PANEL: CONTROLS */}
-      <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
+      <motion.div
+        animate={{ opacity: isProcessing ? 0 : 1 }}
+        transition={{ duration: 0.5 }}
+        className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative pointer-events-auto"
+        style={{ pointerEvents: isProcessing ? 'none' : 'auto' }}
+      >
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
         <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }}
+            className="text-4xl font-black tracking-tighter italic font-serif"
+          >
             S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
+            className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2 font-sans"
+          >
             Professional Virtual Fitting
-          </p>
+          </motion.p>
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
@@ -95,8 +107,8 @@ export default function RealLifeFitting() {
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10 relative">
+                  {userImage ? <LuxuryImageDistortion imageUrl={userImage} className="w-full h-full absolute inset-0" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -112,8 +124,8 @@ export default function RealLifeFitting() {
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10 relative">
+                  {garmentImage ? <LuxuryImageDistortion imageUrl={garmentImage} className="w-full h-full absolute inset-0" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -141,25 +153,26 @@ export default function RealLifeFitting() {
               </div>
             </div>
           ) : (
-            <button 
+            <motion.button
+              whileTap={{ scale: 0.95 }}
               onClick={handleTryOn}
-              className="w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
+              className="w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 font-serif"
             >
               <span>⚡️</span> TRY IT ON
-            </button>
+            </motion.button>
           )}
           
           <div className="mt-4 flex gap-2">
-             <a href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
+             <motion.a whileTap={{ scale: 0.95 }} href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors font-serif">
                SPA Line
-             </a>
-             <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
+             </motion.a>
+             <motion.a whileTap={{ scale: 0.95 }} href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors font-serif">
                Luxury Line
-             </a>
+             </motion.a>
           </div>
 
         </div>
-      </div>
+      </motion.div>
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">

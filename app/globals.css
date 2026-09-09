@@ -47,7 +47,8 @@
   --color-gold-primary: #ecab13;
   --color-surface-dark: #1a1a1a;
   --color-border-dark: #2d2d2d;
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter), var(--font-geist-sans);
+  --font-serif: var(--font-cinzel), serif;
   --font-mono: var(--font-geist-mono);
 }
 
