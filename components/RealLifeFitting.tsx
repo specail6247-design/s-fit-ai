@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import PrivacyTermsModal from '@/components/ui/PrivacyTermsModal';
+import DataSafetyBadge from '@/components/ui/DataSafetyBadge';
+import SocialShareButton from '@/components/ui/SocialShareButton';
+import FeedbackForm from '@/components/ui/FeedbackForm';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +20,9 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  // Modal states
+  const [modalType, setModalType] = useState<'privacy' | 'terms' | null>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -104,6 +111,8 @@ export default function RealLifeFitting() {
                 </div>
               </label>
             </div>
+            {/* Data Safety Badge */}
+            <DataSafetyBadge />
           </div>
 
           {/* Garment Input */}
@@ -158,6 +167,13 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Legal Links */}
+          <div className="mt-6 flex justify-center gap-4 text-[10px] text-gray-500 font-mono">
+            <button onClick={() => setModalType('privacy')} className="hover:text-[#007AFF] transition-colors underline decoration-white/20 underline-offset-4">Privacy Policy</button>
+            <span>|</span>
+            <button onClick={() => setModalType('terms')} className="hover:text-[#007AFF] transition-colors underline decoration-white/20 underline-offset-4">Terms of Service</button>
+          </div>
+
         </div>
       </div>
 
@@ -206,9 +222,18 @@ export default function RealLifeFitting() {
                 AI GENERATED_
               </div>
             </div>
+            <SocialShareButton imageUrl={resultImage} />
           </motion.div>
         )}
       </div>
+
+      {/* Modals & Forms */}
+      <PrivacyTermsModal
+        isOpen={modalType !== null}
+        onClose={() => setModalType(null)}
+        type={modalType || 'privacy'}
+      />
+      <FeedbackForm />
     </div>
   );
 }
