@@ -1,7 +1,13 @@
-'use client';
-
-import RealLifeFitting from '@/components/RealLifeFitting';
+import { LandingPage } from '@/components/LandingPage';
+import { AuthButton } from '@/components/AuthButton';
 
 export default function Home() {
-  return <RealLifeFitting />;
+  return (
+    <>
+      <div className="absolute top-6 right-6 z-50">
+        <AuthButton />
+      </div>
+      <LandingPage />
+    </>
+  );
 }
