@@ -1,4 +1,6 @@
-import OpenAI from 'openai';
+import { getSizeChart } from '@/data/sizeCharts';
+import type { PoseProportions } from '@/lib/mediapipe';
+import { ClothingItem, getAllItems } from '@/data/mockData';
 
 // This service handles the 'Deep' analysis of clothing and body photos
 // to provide professional-grade fitting results.
@@ -23,27 +25,13 @@ export interface SizeRecommendation {
   fitNotes: string[];
 }
 
-// In a real production app, the API key should be handled via environment variables
-// and the analysis should ideally happen on the server to protect the key.
-const openai = new OpenAI({
-  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY || 'your-key-here',
-  dangerouslyAllowBrowser: true, // For client-side demo purposes only
-});
-
 /**
- * Deep Analysis using GPT-4o Vision
+ * Deep Analysis using GPT-4o Vision (Proxy to Next.js API Route)
  */
 export async function analyzeClothingStyle(imageUrl: string): Promise<ClothingStyleAnalysis> {
-  // Use openai instance in the future for real API calls
-  console.log("Starting Deep Vision Analysis for image:", imageUrl.substring(0, 50) + "...");
-  
-  // Use openai instance to avoid unused warning
-  if (!openai.apiKey) {
-    console.warn("OpenAI API key missing, using mock analysis.");
-  }
-
-  return new Promise((resolve) => {
-    setTimeout(() => {
+  // If we are on the server side, just return mock
+  if (typeof window === 'undefined') {
+    return new Promise((resolve) => {
       resolve({
         category: 'tops',
         subCategory: 'sweatshirt',
@@ -57,13 +45,23 @@ export async function analyzeClothingStyle(imageUrl: string): Promise<ClothingSt
         stretchLevel: 4,
         description: 'Heavyweight loopback cotton with a drop-shoulder oversized silhouette. The fabric has a substantial feel with moderate stretch.'
       });
-    }, 2000);
-  });
-}
+    });
+  }
 
-import { getSizeChart } from '@/data/sizeCharts';
-import type { PoseProportions } from '@/lib/mediapipe';
-import { ClothingItem, getAllItems } from '@/data/mockData';
+  const response = await fetch('/api/vision', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ imageUrl }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to analyze clothing style');
+  }
+
+  return response.json();
+}
 
 /**
  * AI Stylist Recommendation Logic
