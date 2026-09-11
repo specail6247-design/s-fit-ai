@@ -75,18 +75,48 @@ export default function RealLifeFitting() {
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
       {/* LEFT PANEL: CONTROLS */}
-      <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
+      <motion.div
+        animate={{ opacity: isProcessing ? 0 : 1 }}
+        style={{ pointerEvents: isProcessing ? 'none' : 'auto' }}
+        transition={{ duration: 0.8, ease: 'easeInOut' }}
+        className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative"
+      >
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
+        <motion.header
+          className="mb-10 relative z-10"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.2
+              }
+            }
+          }}
+        >
+          <motion.h1
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+            }}
+            className="text-4xl font-black tracking-tighter italic"
+          >
             S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+          </motion.h1>
+          <motion.p
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+            }}
+            className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2"
+          >
             Professional Virtual Fitting
-          </p>
-        </header>
+          </motion.p>
+        </motion.header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
           {/* User Photo Input */}
@@ -159,7 +189,7 @@ export default function RealLifeFitting() {
           </div>
 
         </div>
-      </div>
+      </motion.div>
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
       <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
