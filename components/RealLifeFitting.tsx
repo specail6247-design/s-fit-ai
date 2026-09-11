@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LegalModal } from './LegalModal';
+import { SupportModal } from './SupportModal';
+import { DataSafetyBadge } from './DataSafetyBadge';
+import { shareToInstagramStory } from '@/lib/shareUtils';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +20,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isLegalOpen, setIsLegalOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -79,13 +85,21 @@ export default function RealLifeFitting() {
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+        <header className="mb-10 relative z-10 flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-black tracking-tighter italic">
+              S_FIT <span className="text-[#007AFF]">NEO</span>
+            </h1>
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+              Professional Virtual Fitting
+            </p>
+          </div>
+          <button
+            onClick={() => setIsSupportOpen(true)}
+            className="text-xs text-gray-400 hover:text-[#007AFF] transition-colors flex items-center gap-1 border border-white/10 px-3 py-1 rounded-full bg-black/30"
+          >
+            <span>🔧</span> Support Hub
+          </button>
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
@@ -122,6 +136,7 @@ export default function RealLifeFitting() {
               </label>
             </div>
           </div>
+          <DataSafetyBadge />
         </div>
 
         {/* Action Button */}
@@ -157,7 +172,11 @@ export default function RealLifeFitting() {
                Luxury Line
              </a>
           </div>
-
+          <div className="mt-4 text-center">
+            <button onClick={() => setIsLegalOpen(true)} className="text-[10px] text-gray-500 hover:text-white transition-colors underline">
+              Privacy Policy & Terms
+            </button>
+          </div>
         </div>
       </div>
 
@@ -205,10 +224,19 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={() => shareToInstagramStory(resultImage)}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-pink-500 to-orange-400 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      <LegalModal isOpen={isLegalOpen} onClose={() => setIsLegalOpen(false)} />
+      <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
     </div>
   );
 }
