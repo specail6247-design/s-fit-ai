@@ -163,11 +163,11 @@ export function AuthButton() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                {['google', 'apple', 'kakao', 'discord'].map((provider) => (
+                {(['google', 'apple', 'kakao', 'discord'] as const).map((provider) => (
                   <button
                     key={provider}
                     type="button"
-                    onClick={() => handleSocialLogin(provider as any)}
+                    onClick={() => handleSocialLogin(provider)}
                     className="bg-transparent border border-white/10 hover:bg-white/5 text-white/70 hover:text-white py-3 flex items-center justify-center transition-colors uppercase text-[10px] tracking-widest cursor-pointer"
                   >
                     {provider}
