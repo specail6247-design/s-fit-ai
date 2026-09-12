@@ -603,13 +603,15 @@ function ItemCard({
 interface ShareModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onVideoGenerated?: (url: string) => void;
   itemName?: string;
   brandName?: string;
   fitScore: number;
   recommendedSize?: string;
+  videoUrl?: string | null;
 }
 
-function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize }: ShareModalProps) {
+function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommendedSize, videoUrl }: ShareModalProps) {
   const [hasPublished, setHasPublished] = useState(false);
   if (!isOpen) return null;
 
@@ -642,6 +644,27 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
           <button onClick={() => handleShare('instagram')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-[#833AB4] to-[#F77737] text-xs"><span>📷</span> Instagram</button>
           <button onClick={() => handleShare('kakao')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#FEE500] text-black text-xs"><span>💬</span> KakaoStory</button>
         </div>
+
+        {videoUrl && (
+          <div className="mb-4">
+            <button
+              onClick={() => {
+                if (navigator.share) {
+                  navigator.share({ url: videoUrl, title: 'My Cinematic Fit' }).catch(console.error);
+                } else {
+                  const a = document.createElement('a');
+                  a.href = videoUrl;
+                  a.download = 'cinematic-fit.mp4';
+                  a.click();
+                }
+              }}
+              className="w-full py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold rounded-lg flex items-center justify-center gap-2 shadow-lg text-xs"
+            >
+              <span>🎬</span> Share 4K Cinematic Video
+            </button>
+          </div>
+        )}
+
         <div className="pt-4 border-t border-border-color">
           {hasPublished ? (
             <div className="bg-cyber-lime/10 border border-cyber-lime/30 rounded-lg p-2 text-center text-[10px] text-cyber-lime font-bold">✨ Published to Community Runway!</div>
@@ -798,7 +821,7 @@ function AITryOnModal({
                                     try {
                                         const res = await fetch('/api/cinematic-try-on', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({imageUrl: result}) });
                                         const data = await res.json();
-                                        if(data.success) setVideoUrl(data.videoUrl);
+                                        if(data.success) { setVideoUrl(data.videoUrl); if(onVideoGenerated) onVideoGenerated(data.videoUrl); }
                                     } finally { setIsVideoLoading(false); }
                                 }} disabled={isVideoLoading} className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-xs">
                                     {isVideoLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : '🎬 Generate Cinematic Motion'}
@@ -836,6 +859,7 @@ export function FittingRoom() {
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
   const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
+  const [aiTryOnVideoUrl, setAiTryOnVideoUrl] = useState<string | null>(null);
   const [aiTryOnLoading, setAITryOnLoading] = useState(false);
   const [userPhotoPreview, setUserPhotoPreview] = useState<string | null>(null);
   const [isMasterpieceMode, setIsMasterpieceMode] = useState(true);
@@ -1133,11 +1157,13 @@ export function FittingRoom() {
         brandName={currentItem?.brand} 
         fitScore={fitScore}
         recommendedSize={recommendedFit?.recommendedSize}
+        videoUrl={aiTryOnVideoUrl}
       />
       <CompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} picks={topPicks} onSelect={setSelectedItem} />
       <AITryOnModal
         isOpen={showAITryOnModal}
-        onClose={() => { setShowAITryOnModal(false); setAITryOnResult(null); }}
+        onClose={() => { setShowAITryOnModal(false); setAITryOnResult(null); setAiTryOnVideoUrl(null); }}
+        onVideoGenerated={setAiTryOnVideoUrl}
         selectedItem={currentItem}
         userPhotoPreview={userPhotoPreview}
         onPhotoSelect={(file) => {
