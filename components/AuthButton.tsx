@@ -89,68 +89,79 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-[#C9B037] text-[#0A0A0A] px-6 py-2 rounded-full text-xs font-bold tracking-widest uppercase hover:brightness-110 transition-all border border-[#F4E4BC]/50 shadow-[0_0_15px_rgba(201,176,55,0.3)] font-sans"
+        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
       >
-        Member Access
+        LOGIN
       </button>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0A0A0A]/90 backdrop-blur-md p-4">
-          <div className="bg-[#1A1A1A] border border-[#C9B037]/30 w-full max-w-sm rounded-none p-8 relative shadow-[0_0_40px_rgba(201,176,55,0.1)]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-gray-500 hover:text-[#C9B037] transition-colors"
+              className="absolute top-4 right-4 text-soft-gray hover:text-white"
             >
               ✕
             </button>
             
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-black text-white tracking-widest uppercase" style={{ fontFamily: 'Cinzel, serif' }}>
-                {isLogin ? 'VIP Access' : 'Join the Club'}
-              </h2>
-              <div className="h-px w-12 bg-[#C9B037] mx-auto mt-4 mb-2"></div>
-              <p className="text-[10px] text-gray-400 tracking-widest uppercase font-mono">
-                Exclusive Fitting Room
-              </p>
-            </div>
+            <h2 className="text-xl font-bold text-white mb-6 text-center">
+              {isLogin ? 'Welcome Back' : 'Create Account'}
+            </h2>
 
-            <form onSubmit={handleAuth} className="space-y-4 mb-8">
-              <div className="relative">
-                <input
-                  type="email"
-                  placeholder="EMAIL ADDRESS"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white text-xs tracking-widest focus:border-[#C9B037] outline-none transition-colors font-mono placeholder-gray-600"
-                  required
-                />
-              </div>
-              <div className="relative">
-                <input
-                  type="password"
-                  placeholder="PASSWORD"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white text-xs tracking-widest focus:border-[#C9B037] outline-none transition-colors font-mono placeholder-gray-600"
-                  required
-                />
-              </div>
+            <form onSubmit={handleAuth} className="space-y-4 mb-6">
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                required
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                required
+              />
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#C9B037] text-[#0A0A0A] font-bold py-4 mt-4 tracking-widest uppercase text-xs hover:bg-[#F4E4BC] transition-colors disabled:opacity-50"
+                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
               >
-                {loading ? 'Authenticating...' : (isLogin ? 'Sign In' : 'Request Access')}
+                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
               </button>
             </form>
 
-            <p className="text-center text-[10px] text-gray-500 tracking-widest uppercase font-mono mt-8">
-              {isLogin ? "Not a member?" : "Already a member?"}{' '}
+            <div className="flex items-center gap-2 mb-6">
+              <div className="h-px bg-white/10 flex-1" />
+              <span className="text-xs text-soft-gray">OR SOCIAL LOGIN</span>
+              <div className="h-px bg-white/10 flex-1" />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <button onClick={() => handleSocialLogin('google')} className="bg-white/5 hover:bg-white/10 border border-white/10 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
+                <span className="text-lg">🇬</span> <span className="text-xs text-white">Google</span>
+              </button>
+              <button onClick={() => handleSocialLogin('kakao')} className="bg-[#FAE100] hover:bg-[#FADB00] text-[#371D1E] py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
+                <span className="text-lg">💬</span> <span className="text-xs font-bold">Kakao</span>
+              </button>
+              <button onClick={() => handleSocialLogin('apple')} className="bg-white hover:bg-gray-100 text-black py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
+                <span className="text-lg">🍎</span> <span className="text-xs font-bold">Apple</span>
+              </button>
+              <button onClick={() => handleSocialLogin('discord')} className="bg-[#5865F2] hover:bg-[#4752C4] text-white py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
+                <span className="text-lg">🎮</span> <span className="text-xs font-bold">Discord</span>
+              </button>
+            </div>
+
+            <p className="mt-6 text-center text-xs text-soft-gray">
+              {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
               <button
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-[#C9B037] hover:text-[#F4E4BC] ml-2 transition-colors border-b border-[#C9B037]/30 pb-0.5"
+                className="text-cyber-lime hover:underline ml-1"
               >
-                {isLogin ? 'Apply Here' : 'Enter'}
+                {isLogin ? 'Sign up' : 'Log in'}
               </button>
             </p>
           </div>
