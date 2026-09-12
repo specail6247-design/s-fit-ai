@@ -535,6 +535,38 @@ export const mockClothingItems: ClothingItem[] = [
     colors: ['Gold', 'Silver'],
     description: 'Graphic angles and clean lines blend to create the beautiful clarity of the Tiffany T collection',
   },
+  {
+    id: 'tiffany-necklace-1',
+    name: 'T1 Diamond Choker',
+    brand: 'Tiffany',
+    category: 'accessories',
+    subCategory: 'jewelry',
+    zIndex: 36,
+    price: 15500,
+    currency: 'USD',
+    imageUrl: 'https://images.unsplash.com/photo-1599643478524-fb66f70a0066?auto=format&fit=crop&q=80&w=400',
+    textureUrl: 'https://images.unsplash.com/photo-1599643478524-fb66f70a0066?auto=format&fit=crop&q=80&w=400',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Gold'],
+    description: '18k rose gold with brilliant round diamonds.'
+  },
+  {
+    id: 'chanel-bag-1',
+    name: 'Classic Flap Bag',
+    brand: 'Chanel',
+    category: 'accessories',
+    subCategory: 'bag',
+    zIndex: 51,
+    price: 9800,
+    currency: 'USD',
+    imageUrl: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?auto=format&fit=crop&q=80&w=400',
+    textureUrl: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?auto=format&fit=crop&q=80&w=400',
+    isLuxury: true,
+    sizes: ['One Size'],
+    colors: ['Black'],
+    description: 'Black lambskin leather with gold-tone metal hardware.'
+  }
 ];
 
 // Helper functions
