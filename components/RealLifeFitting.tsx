@@ -3,6 +3,11 @@ import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
+import { PrivacyTermsModal } from './legal/PrivacyTermsModal';
+import { SupportHubModal } from './SupportHubModal';
+import { ShareToStoryModal } from './ShareToStoryModal';
+
+
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
   ssr: false,
@@ -16,6 +21,11 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -101,6 +111,10 @@ export default function RealLifeFitting() {
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
+                  <div className="flex items-center gap-1 mt-1 text-[9px] text-green-400 font-medium">
+                    <span>🔒</span> Photos are processed securely and not shared.
+                  </div>
+
                 </div>
               </label>
             </div>
@@ -158,7 +172,15 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
-        </div>
+
+
+          {/* Legal & Support Footer */}
+          <div className="mt-auto pt-8 flex justify-between text-[10px] text-gray-500 font-medium">
+            <button onClick={() => setIsPrivacyOpen(true)} className="hover:text-white transition-colors">Privacy & Terms</button>
+            <button onClick={() => setIsSupportOpen(true)} className="hover:text-white transition-colors flex items-center gap-1"><span>🛠️</span> Report Issue</button>
+          </div>
+
+</div>
       </div>
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
@@ -196,12 +218,22 @@ export default function RealLifeFitting() {
           >
             <div className="relative group">
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
-              <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
-              >
-                ✕ Close
-              </button>
+
+              <div className="absolute top-4 right-4 flex gap-2">
+                <button
+                  onClick={() => setIsShareOpen(true)}
+                  className="bg-gradient-to-r from-purple-500/80 to-pink-500/80 backdrop-blur-md text-white rounded-full px-4 py-2 hover:opacity-90 transition-opacity text-sm font-bold flex items-center gap-2 shadow-lg"
+                >
+                  <span>📸</span> Share Story
+                </button>
+                <button
+                  onClick={() => setResultImage(null)}
+                  className="bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                >
+                  ✕ Close
+                </button>
+              </div>
+
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
@@ -209,6 +241,18 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      {/* Modals */}
+      <PrivacyTermsModal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
+      <SupportHubModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
+      {resultImage && (
+        <ShareToStoryModal
+          isOpen={isShareOpen}
+          onClose={() => setIsShareOpen(false)}
+          resultImage={resultImage}
+        />
+      )}
     </div>
   );
+
 }
