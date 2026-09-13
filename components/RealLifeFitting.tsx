@@ -1,7 +1,13 @@
+import Image from 'next/image';
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+
+import { PrivacyTermsModal } from './legal/PrivacyTermsModal';
+import { SupportHubModal } from './SupportHubModal';
+import { ShareToStoryModal } from './ShareToStoryModal';
+
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +22,11 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -96,11 +107,15 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? <Image src={userImage} alt="User" unoptimized width={64} height={64} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
+                  <div className="flex items-center gap-1 mt-1 text-[9px] text-green-400 font-medium">
+                    <span>🔒</span> Photos are processed securely and not shared.
+                  </div>
+
                 </div>
               </label>
             </div>
@@ -113,7 +128,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? <Image src={garmentImage} alt="Garment" unoptimized width={64} height={64} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -158,7 +173,15 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
-        </div>
+
+
+          {/* Legal & Support Footer */}
+          <div className="mt-auto pt-8 flex justify-between text-[10px] text-gray-500 font-medium">
+            <button onClick={() => setIsPrivacyOpen(true)} className="hover:text-white transition-colors">Privacy & Terms</button>
+            <button onClick={() => setIsSupportOpen(true)} className="hover:text-white transition-colors flex items-center gap-1"><span>🛠️</span> Report Issue</button>
+          </div>
+
+</div>
       </div>
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
@@ -195,13 +218,23 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
-              <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
-              >
-                ✕ Close
-              </button>
+              <Image src={resultImage} alt="Result" unoptimized width={500} height={700} className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+
+              <div className="absolute top-4 right-4 flex gap-2">
+                <button
+                  onClick={() => setIsShareOpen(true)}
+                  className="bg-gradient-to-r from-purple-500/80 to-pink-500/80 backdrop-blur-md text-white rounded-full px-4 py-2 hover:opacity-90 transition-opacity text-sm font-bold flex items-center gap-2 shadow-lg"
+                >
+                  <span>📸</span> Share Story
+                </button>
+                <button
+                  onClick={() => setResultImage(null)}
+                  className="bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                >
+                  ✕ Close
+                </button>
+              </div>
+
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
@@ -209,6 +242,18 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      {/* Modals */}
+      <PrivacyTermsModal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
+      <SupportHubModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
+      {resultImage && (
+        <ShareToStoryModal
+          isOpen={isShareOpen}
+          onClose={() => setIsShareOpen(false)}
+          resultImage={resultImage}
+        />
+      )}
     </div>
   );
+
 }
