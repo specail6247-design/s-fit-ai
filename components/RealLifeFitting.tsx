@@ -15,6 +15,7 @@ export default function RealLifeFitting() {
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
+  const [resultVideo, setResultVideo] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
@@ -195,16 +196,52 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              {resultVideo ? (
+                <div className="w-auto h-[70vh] rounded-xl overflow-hidden shadow-2xl bg-black">
+                  <video src={resultVideo} autoPlay loop muted playsInline className="h-full object-contain" />
+                </div>
+              ) : (
+                <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              )}
+
               <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                onClick={() => { setResultImage(null); setResultVideo(null); }}
+                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors z-30"
               >
                 ✕ Close
               </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
+              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30 z-30">
                 AI GENERATED_
               </div>
+
+              {!resultVideo && (
+                <button
+                  onClick={async () => {
+                    try {
+                      setIsProcessing(true); // Re-use processing state or create new one
+                      const res = await fetch('/api/cinematic-try-on', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ imageUrl: resultImage })
+                      });
+                      const data = await res.json();
+                      if (data.success) {
+                        setResultVideo(data.videoUrl);
+                      } else {
+                        alert(data.error || 'Failed to generate video');
+                      }
+                    } catch (err) {
+                      console.error(err);
+                      alert('Error generating video');
+                    } finally {
+                      setIsProcessing(false);
+                    }
+                  }}
+                  className="absolute bottom-4 right-4 bg-[#007AFF] text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-[#005bb5] transition-colors z-30 flex items-center gap-2"
+                >
+                  <span>🎬</span> Make Cinematic
+                </button>
+              )}
             </div>
           </motion.div>
         )}
