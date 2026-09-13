@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React, { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -44,11 +45,7 @@ export const ShareToStoryModal: React.FC<ShareToStoryModalProps> = ({ isOpen, on
                 ref={storyRef}
                 className="w-48 h-[341px] bg-gradient-to-br from-gray-900 to-black rounded-xl overflow-hidden relative shadow-lg mb-6 border border-white/10"
               >
-                <img
-                  src={resultImage}
-                  alt="Try-on Result"
-                  className="w-full h-full object-cover"
-                />
+                <Image src={resultImage} alt="Try-on Result" unoptimized width={192} height={341} className="w-full h-full object-cover" />
 
                 {/* Branding Overlay */}
                 <div className="absolute inset-0 flex flex-col justify-between p-4 pointer-events-none">
