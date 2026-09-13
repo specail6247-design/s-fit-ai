@@ -1,0 +1,3 @@
+## 2024-09-13 - Icon-Only Button Accessibility in S_FIT AI
+**Learning:** The `LuxuryGarmentDetail.tsx` component used several icon-only buttons with `<span className="material-symbols-outlined">...</span>` for icons like zoom, 360 view, light mode, and share, without providing `aria-label`s. This makes them completely inaccessible to screen reader users, who will just hear "button" without context.
+**Action:** Always ensure that icon-only interactive elements (buttons, links) have a descriptive `aria-label` explaining their function, and add `aria-hidden="true"` to the icon element itself (like `<span className="material-symbols-outlined">`) so screen readers don't try to read out the icon's ligature text (e.g. reading out "light underscore mode").
