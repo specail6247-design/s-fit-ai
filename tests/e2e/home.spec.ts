@@ -16,6 +16,7 @@ test.describe('Home Page', () => {
   });
 
   test('should display mode selection options', async ({ page }) => {
+    /* The ModeSelector component was removed in the previous commit. We adjust tests to match RealLifeFitting.
     // Check for presence of mode cards
     await expect(page.getByText('VIBE CHECK')).toBeVisible();
     await expect(page.getByText('DIGITAL TWIN')).toBeVisible();
@@ -24,6 +25,10 @@ test.describe('Home Page', () => {
     // Check continue button
     const continueBtn = page.getByRole('button', { name: /Continue/i });
     await expect(continueBtn).toBeVisible();
+    */
+    // Check for try it on button instead
+    const tryBtn = page.getByRole('button', { name: /TRY IT ON/i });
+    await expect(tryBtn).toBeVisible();
   });
 
   test('should match visual snapshot', async ({ page }) => {
