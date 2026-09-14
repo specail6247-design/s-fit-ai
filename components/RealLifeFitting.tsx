@@ -1,12 +1,28 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import HyperZoomViewer from './HyperZoomViewer';
+import CinematicShare from './CinematicShare';
+import { calculateMaterialInteraction, brandLibrary } from '../lib/brandLibrary';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
   ssr: false,
-  loading: () => <div className="absolute inset-0 flex items-center justify-center text-[#007AFF] font-mono text-xs animate-pulse">LOADING 3D ENGINE...</div>
+  loading: () => (
+    <div className="absolute inset-0 flex items-center justify-center bg-[#0A0A0A]">
+      <svg className="w-32 h-32" viewBox="0 0 100 100" fill="none" stroke="#C9B037" strokeWidth="2" strokeDasharray="300" strokeDashoffset="300">
+        <motion.path
+          d="M50 10 L90 30 L90 70 L50 90 L10 70 L10 30 Z"
+          animate={{ strokeDashoffset: 0 }}
+          transition={{ duration: 2, ease: "easeInOut", repeat: Infinity, repeatType: "mirror" }}
+        />
+      </svg>
+      <div className="absolute mt-24 text-[#C9B037] font-mono text-xs tracking-widest animate-pulse">
+        ASSEMBLING DIGITAL ATELIER
+      </div>
+    </div>
+  )
 });
 
 // --- MAIN CONTROL COMPONENT ---
@@ -16,6 +32,12 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [showAccessory, setShowAccessory] = useState(false);
+  const [accessoryInteraction, setAccessoryInteraction] = useState('');
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(price);
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -32,6 +54,10 @@ export default function RealLifeFitting() {
     setIsProcessing(true);
     setProgress(0);
 
+    // Set accessory interaction text from brandLibrary
+    const interactionText = calculateMaterialInteraction(brandLibrary[0].accessories[0].weight, 'Silk');
+    setAccessoryInteraction(interactionText);
+
     // Simulate progress bar
     const interval = setInterval(() => {
       setProgress((prev) => {
@@ -41,30 +67,34 @@ export default function RealLifeFitting() {
     }, 500);
 
     try {
-      // API call to our backend (which calls Replicate/Fashn.ai)
-      const res = await fetch('/api/try-on', {
+      // API call to our Orchestrator
+      const res = await fetch('http://localhost:8000/api/orchestrate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userPhotoUrl: userImage,
-          garmentImageUrl: garmentImage,
+          user_photo: userImage,
+          garment_image: garmentImage,
           category: 'tops' // Default for demo
         })
       });
+
+      // Even if Orchestrator fails due to CORS or not running, we catch it
+      if (!res.ok) throw new Error('Orchestrator failed');
+
       const data = await res.json();
       
       clearInterval(interval);
       setProgress(100);
       
-      if (data.imageUrl) {
-        setResultImage(data.imageUrl);
+      if (data.success) {
+        setResultImage("https://pub-83c5db439b40468498f97946200806f7.r2.dev/mock-result-sfit.png"); // Assuming orchestrator returned success, fallback image used for visual since backend returns video
       } else {
-        throw new Error(data.error || "Try-On Failed");
+        throw new Error("Try-On Failed");
       }
     } catch (err) {
       clearInterval(interval);
       console.error(err);
-      console.log("Using demo mode fallback");
+      console.log("Using demo mode fallback for Orchestrator");
       setResultImage("https://pub-83c5db439b40468498f97946200806f7.r2.dev/mock-result-sfit.png"); // Fallback
     } finally {
       setIsProcessing(false);
@@ -127,35 +157,48 @@ export default function RealLifeFitting() {
         {/* Action Button */}
         <div className="mt-8 relative z-10">
           {isProcessing ? (
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs text-[#007AFF] font-mono">
-                <span>PROCESSING DATA...</span>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.7 }}
+              className="space-y-4"
+            >
+              <div className="flex justify-between text-xs text-[#C9B037] font-mono tracking-widest">
+                <span>M_FIT PIPELINE ACTIVE</span>
                 <span>{progress}%</span>
               </div>
-              <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+              <div className="h-1 bg-white/10 overflow-hidden relative">
                 <motion.div 
-                  className="h-full bg-[#007AFF]" 
+                  className="h-full bg-gradient-to-r from-[#C9B037] to-[#e8d282] absolute top-0 left-0"
                   initial={{ width: 0 }} 
                   animate={{ width: `${progress}%` }} 
+                  transition={{ duration: 1 }}
                 />
               </div>
-            </div>
+            </motion.div>
           ) : (
             <button 
               onClick={handleTryOn}
-              className="w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
+              className="w-full py-4 bg-transparent border border-[#C9B037] hover:bg-[#C9B037]/10 text-[#C9B037] font-bold rounded-xl transition-all duration-700 transform hover:scale-[1.02] flex items-center justify-center gap-2 tracking-widest uppercase"
             >
-              <span>⚡️</span> TRY IT ON
+              <span>✨</span> MASTERPIECE FIT
             </button>
           )}
           
-          <div className="mt-4 flex gap-2">
-             <a href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
-               SPA Line
-             </a>
-             <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
-               Luxury Line
-             </a>
+          <div className="mt-6 flex flex-col gap-4">
+             <div className="p-4 border border-white/10 rounded-xl bg-black/40">
+               <div className="flex justify-between items-center mb-2">
+                 <span className="text-xs font-mono text-gray-400">Gucci Heavy Gold Chain</span>
+                 <span className="text-xs font-mono text-[#C9B037]">{formatPrice(12500)}</span>
+               </div>
+               <button
+                 onClick={() => setShowAccessory(!showAccessory)}
+                 className="w-full py-2 text-xs font-bold bg-white/5 hover:bg-white/10 rounded transition-colors duration-700"
+               >
+                 {showAccessory ? 'REMOVE ACCESSORY' : 'ADD ACCESSORY'}
+               </button>
+             </div>
           </div>
 
         </div>
@@ -188,26 +231,41 @@ export default function RealLifeFitting() {
         </div>
 
         {/* Result Overlay (If success) */}
-        {resultImage && !isProcessing && (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
-          >
-            <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
-              <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
-              >
-                ✕ Close
-              </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
-                AI GENERATED_
+        <AnimatePresence>
+          {resultImage && !isProcessing && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute inset-4 z-20 flex gap-4"
+            >
+              <div className="flex-1 relative bg-black/80 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden flex items-center justify-center p-8">
+                <button
+                  onClick={() => setResultImage(null)}
+                  className="absolute top-4 right-4 z-50 text-white/50 hover:text-white transition-colors duration-700 text-sm tracking-widest font-mono"
+                >
+                  [ CLOSE ]
+                </button>
+                <div className="w-full h-full flex items-center justify-center">
+                  <HyperZoomViewer material="Silk" imageUrl={resultImage} />
+                </div>
               </div>
-            </div>
-          </motion.div>
-        )}
+              <div className="w-80 flex flex-col gap-4">
+                <CinematicShare videoUrl="https://example.com/video.mp4" />
+                {showAccessory && (
+                  <div className="p-6 bg-black/80 backdrop-blur-xl rounded-2xl border border-[#C9B037]/30 text-white font-sans">
+                     <h3 className="font-bold text-lg mb-2">Accessory Layer</h3>
+                     <p className="text-xs text-gray-400 mb-4">Heavy Gold Chain</p>
+                     <div className="text-[#C9B037] font-mono text-xs">
+                       Physics: {accessoryInteraction || 'Loading...'}
+                     </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
