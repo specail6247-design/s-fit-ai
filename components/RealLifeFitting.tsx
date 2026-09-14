@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import LegalModal from '@/components/LegalModal';
+import ShareStoryModal from '@/components/ShareStoryModal';
+import SupportHub from '@/components/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +19,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [legalModalType, setLegalModalType] = useState<'privacy' | 'terms' | null>(null);
+  const [isShareOpen, setIsShareOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -124,6 +129,14 @@ export default function RealLifeFitting() {
           </div>
         </div>
 
+
+          {/* Data Safety Badge */}
+          <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+            <span className="text-green-500">🔒</span>
+            <p className="text-[10px] text-green-400 font-medium">Photos are processed securely and not shared. <button onClick={() => setLegalModalType('privacy')} className="underline hover:text-green-300">Privacy Policy</button></p>
+          </div>
+
+
         {/* Action Button */}
         <div className="mt-8 relative z-10">
           {isProcessing ? (
@@ -156,6 +169,12 @@ export default function RealLifeFitting() {
              <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                Luxury Line
              </a>
+          </div>
+
+          <div className="mt-6 flex justify-center gap-4 text-[10px] text-gray-500">
+            <button onClick={() => setLegalModalType('terms')} className="hover:text-white transition-colors">Terms of Service</button>
+            <span>|</span>
+            <button onClick={() => setLegalModalType('privacy')} className="hover:text-white transition-colors">Privacy Policy</button>
           </div>
 
         </div>
@@ -202,6 +221,12 @@ export default function RealLifeFitting() {
               >
                 ✕ Close
               </button>
+              <button
+                onClick={() => setIsShareOpen(true)}
+                className="absolute top-4 right-24 bg-black/60 text-white rounded-full px-4 py-2 hover:bg-pink-500 transition-colors flex items-center gap-2"
+              >
+                <span>📱</span> Share to Story
+              </button>
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
@@ -209,6 +234,24 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      {/* Support Hub */}
+      <SupportHub />
+
+      {/* Modals */}
+      <LegalModal
+        isOpen={legalModalType !== null}
+        onClose={() => setLegalModalType(null)}
+        type={legalModalType || 'privacy'}
+      />
+
+      {resultImage && (
+        <ShareStoryModal
+          isOpen={isShareOpen}
+          onClose={() => setIsShareOpen(false)}
+          imageUrl={resultImage}
+        />
+      )}
     </div>
   );
 }
