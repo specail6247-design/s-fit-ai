@@ -11,8 +11,6 @@ import {
 } from '@/lib/mediapipe';
 import type { FaceAnalysis, PoseAnalysis } from '@/lib/mediapipe';
 import { useStore } from '@/store/useStore';
-import { analyzeClothingStyle } from '@/lib/visionService';
-
 type UploadStep = 'face' | 'body';
 
 interface DigitalTwinModeProps {
@@ -135,7 +133,17 @@ export function DigitalTwinMode({ onComplete }: DigitalTwinModeProps) {
       setPoseStatus('loading');
       
       try {
-        const deepAnalysis = await analyzeClothingStyle(bodyPreview);
+        const response = await fetch('/api/vision', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageUrl: bodyPreview })
+        });
+
+        if (!response.ok) {
+          throw new Error('Vision API error');
+        }
+
+        const deepAnalysis = await response.json();
         setClothingAnalysis(deepAnalysis);
         
         // Finalize
