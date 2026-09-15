@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import LegalModal from './LegalModal';
+import ReportIssueModal from './ReportIssueModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,53 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isLegalOpen, setIsLegalOpen] = useState(false);
+  const [isReportOpen, setIsReportOpen] = useState(false);
+
+  const handleShareToStory = () => {
+    if (!resultImage) return;
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    canvas.width = 1080;
+    canvas.height = 1920;
+
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      // Calculate scale to fit image in story (with padding)
+      const scale = Math.min((canvas.width * 0.9) / img.width, (canvas.height * 0.7) / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (canvas.width - w) / 2;
+      const y = (canvas.height - h) / 2 - 100;
+
+      ctx.drawImage(img, x, y, w, h);
+
+      // Branding
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 60px "Geist Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT AI', canvas.width / 2, canvas.height - 200);
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = 'bold 40px "Geist", sans-serif';
+      ctx.fillText('VIRTUAL FITTING', canvas.width / 2, canvas.height - 130);
+
+      // Download
+      const url = canvas.toDataURL('image/jpeg', 0.9);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'sfit-story.jpg';
+      a.click();
+    };
+    img.src = resultImage;
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -141,12 +190,18 @@ export default function RealLifeFitting() {
               </div>
             </div>
           ) : (
-            <button 
-              onClick={handleTryOn}
-              className="w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
-            >
-              <span>⚡️</span> TRY IT ON
-            </button>
+            <>
+              <div className="mb-4 flex items-center justify-center gap-2 text-[10px] text-gray-400 bg-white/5 py-2 px-3 rounded-lg border border-white/10">
+                <span className="text-green-400">🔒</span>
+                <span>Photos are processed securely and not shared.</span>
+              </div>
+              <button
+                onClick={handleTryOn}
+                className="w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
+              >
+                <span>⚡️</span> TRY IT ON
+              </button>
+            </>
           )}
           
           <div className="mt-4 flex gap-2">
@@ -158,6 +213,11 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Support Hub Links */}
+          <div className="mt-6 flex justify-between items-center text-[10px] text-gray-500 uppercase font-bold tracking-wider">
+            <button onClick={() => setIsLegalOpen(true)} className="hover:text-white transition-colors">Privacy & Terms</button>
+            <button onClick={() => setIsReportOpen(true)} className="hover:text-[#007AFF] transition-colors">Report Issue</button>
+          </div>
         </div>
       </div>
 
@@ -205,10 +265,22 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+              {/* Share to Story Button */}
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-purple-600 to-pink-500 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      {/* Modals */}
+      <LegalModal isOpen={isLegalOpen} onClose={() => setIsLegalOpen(false)} />
+      <ReportIssueModal isOpen={isReportOpen} onClose={() => setIsReportOpen(false)} />
     </div>
   );
 }
