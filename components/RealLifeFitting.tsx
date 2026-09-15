@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import CinematicViewer from '@/components/ui/CinematicViewer';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -15,6 +16,8 @@ export default function RealLifeFitting() {
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
+  const [resultVideo, setResultVideo] = useState<string | null>(null);
+  const [isVideoProcessing, setIsVideoProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
@@ -26,9 +29,32 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleCinematicTryOn = async () => {
+    if (!resultImage) return;
+    setIsVideoProcessing(true);
+    try {
+      const res = await fetch('/api/cinematic-try-on', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: resultImage })
+      });
+      const data = await res.json();
+      if (data.success && data.videoUrl) {
+        setResultVideo(data.videoUrl);
+      } else {
+        alert(data.error || 'Failed to generate cinematic video');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error generating video');
+    } finally {
+      setIsVideoProcessing(false);
+    }
+  };
+
   const handleTryOn = async () => {
     if (!userImage || !garmentImage) return alert("Please upload both User Photo and Garment.");
-    
+    setResultVideo(null);
     setIsProcessing(true);
     setProgress(0);
 
@@ -192,20 +218,46 @@ export default function RealLifeFitting() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl flex flex-col items-center gap-4"
           >
-            <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
-              <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
-              >
-                ✕ Close
-              </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
-                AI GENERATED_
+            {resultVideo ? (
+              <div className="relative group">
+                <CinematicViewer videoUrl={resultVideo} className="h-[70vh] w-auto" />
+                <button
+                  onClick={() => { setResultVideo(null); setResultImage(null); }}
+                  className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors z-30"
+                >
+                  ✕ Close
+                </button>
               </div>
-            </div>
+            ) : (
+              <div className="relative group">
+                <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+                <button
+                  onClick={() => setResultImage(null)}
+                  className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
+                >
+                  ✕ Close
+                </button>
+                <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
+                  AI GENERATED_
+                </div>
+              </div>
+            )}
+
+            {!resultVideo && (
+              <button
+                onClick={handleCinematicTryOn}
+                disabled={isVideoProcessing}
+                className="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold rounded-xl shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50 disabled:scale-100"
+              >
+                {isVideoProcessing ? (
+                  <span className="animate-pulse">🎬 GENERATING CINEMATIC VIDEO...</span>
+                ) : (
+                  <><span>🎬</span> GENERATE CINEMATIC VIDEO</>
+                )}
+              </button>
+            )}
           </motion.div>
         )}
       </div>
