@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import CinematicViewer from '@/components/ui/CinematicViewer';
+import Image from 'next/image';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,8 +16,6 @@ export default function RealLifeFitting() {
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
-  const [resultVideo, setResultVideo] = useState<string | null>(null);
-  const [isVideoProcessing, setIsVideoProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
@@ -29,32 +27,9 @@ export default function RealLifeFitting() {
     }
   };
 
-  const handleCinematicTryOn = async () => {
-    if (!resultImage) return;
-    setIsVideoProcessing(true);
-    try {
-      const res = await fetch('/api/cinematic-try-on', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageUrl: resultImage })
-      });
-      const data = await res.json();
-      if (data.success && data.videoUrl) {
-        setResultVideo(data.videoUrl);
-      } else {
-        alert(data.error || 'Failed to generate cinematic video');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Error generating video');
-    } finally {
-      setIsVideoProcessing(false);
-    }
-  };
-
   const handleTryOn = async () => {
     if (!userImage || !garmentImage) return alert("Please upload both User Photo and Garment.");
-    setResultVideo(null);
+
     setIsProcessing(true);
     setProgress(0);
 
@@ -122,7 +97,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? <Image unoptimized width={64} height={64} alt="User photo" src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -139,7 +114,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? <Image unoptimized width={64} height={64} alt="Garment image" src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -218,46 +193,20 @@ export default function RealLifeFitting() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl flex flex-col items-center gap-4"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
-            {resultVideo ? (
-              <div className="relative group">
-                <CinematicViewer videoUrl={resultVideo} className="h-[70vh] w-auto" />
-                <button
-                  onClick={() => { setResultVideo(null); setResultImage(null); }}
-                  className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors z-30"
-                >
-                  ✕ Close
-                </button>
-              </div>
-            ) : (
-              <div className="relative group">
-                <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
-                <button
-                  onClick={() => setResultImage(null)}
-                  className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
-                >
-                  ✕ Close
-                </button>
-                <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
-                  AI GENERATED_
-                </div>
-              </div>
-            )}
-
-            {!resultVideo && (
+            <div className="relative group">
+                <Image unoptimized width={500} height={800} src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button
-                onClick={handleCinematicTryOn}
-                disabled={isVideoProcessing}
-                className="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold rounded-xl shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50 disabled:scale-100"
+                onClick={() => setResultImage(null)}
+                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
               >
-                {isVideoProcessing ? (
-                  <span className="animate-pulse">🎬 GENERATING CINEMATIC VIDEO...</span>
-                ) : (
-                  <><span>🎬</span> GENERATE CINEMATIC VIDEO</>
-                )}
+                ✕ Close
               </button>
-            )}
+              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
+                AI GENERATED_
+              </div>
+            </div>
           </motion.div>
         )}
       </div>
