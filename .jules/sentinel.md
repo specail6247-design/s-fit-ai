@@ -1,0 +1,4 @@
+## 2024-05-18 - Path Traversal Vulnerability in Next.js File Read Utility
+**Vulnerability:** A local file read helper (`localFileToDataUri`) in `app/api/try-on/route.ts` concatenated user input (garment image path) directly into a file path using `path.join()`, allowing path traversal via `../` to access arbitrary files on the system (e.g., `/etc/passwd`).
+**Learning:** `path.join` does not prevent directory traversal; it merely normalizes the path. When serving or processing local files based on client input, the resulting absolute path must be validated to ensure it remains within the intended sandbox directory.
+**Prevention:** Always use `path.resolve()` on both the base directory and the target path, then enforce that the target path strictly `.startsWith(baseDirectory)` before any file system access.
