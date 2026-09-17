@@ -17,11 +17,13 @@ class PipelineRequest(BaseModel):
 REPLICATE_API_TOKEN = os.environ.get("REPLICATE_API_TOKEN", "")
 IDM_VTON_MODEL = "cuuupid/idm-vton:c871bb9b046607b680449ecbae55fd8c6d945e0a1948644bf2361b3d021d3ff4"
 REAL_ESRGAN_MODEL = "nightmareai/real-esrgan:42fed1c4974146d4d2414e2be2c5277c7fcf05fcc3a73ab241bbb49991ea7781"
-SVD_MODEL = "stability-ai/stable-video-diffusion:3f0457e4619daac51203dedb472816f3af8d9bc94d61ced4e916cd04605162f1"
+RUNWAY_GEN3_MODEL = "runwayml/gen-3-alpha:latest" # Requested Runway Gen-3/4 API
 
 async def call_replicate(client: httpx.AsyncClient, model: str, input_data: dict):
     if not REPLICATE_API_TOKEN:
         # Mock successful response if no token
+        if model == RUNWAY_GEN3_MODEL:
+            return {"output": "https://example.com/mock-video.mp4"}
         return {"output": "https://pub-83c5db439b40468498f97946200806f7.r2.dev/mock-result-sfit.png"}
 
     url = "https://api.replicate.com/v1/predictions"
@@ -30,7 +32,7 @@ async def call_replicate(client: httpx.AsyncClient, model: str, input_data: dict
         "Content-Type": "application/json"
     }
     data = {
-        "version": model.split(":")[1],
+        "version": model.split(":")[1] if ":" in model else model,
         "input": input_data
     }
 
@@ -86,13 +88,13 @@ async def run_pipeline(request: PipelineRequest):
         # Step 2: Upscale & Video generation in parallel
         upscale_input = {"image": output_url, "scale": 4}
         video_input = {
-            "input_image": output_url,
-            "video_length": "25_frames_with_svd_xt",
-            "sizing_strategy": "maintain_aspect_ratio"
-        }
+            "prompt": "Cinematic runway walk, hyper-realistic, 60fps",
+            "image": output_url,
+            "duration": 5
+        } # Runway parameters
 
         upscale_task = asyncio.create_task(call_replicate(client, REAL_ESRGAN_MODEL, upscale_input))
-        video_task = asyncio.create_task(call_replicate(client, SVD_MODEL, video_input))
+        video_task = asyncio.create_task(call_replicate(client, RUNWAY_GEN3_MODEL, video_input))
 
         results = await asyncio.gather(upscale_task, video_task, return_exceptions=True)
 
