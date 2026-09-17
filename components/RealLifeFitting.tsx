@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LegalModal } from './LegalModal';
+import { ReportIssueModal } from './ReportIssueModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [legalType, setLegalType] = useState<'privacy' | 'terms' | null>(null);
+  const [showReportIssue, setShowReportIssue] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -26,7 +30,44 @@ export default function RealLifeFitting() {
     }
   };
 
-  const handleTryOn = async () => {
+
+  const handleShareToStory = () => {
+    if (!resultImage) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const scale = Math.min(1000 / img.width, 1600 / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (1080 - w) / 2;
+      const y = (1920 - h) / 2;
+
+      ctx.drawImage(img, x, y, w, h);
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = 'bold 60px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT AI', 540, 100);
+
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+      const link = document.createElement('a');
+      link.download = 'sfit-story.jpg';
+      link.href = dataUrl;
+      link.click();
+    };
+    img.src = resultImage;
+  };
+
+    const handleTryOn = async () => {
     if (!userImage || !garmentImage) return alert("Please upload both User Photo and Garment.");
     
     setIsProcessing(true);
@@ -124,6 +165,12 @@ export default function RealLifeFitting() {
           </div>
         </div>
 
+        {/* Data Safety Badge */}
+        <div className="flex items-center gap-2 px-4 py-3 bg-[#007AFF]/10 border border-[#007AFF]/20 rounded-xl mt-4">
+          <span className="text-xl">🛡️</span>
+          <p className="text-[10px] text-[#007AFF] font-bold leading-tight">Data Safety: Photos are processed securely and not shared.</p>
+        </div>
+
         {/* Action Button */}
         <div className="mt-8 relative z-10">
           {isProcessing ? (
@@ -156,6 +203,13 @@ export default function RealLifeFitting() {
              <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                Luxury Line
              </a>
+          </div>
+
+          {/* Footer Links */}
+          <div className="mt-8 pt-4 border-t border-white/10 flex flex-wrap gap-4 text-[10px] text-gray-500 justify-center">
+            <button onClick={() => setLegalType('privacy')} className="hover:text-white transition-colors">Privacy Policy</button>
+            <button onClick={() => setLegalType('terms')} className="hover:text-white transition-colors">Terms of Service</button>
+            <button onClick={() => setShowReportIssue(true)} className="hover:text-[#007AFF] transition-colors">Report Issue</button>
           </div>
 
         </div>
@@ -202,6 +256,12 @@ export default function RealLifeFitting() {
               >
                 ✕ Close
               </button>
+              <button
+                onClick={handleShareToStory}
+                className="absolute top-16 right-4 bg-[#007AFF] text-white rounded-full p-2 hover:bg-[#005bb5] transition-colors shadow-lg"
+              >
+                📸 Share to Story
+              </button>
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
@@ -209,6 +269,9 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      <LegalModal isOpen={legalType !== null} onClose={() => setLegalType(null)} type={legalType} />
+      <ReportIssueModal isOpen={showReportIssue} onClose={() => setShowReportIssue(false)} />
     </div>
   );
 }
