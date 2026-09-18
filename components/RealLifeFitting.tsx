@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import PrivacyTermsModal from './PrivacyTermsModal';
+import SupportHubModal from './SupportHubModal';
+import StoryShareModal from './StoryShareModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -13,6 +16,9 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 export default function RealLifeFitting() {
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [isStoryShareOpen, setIsStoryShareOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
@@ -88,7 +94,7 @@ export default function RealLifeFitting() {
           </p>
         </header>
 
-        <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
+        <div className="space-y-8 relative z-10 flex-1 overflow-y-auto pr-2">
           {/* User Photo Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
@@ -96,13 +102,19 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? <img src={userImage} alt="User" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
                 </div>
               </label>
+            </div>
+
+            {/* Data Safety Badge */}
+            <div className="mt-2 flex items-center gap-2 text-xs text-green-400/80 bg-green-500/10 px-3 py-2 rounded-lg border border-green-500/20">
+              <span className="text-sm">🛡️</span>
+              <span>Photos are processed securely and not shared.</span>
             </div>
           </div>
 
@@ -159,6 +171,16 @@ export default function RealLifeFitting() {
           </div>
 
         </div>
+
+        {/* Footer Links */}
+        <div className="mt-6 flex justify-between text-xs text-gray-500 relative z-10 pt-4 border-t border-white/10">
+          <button onClick={() => setIsPrivacyOpen(true)} className="hover:text-white transition-colors underline-offset-4 hover:underline">
+            Privacy & Terms
+          </button>
+          <button onClick={() => setIsSupportOpen(true)} className="hover:text-white transition-colors underline-offset-4 hover:underline">
+            Support Hub
+          </button>
+        </div>
       </div>
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
@@ -205,10 +227,23 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+              <div className="absolute bottom-4 right-4 flex gap-2">
+                <button
+                  onClick={() => setIsStoryShareOpen(true)}
+                  className="bg-gradient-to-r from-pink-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-2"
+                >
+                  📸 Share to Story
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
       </div>
+
+      <PrivacyTermsModal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
+      <SupportHubModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
+      <StoryShareModal isOpen={isStoryShareOpen} onClose={() => setIsStoryShareOpen(false)} resultImage={resultImage} />
     </div>
   );
 }
