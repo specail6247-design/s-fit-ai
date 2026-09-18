@@ -33,8 +33,6 @@
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
   --transition-slow: 400ms cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-luxury: 700ms cubic-bezier(0.25, 0.1, 0.25, 1);
-  --transition-cinematic: 1000ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @theme inline {
@@ -279,24 +277,6 @@ body {
 .auto-cycle-bar {
   transform-origin: left;
   animation: autoCycle 5s linear infinite;
-}
-
-/* Luxury Mode & Cinematic Share Utilities */
-.luxury-grading {
-  filter: saturate(0.9) contrast(1.1);
-}
-.immersive-state {
-  opacity: 0;
-  transition: opacity var(--transition-luxury);
-}
-.immersive-state.active {
-  opacity: 1;
-}
-.text-cinzel {
-  font-family: var(--font-cinzel), serif;
-}
-.text-geist {
-  font-family: var(--font-geist-sans), sans-serif;
 }
 
 /* Mobile Responsiveness */

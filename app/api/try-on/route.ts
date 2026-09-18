@@ -87,37 +87,23 @@ export async function POST(request: NextRequest) {
     console.log('- garmentImage type:', garmentImageInput.startsWith('data:') ? 'data URI' : 'URL');
     console.log('- category:', category || 'upper_body');
 
-    // Call Python FastAPI Orchestrator
-    try {
-        const response = await fetch('http://localhost:8000/api/orchestrate/try-on', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                userPhoto: userPhotoInput,
-                garmentImage: garmentImageInput,
-                category: category || 'upper_body'
-            })
-        });
+    // Call Replicate API
+    const result = await generateVirtualTryOn({
+      userPhoto: userPhotoInput,
+      garmentImage: garmentImageInput,
+      category: category || 'upper_body'
+    });
 
-        const result = await response.json();
-
-        if (result.success) {
-            return NextResponse.json({ success: true, imageUrl: result.imageUrl });
-        } else {
-            return NextResponse.json({ error: result.error || 'Backend error' }, { status: 500 });
-        }
-    } catch {
-        // Fallback to internal lib
-        const fallbackResult = await generateVirtualTryOn({
-          userPhoto: userPhotoInput,
-          garmentImage: garmentImageInput,
-          category: category || 'upper_body'
-        });
-        if (fallbackResult.success) {
-            return NextResponse.json({ success: true, imageUrl: fallbackResult.imageUrl });
-        } else {
-            return NextResponse.json({ error: fallbackResult.error }, { status: 500 });
-        }
+    if (result.success) {
+      return NextResponse.json({
+        success: true,
+        imageUrl: result.imageUrl
+      });
+    } else {
+      return NextResponse.json(
+        { error: result.error },
+        { status: 500 }
+      );
     }
   } catch (error) {
     console.error('Try-on API error:', error);

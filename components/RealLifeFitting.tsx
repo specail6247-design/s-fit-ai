@@ -205,25 +205,6 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
-              <button
-                onClick={async () => {
-                  try {
-                    const res = await fetch('/api/cinematic-try-on', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({imageUrl: resultImage}) });
-                    const data = await res.json();
-                    if(data.videoUrl) {
-                        window.open(data.videoUrl, '_blank');
-                    } else {
-                        alert('Cinematic render failed: ' + (data.error || 'Unknown error'));
-                    }
-                  } catch(error) {
-                      console.error(error);
-                      alert('Cinematic Share Error');
-                  }
-                }}
-                className="absolute bottom-4 right-4 bg-[#C9B037] hover:bg-[#ecab13] text-black font-bold px-4 py-2 rounded-lg text-sm transition-all shadow-[0_0_15px_rgba(201,176,55,0.5)] flex items-center gap-2"
-              >
-                🎥 Cinematic Share 4K
-              </button>
             </div>
           </motion.div>
         )}
