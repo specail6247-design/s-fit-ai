@@ -77,7 +77,7 @@ export function AuthButton() {
         </div>
         <button
           onClick={handleLogout}
-          className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-xs font-medium transition-colors border border-white/10"
+          className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-xs font-medium transition-colors border border-white/10 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
         >
           Sign Out
         </button>
@@ -89,22 +89,23 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
       >
         LOGIN
       </button>
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
+          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative" role="dialog" aria-modal="true" aria-labelledby="modal-title">
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              aria-label="Close modal"
+              className="absolute top-4 right-4 text-soft-gray hover:text-white focus-visible:ring-2 focus-visible:ring-cyber-lime focus-visible:outline-none rounded-sm"
             >
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
+            <h2 id="modal-title" className="text-xl font-bold text-white mb-6 text-center">
               {isLogin ? 'Welcome Back' : 'Create Account'}
             </h2>
 
@@ -112,23 +113,26 @@ export function AuthButton() {
               <input
                 type="email"
                 placeholder="Email"
+                aria-label="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime focus:ring-1 focus:ring-cyber-lime outline-none"
                 required
               />
               <input
                 type="password"
                 placeholder="Password"
+                aria-label="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime focus:ring-1 focus:ring-cyber-lime outline-none"
                 required
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                aria-busy={loading}
+                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-cyber-lime focus-visible:outline-none"
               >
                 {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
               </button>
@@ -141,17 +145,17 @@ export function AuthButton() {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <button onClick={() => handleSocialLogin('google')} className="bg-white/5 hover:bg-white/10 border border-white/10 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🇬</span> <span className="text-xs text-white">Google</span>
+              <button onClick={() => handleSocialLogin('google')} aria-label="Sign in with Google" className="bg-white/5 hover:bg-white/10 border border-white/10 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors focus-visible:ring-2 focus-visible:ring-cyber-lime focus-visible:outline-none">
+                <span className="text-lg" aria-hidden="true">🇬</span> <span className="text-xs text-white">Google</span>
               </button>
-              <button onClick={() => handleSocialLogin('kakao')} className="bg-[#FAE100] hover:bg-[#FADB00] text-[#371D1E] py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">💬</span> <span className="text-xs font-bold">Kakao</span>
+              <button onClick={() => handleSocialLogin('kakao')} aria-label="Sign in with Kakao" className="bg-[#FAE100] hover:bg-[#FADB00] text-[#371D1E] py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors focus-visible:ring-2 focus-visible:ring-cyber-lime focus-visible:outline-none">
+                <span className="text-lg" aria-hidden="true">💬</span> <span className="text-xs font-bold">Kakao</span>
               </button>
-              <button onClick={() => handleSocialLogin('apple')} className="bg-white hover:bg-gray-100 text-black py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🍎</span> <span className="text-xs font-bold">Apple</span>
+              <button onClick={() => handleSocialLogin('apple')} aria-label="Sign in with Apple" className="bg-white hover:bg-gray-100 text-black py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors focus-visible:ring-2 focus-visible:ring-cyber-lime focus-visible:outline-none">
+                <span className="text-lg" aria-hidden="true">🍎</span> <span className="text-xs font-bold">Apple</span>
               </button>
-              <button onClick={() => handleSocialLogin('discord')} className="bg-[#5865F2] hover:bg-[#4752C4] text-white py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🎮</span> <span className="text-xs font-bold">Discord</span>
+              <button onClick={() => handleSocialLogin('discord')} aria-label="Sign in with Discord" className="bg-[#5865F2] hover:bg-[#4752C4] text-white py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors focus-visible:ring-2 focus-visible:ring-cyber-lime focus-visible:outline-none">
+                <span className="text-lg" aria-hidden="true">🎮</span> <span className="text-xs font-bold">Discord</span>
               </button>
             </div>
 
@@ -159,7 +163,7 @@ export function AuthButton() {
               {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
               <button
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-cyber-lime hover:underline ml-1"
+                className="text-cyber-lime hover:underline ml-1 focus-visible:ring-2 focus-visible:ring-cyber-lime focus-visible:outline-none rounded-sm"
               >
                 {isLogin ? 'Sign up' : 'Log in'}
               </button>
