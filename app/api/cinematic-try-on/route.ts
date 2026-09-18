@@ -12,15 +12,32 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await generateCinematicVideo(imageUrl);
+    try {
+        const response = await fetch('http://localhost:8000/api/orchestrate/cinematic', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ imageUrl })
+        });
 
-    if (result.success) {
-      return NextResponse.json(result);
-    } else {
-      return NextResponse.json(
-        { success: false, error: result.error || 'Failed to generate video' },
-        { status: 500 }
-      );
+        const result = await response.json();
+
+        if (result.success) {
+            return NextResponse.json(result);
+        } else {
+            return NextResponse.json({ success: false, error: result.error || 'Failed to generate video' }, { status: 500 });
+        }
+    } catch {
+        // Fallback to internal lib
+        const fallbackResult = await generateCinematicVideo(imageUrl);
+
+        if (fallbackResult.success) {
+          return NextResponse.json(fallbackResult);
+        } else {
+          return NextResponse.json(
+            { success: false, error: fallbackResult.error || 'Failed to generate video' },
+            { status: 500 }
+          );
+        }
     }
   } catch (error) {
     console.error('API Error:', error);

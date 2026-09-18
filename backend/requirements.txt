@@ -1,0 +1,1 @@
+fastapi\nreplicate\npydantic\nuvicorn\nhttpx
