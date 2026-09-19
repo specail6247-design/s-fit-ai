@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { SupportHub } from '@/components/support/SupportHub';
+import { PrivacyPolicyModal } from '@/components/support/PrivacyPolicyModal';
+import { ShareToStory } from '@/components/support/ShareToStory';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -13,6 +16,7 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 export default function RealLifeFitting() {
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
@@ -103,6 +107,12 @@ export default function RealLifeFitting() {
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
                 </div>
               </label>
+              <div className="mt-2 text-[10px] text-green-500/80 flex items-center gap-1">
+                <span>🛡️</span> Photos are processed securely and not shared.
+                <button onClick={() => setIsPrivacyOpen(true)} className="ml-auto underline hover:text-white">
+                  Privacy Policy
+                </button>
+              </div>
             </div>
           </div>
 
@@ -158,6 +168,8 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <SupportHub />
+
         </div>
       </div>
 
@@ -205,10 +217,12 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <div className="absolute bottom-4 right-4 w-48"><ShareToStory imageUrl={resultImage} /></div>
             </div>
           </motion.div>
         )}
       </div>
+      <PrivacyPolicyModal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
     </div>
   );
 }
