@@ -23,8 +23,9 @@ export function SupportHub() {
 
       <AnimatePresence>
         {isOpen && (
-          <>
+          <div key="support-hub-container">
             <motion.div
+              key="backdrop"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -33,6 +34,7 @@ export function SupportHub() {
             />
 
             <motion.div
+              key="drawer"
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
@@ -113,7 +115,7 @@ export function SupportHub() {
                 </section>
               </div>
             </motion.div>
-          </>
+          </div>
         )}
       </AnimatePresence>
     </>
