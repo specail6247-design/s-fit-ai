@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 const SFitAIProject = () => {
   const [userImage, setUserImage] = useState<string | null>(null);
@@ -62,17 +63,17 @@ const SFitAIProject = () => {
         <div style={styles.grid}>
           <div style={styles.card}>
             <h3>User Photo</h3>
-            <div style={styles.uploadBox}>
-              <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} />
-              {userImage && <img src={userImage} style={styles.preview} alt="User" />}
+            <div style={{ ...styles.uploadBox, position: 'relative' }}>
+              <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} style={{ position: 'relative', zIndex: 10 }} />
+              {userImage && <Image src={userImage} fill unoptimized style={{ objectFit: 'cover', borderRadius: '8px', zIndex: 1 }} alt="User" />}
             </div>
           </div>
 
           <div style={styles.card}>
             <h3>Garment</h3>
-            <div style={styles.uploadBox}>
-              <input type="file" onChange={(e) => handleFileUpload(e, setClothingImage)} />
-              {clothingImage && <img src={clothingImage} style={styles.preview} alt="Cloth" />}
+            <div style={{ ...styles.uploadBox, position: 'relative' }}>
+              <input type="file" onChange={(e) => handleFileUpload(e, setClothingImage)} style={{ position: 'relative', zIndex: 10 }} />
+              {clothingImage && <Image src={clothingImage} fill unoptimized style={{ objectFit: 'cover', borderRadius: '8px', zIndex: 1 }} alt="Cloth" />}
             </div>
           </div>
         </div>
@@ -90,7 +91,9 @@ const SFitAIProject = () => {
         {finalResult && (
           <div style={styles.resultContainer}>
             <h2 style={styles.resultTitle}>Fitting Result</h2>
-            <img src={finalResult} style={styles.finalImg} alt="Result" />
+            <div style={{ position: 'relative', width: '100%', maxWidth: '400px', height: '500px', margin: '0 auto' }}>
+              <Image src={finalResult} fill unoptimized style={{ objectFit: 'cover', borderRadius: '12px' }} alt="Result" />
+            </div>
           </div>
         )}
       </main>
