@@ -539,7 +539,7 @@ function Scene({
             scale={1.0}
           />
         ) : (
-          <Mannequin height={height} opacity={1.0} />
+          <Mannequin height={height} />
         )}
         
         {/* Fit Heatmap Visual Overlay */}
