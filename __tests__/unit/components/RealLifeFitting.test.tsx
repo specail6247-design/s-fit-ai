@@ -29,18 +29,18 @@ vi.mock('three', () => ({
 }));
 
 describe('RealLifeFitting', () => {
-  it('renders the Night City UI structure', () => {
+  it('renders the M_FIT UI structure', () => {
     render(<RealLifeFitting />);
     
     // Check for Main Header
-    expect(screen.getByText(/S_FIT/i)).toBeInTheDocument();
-    expect(screen.getByText(/NEO/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/M_FIT/i)[0]).toBeInTheDocument();
+    expect(screen.getByText(/Personal Digital Atelier/i)).toBeInTheDocument();
     
     // Check for Sections
-    expect(screen.getByText(/01. Identification/i)).toBeInTheDocument();
-    expect(screen.getByText(/02. Target Garment/i)).toBeInTheDocument();
+    expect(screen.getByText(/I. The Muse/i)).toBeInTheDocument();
+    expect(screen.getByText(/II. The Masterpiece/i)).toBeInTheDocument();
     
     // Check for CTA
-    expect(screen.getByText(/TRY IT ON/i)).toBeInTheDocument();
+    expect(screen.getByText(/Begin Simulation/i)).toBeInTheDocument();
   });
 });

@@ -6,7 +6,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
   ssr: false,
-  loading: () => <div className="absolute inset-0 flex items-center justify-center text-[#007AFF] font-mono text-xs animate-pulse">LOADING 3D ENGINE...</div>
+  loading: () => <div className="absolute inset-0 flex items-center justify-center text-[#C9B037] font-mono text-xs animate-pulse">LOADING M_FIT STUDIO...</div>
 });
 
 // --- MAIN CONTROL COMPONENT ---
@@ -15,6 +15,7 @@ export default function RealLifeFitting() {
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
+  const [resultVideo, setResultVideo] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
@@ -32,23 +33,24 @@ export default function RealLifeFitting() {
     setIsProcessing(true);
     setProgress(0);
 
-    // Simulate progress bar
+    // Simulate progress bar (slower for Luxury Mode)
     const interval = setInterval(() => {
       setProgress((prev) => {
-        if (prev >= 90) return prev;
-        return prev + 10;
+        if (prev >= 95) return prev;
+        return prev + 5;
       });
-    }, 500);
+    }, 700);
 
     try {
-      // API call to our backend (which calls Replicate/Fashn.ai)
-      const res = await fetch('/api/try-on', {
+      // Call orchestration API (Proxy to Python Backend)
+      const res = await fetch('/api/orchestrate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userPhotoUrl: userImage,
-          garmentImageUrl: garmentImage,
-          category: 'tops' // Default for demo
+          user_photo: userImage,
+          garment_image: garmentImage,
+          category: 'luxury',
+          accessories: ['gold_necklace', 'silk_scarf']
         })
       });
       const data = await res.json();
@@ -56,8 +58,9 @@ export default function RealLifeFitting() {
       clearInterval(interval);
       setProgress(100);
       
-      if (data.imageUrl) {
-        setResultImage(data.imageUrl);
+      if (data.success) {
+        setResultImage(data.final_image_url);
+        setResultVideo(data.final_video_url);
       } else {
         throw new Error(data.error || "Try-On Failed");
       }
@@ -65,61 +68,63 @@ export default function RealLifeFitting() {
       clearInterval(interval);
       console.error(err);
       console.log("Using demo mode fallback");
-      setResultImage("https://pub-83c5db439b40468498f97946200806f7.r2.dev/mock-result-sfit.png"); // Fallback
+      setResultImage("https://pub-83c5db439b40468498f97946200806f7.r2.dev/mock-result-sfit.png");
+      setResultVideo("https://pub-83c5db439b40468498f97946200806f7.r2.dev/mock-runway-video.mp4");
     } finally {
-      setIsProcessing(false);
+      setTimeout(() => setIsProcessing(false), 1000);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
+    <div className="min-h-screen bg-[#0A0A0A] text-white font-sans flex overflow-hidden">
       
       {/* LEFT PANEL: CONTROLS */}
-      <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
-        {/* Background Ambience */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
+      <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-[#C9B037]/20 relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] to-black pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
+        <header className="mb-10 relative z-10 text-center">
+          <h1 className="text-4xl font-serif tracking-widest text-[#C9B037]">
+            M_FIT
           </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
+          <p className="text-[10px] text-gray-400 tracking-[0.4em] uppercase mt-2">
+            Personal Digital Atelier
           </p>
         </header>
 
-        <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
+        <div className="space-y-8 relative z-10 flex-1 overflow-y-auto hide-scrollbar">
           {/* User Photo Input */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
-            <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
-              <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
-              <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+            <label className="text-[10px] tracking-widest text-[#C9B037] uppercase">I. The Muse</label>
+            <div className="border border-white/10 bg-black/60 rounded-xl p-4 hover:border-[#C9B037] transition-all duration-700 group cursor-pointer relative overflow-hidden">
+              <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="absolute inset-0 opacity-0 cursor-pointer z-20" aria-label="Upload User Photo" />
+              <div className="flex items-center gap-4 relative z-10">
+                <div className="w-20 h-20 bg-[#111] rounded-lg flex items-center justify-center overflow-hidden border border-white/5">
+                  {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
+                  {userImage ? <img src={userImage} className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000" /> : <span className="text-2xl opacity-50 font-serif italic">M</span>}
                 </div>
                 <div>
-                  <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
-                  <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
+                  <div className="text-sm font-medium tracking-wide group-hover:text-[#C9B037] transition-colors duration-700 text-gray-300">Upload Portrait</div>
+                  <div className="text-[10px] text-gray-600 tracking-wider">High-fidelity analysis</div>
                 </div>
-              </label>
+              </div>
             </div>
           </div>
 
           {/* Garment Input */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-[#007AFF] uppercase">02. Target Garment</label>
-            <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
-              <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
-              <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+            <label className="text-[10px] tracking-widest text-[#C9B037] uppercase">II. The Masterpiece</label>
+            <div className="border border-white/10 bg-black/60 rounded-xl p-4 hover:border-[#C9B037] transition-all duration-700 group cursor-pointer relative overflow-hidden">
+              <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="absolute inset-0 opacity-0 cursor-pointer z-20" aria-label="Select Garment" />
+              <div className="flex items-center gap-4 relative z-10">
+                <div className="w-20 h-20 bg-[#111] rounded-lg flex items-center justify-center overflow-hidden border border-white/5">
+                  {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
+                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000" /> : <span className="text-2xl opacity-50 font-serif italic">G</span>}
                 </div>
                 <div>
-                  <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
-                  <div className="text-[10px] text-gray-500">Front view preferred</div>
+                  <div className="text-sm font-medium tracking-wide group-hover:text-[#C9B037] transition-colors duration-700 text-gray-300">Select Garment</div>
+                  <div className="text-[10px] text-gray-600 tracking-wider">Silk, Denim, Wool</div>
                 </div>
-              </label>
+              </div>
             </div>
           </div>
         </div>
@@ -127,60 +132,49 @@ export default function RealLifeFitting() {
         {/* Action Button */}
         <div className="mt-8 relative z-10">
           {isProcessing ? (
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs text-[#007AFF] font-mono">
-                <span>PROCESSING DATA...</span>
+            <div className="space-y-4">
+              <div className="flex justify-between text-[10px] text-[#C9B037] tracking-widest uppercase">
+                <span>Orchestrating AI...</span>
                 <span>{progress}%</span>
               </div>
-              <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+              <div className="h-1 bg-gray-900 overflow-hidden">
                 <motion.div 
-                  className="h-full bg-[#007AFF]" 
+                  className="h-full bg-gradient-to-r from-[#C9B037]/50 to-[#C9B037]"
                   initial={{ width: 0 }} 
                   animate={{ width: `${progress}%` }} 
+                  transition={{ duration: 0.5 }}
                 />
+              </div>
+              {/* Sophisticated SVG tracing animation for loading */}
+              <div className="flex justify-center mt-4">
+                <svg width="40" height="40" viewBox="0 0 100 100" className="animate-spin" style={{ animationDuration: '3s' }}>
+                   <circle cx="50" cy="50" r="45" fill="none" stroke="#C9B037" strokeWidth="1" strokeDasharray="100 200" strokeLinecap="round" />
+                   <circle cx="50" cy="50" r="35" fill="none" stroke="#C9B037" strokeWidth="0.5" strokeDasharray="50 100" strokeLinecap="round" style={{ animationDirection: 'reverse' }} className="animate-spin" />
+                </svg>
               </div>
             </div>
           ) : (
             <button 
               onClick={handleTryOn}
-              className="w-full py-4 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
+              className="w-full py-5 bg-[#C9B037] hover:bg-[#d4c15b] text-black tracking-widest text-xs uppercase font-bold transition-all duration-700 hover:shadow-[0_0_30px_rgba(201,176,55,0.3)] flex items-center justify-center gap-3"
             >
-              <span>⚡️</span> TRY IT ON
+              <span>Begin Simulation</span>
             </button>
           )}
-          
-          <div className="mt-4 flex gap-2">
-             <a href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
-               SPA Line
-             </a>
-             <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
-               Luxury Line
-             </a>
-          </div>
-
         </div>
       </div>
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
-      <div className="flex-1 relative bg-gradient-to-b from-[#0a0a0a] to-[#111]">
-        {/* Background Image (Night City Vibe) */}
-        <div className="absolute inset-0 opacity-40 z-0">
-           {/* Placeholder for Night City HDRI background visual */}
-           <div className="w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-black to-black"></div>
-        </div>
+      <div className="flex-1 relative bg-black">
+        {/* Immersive UI State during analysis */}
+        <div className={`absolute inset-0 transition-opacity duration-1000 pointer-events-none z-30 ${isProcessing ? 'opacity-100 bg-black/80 backdrop-blur-sm' : 'opacity-0'}`}></div>
 
-        {/* 3D Canvas (Safe Load) */}
+        {/* 3D Canvas */}
         <div className="absolute inset-0 z-10">
           <ErrorBoundary fallback={
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-white/50 space-y-4">
-              <span className="text-4xl opacity-50">🤖</span>
-              <p className="text-xs font-mono">3D VISUALIZATION UNAVAILABLE</p>
-              <button 
-                onClick={() => window.location.reload()}
-                className="px-4 py-2 border border-white/20 rounded-lg hover:bg-white/10 text-xs"
-              >
-                RELOAD ENGINE
-              </button>
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-[#C9B037]/50 space-y-4 font-serif">
+              <span className="text-4xl opacity-50">.</span>
+              <p className="text-xs tracking-widest uppercase">Atelier Offline</p>
             </div>
           }>
             <AvatarCanvas />
@@ -188,24 +182,64 @@ export default function RealLifeFitting() {
         </div>
 
         {/* Result Overlay (If success) */}
-        {resultImage && !isProcessing && (
+        {(resultImage || resultVideo) && !isProcessing && (
           <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.5 }}
+            className="absolute inset-0 z-40 bg-black flex items-center justify-center p-12"
           >
-            <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
-              <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
-              >
-                ✕ Close
-              </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
-                AI GENERATED_
-              </div>
-            </div>
+             <div className="max-w-6xl w-full h-full flex flex-col items-center relative">
+               <div className="absolute top-0 right-0 flex gap-4">
+                  <button
+                    className="px-6 py-2 border border-[#C9B037]/50 text-[#C9B037] text-xs tracking-widest uppercase hover:bg-[#C9B037]/10 transition-colors duration-700"
+                  >
+                    Export 4K Cinematic
+                  </button>
+                  <button
+                    onClick={() => {setResultImage(null); setResultVideo(null);}}
+                    className="px-6 py-2 border border-white/20 text-white text-xs tracking-widest uppercase hover:bg-white/10 transition-colors duration-700"
+                  >
+                    Close
+                  </button>
+               </div>
+
+               <div className="w-full h-full flex items-center justify-center gap-8 mt-16">
+                 {/* Hyper-Zoom Result Image with color grading */}
+                 {resultImage && (
+                    <div className="w-1/2 h-[80vh] relative group cursor-crosshair overflow-hidden border border-white/10">
+                       {/* eslint-disable-next-line @next/next/no-img-element */}
+                       <img
+                          src={resultImage}
+                          alt="Result Image"
+                          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[2.5]"
+                          style={{ filter: 'saturate(0.9) contrast(1.1)' }}
+                       />
+                       <div className="absolute bottom-4 left-4 text-[#C9B037] text-[10px] tracking-widest uppercase bg-black/50 px-3 py-1 backdrop-blur-md">
+                         Hyper-Zoom Render
+                       </div>
+                    </div>
+                 )}
+
+                 {/* Cinematic Motion Video */}
+                 {resultVideo && (
+                    <div className="w-1/2 h-[80vh] relative border border-white/10 overflow-hidden">
+                       <video
+                         src={resultVideo}
+                         autoPlay
+                         loop
+                         muted
+                         playsInline
+                         className="w-full h-full object-cover"
+                         style={{ filter: 'saturate(0.9) contrast(1.1)' }}
+                       />
+                       <div className="absolute bottom-4 left-4 text-[#C9B037] text-[10px] tracking-widest uppercase bg-black/50 px-3 py-1 backdrop-blur-md">
+                         Physics Simulation
+                       </div>
+                    </div>
+                 )}
+               </div>
+             </div>
           </motion.div>
         )}
       </div>
