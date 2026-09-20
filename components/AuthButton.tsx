@@ -89,9 +89,9 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-5 py-2 rounded-full text-xs font-bold tracking-widest transition-all"
       >
-        LOGIN
+        MEMBER ACCESS
       </button>
 
       {showModal && (
@@ -104,7 +104,7 @@ export function AuthButton() {
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
+            <h2 className="text-2xl font-serif italic text-white mb-6 text-center">
               {isLogin ? 'Welcome Back' : 'Create Account'}
             </h2>
 
@@ -128,7 +128,7 @@ export function AuthButton() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="w-full bg-[#C9B037] text-black font-bold py-3 rounded-xl hover:brightness-110 transition-all disabled:opacity-50"
               >
                 {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
               </button>
