@@ -1,28 +1,30 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const data = await req.json();
 
-    // Proxy request to the dedicated Python FastAPI orchestration server
-    const backendRes = await fetch('http://localhost:8000/api/v1/orchestrate', {
+    // Use environment variable for backend URL, fallback to localhost for development
+    const backendUrl = process.env.ORCHESTRATION_API_URL || 'http://localhost:8000';
+
+    const response = await fetch(`${backendUrl}/api/v1/orchestrate`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(data),
     });
 
-    if (!backendRes.ok) {
-        return NextResponse.json({ success: false, error: "Backend error" }, { status: backendRes.status });
+    if (!response.ok) {
+      throw new Error(`Orchestration backend failed: ${response.statusText}`);
     }
 
-    const data = await backendRes.json();
-    return NextResponse.json(data);
+    const result = await response.json();
+    return NextResponse.json(result);
   } catch (error) {
-    console.error('Orchestrate proxy error:', error);
+    console.error('Orchestration proxy error:', error);
     return NextResponse.json(
-      { success: false, error: 'Internal server error connecting to backend' },
+      { error: 'Failed to orchestrate AI models' },
       { status: 500 }
     );
   }
