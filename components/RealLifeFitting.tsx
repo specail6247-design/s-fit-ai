@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LegalModal } from './legal/LegalModal';
+import { SupportHub } from './support/SupportHub';
+import { ShareToStory } from './social/ShareToStory';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +19,9 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isLegalOpen, setIsLegalOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -106,6 +112,12 @@ export default function RealLifeFitting() {
             </div>
           </div>
 
+          {/* Data Safety Badge */}
+          <div className="flex items-center justify-center gap-2 p-3 bg-[#007AFF]/10 border border-[#007AFF]/30 rounded-lg mb-4">
+            <span className="text-xl">🛡️</span>
+            <p className="text-[10px] text-[#007AFF]">Photos are processed securely and not shared.</p>
+          </div>
+
           {/* Garment Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">02. Target Garment</label>
@@ -158,6 +170,12 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Footer Links */}
+          <div className="mt-6 flex justify-between text-[10px] text-gray-500 font-bold uppercase tracking-wider pb-4">
+            <button onClick={() => setIsLegalOpen(true)} className="hover:text-[#007AFF] transition-colors cursor-pointer">Privacy & Terms</button>
+            <button onClick={() => setIsSupportOpen(true)} className="hover:text-[#007AFF] transition-colors cursor-pointer">Report Issue</button>
+          </div>
+
         </div>
       </div>
 
@@ -205,10 +223,22 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={() => setIsShareOpen(true)}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 hover:scale-105 transition-transform cursor-pointer"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      <LegalModal isOpen={isLegalOpen} onClose={() => setIsLegalOpen(false)} />
+      <SupportHub isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
+      {resultImage && (
+        <ShareToStory isOpen={isShareOpen} onClose={() => setIsShareOpen(false)} resultImage={resultImage} />
+      )}
     </div>
   );
 }
