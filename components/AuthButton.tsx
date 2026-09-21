@@ -99,7 +99,8 @@ export function AuthButton() {
           <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              aria-label="Close modal"
+              className="absolute top-4 right-4 text-soft-gray hover:text-white focus-visible:ring-2 focus-visible:outline-none"
             >
               ✕
             </button>
@@ -111,24 +112,27 @@ export function AuthButton() {
             <form onSubmit={handleAuth} className="space-y-4 mb-6">
               <input
                 type="email"
+                aria-label="Email"
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime focus-visible:ring-2 outline-none"
                 required
               />
               <input
                 type="password"
+                aria-label="Password"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime focus-visible:ring-2 outline-none"
                 required
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                aria-busy={loading}
+                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 focus-visible:ring-2 transition-colors disabled:opacity-50"
               >
                 {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
               </button>
