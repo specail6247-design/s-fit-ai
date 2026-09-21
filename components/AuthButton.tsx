@@ -89,14 +89,14 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="bg-transparent border border-[#C9B037] text-[#C9B037] px-6 py-2.5 rounded-full text-xs font-serif tracking-widest hover:bg-[#C9B037] hover:text-black transition-all"
       >
-        LOGIN
+        MEMBER ACCESS
       </button>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
+          <div className="bg-void-black border border-[#C9B037]/30 w-full max-w-md rounded-2xl p-10 relative shadow-[0_0_50px_rgba(201,176,55,0.1)]">
             <button
               onClick={() => setShowModal(false)}
               className="absolute top-4 right-4 text-soft-gray hover:text-white"
@@ -104,7 +104,7 @@ export function AuthButton() {
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
+            <h2 className="text-2xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#C9B037] to-[#F4E4BC] mb-8 text-center tracking-wide uppercase">
               {isLogin ? 'Welcome Back' : 'Create Account'}
             </h2>
 
@@ -114,7 +114,7 @@ export function AuthButton() {
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white text-sm focus:border-[#C9B037] transition-colors outline-none font-mono placeholder:text-gray-600"
                 required
               />
               <input
@@ -122,13 +122,13 @@ export function AuthButton() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white text-sm focus:border-[#C9B037] transition-colors outline-none font-mono placeholder:text-gray-600"
                 required
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="w-full bg-gradient-to-r from-[#C9B037] to-[#F4E4BC] text-black font-serif tracking-widest font-bold py-4 mt-4 hover:opacity-90 transition-opacity disabled:opacity-50"
               >
                 {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
               </button>
