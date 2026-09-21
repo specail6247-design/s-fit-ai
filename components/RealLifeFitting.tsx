@@ -10,11 +10,37 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 });
 
 // --- MAIN CONTROL COMPONENT ---
+
+const localFileToDataUri = async (url: string): Promise<string> => {
+  if (url.startsWith('data:')) return url;
+  if (url.startsWith('http')) return url;
+
+  // It's a local path
+  try {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (e) {
+    console.error("Failed to convert local file to data URI", e);
+    return url;
+  }
+};
+
 export default function RealLifeFitting() {
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
+  const [resultVideo, setResultVideo] = useState<string | null>(null);
+  const [isUpscaling, setIsUpscaling] = useState(false);
+  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
+  const [activeTab, setActiveTab] = useState<'image' | 'video'>('image');
+  const [activeCategory, setActiveCategory] = useState<'tops' | 'bottoms' | 'dresses' | 'accessories'>('tops');
   const [progress, setProgress] = useState(0);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
@@ -26,7 +52,52 @@ export default function RealLifeFitting() {
     }
   };
 
+
+  const handleUpscale = async () => {
+    if (!resultImage || isUpscaling) return;
+    setIsUpscaling(true);
+    try {
+      const res = await fetch('/api/upscale', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: resultImage })
+      });
+      const data = await res.json();
+      if (data.imageUrl) {
+        setResultImage(data.imageUrl);
+      }
+    } catch (err) {
+      console.error('Upscale failed', err);
+    } finally {
+      setIsUpscaling(false);
+    }
+  };
+
+  const handleGenerateVideo = async () => {
+    if (!resultImage || isGeneratingVideo) return;
+    setIsGeneratingVideo(true);
+    setActiveTab('video');
+    try {
+      const res = await fetch('/api/video', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: resultImage })
+      });
+      const data = await res.json();
+      if (data.videoUrl) {
+        setResultVideo(data.videoUrl);
+      }
+    } catch (err) {
+      console.error('Video generation failed', err);
+      setActiveTab('image');
+    } finally {
+      setIsGeneratingVideo(false);
+    }
+  };
+
   const handleTryOn = async () => {
+    setResultVideo(null);
+    setActiveTab('image');
     if (!userImage || !garmentImage) return alert("Please upload both User Photo and Garment.");
     
     setIsProcessing(true);
@@ -41,14 +112,18 @@ export default function RealLifeFitting() {
     }, 500);
 
     try {
+      // Convert to data URIs if they are local paths
+      const userPhotoDataUri = await localFileToDataUri(userImage);
+      const garmentImageDataUri = await localFileToDataUri(garmentImage);
+
       // API call to our backend (which calls Replicate/Fashn.ai)
       const res = await fetch('/api/try-on', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userPhotoUrl: userImage,
-          garmentImageUrl: garmentImage,
-          category: 'tops' // Default for demo
+          userPhotoUrl: userPhotoDataUri,
+          garmentImageUrl: garmentImageDataUri,
+          category: activeCategory
         })
       });
       const data = await res.json();
@@ -89,6 +164,22 @@ export default function RealLifeFitting() {
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
+          {/* Category Selection */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-[#007AFF] uppercase">00. Global Brand Library & Scalability</label>
+            <div className="flex gap-2">
+                {(['tops', 'bottoms', 'dresses', 'accessories'] as const).map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`flex-1 py-2 rounded-lg text-xs font-bold uppercase transition-colors ${activeCategory === cat ? 'bg-[#007AFF] text-white' : 'bg-black/40 text-gray-400 hover:text-white border border-white/20'}`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+            </div>
+          </div>
+
           {/* User Photo Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
@@ -108,7 +199,7 @@ export default function RealLifeFitting() {
 
           {/* Garment Input */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-[#007AFF] uppercase">02. Target Garment</label>
+            <label className="text-xs font-bold text-[#007AFF] uppercase">02. Target Garment (Material Interactive)</label>
             <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
@@ -188,23 +279,92 @@ export default function RealLifeFitting() {
         </div>
 
         {/* Result Overlay (If success) */}
+
         {resultImage && !isProcessing && (
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl flex flex-col gap-4"
           >
-            <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
-              <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
-              >
-                ✕ Close
-              </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
-                AI GENERATED_
+            <div className="flex justify-between items-center px-2">
+              <div className="flex gap-2 bg-black/40 p-1 rounded-lg">
+                <button
+                  onClick={() => setActiveTab('image')}
+                  className={`px-4 py-1 text-xs font-bold rounded-md transition-colors ${activeTab === 'image' ? 'bg-[#007AFF] text-white' : 'text-gray-400 hover:text-white'}`}
+                >
+                  IMAGE
+                </button>
+                <button
+                  onClick={() => setActiveTab('video')}
+                  className={`px-4 py-1 text-xs font-bold rounded-md transition-colors ${activeTab === 'video' ? 'bg-[#007AFF] text-white' : 'text-gray-400 hover:text-white'}`}
+                >
+                  VIDEO
+                </button>
               </div>
+              <button 
+                onClick={() => { setResultImage(null); setResultVideo(null); setActiveTab('image'); }}
+                className="bg-black/60 text-white rounded-full p-2 hover:bg-red-500 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="relative group bg-black/20 rounded-xl overflow-hidden min-h-[50vh] min-w-[30vw] flex items-center justify-center">
+              {activeTab === 'video' ? (
+                isGeneratingVideo ? (
+                  <div className="flex flex-col items-center gap-4 p-8">
+                    <div className="w-8 h-8 border-4 border-[#007AFF] border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-[#007AFF] text-sm font-mono tracking-widest text-center">
+                      GENERATING 4K CINEMATIC VIDEO...<br/>
+                      <span className="text-xs text-gray-400">Rendering physics and motion</span>
+                    </p>
+                  </div>
+                ) : resultVideo ? (
+                  <video src={resultVideo} autoPlay loop muted playsInline className="w-auto h-[70vh] rounded-xl shadow-2xl object-contain" />
+                ) : (
+                  <div className="flex flex-col items-center gap-4 p-8">
+                    <p className="text-gray-400 text-sm text-center mb-4">No video generated yet.</p>
+                    <button
+                      onClick={handleGenerateVideo}
+                      className="px-6 py-3 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl shadow-[0_0_20px_rgba(0,122,255,0.4)] transition-all flex items-center gap-2"
+                    >
+                      🎬 GENERATE CINEMATIC VIDEO
+                    </button>
+                  </div>
+                )
+              ) : (
+                <>
+                  <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+                  <div className="absolute bottom-4 left-4 flex gap-2">
+                    <div className="bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30 flex items-center">
+                      AI GENERATED_
+                    </div>
+                  </div>
+                  <div className="absolute bottom-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={handleUpscale}
+                      disabled={isUpscaling}
+                      className="bg-black/80 hover:bg-[#007AFF] text-white px-4 py-2 rounded-lg text-xs font-bold shadow-lg backdrop-blur-sm border border-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      {isUpscaling ? (
+                        <>
+                          <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          UPSCALING...
+                        </>
+                      ) : (
+                        '🔍 4K HYPER-ZOOM'
+                      )}
+                    </button>
+                    <button
+                      onClick={handleGenerateVideo}
+                      disabled={isGeneratingVideo}
+                      className="bg-[#007AFF] hover:bg-[#005bb5] text-white px-4 py-2 rounded-lg text-xs font-bold shadow-lg shadow-[#007AFF]/20 transition-colors flex items-center gap-2"
+                    >
+                      🎬 CINEMATIC SHARE
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </motion.div>
         )}
