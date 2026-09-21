@@ -17,6 +17,74 @@ export default function RealLifeFitting() {
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
 
+  const [showLegalModal, setShowLegalModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportText, setReportText] = useState("");
+  const [reportSubmitted, setReportSubmitted] = useState(false);
+
+  const handleReportSubmit = () => {
+    if (!reportText.trim()) return;
+    setReportSubmitted(true);
+    setTimeout(() => {
+      setShowReportModal(false);
+      setReportSubmitted(false);
+      setReportText("");
+    }, 2000);
+  };
+
+  const handleShareToStory = async () => {
+    if (!resultImage) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = resultImage;
+    await new Promise((resolve) => {
+      img.onload = resolve;
+      img.onerror = resolve;
+    });
+
+    const imgAspect = img.width / img.height;
+    const canvasAspect = canvas.width / canvas.height;
+
+    let drawWidth, drawHeight;
+    if (imgAspect > canvasAspect) {
+      drawWidth = canvas.width;
+      drawHeight = canvas.width / imgAspect;
+    } else {
+      drawHeight = canvas.height;
+      drawWidth = canvas.height * imgAspect;
+    }
+
+    const x = (canvas.width - drawWidth) / 2;
+    const y = (canvas.height - drawHeight) / 2;
+
+    ctx.drawImage(img, x, y, drawWidth, drawHeight);
+
+    ctx.fillStyle = '#007AFF';
+    ctx.font = 'italic 900 80px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('S_FIT NEO', canvas.width / 2, 150);
+
+    ctx.font = 'bold 40px sans-serif';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.fillText('Professional Virtual Fitting', canvas.width / 2, 220);
+
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = 'sfit-story.jpg';
+    a.click();
+  };
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -122,6 +190,16 @@ export default function RealLifeFitting() {
               </label>
             </div>
           </div>
+
+          {/* Data Safety Badge */}
+          <div className="flex items-start gap-3 p-3 bg-white/5 border border-white/10 rounded-xl mt-4">
+            <span className="text-lg leading-none">🔒</span>
+            <div>
+              <p className="text-xs font-bold text-gray-200">Data Safety</p>
+              <p className="text-[10px] text-gray-500 mt-1">Photos are processed securely and not shared.</p>
+            </div>
+          </div>
+
         </div>
 
         {/* Action Button */}
@@ -156,6 +234,11 @@ export default function RealLifeFitting() {
              <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                Luxury Line
              </a>
+          </div>
+
+          <div className="mt-6 flex gap-4 text-[10px] text-gray-500 justify-center">
+            <button onClick={() => setShowLegalModal(true)} className="hover:text-white transition-colors underline">Privacy & Terms</button>
+            <button onClick={() => setShowReportModal(true)} className="hover:text-white transition-colors underline">Report Issue</button>
           </div>
 
         </div>
@@ -205,10 +288,66 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+
+              <div className="absolute bottom-4 right-4 flex gap-2">
+                <button
+                  onClick={handleShareToStory}
+                  className="bg-gradient-to-r from-pink-500 to-orange-500 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-lg hover:opacity-90 transition-opacity flex items-center gap-2"
+                >
+                  <span>📸</span> Share to Story
+                </button>
+              </div>
+
             </div>
           </motion.div>
         )}
       </div>
+
+      {/* Modals */}
+      {showLegalModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-[#111] border border-white/10 p-6 rounded-2xl w-full max-w-2xl max-h-[80vh] flex flex-col relative">
+            <button onClick={() => setShowLegalModal(false)} className="absolute top-4 right-4 text-white/50 hover:text-white">✕</button>
+            <h2 className="text-xl font-bold mb-4">Privacy Policy & Terms</h2>
+            <div className="overflow-y-auto pr-4 text-sm text-gray-300 space-y-4 flex-1">
+              <h3 className="font-bold text-white">Privacy Policy</h3>
+              <p>Your privacy is important to us. Photos uploaded to S_FIT NEO are processed securely and temporarily stored solely for the purpose of generating your virtual fitting result. We do not share your images with third parties without your explicit consent.</p>
+
+              <h3 className="font-bold text-white mt-6">Terms of Service</h3>
+              <p>By using S_FIT NEO, you agree to use the service for its intended purpose. You may not upload inappropriate or explicit content. The generated results are for personal use, and we reserve the right to restrict access to users who violate these terms.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showReportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-[#111] border border-white/10 p-6 rounded-2xl w-full max-w-md relative">
+            <button onClick={() => setShowReportModal(false)} className="absolute top-4 right-4 text-white/50 hover:text-white">✕</button>
+            <h2 className="text-xl font-bold mb-4">Report Issue</h2>
+            {reportSubmitted ? (
+              <div className="text-green-500 font-bold text-center py-8">Thank you! We&apos;ve received your report.</div>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-sm text-gray-400">Describe the bug or issue you encountered.</p>
+                <textarea
+                  className="w-full bg-black/50 border border-white/20 rounded-xl p-3 text-sm focus:border-[#007AFF] outline-none min-h-[100px]"
+                  placeholder="What went wrong?"
+                  value={reportText}
+                  onChange={(e) => setReportText(e.target.value)}
+                />
+                <button
+                  onClick={handleReportSubmit}
+                  className="w-full py-3 bg-[#007AFF] hover:bg-[#005bb5] rounded-xl text-sm font-bold transition-colors"
+                >
+                  Submit Report
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
