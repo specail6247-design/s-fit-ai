@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateVirtualTryOn } from '@/lib/virtualTryOn';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -87,21 +86,34 @@ export async function POST(request: NextRequest) {
     console.log('- garmentImage type:', garmentImageInput.startsWith('data:') ? 'data URI' : 'URL');
     console.log('- category:', category || 'upper_body');
 
-    // Call Replicate API
-    const result = await generateVirtualTryOn({
-      userPhoto: userPhotoInput,
-      garmentImage: garmentImageInput,
-      category: category || 'upper_body'
+    // Call Python FastAPI Orchestration Backend
+    const backendUrl = process.env.FASTAPI_BACKEND_URL || 'http://127.0.0.1:8000';
+    const backendRes = await fetch(`${backendUrl}/api/orchestrate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userPhotoUrl: userPhotoInput,
+        garmentImageUrl: garmentImageInput,
+        category: category || 'upper_body',
+        is_cinematic: body.is_cinematic || false
+      })
     });
+
+    if (!backendRes.ok) {
+      throw new Error(`FastAPI backend error: ${backendRes.statusText}`);
+    }
+
+    const result = await backendRes.json();
 
     if (result.success) {
       return NextResponse.json({
         success: true,
-        imageUrl: result.imageUrl
+        imageUrl: result.imageUrl,
+        videoUrl: result.videoUrl
       });
     } else {
       return NextResponse.json(
-        { error: result.error },
+        { error: result.error || 'Failed orchestration' },
         { status: 500 }
       );
     }

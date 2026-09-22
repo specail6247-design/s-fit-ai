@@ -100,6 +100,33 @@ export class LayeringEngine {
 
     return warnings;
   }
+
+  analyzeMaterialInteraction(items: ClothingItem[]): {
+    aestheticMatch: 'Luxury' | 'K-Fashion' | 'Mixed';
+    physicsAdjustments: string[];
+  } {
+    const adjustments: string[] = [];
+    let luxuryCount = 0;
+    let kFashionCount = 0;
+
+    const hasHeavyJewelry = items.some(i => i.subCategory === 'jewelry' && (i.name.includes('Heavy') || i.name.includes('Metal') || i.name.includes('Gold')));
+    const hasDelicateFabric = items.some(i => i.category === 'tops' || i.category === 'dresses');
+
+    if (hasHeavyJewelry && hasDelicateFabric) {
+      adjustments.push("Layering Intelligence: Heavy jewelry detected on delicate fabric. Applying drape physics adjustment and depth inpainting for realistic material interaction.");
+    }
+
+    items.forEach(i => {
+      if (i.isLuxury) luxuryCount++;
+      if (i.name.includes('K-Fashion')) kFashionCount++;
+    });
+
+    let aestheticMatch: 'Luxury' | 'K-Fashion' | 'Mixed' = 'Mixed';
+    if (luxuryCount > 0 && kFashionCount === 0) aestheticMatch = 'Luxury';
+    if (kFashionCount > 0 && luxuryCount === 0) aestheticMatch = 'K-Fashion';
+
+    return { aestheticMatch, physicsAdjustments: adjustments };
+  }
 }
 
 export const layeringEngine = new LayeringEngine();
