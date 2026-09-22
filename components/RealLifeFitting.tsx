@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { PrivacyModal } from './modals/PrivacyModal';
+import { TermsModal } from './modals/TermsModal';
+import { ReportIssueModal } from './modals/ReportIssueModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +19,53 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+
+  const handleShareToStory = () => {
+    if (!resultImage) return;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      // Create a vertical 9:16 aspect ratio canvas (e.g., 1080x1920)
+      canvas.width = 1080;
+      canvas.height = 1920;
+
+      // Draw background
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw image centered and scaled
+      const scale = Math.min(canvas.width / img.width, (canvas.height - 400) / img.height);
+      const scaledWidth = img.width * scale;
+      const scaledHeight = img.height * scale;
+      const x = (canvas.width - scaledWidth) / 2;
+      const y = (canvas.height - scaledHeight) / 2;
+      ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+
+      // Draw S_FIT AI branding
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 60px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT AI', canvas.width / 2, canvas.height - 150);
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = '30px Arial';
+      ctx.fillText('Virtual Try-On Experience', canvas.width / 2, canvas.height - 90);
+
+      // Trigger download
+      const link = document.createElement('a');
+      link.download = 'sfit-story.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    };
+    img.src = resultImage;
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -103,6 +153,9 @@ export default function RealLifeFitting() {
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
                 </div>
               </label>
+            </div>
+            <div className="mt-2 flex items-center gap-2 text-[10px] text-green-400/80 font-mono tracking-widest uppercase">
+              <span>🔒</span> Photos are processed securely and not shared.
             </div>
           </div>
 
@@ -205,10 +258,27 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 text-white font-bold px-4 py-2 rounded-xl shadow-[0_0_15px_rgba(255,0,255,0.3)] hover:scale-[1.02] transition-transform flex items-center gap-2 text-sm z-30"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
+
+        {/* Support & Legal Links */}
+        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-6 text-[10px] font-mono tracking-widest uppercase text-white/40 z-20 pointer-events-auto">
+           <button onClick={() => setShowPrivacy(true)} className="hover:text-white transition-colors">Privacy Policy</button>
+           <button onClick={() => setShowTerms(true)} className="hover:text-white transition-colors">Terms of Service</button>
+           <button onClick={() => setShowReport(true)} className="hover:text-[#007AFF] transition-colors">Report Issue</button>
+        </div>
       </div>
+
+      {showPrivacy && <PrivacyModal onClose={() => setShowPrivacy(false)} />}
+      {showTerms && <TermsModal onClose={() => setShowTerms(false)} />}
+      {showReport && <ReportIssueModal onClose={() => setShowReport(false)} />}
     </div>
   );
 }
