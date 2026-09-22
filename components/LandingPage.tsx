@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ModeSelector } from './ModeSelector';
+import { PrivacyModal } from './modals/PrivacyModal';
+import { TermsModal } from './modals/TermsModal';
+import { ReportIssueModal } from './modals/ReportIssueModal';
 
 export function LandingPage() {
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+
   return (
     <div className="min-h-screen bg-void-black text-pure-white overflow-hidden relative selection:bg-cyber-lime selection:text-black">
+      {showPrivacy && <PrivacyModal onClose={() => setShowPrivacy(false)} />}
+      {showTerms && <TermsModal onClose={() => setShowTerms(false)} />}
+      {showReport && <ReportIssueModal onClose={() => setShowReport(false)} />}
       
       {/* Background Ambience */}
       <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-purple-900/10 to-transparent pointer-events-none" />
@@ -62,6 +72,11 @@ export function LandingPage() {
             <span className="text-white">Ready Player Me</span>
             <span className="text-white">Three.js</span>
             <span className="text-white">Next.js 15</span>
+          </div>
+          <div className="flex gap-4">
+            <button onClick={() => setShowPrivacy(true)} className="hover:text-white transition-colors">Privacy</button>
+            <button onClick={() => setShowTerms(true)} className="hover:text-white transition-colors">Terms</button>
+            <button onClick={() => setShowReport(true)} className="hover:text-white transition-colors">Report Issue</button>
           </div>
           <p>© 2026 Antigravity. All rights reserved.</p>
         </div>
