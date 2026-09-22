@@ -33,14 +33,14 @@ describe('RealLifeFitting', () => {
     render(<RealLifeFitting />);
     
     // Check for Main Header
-    expect(screen.getByText(/S_FIT/i)).toBeInTheDocument();
-    expect(screen.getByText(/NEO/i)).toBeInTheDocument();
+    expect(screen.getByText(/M_FIT/i)).toBeInTheDocument();
+    expect(screen.getByText(/Personal Digital Atelier/i)).toBeInTheDocument();
     
     // Check for Sections
     expect(screen.getByText(/01. Identification/i)).toBeInTheDocument();
     expect(screen.getByText(/02. Target Garment/i)).toBeInTheDocument();
     
     // Check for CTA
-    expect(screen.getByText(/TRY IT ON/i)).toBeInTheDocument();
+    expect(screen.getByText(/MASTERPIECE FIT/i)).toBeInTheDocument();
   });
 });
