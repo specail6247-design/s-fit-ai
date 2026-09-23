@@ -99,6 +99,7 @@ export function AuthButton() {
           <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
             <button
               onClick={() => setShowModal(false)}
+              aria-label="Close"
               className="absolute top-4 right-4 text-soft-gray hover:text-white"
             >
               ✕
@@ -111,6 +112,7 @@ export function AuthButton() {
             <form onSubmit={handleAuth} className="space-y-4 mb-6">
               <input
                 type="email"
+                aria-label="Email"
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -119,6 +121,7 @@ export function AuthButton() {
               />
               <input
                 type="password"
+                aria-label="Password"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -128,6 +131,7 @@ export function AuthButton() {
               <button
                 type="submit"
                 disabled={loading}
+                aria-busy={loading}
                 className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
               >
                 {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
