@@ -677,7 +677,7 @@ function CompareModal({ isOpen, onClose, picks, onSelect }: CompareModalProps) {
       <motion.div className="relative glass-card p-6 max-w-md w-full max-h-[80vh] overflow-y-auto" initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}>
         <div className="flex justify-between items-center mb-6">
           <div><h3 className="text-lg font-bold">Compare AI Picks</h3><p className="text-[10px] text-soft-gray">Ranked by your unique body signals</p></div>
-          <button onClick={onClose} className="text-soft-gray hover:text-white">✕</button>
+          <button onClick={onClose} aria-label="Close" className="text-soft-gray hover:text-white">✕</button>
         </div>
         <div className="space-y-4">
           {picks.map((pick, idx) => (
@@ -740,7 +740,7 @@ function AITryOnModal({
                         <h3 className="text-xl font-bold text-pure-white flex items-center gap-2"><span className="animate-pulse">✨</span> Masterpiece Try-On</h3>
                         <p className="text-xs text-soft-gray mt-1">Hollywood-grade virtual fitting engine</p>
                     </div>
-                    <button onClick={onClose} className="text-soft-gray hover:text-white text-2xl">✕</button>
+                    <button onClick={onClose} aria-label="Close" className="text-soft-gray hover:text-white text-2xl">✕</button>
                 </div>
 
                 <div className="space-y-6">
