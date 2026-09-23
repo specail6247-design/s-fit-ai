@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LegalModal } from '@/components/modals/LegalModal';
+import { ReportIssueModal } from '@/components/modals/ReportIssueModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [legalModalType, setLegalModalType] = useState<'terms' | 'privacy' | null>(null);
+  const [showSupport, setShowSupport] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -24,6 +28,49 @@ export default function RealLifeFitting() {
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleShareToStory = () => {
+    if (!resultImage) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Draw background
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw branding
+    ctx.fillStyle = '#007AFF';
+    ctx.font = 'bold 80px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('S_FIT NEO', canvas.width / 2, 150);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '40px sans-serif';
+    ctx.fillText('Virtual Fitting Result', canvas.width / 2, 220);
+
+    // Draw image
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      // Calculate aspect ratio to fit inside canvas
+      const scale = Math.min((canvas.width - 100) / img.width, (canvas.height - 600) / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (canvas.width - w) / 2;
+      const y = (canvas.height - h) / 2 + 50;
+      ctx.drawImage(img, x, y, w, h);
+
+      // Trigger download
+      const link = document.createElement('a');
+      link.download = 'sfit-story.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    };
+    img.src = resultImage;
   };
 
   const handleTryOn = async () => {
@@ -79,13 +126,21 @@ export default function RealLifeFitting() {
         {/* Background Ambience */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none" />
         
-        <header className="mb-10 relative z-10">
-          <h1 className="text-4xl font-black tracking-tighter italic">
-            S_FIT <span className="text-[#007AFF]">NEO</span>
-          </h1>
-          <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
-            Professional Virtual Fitting
-          </p>
+        <header className="mb-10 relative z-10 flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-black tracking-tighter italic">
+              S_FIT <span className="text-[#007AFF]">NEO</span>
+            </h1>
+            <p className="text-xs text-gray-400 tracking-[0.3em] uppercase mt-2">
+              Professional Virtual Fitting
+            </p>
+          </div>
+          <button
+            onClick={() => setShowSupport(true)}
+            className="text-[10px] text-gray-400 hover:text-white transition-colors border border-gray-800 rounded px-2 py-1 uppercase tracking-widest"
+          >
+            Support Hub
+          </button>
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
@@ -126,6 +181,10 @@ export default function RealLifeFitting() {
 
         {/* Action Button */}
         <div className="mt-8 relative z-10">
+          <div className="mb-6 flex items-center justify-center gap-2 text-[10px] text-gray-400 font-mono bg-white/5 py-2 rounded-lg border border-white/10">
+            <span className="text-green-400">🔒</span> Photos are processed securely and not shared.
+          </div>
+
           {isProcessing ? (
             <div className="space-y-2">
               <div className="flex justify-between text-xs text-[#007AFF] font-mono">
@@ -156,6 +215,11 @@ export default function RealLifeFitting() {
              <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                Luxury Line
              </a>
+          </div>
+
+          <div className="mt-6 flex justify-center gap-6 text-[10px] text-gray-500 uppercase tracking-widest">
+             <button onClick={() => setLegalModalType('terms')} className="hover:text-white transition-colors">Terms</button>
+             <button onClick={() => setLegalModalType('privacy')} className="hover:text-white transition-colors">Privacy</button>
           </div>
 
         </div>
@@ -205,10 +269,27 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-[#007AFF] text-white rounded-full px-4 py-2 hover:bg-[#005bb5] transition-colors font-bold text-sm shadow-[0_0_15px_rgba(0,122,255,0.5)] flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      <LegalModal
+        isOpen={legalModalType !== null}
+        onClose={() => setLegalModalType(null)}
+        type={legalModalType}
+      />
+
+      <ReportIssueModal
+        isOpen={showSupport}
+        onClose={() => setShowSupport(false)}
+      />
     </div>
   );
 }
