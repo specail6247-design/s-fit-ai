@@ -7,7 +7,7 @@ test.describe('Home Page', () => {
 
   test('should render RealLifeFitting container', async ({ page }) => {
     await expect(page.locator('.min-h-screen')).toBeVisible();
-    await expect(page.getByText(/User Photo/i)).toBeVisible();
-    await expect(page.getByText(/Garment/i)).toBeVisible();
+    await expect(page.getByText(/User Photo/i).first()).toBeVisible();
+    await expect(page.getByText(/Garment/i).first()).toBeVisible();
   });
 });
