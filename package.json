@@ -7,7 +7,8 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "backend": "python3 -m uvicorn backend.ai_server:app --reload"
   },
   "dependencies": {
     "@mediapipe/pose": "^0.5.1675469404",
