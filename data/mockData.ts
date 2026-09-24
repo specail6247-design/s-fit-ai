@@ -24,7 +24,7 @@ export interface Brand {
   name: string;
   logo: string;
   isLuxury: boolean;
-  tier: 'mass' | 'luxury' | 'basic';
+  tier: 'mass' | 'luxury' | 'basic' | 'k-fashion';
 }
 
 // Brand Data
@@ -35,6 +35,13 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=ZARA',
     isLuxury: false,
     tier: 'mass',
+  },
+  {
+    id: 'musinsa',
+    name: 'Musinsa',
+    logo: 'https://placehold.co/100x100?text=MUSINSA',
+    isLuxury: true,
+    tier: 'k-fashion',
   },
   {
     id: 'gucci',

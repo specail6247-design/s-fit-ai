@@ -23,15 +23,38 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const videoUrl = await generateRunwayVideo(processedImageUrl);
+    const backendUrl = process.env.FASTAPI_BACKEND_URL;
 
-    if (videoUrl) {
-      return NextResponse.json({ success: true, videoUrl });
+    if (backendUrl) {
+      // Proxy request to the FastAPI backend instead of calling generateRunwayVideo directly
+      const proxyResponse = await fetch(`${backendUrl}/api/v1/cinematic-motion`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageUrl: processedImageUrl })
+      });
+
+      const data = await proxyResponse.json();
+
+      if (data.success) {
+        return NextResponse.json({ success: true, videoUrl: data.videoUrl });
+      } else {
+        return NextResponse.json(
+          { success: false, error: data.error || 'Failed to generate video' },
+          { status: 500 }
+        );
+      }
     } else {
-      return NextResponse.json(
-        { success: false, error: 'Failed to generate video' },
-        { status: 500 }
-      );
+      // Fallback to direct SDK call if Python backend isn't configured for production deploy
+      const videoUrl = await generateRunwayVideo(processedImageUrl);
+
+      if (videoUrl) {
+        return NextResponse.json({ success: true, videoUrl });
+      } else {
+        return NextResponse.json(
+          { success: false, error: 'Failed to generate video' },
+          { status: 500 }
+        );
+      }
     }
   } catch (error) {
     console.error('Runway Motion API Error:', error);

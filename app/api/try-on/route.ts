@@ -14,10 +14,7 @@ function localFileToDataUri(localPath: string): string | null {
     const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
     const absolutePath = path.join(process.cwd(), 'public', relativePath);
     
-    console.log('Reading local file:', absolutePath);
-    
     if (!fs.existsSync(absolutePath)) {
-      console.error('File not found:', absolutePath);
       return null;
     }
     
@@ -54,56 +51,67 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Process User Photo - Keep as data URI string for Replicate
+    // Process User Photo
     const userPhotoInput: string = userPhotoUrl;
-    // Replicate accepts data URIs directly
 
     // Process Garment Image
     let garmentImageInput: string = garmentImageUrl;
 
     if (typeof garmentImageUrl === 'string') {
       if (garmentImageUrl.startsWith('data:')) {
-        // Already a data URI - use as is
         garmentImageInput = garmentImageUrl;
       } else if (garmentImageUrl.startsWith('/')) {
-        // Local file in public directory - convert to base64 data URI
         const dataUri = localFileToDataUri(garmentImageUrl);
         if (!dataUri) {
-          return NextResponse.json(
-            { error: `Failed to read local image: ${garmentImageUrl}` },
-            { status: 400 }
-          );
+          return NextResponse.json({ error: `Failed to read local image: ${garmentImageUrl}` }, { status: 400 });
         }
         garmentImageInput = dataUri;
-        console.log('Converted local file to data URI, length:', dataUri.length);
       } else if (garmentImageUrl.startsWith('http://') || garmentImageUrl.startsWith('https://')) {
-        // External URL - Replicate can fetch this directly
         garmentImageInput = garmentImageUrl;
       }
     }
 
-    console.log('Calling Replicate with:');
-    console.log('- userPhoto type:', userPhotoInput.startsWith('data:') ? 'data URI' : 'URL');
-    console.log('- garmentImage type:', garmentImageInput.startsWith('data:') ? 'data URI' : 'URL');
-    console.log('- category:', category || 'upper_body');
+    // Check if the backend is configured, else fallback to local lib
+    const backendUrl = process.env.FASTAPI_BACKEND_URL;
 
-    // Call Replicate API
-    const result = await generateVirtualTryOn({
-      userPhoto: userPhotoInput,
-      garmentImage: garmentImageInput,
-      category: category || 'upper_body'
-    });
-
-    if (result.success) {
-      return NextResponse.json({
-        success: true,
-        imageUrl: result.imageUrl
+    if (backendUrl) {
+      // Proxy request to the FastAPI backend
+      const proxyResponse = await fetch(`${backendUrl}/api/v1/orchestrate-try-on`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userPhotoUrl: userPhotoInput,
+            garmentImageUrl: garmentImageInput,
+            category: category || 'upper_body'
+          })
       });
+
+      const data = await proxyResponse.json();
+
+      if (data.success) {
+        return NextResponse.json({ success: true, imageUrl: data.imageUrl });
+      } else {
+        return NextResponse.json({ error: data.error || 'Failed to generate try-on' }, { status: 500 });
+      }
     } else {
-      return NextResponse.json(
-        { error: result.error },
-        { status: 500 }
-      );
+       // Fallback to direct call if python backend isn't configured for production deploy
+       const result = await generateVirtualTryOn({
+          userPhoto: userPhotoInput,
+          garmentImage: garmentImageInput,
+          category: category || 'upper_body'
+        });
+
+        if (result.success) {
+          return NextResponse.json({
+            success: true,
+            imageUrl: result.imageUrl
+          });
+        } else {
+          return NextResponse.json(
+            { error: result.error },
+            { status: 500 }
+          );
+        }
     }
   } catch (error) {
     console.error('Try-on API error:', error);

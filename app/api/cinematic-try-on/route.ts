@@ -12,15 +12,38 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await generateCinematicVideo(imageUrl);
+    const backendUrl = process.env.FASTAPI_BACKEND_URL;
 
-    if (result.success) {
-      return NextResponse.json(result);
+    if (backendUrl) {
+      // Proxy request to the FastAPI backend instead of calling generateCinematicVideo directly
+      const proxyResponse = await fetch(`${backendUrl}/api/v1/cinematic-motion`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageUrl })
+      });
+
+      const data = await proxyResponse.json();
+
+      if (data.success) {
+        return NextResponse.json(data);
+      } else {
+        return NextResponse.json(
+          { success: false, error: data.error || 'Failed to generate video' },
+          { status: 500 }
+        );
+      }
     } else {
-      return NextResponse.json(
-        { success: false, error: result.error || 'Failed to generate video' },
-        { status: 500 }
-      );
+      // Fallback
+      const result = await generateCinematicVideo(imageUrl);
+
+      if (result.success) {
+        return NextResponse.json(result);
+      } else {
+        return NextResponse.json(
+          { success: false, error: result.error || 'Failed to generate video' },
+          { status: 500 }
+        );
+      }
     }
   } catch (error) {
     console.error('API Error:', error);

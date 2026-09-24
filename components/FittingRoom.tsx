@@ -253,6 +253,9 @@ function SoftBodyPlane({
   const finalMaterialProps = { ...(materialProps ?? {}) };
   if (isMicroMode) {
       finalMaterialProps.normalScale = new THREE.Vector2(3, 3);
+      // Hyper-Zoom micro-fiber texture reveal for Masterpiece Mode
+      finalMaterialProps.displacementScale = (finalMaterialProps.displacementScale || 0.05) * 1.5;
+      finalMaterialProps.roughness = 0.9;
   }
 
   return (
@@ -417,13 +420,28 @@ function AccessoryClothing({ item }: ClothingProps) {
   const aspect = img ? img.width / img.height : 1;
   const zIndex = layeringEngine.getItemZIndex(item);
   
-  const baseWidth = item.subCategory === 'bag' ? 0.4 : 0.2;
-  const position: [number, number, number] = item.subCategory === 'bag' ? [0.35, 0.8, 0.2] : [0, 1.45, 0.15];
+  // Enhanced Accessory Layering System with specific material interactions
+  // Heavy necklaces on silk require specific positioning and visual weight
+  let baseWidth = 0.2;
+  let position: [number, number, number] = [0, 1.45, 0.15];
+
+  if (item.subCategory === 'bag') {
+      baseWidth = 0.4;
+      position = [0.35, 0.8, 0.2];
+  } else if (item.subCategory === 'jewelry' || item.category === 'accessories') {
+      baseWidth = 0.25;
+      // Adjusted Z to simulate physical weight resting against the chest/garment
+      position = [0, 1.35, 0.18];
+  }
+
+  // Ensure high metalness for luxury jewelry rendering
+  const materialMetalness = item.isLuxury && item.subCategory === 'jewelry' ? 0.9 : (item.isLuxury ? 0.5 : 0.2);
+  const materialRoughness = item.isLuxury && item.subCategory === 'jewelry' ? 0.1 : 0.4;
 
   return (
     <mesh position={position} renderOrder={zIndex} castShadow receiveShadow>
       <planeGeometry args={[baseWidth, baseWidth / aspect, 32, 32]} />
-      <meshStandardMaterial map={texture} transparent side={THREE.DoubleSide} roughness={0.4} metalness={item.isLuxury ? 0.5 : 0.2} alphaTest={0.5} />
+      <meshStandardMaterial map={texture} transparent side={THREE.DoubleSide} roughness={materialRoughness} metalness={materialMetalness} alphaTest={0.5} />
     </mesh>
   );
 }
@@ -646,7 +664,19 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
           {hasPublished ? (
             <div className="bg-cyber-lime/10 border border-cyber-lime/30 rounded-lg p-2 text-center text-[10px] text-cyber-lime font-bold">✨ Published to Community Runway!</div>
           ) : (
-            <button onClick={() => { setHasPublished(true); setTimeout(() => setHasPublished(false), 3000); }} className="btn-primary w-full py-2 text-xs">✨ Publish to Community</button>
+            <>
+              <button onClick={() => { setHasPublished(true); setTimeout(() => setHasPublished(false), 3000); }} className="btn-primary w-full py-2 text-xs mb-2">✨ Publish to Community</button>
+              <button onClick={() => {
+                // In a real app this would download the generated video URL
+                const a = document.createElement('a');
+                a.href = 'https://storage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4';
+                a.download = 'sfit-cinematic-4k.mp4';
+                a.click();
+                onClose();
+              }} className="w-full py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-lg shadow-lg hover:scale-[1.02] transition-all text-xs flex items-center justify-center gap-2 border border-white/10">
+                🎬 Export 4K Cinematic Video
+              </button>
+            </>
           )}
         </div>
         <button onClick={onClose} className="w-full mt-4 py-2 text-soft-gray hover:text-white transition-colors text-xs">Close</button>
