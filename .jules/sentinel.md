@@ -1,0 +1,4 @@
+## 2025-05-18 - Path Traversal Vulnerability in Local File Access
+**Vulnerability:** The `localFileToDataUri` API endpoint lacked bounds checking, allowing path traversal (`../../`) and access to arbitrary files outside the `public` directory via `path.join()`.
+**Learning:** Checking against `public` is insufficient if the file path isn't securely bounded. `path.resolve` resolves `..` components to parent directories.
+**Prevention:** Use `path.resolve(baseDir, userInput)` and verify `absolutePath.startsWith(baseDir + path.sep) && absolutePath !== baseDir` to strictly confine access to the intended directory and block sibling folder access (like `/app/public_secrets`).
