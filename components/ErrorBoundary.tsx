@@ -17,6 +17,7 @@ export class ErrorBoundary extends Component<Props, State> {
   };
 
   public static getDerivedStateFromError(_: Error): State {
+    // Note: Do not log side effects here, React expects this to be pure.
     return { hasError: true };
   }
 
