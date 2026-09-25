@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { User } from '@supabase/supabase-js';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function AuthButton() {
   const [user, setUser] = useState<User | null>(null);
@@ -89,24 +90,46 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all shadow-[0_0_15px_rgba(204,255,0,0.3)] tracking-widest uppercase"
       >
-        LOGIN
+        MEMBER ACCESS
       </button>
 
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
-            <button
-              onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.95, y: 20, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-8 relative overflow-hidden glass-card"
             >
-              ✕
-            </button>
-            
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h2>
+              {/* Premium Shimmer */}
+              <div className="absolute inset-0 pointer-events-none luxury-shimmer" />
+
+              <button
+                onClick={() => setShowModal(false)}
+                className="absolute top-4 right-4 text-soft-gray hover:text-white z-10 transition-colors text-xl"
+                aria-label="Close"
+              >
+                ✕
+              </button>
+
+              <div className="text-center mb-8 relative z-10">
+                <span className="text-3xl mb-4 block">🗝️</span>
+                <h2 className="text-2xl font-bold text-pure-white italic tracking-tighter" style={{ fontFamily: 'var(--font-display)' }}>
+                  {isLogin ? 'VIP ACCESS' : 'JOIN THE CLUB'}
+                </h2>
+                <p className="text-xs text-soft-gray mt-2 uppercase tracking-widest">
+                  Exclusive Virtual Fitting
+                </p>
+              </div>
 
             <form onSubmit={handleAuth} className="space-y-4 mb-6">
               <input
@@ -155,7 +178,7 @@ export function AuthButton() {
               </button>
             </div>
 
-            <p className="mt-6 text-center text-xs text-soft-gray">
+            <p className="mt-6 text-center text-xs text-soft-gray relative z-10">
               {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
               <button
                 onClick={() => setIsLogin(!isLogin)}
@@ -164,9 +187,10 @@ export function AuthButton() {
                 {isLogin ? 'Sign up' : 'Log in'}
               </button>
             </p>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
