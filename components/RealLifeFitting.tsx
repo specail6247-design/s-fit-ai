@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import CinematicViewer from '@/components/CinematicViewer';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -15,6 +16,7 @@ export default function RealLifeFitting() {
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
+  const [showCinematic, setShowCinematic] = useState(false);
   const [progress, setProgress] = useState(0);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
@@ -205,8 +207,23 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={() => setShowCinematic(true)}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-[#007AFF] to-[#00ffff] text-black px-4 py-2 rounded-lg text-xs font-bold tracking-widest uppercase hover:scale-105 transition-transform flex items-center gap-2 shadow-[0_0_15px_rgba(0,122,255,0.5)]"
+              >
+                <span className="material-symbols-outlined text-sm">movie</span>
+                Cinematic Mode
+              </button>
             </div>
           </motion.div>
+        )}
+
+        {/* Cinematic Viewer Overlay */}
+        {showCinematic && resultImage && (
+          <CinematicViewer
+            imageUrl={resultImage}
+            onClose={() => setShowCinematic(false)}
+          />
         )}
       </div>
     </div>
