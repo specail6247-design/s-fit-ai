@@ -1,0 +1,4 @@
+## 2024-05-24 - [Path Traversal in API Endpoint]
+**Vulnerability:** Found a path traversal vulnerability in `app/api/try-on/route.ts` where user input (`garmentImageUrl`) is used to construct a file path for `fs.readFileSync` without validation. `path.join(process.cwd(), 'public', relativePath)` allows using `../` in the input to read arbitrary files from the server, and lacks boundary checks.
+**Learning:** Even internal helper functions like `localFileToDataUri` need strict path validation because their inputs often originate from the user (in this case, via the POST body). Relying merely on removing the leading slash is insufficient.
+**Prevention:** Always validate that resolved paths start strictly with the intended base directory using `absolutePath.startsWith(baseDir + path.sep)` or `absolutePath === baseDir` before passing them to file system operations.
