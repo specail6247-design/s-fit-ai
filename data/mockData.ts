@@ -25,6 +25,8 @@ export interface Brand {
   logo: string;
   isLuxury: boolean;
   tier: 'mass' | 'luxury' | 'basic';
+  bannerImage?: string;
+  description?: string;
 }
 
 // Brand Data
@@ -35,6 +37,8 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=ZARA',
     isLuxury: false,
     tier: 'mass',
+    bannerImage: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=1000',
+    description: 'Fast fashion with modern silhouettes.',
   },
   {
     id: 'gucci',
@@ -42,6 +46,8 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=GUCCI',
     isLuxury: true,
     tier: 'luxury',
+    bannerImage: 'https://images.unsplash.com/photo-1550617931-e17a7b70dce2?auto=format&fit=crop&q=80&w=1000',
+    description: 'Experience luxury tailoring with millimeter-accurate 3D physics mapping.',
   },
   {
     id: 'uniqlo',
@@ -49,6 +55,8 @@ export const brands: Brand[] = [
     logo: 'https://placehold.co/100x100?text=UNIQLO',
     isLuxury: false,
     tier: 'basic',
+    bannerImage: 'https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&q=80&w=1000',
+    description: 'LifeWear: simple, high-quality everyday clothing.',
   },
   {
     id: 'hm',
