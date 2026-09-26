@@ -104,9 +104,14 @@ export function AuthButton() {
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h2>
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-black tracking-widest uppercase italic text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-300 to-gray-500">
+                Member Access
+              </h2>
+              <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em] mt-2">
+                {isLogin ? 'Exclusive Entry' : 'Join the Club'}
+              </p>
+            </div>
 
             <form onSubmit={handleAuth} className="space-y-4 mb-6">
               <input
@@ -114,7 +119,7 @@ export function AuthButton() {
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-black/40 border-b border-white/10 px-4 py-3 text-white text-sm focus:border-white/50 outline-none transition-colors"
                 required
               />
               <input
@@ -122,13 +127,13 @@ export function AuthButton() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-black/40 border-b border-white/10 px-4 py-3 text-white text-sm focus:border-white/50 outline-none transition-colors"
                 required
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="w-full bg-white text-black font-bold py-4 text-xs tracking-widest uppercase hover:bg-gray-200 transition-all disabled:opacity-50"
               >
                 {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
               </button>
