@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import LegalModal from '@/components/LegalModal';
+import SupportHub from '@/components/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isLegalOpen, setIsLegalOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -69,6 +73,74 @@ export default function RealLifeFitting() {
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handleShareToStory = () => {
+    if (!resultImage) return;
+
+    // Create a canvas to generate a branded vertical image (9:16 aspect ratio)
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Standard Instagram Story dimensions
+    canvas.width = 1080;
+    canvas.height = 1920;
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      // 1. Draw background
+      ctx.fillStyle = '#0a0a0a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 2. Calculate image layout (centered, contain)
+      const padding = 100;
+      const availableWidth = canvas.width - (padding * 2);
+      const availableHeight = canvas.height - (padding * 4); // Leave room for logo
+
+      const imgRatio = img.width / img.height;
+      const targetRatio = availableWidth / availableHeight;
+
+      let drawWidth, drawHeight;
+      if (imgRatio > targetRatio) {
+        drawWidth = availableWidth;
+        drawHeight = drawWidth / imgRatio;
+      } else {
+        drawHeight = availableHeight;
+        drawWidth = drawHeight * imgRatio;
+      }
+
+      const drawX = (canvas.width - drawWidth) / 2;
+      const drawY = (canvas.height - drawHeight) / 2;
+
+      // Draw the image
+      ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+
+      // 3. Draw Branding
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 60px "Space Grotesk", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT AI', canvas.width / 2, 150);
+
+      ctx.font = 'italic 40px sans-serif';
+      ctx.fillStyle = '#007AFF';
+      ctx.fillText('Virtual Try-On Result', canvas.width / 2, 220);
+
+      ctx.font = '30px sans-serif';
+      ctx.fillStyle = '#888888';
+      ctx.fillText('sfit-ai.com', canvas.width / 2, canvas.height - 100);
+
+      // 4. Trigger download
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = 'sfit-story-share.jpg';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+    img.src = resultImage;
   };
 
   return (
@@ -158,6 +230,18 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Data Safety Badge */}
+          <div className="mt-6 flex items-center justify-center gap-2 text-gray-400 bg-white/5 p-3 rounded-lg border border-white/10">
+            <span className="text-lg">🔒</span>
+            <span className="text-[10px] font-medium leading-tight">Photos are processed securely<br/>and not shared.</span>
+          </div>
+
+        </div>
+
+        {/* Footer Links */}
+        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-6 text-[10px] text-gray-500 uppercase tracking-widest z-20">
+          <button onClick={() => setIsLegalOpen(true)} className="hover:text-white transition-colors cursor-pointer relative">Privacy & Terms</button>
+          <button onClick={() => setIsSupportOpen(true)} className="hover:text-white transition-colors cursor-pointer relative">Support Hub</button>
         </div>
       </div>
 
@@ -205,10 +289,19 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-[#007AFF] hover:bg-[#005bb5] text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg transition-colors flex items-center gap-2"
+              >
+                <span>📱</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      <LegalModal isOpen={isLegalOpen} onClose={() => setIsLegalOpen(false)} />
+      <SupportHub isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
     </div>
   );
 }
