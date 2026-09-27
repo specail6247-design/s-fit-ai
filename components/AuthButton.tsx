@@ -98,10 +98,11 @@ export function AuthButton() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
           <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
             <button
+              aria-label="Close modal"
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              className="absolute top-4 right-4 text-soft-gray hover:text-white focus-visible:ring-2 focus-visible:ring-white outline-none rounded-sm"
             >
-              ✕
+              <span aria-hidden="true">✕</span>
             </button>
             
             <h2 className="text-xl font-bold text-white mb-6 text-center">
@@ -109,26 +110,38 @@ export function AuthButton() {
             </h2>
 
             <form onSubmit={handleAuth} className="space-y-4 mb-6">
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
+              <div className="space-y-1.5">
+                <label htmlFor="email" className="text-xs font-medium text-soft-gray block">
+                  Email <span className="text-cyber-lime">*</span>
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="name@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none focus-visible:ring-2 focus-visible:ring-cyber-lime/30"
+                  required
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label htmlFor="password" className="text-xs font-medium text-soft-gray block">
+                  Password <span className="text-cyber-lime">*</span>
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none focus-visible:ring-2 focus-visible:ring-cyber-lime/30"
+                  required
+                />
+              </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-white outline-none mt-2"
               >
                 {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
               </button>
