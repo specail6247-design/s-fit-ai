@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateCinematicVideo } from '@/lib/virtualTryOn';
 
 export async function POST(req: NextRequest) {
   try {

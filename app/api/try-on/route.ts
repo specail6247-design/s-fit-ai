@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateVirtualTryOn } from '@/lib/virtualTryOn';
 import * as fs from 'fs';
 import * as path from 'path';
 
