@@ -12,7 +12,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await generateCinematicVideo(imageUrl);
+    const res = await fetch("http://127.0.0.1:8000/cinematic", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl })
+    });
+    const result = await res.json();
 
     if (result.success) {
       return NextResponse.json(result);
