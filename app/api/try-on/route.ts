@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateVirtualTryOn } from '@/lib/virtualTryOn';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -87,12 +86,17 @@ export async function POST(request: NextRequest) {
     console.log('- garmentImage type:', garmentImageInput.startsWith('data:') ? 'data URI' : 'URL');
     console.log('- category:', category || 'upper_body');
 
-    // Call Replicate API
-    const result = await generateVirtualTryOn({
-      userPhoto: userPhotoInput,
-      garmentImage: garmentImageInput,
-      category: category || 'upper_body'
+    // Call FastAPI Backend API
+    const res = await fetch("http://127.0.0.1:8000/try-on", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userPhotoUrl: userPhotoInput,
+            garmentImageUrl: garmentImageInput,
+            category: category || 'upper_body'
+        })
     });
+    const result = await res.json();
 
     if (result.success) {
       return NextResponse.json({
