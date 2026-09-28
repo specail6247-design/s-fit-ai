@@ -104,9 +104,12 @@ export function AuthButton() {
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h2>
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-500 uppercase font-mono">
+                {isLogin ? 'Member Access' : 'VIP Access'}
+              </h2>
+              <p className="text-[10px] text-cyber-lime mt-2 tracking-[0.2em] uppercase font-mono">S_FIT Protocol Authorized Personnel Only</p>
+            </div>
 
             <form onSubmit={handleAuth} className="space-y-4 mb-6">
               <input
@@ -114,7 +117,7 @@ export function AuthButton() {
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-black/40 border-b border-white/20 px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none transition-colors placeholder:text-gray-600 font-mono"
                 required
               />
               <input
@@ -122,7 +125,7 @@ export function AuthButton() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-black/40 border-b border-white/20 px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none transition-colors placeholder:text-gray-600 font-mono"
                 required
               />
               <button
