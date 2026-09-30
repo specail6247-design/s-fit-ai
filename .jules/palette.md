@@ -1,0 +1,3 @@
+## 2024-10-01 - Icon-only buttons lacking ARIA labels
+**Learning:** Multiple components in the S_FIT AI project (AuthButton, FittingRoom, DigitalTwinMode, VibeCheckMode) utilize a text character '✕' for close buttons without accompanying ARIA labels, making them inaccessible to screen readers.
+**Action:** When implementing new UI components or reviewing existing ones, ensure that any icon-only button (especially those using text characters instead of SVGs) includes a descriptive `aria-label` and wraps the visual character in an `aria-hidden="true"` span to prevent redundant screen reader announcements.
