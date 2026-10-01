@@ -855,7 +855,7 @@ function AITryOnModal({
 
 export function FittingRoom() {
   const {
-    userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis, savedItems, toggleSaveItem
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
