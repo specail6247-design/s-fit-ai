@@ -1,7 +1,7 @@
 'use client';
 
-import RealLifeFitting from '@/components/RealLifeFitting';
+import MasterpieceFit from '@/components/MasterpieceFit';
 
 export default function Home() {
-  return <RealLifeFitting />;
+  return <MasterpieceFit />;
 }
