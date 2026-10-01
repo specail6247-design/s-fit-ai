@@ -1,0 +1,1 @@
+## 2026-10-01 - Palette UX Learning\n**Learning:** Replaced standard login buttons with VIP 'Member Access' modal to create a high-fidelity exclusive experience.\n**Action:** Use tracking-widest, uppercase fonts, and translucent borders with backdrop blurs to reinforce a VIP club vibe.
