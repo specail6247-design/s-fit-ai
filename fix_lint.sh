@@ -1,0 +1,3 @@
+sed -i "s/S_FIT AI's/S_FIT AI\&apos;s/g" components/LuxuryGarmentDetail.tsx
+sed -i "s/import { motion, AnimatePresence } from 'framer-motion';/import { AnimatePresence } from 'framer-motion';/g" components/LuxuryGarmentDetail.tsx
+sed -i "s/<img src={resultImage} alt=\"Masterpiece\" className=\"w-full h-full object-cover transition-opacity duration-1000\" style={{ opacity: isZoomed ? 0.3 : 1 }} \/>/{\/* eslint-disable-next-line @next\/next\/no-img-element *\/}\n                    <img src={resultImage} alt=\"Masterpiece\" className=\"w-full h-full object-cover transition-opacity duration-1000\" style={{ opacity: isZoomed ? 0.3 : 1 }} \/>/g" components/MasterpieceFit.tsx
