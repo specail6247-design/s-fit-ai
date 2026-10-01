@@ -96,6 +96,12 @@ interface StoreState {
   selectedItem: ClothingItem | null;
   setSelectedItem: (item: ClothingItem | null) => void;
 
+  // Phase 7: The Vault
+  savedItems: ClothingItem[];
+  saveItem: (item: ClothingItem) => void;
+  removeItem: (itemId: string) => void;
+  toggleSaveItem: (item: ClothingItem) => void;
+
   // Daily Usage (Freemium)
   dailyUsage: DailyUsage;
   incrementUsage: () => void;
@@ -186,6 +192,17 @@ export const useStore = create<StoreState>()(
       selectedItem: null,
       setSelectedItem: (item) => set({ selectedItem: item }),
 
+      // Phase 7: The Vault
+      savedItems: [],
+      saveItem: (item) => set((state) => ({ savedItems: state.savedItems.some(i => i.id === item.id) ? state.savedItems : [...state.savedItems, item] })),
+      removeItem: (itemId) => set((state) => ({ savedItems: state.savedItems.filter(i => i.id !== itemId) })),
+      toggleSaveItem: (item) => set((state) => {
+        const exists = state.savedItems.some(i => i.id === item.id);
+        return {
+          savedItems: exists ? state.savedItems.filter(i => i.id !== item.id) : [...state.savedItems, item]
+        };
+      }),
+
       // Daily Usage
       dailyUsage: {
         count: 0,
@@ -252,6 +269,7 @@ export const useStore = create<StoreState>()(
     {
       name: 's-fit-ai-storage',
       partialize: (state) => ({
+        savedItems: state.savedItems,
         dailyUsage: state.dailyUsage,
         isPremium: state.isPremium,
         userStats: state.userStats,

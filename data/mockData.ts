@@ -17,6 +17,8 @@ export interface ClothingItem {
   sizes: string[];
   colors: string[];
   description: string;
+  stylingTip?: string;
+  availableInSeconds?: number;
 }
 
 export interface Brand {
@@ -182,6 +184,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 44', 'IT 46', 'IT 48', 'IT 50', 'IT 52'],
     colors: ['Beige/Ebony'],
     description: 'Iconic GG pattern wool blazer with silk lining',
+    stylingTip: 'Pair this with structured denim for a balanced silhouette.',
   },
   {
     id: 'gucci-002',
@@ -196,6 +199,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['IT 38', 'IT 40', 'IT 42', 'IT 44', 'IT 46'],
     colors: ['Ivory', 'Black'],
     description: 'Pure silk blouse with signature horsebit print',
+    stylingTip: 'Tuck into a high-waisted skirt to emphasize your waist.',
   },
   {
     id: 'gucci-003',
@@ -254,6 +258,7 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['Black', 'Navy', 'Olive', 'Wine'],
     description: 'Lightweight, compact down jacket',
+    stylingTip: 'Layer under a wool coat for extra warmth without bulk.',
   },
   {
     id: 'uniqlo-002',
@@ -502,6 +507,8 @@ export const mockClothingItems: ClothingItem[] = [
     sizes: ['One Size'],
     colors: ['Black', 'Beige'],
     description: 'Iconic quilted leather handbag with chain strap',
+    stylingTip: 'A timeless piece that elevates even casual attire.',
+    availableInSeconds: 7200,
   },
   {
     id: 'supreme-hat-001',

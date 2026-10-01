@@ -577,14 +577,33 @@ interface ItemCardProps {
   fitScore: number;
 }
 
+function formatTime(seconds: number) {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+  return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+}
+
 function ItemCard({
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
+  const [timeLeft, setTimeLeft] = useState(item.availableInSeconds || 0);
+
+  useEffect(() => {
+    if (!item.availableInSeconds || item.availableInSeconds <= 0) return;
+    const interval = setInterval(() => {
+      setTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [item.availableInSeconds]);
+
+  const isLocked = item.availableInSeconds !== undefined && timeLeft > 0;
+
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
   return (
     <motion.button
-      onClick={onSelect}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
+      onClick={isLocked ? undefined : onSelect}
+      className={`relative flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'} ${isLocked ? 'opacity-70 cursor-not-allowed' : ''}`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
@@ -596,6 +615,13 @@ function ItemCard({
       <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
       <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
       <p className="text-[0.55rem] text-cyber-lime">Fit {fitScore}%</p>
+      {isLocked && (
+        <div className="absolute inset-0 bg-void-black/80 flex flex-col items-center justify-center rounded-lg backdrop-blur-[1px]">
+          <span className="text-xl mb-1">🔒</span>
+          <span className="text-[0.5rem] uppercase text-luxury-gold tracking-widest font-bold">Drops In</span>
+          <span className="text-[0.6rem] text-white font-mono">{formatTime(timeLeft)}</span>
+        </div>
+      )}
     </motion.button>
   );
 }
@@ -833,6 +859,39 @@ export function FittingRoom() {
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showVault, setShowVault] = useState(false);
+  const [isAudioMuted, setIsAudioMuted] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    audioRef.current = new Audio('https://actions.google.com/sounds/v1/water/rain_on_roof.ogg');
+    audioRef.current.loop = true;
+    audioRef.current.volume = 0.1;
+
+    // Attempt to play on mount
+    const playAudio = async () => {
+      try {
+        if (!isAudioMuted && audioRef.current) {
+          await audioRef.current.play();
+        }
+      } catch (e) {
+        console.log('Audio autoplay blocked', e);
+      }
+    };
+    playAudio();
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, [isAudioMuted]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.muted = isAudioMuted;
+    }
+  }, [isAudioMuted]);
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
   const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
@@ -1000,6 +1059,12 @@ export function FittingRoom() {
             <button onClick={() => setShowHeatmap(!showHeatmap)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 🔥 Fit Heatmap
             </button>
+            <button onClick={() => setShowVault(!showVault)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showVault ? 'bg-luxury-gold text-black border-luxury-gold' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                🏦 The Vault ({savedItems.length})
+            </button>
+                    <button onClick={() => setIsAudioMuted(!isAudioMuted)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${!isAudioMuted ? 'bg-white/20 text-white border-white/40' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                {isAudioMuted ? '🔇 Audio' : '🔊 Audio'}
+            </button>
         </div>
 
         {/* Rotation hint */}
@@ -1010,10 +1075,25 @@ export function FittingRoom() {
           </motion.div>
         )}
 
+        {/* Styling Tip */}
+        {currentItem?.stylingTip && (
+          <div className="absolute top-20 right-4 max-w-[200px] z-10 pointer-events-none">
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="glass-card p-3 border-l-2 border-luxury-gold">
+              <p className="text-[8px] uppercase tracking-widest text-luxury-gold mb-1 font-bold">Styling Tip</p>
+              <p className="text-[10px] text-pure-white leading-relaxed">{currentItem.stylingTip}</p>
+            </motion.div>
+          </div>
+        )}
+
         <div className="absolute top-4 left-4 flex gap-2 z-20">
             <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
                 <span>📤</span>
             </button>
+            {currentItem && (
+              <button onClick={() => toggleSaveItem(currentItem)} className="bg-charcoal/60 backdrop-blur-md px-3 py-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors flex items-center gap-2">
+                <span>{savedItems.some(i => i.id === currentItem.id) ? '♥ Saved' : '♡ Save'}</span>
+              </button>
+            )}
             <motion.button onClick={() => setShowAITryOnModal(true)} 
                            className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
                            whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -1083,6 +1163,42 @@ export function FittingRoom() {
             </AnimatePresence>
         </div>
       </div>
+
+      {/* The Vault Drawer */}
+      <AnimatePresence>
+        {showVault && (
+          <motion.div
+            initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
+            className="absolute top-0 right-0 bottom-0 w-64 bg-void-black/95 backdrop-blur-xl border-l border-white/10 z-50 p-4 flex flex-col"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-sm uppercase tracking-widest font-bold text-luxury-gold">The Vault</h2>
+              <button onClick={() => setShowVault(false)} className="text-soft-gray hover:text-white">✕</button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-hide">
+              {savedItems.length === 0 ? (
+                <p className="text-xs text-soft-gray italic text-center mt-10">Your vault is empty. Save looks to compare.</p>
+              ) : (
+                savedItems.map(item => (
+                  <div key={item.id} className="glass-card p-3 flex gap-3 relative group">
+                    <div className="w-16 h-16 rounded bg-charcoal flex items-center justify-center shrink-0">
+                      <span className="text-2xl">{getCategoryIcon(item.category)}</span>
+                    </div>
+                    <div className="flex flex-col justify-center flex-1 min-w-0">
+                      <p className="text-[10px] uppercase text-soft-gray">{item.brand}</p>
+                      <p className="text-xs font-bold text-white truncate">{item.name}</p>
+                      <p className="text-[10px] text-luxury-gold mt-1">${item.price}</p>
+                    </div>
+                    <button onClick={() => toggleSaveItem(item)} className="absolute top-2 right-2 text-soft-gray hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">✕</button>
+                    <button onClick={() => { setSelectedItem(item); setShowVault(false); }} className="absolute bottom-2 right-2 text-[8px] uppercase tracking-wider bg-white/10 hover:bg-white/20 px-2 py-1 rounded transition-colors">Wear</button>
+                  </div>
+                ))
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Item Selector Footer */}
       <div className="p-4 border-t border-border-color bg-void-black">
