@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LegalModal } from './LegalModal';
+import { SupportModal } from './SupportModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,72 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isLegalOpen, setIsLegalOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const resultImgRef = useRef<HTMLImageElement>(null);
+
+  const handleShareToStory = () => {
+    if (!resultImage || !resultImgRef.current) return;
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Instagram Story aspect ratio (9:16)
+    canvas.width = 1080;
+    canvas.height = 1920;
+
+    // Background
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw Image (scaled to fit)
+    const img = resultImgRef.current;
+    const imgAspect = img.naturalWidth / img.naturalHeight;
+    const canvasAspect = canvas.width / canvas.height;
+
+    let drawW, drawH, drawX, drawY;
+
+    if (imgAspect > canvasAspect) {
+      drawW = canvas.width;
+      drawH = canvas.width / imgAspect;
+      drawX = 0;
+      drawY = (canvas.height - drawH) / 2;
+    } else {
+      drawH = canvas.height * 0.8; // Leave room for branding
+      drawW = drawH * imgAspect;
+      drawX = (canvas.width - drawW) / 2;
+      drawY = (canvas.height - drawH) / 2;
+    }
+
+    // Add glowing background behind image
+    ctx.shadowColor = '#007AFF';
+    ctx.shadowBlur = 50;
+    ctx.drawImage(img, drawX, drawY, drawW, drawH);
+    ctx.shadowBlur = 0;
+
+    // Branding
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 60px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('S_FIT AI', canvas.width / 2, 120);
+
+    ctx.fillStyle = '#007AFF';
+    ctx.font = '40px Arial';
+    ctx.fillText('My Virtual Fit', canvas.width / 2, canvas.height - 80);
+
+    // Download/Share
+    try {
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+      const link = document.createElement('a');
+      link.download = 'sfit-story.jpg';
+      link.href = dataUrl;
+      link.click();
+    } catch (e) {
+      console.error("Canvas export failed", e);
+      alert("Could not generate story image.");
+    }
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -149,6 +217,13 @@ export default function RealLifeFitting() {
             </button>
           )}
           
+          <div className="mt-4 text-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-[10px]">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+              Photos are processed securely and not shared.
+            </div>
+          </div>
+
           <div className="mt-4 flex gap-2">
              <a href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                SPA Line
@@ -158,6 +233,10 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-6 flex justify-center gap-4 text-[10px] text-gray-500 underline pb-4">
+            <button onClick={() => setIsLegalOpen(true)} className="hover:text-white">Privacy Policy & Terms</button>
+            <button onClick={() => setIsSupportOpen(true)} className="hover:text-white">Support Hub</button>
+          </div>
         </div>
       </div>
 
@@ -195,20 +274,31 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
-              <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              <img ref={resultImgRef} src={resultImage} alt="Result" crossOrigin="anonymous" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
               >
                 ✕ Close
               </button>
-              <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
-                AI GENERATED_
+              <div className="absolute bottom-4 left-4 flex gap-2">
+                <div className="bg-black/60 text-[#007AFF] px-3 py-2 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30 flex items-center">
+                  AI GENERATED_
+                </div>
+                <button
+                  onClick={handleShareToStory}
+                  className="bg-gradient-to-tr from-pink-500 to-orange-400 text-white px-3 py-2 rounded-md text-xs font-bold shadow-lg hover:opacity-90 flex items-center gap-2"
+                >
+                  <span>📱</span> Share to Story
+                </button>
               </div>
             </div>
           </motion.div>
         )}
       </div>
+
+      <LegalModal isOpen={isLegalOpen} onClose={() => setIsLegalOpen(false)} />
+      <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
     </div>
   );
 }
