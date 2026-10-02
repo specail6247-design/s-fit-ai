@@ -1,0 +1,3 @@
+## 2024-10-24 - Material Symbols Accessibility Pattern
+**Learning:** The S_FIT AI app extensively uses Google Material Symbols via `<span>text</span>` for icons (e.g. `<span>share</span>`). Without `aria-hidden="true"`, screen readers literally announce the icon name text ("share", "zoom_in", etc.), which is confusing especially inside icon-only buttons that lack `aria-label`s.
+**Action:** Always add `aria-hidden="true"` to Material Symbol `<span>` tags, and if the icon serves as the only content in a `<button>` or `<Link>`, ensure the parent element has a descriptive `aria-label`.
