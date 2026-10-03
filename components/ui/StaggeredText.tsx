@@ -17,12 +17,12 @@ export default function StaggeredText({ text, className }: { text: string, class
     visible: {
       opacity: 1,
       y: 0,
-      transition: { type: "spring", damping: 12, stiffness: 100 },
+      transition: { type: "spring" as const, damping: 12, stiffness: 100 },
     },
     hidden: {
       opacity: 0,
       y: 20,
-      transition: { type: "spring", damping: 12, stiffness: 100 },
+      transition: { type: "spring" as const, damping: 12, stiffness: 100 },
     },
   };
 
