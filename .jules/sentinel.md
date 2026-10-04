@@ -1,0 +1,4 @@
+## 2024-10-04 - Path Traversal in File to Data URI conversion
+**Vulnerability:** Path traversal (LFI) allows reading arbitrary local files via unvalidated input in `app/api/try-on/route.ts`.
+**Learning:** It existed because `path.join` was used without checking if the resolved path escaped the intended base directory. The API route processes local files as data URIs which are critical injection points.
+**Prevention:** Always use `path.resolve` for both base and target directories, and strictly assert that the resolved target path starts with the base directory plus a path separator (`baseDir + path.sep`).
