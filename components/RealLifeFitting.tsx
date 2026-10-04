@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import LegalModal from '@/components/Legal/LegalModal';
+import DataSafetyBadge from '@/components/Legal/DataSafetyBadge';
+import ShareToStory from '@/components/Share/ShareToStory';
+import SupportHub from '@/components/Support/SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +20,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [isSupportHubOpen, setIsSupportHubOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -89,6 +95,8 @@ export default function RealLifeFitting() {
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
+          <DataSafetyBadge />
+
           {/* User Photo Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
@@ -158,6 +166,10 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          <div className="mt-6 flex justify-center gap-4 text-xs text-gray-500 pb-4">
+            <button onClick={() => setIsLegalModalOpen(true)} className="hover:text-white transition-colors underline underline-offset-2">Privacy & Terms</button>
+            <button onClick={() => setIsSupportHubOpen(true)} className="hover:text-white transition-colors underline underline-offset-2">Report Issue</button>
+          </div>
         </div>
       </div>
 
@@ -205,10 +217,16 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <div className="absolute bottom-4 right-4">
+                <ShareToStory imageUrl={resultImage} />
+              </div>
             </div>
           </motion.div>
         )}
       </div>
+
+      <LegalModal isOpen={isLegalModalOpen} onClose={() => setIsLegalModalOpen(false)} />
+      <SupportHub isOpen={isSupportHubOpen} onClose={() => setIsSupportHubOpen(false)} />
     </div>
   );
 }
