@@ -1,0 +1,3 @@
+## 2024-05-24 - Add ARIA Labels to Icon-Only Buttons
+**Learning:** Icon-only buttons using `material-symbols-outlined` spans often lack context for screen readers. A common pattern in this app is using spans with text (e.g., `<span className="material-symbols-outlined">share</span>`) for icons.
+**Action:** When improving accessibility for icon-only buttons that use text characters (e.g., '✕') or material symbol fonts instead of SVGs, wrap the text character in `<span aria-hidden="true">` and apply the `aria-label` to the parent `<button>` to prevent screen readers from redundantly announcing the literal character.
