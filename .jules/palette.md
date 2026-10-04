@@ -1,0 +1,3 @@
+## 2024-05-24 - Service Essentials Support Hub and VIP Login
+**Learning:** Adding complex nested dynamic layout state (like an accordion in Framer Motion within a fixed full-screen drawer) needs to cleanly manage z-indexes and overlay backdrops to maintain a single 'hidden until needed' focus aesthetic.
+**Action:** When doing drawer overlay designs, maintain z-indexes clearly: fixed help button (`z-40`), backdrop (`z-50`), drawer panel (`z-50`) to avoid stacking context collisions with other elements on the main dashboard (`RealLifeFitting`). Always manage icon accessibility using explicit screen-reader labels and icon names.
