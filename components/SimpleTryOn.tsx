@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { DataSafetyBadge } from '@/components/ui/DataSafetyBadge';
 
 const SFitAIProject = () => {
   const [userImage, setUserImage] = useState<string | null>(null);
@@ -75,6 +76,10 @@ const SFitAIProject = () => {
               {clothingImage && <img src={clothingImage} style={styles.preview} alt="Cloth" />}
             </div>
           </div>
+        </div>
+
+        <div style={{ marginBottom: '20px' }}>
+          <DataSafetyBadge />
         </div>
 
         {/* 실행 버튼 */}
