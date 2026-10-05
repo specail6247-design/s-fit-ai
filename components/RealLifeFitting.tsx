@@ -13,7 +13,6 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 export default function RealLifeFitting() {
   const [userImage, setUserImage] = useState<string | null>(null);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
-  const [category, setCategory] = useState<'upper_body' | 'lower_body' | 'dresses'>('upper_body');
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
@@ -49,7 +48,7 @@ export default function RealLifeFitting() {
         body: JSON.stringify({
           userPhotoUrl: userImage,
           garmentImageUrl: garmentImage,
-          category: category
+          category: 'tops' // Default for demo
         })
       });
       const data = await res.json();
@@ -97,7 +96,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {userImage ? <img src={userImage} alt="User" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -110,29 +110,18 @@ export default function RealLifeFitting() {
           {/* Garment Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">02. Target Garment</label>
-            <div className="flex flex-col gap-2">
-              <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
-                <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
-                <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
-                  <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                    {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
-                  </div>
-                  <div>
-                    <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
-                    <div className="text-[10px] text-gray-500">Front view preferred</div>
-                  </div>
-                </label>
-              </div>
-
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value as 'upper_body' | 'lower_body' | 'dresses')}
-                className="w-full bg-black/40 border border-white/20 rounded-xl p-3 text-sm text-gray-300 focus:outline-none focus:border-[#007AFF] hover:border-[#007AFF] transition-colors appearance-none"
-              >
-                <option value="upper_body">Upper Body (Tops, Shirts, Jackets)</option>
-                <option value="lower_body">Lower Body (Pants, Skirts, Shorts)</option>
-                <option value="dresses">Dresses (Full Body)</option>
-              </select>
+            <div className="border border-white/20 bg-black/40 rounded-xl p-4 hover:border-[#007AFF] transition-colors group">
+              <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
+              <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
+                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {garmentImage ? <img src={garmentImage} alt="Garment" className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                </div>
+                <div>
+                  <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
+                  <div className="text-[10px] text-gray-500">Front view preferred</div>
+                </div>
+              </label>
             </div>
           </div>
         </div>
@@ -208,6 +197,7 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
