@@ -1,7 +1,12 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { DataSafetyBadge } from '@/components/ui/DataSafetyBadge';
+import { LegalModal } from '@/components/ui/LegalModal';
+import { ReportIssueModal } from '@/components/ui/ReportIssueModal';
+import { StoryShareModal } from '@/components/ui/StoryShareModal';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +21,9 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [showLegalModal, setShowLegalModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [showStoryModal, setShowStoryModal] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -96,7 +104,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? <img src={userImage} alt="User photo upload" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +121,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? <img src={garmentImage} alt="Garment upload" className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -122,6 +130,8 @@ export default function RealLifeFitting() {
               </label>
             </div>
           </div>
+
+          <DataSafetyBadge />
         </div>
 
         {/* Action Button */}
@@ -156,6 +166,11 @@ export default function RealLifeFitting() {
              <a href="/luxury" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                Luxury Line
              </a>
+          </div>
+
+          <div className="mt-8 flex justify-center gap-6 text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+            <button onClick={() => setShowLegalModal(true)} className="hover:text-white transition-colors">Privacy & Terms</button>
+            <button onClick={() => setShowReportModal(true)} className="hover:text-[#007AFF] transition-colors">Report Issue</button>
           </div>
 
         </div>
@@ -205,10 +220,20 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={() => setShowStoryModal(true)}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg hover:scale-105 transition-transform"
+              >
+                Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      <LegalModal isOpen={showLegalModal} onClose={() => setShowLegalModal(false)} />
+      <ReportIssueModal isOpen={showReportModal} onClose={() => setShowReportModal(false)} />
+      {resultImage && <StoryShareModal isOpen={showStoryModal} onClose={() => setShowStoryModal(false)} imageUrl={resultImage} />}
     </div>
   );
 }
