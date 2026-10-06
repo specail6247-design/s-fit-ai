@@ -1,0 +1,4 @@
+## 2024-05-18 - Path Traversal in File Reading API
+**Vulnerability:** A Local File Inclusion (LFI) / Path Traversal vulnerability existed in `app/api/try-on/route.ts` because `path.join` was used to construct file paths with user input without validating if the resolved path escaped the intended base directory.
+**Learning:** In Next.js/Node.js backend routes (often integrating SDKs like Replicate that require data URIs), processing local files via user input is a critical injection point. `path.join` is insufficient for preventing path traversal attacks.
+**Prevention:** Always validate user-provided file paths strictly by using `path.resolve` for both the base and target directories, and asserting that the resolved target path strictly starts with the base directory plus a path separator (`path.sep`).
