@@ -1,0 +1,3 @@
+## 2023-10-08 - Accessible Ligature Icons in Next.js
+**Learning:** When using Material Symbols ligature icons (e.g., `<span className="material-symbols-outlined">zoom_in</span>`) inside interactive elements like buttons, screen readers will read the literal text ("zoom in" or "arrow back"). While sometimes this happens to make sense, it often reads weirdly or redundantly. If wrapped in a button that needs a specific action name, the span itself should be hidden.
+**Action:** Always add `aria-hidden="true"` to the `span` containing the ligature text, and add a descriptive `aria-label` to the parent `<button>` or `<Link>` to ensure screen readers announce the intended action, not the icon name.
