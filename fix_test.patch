@@ -1,0 +1,53 @@
+<<<<<<< SEARCH
+      const mockResult: PoseProportions = {
+        shoulderWidth: 0.25,
+        hipWidth: 0.2,
+        torsoHeight: 0.3,
+        legLength: 0.45,
+        overallRatio: 0.8,
+      };
+=======
+      const mockResult: PoseProportions = {
+        shoulderWidth: 0.25,
+        hipWidth: 0.2,
+        torsoHeight: 0.3,
+        legLength: 0.45,
+        overallRatio: 0.8,
+        waistWidth: 0.22,
+        armLength: 0.35,
+        shoulderSlope: 0.1,
+      };
+>>>>>>> REPLACE
+<<<<<<< SEARCH
+    it('should calculate style score properly based on user context', async () => {
+      const mockItem = {
+        id: "test1",
+        name: "Test Shirt",
+        brand: "Gucci" as const,
+        category: "tops",
+        price: 500,
+        imageUrl: "test.jpg",
+        fitType: "regular" as const,
+        colors: ["white"],
+        material: "cotton",
+        warmth: 1,
+        style: "casual",
+        description: "A test shirt"
+      };
+=======
+    it('should calculate style score properly based on user context', async () => {
+      const mockItem = {
+        id: "test1",
+        name: "Test Shirt",
+        brand: "Gucci" as const,
+        category: "tops" as const,
+        price: 500,
+        imageUrl: "test.jpg",
+        fitType: "regular" as const,
+        colors: ["white"],
+        material: "cotton",
+        warmth: 1,
+        style: "casual",
+        description: "A test shirt"
+      };
+>>>>>>> REPLACE
