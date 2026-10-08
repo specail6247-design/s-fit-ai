@@ -1,0 +1,6 @@
+<<<<<<< SEARCH
+/app/app/spa/layout.tsx
+  13:8  warning  A font-display parameter is missing (adding `&display=optional` is recommended). See: https://nextjs.org/docs/messages/google-font-display                       @next/next/google-font-display
+  13:8  warning  Custom fonts not added in `pages/_document.js` will only load for a single page. This is discouraged. See: https://nextjs.org/docs/messages/no-page-custom-font  @next/next/no-page-custom-font
+=======
+>>>>>>> REPLACE

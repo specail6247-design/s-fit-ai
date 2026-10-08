@@ -5,7 +5,7 @@ import LuxuryImageDistortion from "./LuxuryImageDistortion";
 import { motion, AnimatePresence } from "framer-motion";
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], display: 'optional' });
 const cinzel = Cinzel({ subsets: ["latin"], display: 'optional' });
-/* eslint-disable-next-line @next/next/no-page-custom-font */
+
 
 const LUXURY_BRAND = { name: "AURA LUXURY", description: "Elegance redefined for the modern digital era. Experience unparalleled craftsmanship in every thread.", bannerImage: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&q=80&w=2000" };
 const LUXURY_PRODUCTS = [
