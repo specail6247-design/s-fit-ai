@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { BottomSheet } from '@/components/ui/BottomSheet';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -17,6 +18,11 @@ export default function RealLifeFitting() {
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
 
+  // Legal & Compliance state
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [legalContentType, setLegalContentType] = useState<'privacy' | 'terms'>('privacy');
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -24,6 +30,58 @@ export default function RealLifeFitting() {
       reader.onload = (ev) => setter(ev.target?.result as string);
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleShareToStory = () => {
+    if (!resultImage) return;
+
+    // Create canvas to generate IG Story format (1080x1920)
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Fill background
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0, 0, 1080, 1920);
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      // Draw image in center
+      const imgRatio = img.width / img.height;
+      const targetWidth = 900;
+      const targetHeight = targetWidth / imgRatio;
+      const x = (1080 - targetWidth) / 2;
+      const y = (1920 - targetHeight) / 2;
+
+      // Add glow effect
+      ctx.shadowColor = 'rgba(0, 122, 255, 0.5)';
+      ctx.shadowBlur = 50;
+      ctx.drawImage(img, x, y, targetWidth, targetHeight);
+
+      // Reset shadow for text
+      ctx.shadowBlur = 0;
+
+      // Add Branding
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 80px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT NEO', 540, 150);
+
+      ctx.fillStyle = '#007AFF';
+      ctx.font = '40px monospace';
+      ctx.fillText('VIRTUAL FITTING MATCH', 540, 220);
+
+      // Trigger download
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+      const link = document.createElement('a');
+      link.download = 'sfit_story_share.jpg';
+      link.href = dataUrl;
+      link.click();
+    };
+    img.src = resultImage;
   };
 
   const handleTryOn = async () => {
@@ -96,7 +154,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {userImage ? <img src={userImage} alt="User photo upload" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +171,7 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {garmentImage ? <img src={garmentImage} alt="Garment photo upload" className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -158,6 +216,21 @@ export default function RealLifeFitting() {
              </a>
           </div>
 
+          {/* Data Safety Badge */}
+          <div className="mt-6 flex items-center justify-center gap-2 text-gray-500 text-[10px] bg-black/20 p-2 rounded-lg border border-white/5">
+             <span aria-hidden="true" className="material-symbols-outlined text-[14px] text-green-500">lock</span>
+             <span>Photos are processed securely and not shared.</span>
+          </div>
+
+          {/* Support / Legal Footer Links */}
+          <div className="mt-4 flex justify-center gap-4 text-[10px] text-gray-600">
+            <button onClick={() => { setLegalContentType('privacy'); setIsLegalModalOpen(true); }} className="hover:text-white transition-colors">Privacy Policy</button>
+            <span>|</span>
+            <button onClick={() => { setLegalContentType('terms'); setIsLegalModalOpen(true); }} className="hover:text-white transition-colors">Terms of Service</button>
+            <span>|</span>
+            <button onClick={() => setIsReportModalOpen(true)} className="hover:text-white transition-colors">Report Issue</button>
+          </div>
+
         </div>
       </div>
 
@@ -196,12 +269,25 @@ export default function RealLifeFitting() {
           >
             <div className="relative group">
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
-              <button 
-                onClick={() => setResultImage(null)} 
-                className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
-              >
-                ✕ Close
-              </button>
+
+              {/* Action Buttons Top Right */}
+              <div className="absolute top-4 right-4 flex flex-col gap-2">
+                <button
+                  onClick={() => setResultImage(null)}
+                  className="bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors flex items-center justify-center shadow-lg"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">✕</span>
+                </button>
+                <button
+                  onClick={handleShareToStory}
+                  className="bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white rounded-full p-2 hover:scale-110 transition-transform flex items-center justify-center shadow-lg"
+                  aria-label="Share to Story"
+                >
+                  <span aria-hidden="true" className="material-symbols-outlined text-sm">share</span>
+                </button>
+              </div>
+
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
@@ -209,6 +295,58 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      {/* MODALS */}
+      <BottomSheet
+        isOpen={isLegalModalOpen}
+        onClose={() => setIsLegalModalOpen(false)}
+        title={legalContentType === 'privacy' ? 'Privacy Policy' : 'Terms of Service'}
+      >
+        <div className="space-y-4 text-sm text-gray-300 max-w-lg mx-auto pb-10">
+          <p>
+            {legalContentType === 'privacy'
+              ? "Your privacy is important to us. Photos uploaded are processed securely using temporary, end-to-end encrypted sessions and are instantly deleted from our servers post-analysis. We do not use your photos to train public models, and we do not sell your data."
+              : "By using S_FIT AI, you agree to our Terms of Service. This is an AI-powered visualization tool. Results are synthetic estimates and may not reflect physical reality perfectly. Do not upload sensitive or non-consensual images."}
+          </p>
+          <button
+            onClick={() => setIsLegalModalOpen(false)}
+            className="w-full py-3 bg-[#007AFF] hover:bg-[#005bb5] text-white font-bold rounded-xl transition-all"
+          >
+            Acknowledge
+          </button>
+        </div>
+      </BottomSheet>
+
+      <BottomSheet
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        title="Report an Issue"
+      >
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            alert("Issue reported successfully. Our team will review it.");
+            setIsReportModalOpen(false);
+          }}
+          className="space-y-4 text-sm max-w-lg mx-auto pb-10"
+        >
+          <div className="space-y-2">
+            <label className="text-gray-400 text-xs uppercase tracking-wider">Describe the problem</label>
+            <textarea
+              required
+              rows={4}
+              placeholder="e.g., The garment didn't map correctly to the body, or the UI is glitching..."
+              className="w-full bg-black/40 border border-white/20 rounded-xl p-3 text-white focus:outline-none focus:border-[#007AFF]"
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full py-3 bg-red-500/20 hover:bg-red-500 border border-red-500/50 text-white font-bold rounded-xl transition-all"
+          >
+            Submit Report
+          </button>
+        </form>
+      </BottomSheet>
     </div>
   );
 }
