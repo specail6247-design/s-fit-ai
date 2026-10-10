@@ -89,46 +89,61 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="bg-transparent border border-white/20 text-white hover:bg-white/10 px-6 py-2.5 rounded-full text-[10px] font-bold tracking-widest uppercase transition-all flex items-center gap-2"
       >
-        LOGIN
+        <span className="w-1.5 h-1.5 rounded-full bg-white/50" />
+        Member Access
       </button>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
+          <div className="bg-[#050505] border border-white/10 w-full max-w-md p-10 relative overflow-hidden group">
+            {/* Ambient background effect */}
+            <div className="absolute -inset-20 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent opacity-50 pointer-events-none" />
+
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              className="absolute top-6 right-6 text-white/30 hover:text-white transition-colors"
             >
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h2>
+            <div className="mb-10 text-center relative z-10">
+              <h2 className="text-2xl font-black tracking-tighter uppercase mb-2">
+                {isLogin ? 'Welcome Back' : 'Join the Club'}
+              </h2>
+              <p className="text-xs text-white/40 tracking-widest uppercase">
+                {isLogin ? 'Enter your credentials' : 'Create your digital identity'}
+              </p>
+            </div>
 
-            <form onSubmit={handleAuth} className="space-y-4 mb-6">
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
+            <form onSubmit={handleAuth} className="space-y-6 mb-8 relative z-10">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-white/50 uppercase tracking-wider pl-1">Email</label>
+                <input
+                  type="email"
+                  placeholder="name@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-white/5 border-b border-white/10 px-4 py-3 text-white text-sm focus:border-white focus:bg-white/10 outline-none transition-all placeholder:text-white/20"
+                  required
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-white/50 uppercase tracking-wider pl-1">Password</label>
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-white/5 border-b border-white/10 px-4 py-3 text-white text-sm focus:border-white focus:bg-white/10 outline-none transition-all placeholder:text-white/20"
+                  required
+                />
+              </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="w-full bg-white text-black font-bold py-4 text-xs tracking-widest uppercase hover:bg-white/90 transition-all disabled:opacity-50 relative overflow-hidden group-hover:shadow-[0_0_30px_rgba(255,255,255,0.1)]"
               >
                 {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
               </button>
