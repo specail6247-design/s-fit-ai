@@ -96,6 +96,15 @@ interface StoreState {
   selectedItem: ClothingItem | null;
   setSelectedItem: (item: ClothingItem | null) => void;
 
+  // The Vault (Saved Items)
+  vaultItems: ClothingItem[];
+  addToVault: (item: ClothingItem) => void;
+  removeFromVault: (itemId: string) => void;
+
+  // Sensory Ambience
+  isAudioMuted: boolean;
+  toggleAudioMute: () => void;
+
   // Daily Usage (Freemium)
   dailyUsage: DailyUsage;
   incrementUsage: () => void;
@@ -185,6 +194,23 @@ export const useStore = create<StoreState>()(
       setSelectedBrand: (brandId) => set({ selectedBrand: brandId }),
       selectedItem: null,
       setSelectedItem: (item) => set({ selectedItem: item }),
+
+      // The Vault
+      vaultItems: [],
+      addToVault: (item) =>
+        set((state) => ({
+          vaultItems: state.vaultItems.find((i) => i.id === item.id)
+            ? state.vaultItems
+            : [...state.vaultItems, item],
+        })),
+      removeFromVault: (itemId) =>
+        set((state) => ({
+          vaultItems: state.vaultItems.filter((i) => i.id !== itemId),
+        })),
+
+      // Sensory Ambience
+      isAudioMuted: true, // Default to muted to not annoy users
+      toggleAudioMute: () => set((state) => ({ isAudioMuted: !state.isAudioMuted })),
 
       // Daily Usage
       dailyUsage: {
