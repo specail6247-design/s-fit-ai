@@ -306,7 +306,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
@@ -581,21 +581,40 @@ function ItemCard({
   item, isSelected, onSelect, isRecommended, fitScore
 }: ItemCardProps) {
   const primaryColor = colorMap[item.colors?.[0] || 'Black'] || '#555';
+
+  // Fake countdown for locked items
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [timeLeft] = useState('02:00:00');
+  useEffect(() => {
+    if (!item.isLocked) return;
+    // We will just do a simple decrementing string for demo purposes
+    // A more robust implementation would use a real end time.
+  }, [item.isLocked]);
+
   return (
     <motion.button
-      onClick={onSelect}
-      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      onClick={() => { if (!item.isLocked) onSelect(); }}
+      className={`flex-shrink-0 w-24 p-2 rounded-lg border transition-all snap-start relative ${item.isLocked ? 'opacity-70 cursor-not-allowed border-red-500/30' : ''} ${isSelected ? 'border-cyber-lime bg-charcoal' : 'border-border-color bg-void-black hover:border-soft-gray/50'}`}
+      whileHover={item.isLocked ? {} : { scale: 1.05 }}
+      whileTap={item.isLocked ? {} : { scale: 0.95 }}
     >
       <div className="aspect-square rounded-md mb-2 flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
-        <span className="text-2xl drop-shadow-lg">{getCategoryIcon(item.category)}</span>
-        {item.isLuxury && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
-        {isRecommended && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
+        <span className={`text-2xl drop-shadow-lg ${item.isLocked ? 'grayscale opacity-50' : ''}`}>{getCategoryIcon(item.category)}</span>
+
+        {item.isLocked && (
+          <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center">
+            <span className="material-symbols-outlined text-white text-lg">lock</span>
+            <span className="text-[8px] text-white font-mono mt-1">02:00:00</span>
+          </div>
+        )}
+
+        {item.isLuxury && !item.isLocked && <div className="absolute top-0 right-0 w-4 h-4 bg-luxury-gold rounded-bl flex items-center justify-center"><span className="text-[0.5rem]">✦</span></div>}
+        {isRecommended && !item.isLocked && <div className="absolute top-0 left-0 rounded-br bg-cyber-lime px-1.5 py-0.5 text-[0.55rem] font-bold text-void-black">AI Pick</div>}
       </div>
       <p className="text-[0.6rem] text-pure-white truncate">{item.name}</p>
       <p className="text-[0.55rem] text-soft-gray">${item.price}</p>
-      <p className="text-[0.55rem] text-cyber-lime">Fit {fitScore}%</p>
+      {!item.isLocked && <p className="text-[0.55rem] text-cyber-lime">Fit {fitScore}%</p>}
+      {item.isLocked && <p className="text-[0.55rem] text-red-400 font-bold">Locked</p>}
     </motion.button>
   );
 }
@@ -829,12 +848,13 @@ function AITryOnModal({
 
 export function FittingRoom() {
   const {
-    userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis,
+    userStats, selectedBrand, selectedItem, setSelectedItem, selectedMode, faceAnalysis, poseAnalysis, vaultItems, addToVault, removeFromVault, isAudioMuted, toggleAudioMute
   } = useStore();
   
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
+  const [showVault, setShowVault] = useState(false);
   const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
   const [aiTryOnLoading, setAITryOnLoading] = useState(false);
   const [userPhotoPreview, setUserPhotoPreview] = useState<string | null>(null);
@@ -856,6 +876,76 @@ export function FittingRoom() {
     return false;
   });
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Audio Context for Ambient Synth
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const oscillatorRef = useRef<OscillatorNode | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+
+  useEffect(() => {
+    if (!isAudioMuted && !audioCtxRef.current && isMasterpieceMode) {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+        audioCtxRef.current = new AudioContext();
+
+        oscillatorRef.current = audioCtxRef.current.createOscillator();
+        gainNodeRef.current = audioCtxRef.current.createGain();
+
+        // Low, sub-bass hum for "luxury ambience"
+        oscillatorRef.current.type = 'sine';
+        oscillatorRef.current.frequency.setValueAtTime(55, audioCtxRef.current.currentTime); // ~A1 note
+
+        // Setup slight detune oscillation
+        const lfo = audioCtxRef.current.createOscillator();
+        const lfoGain = audioCtxRef.current.createGain();
+        lfo.type = 'sine';
+        lfo.frequency.setValueAtTime(0.1, audioCtxRef.current.currentTime);
+        lfoGain.gain.setValueAtTime(5, audioCtxRef.current.currentTime);
+        lfo.connect(lfoGain);
+        lfoGain.connect(oscillatorRef.current.detune);
+        lfo.start();
+
+        // Keep gain very low and ease in
+        gainNodeRef.current.gain.setValueAtTime(0, audioCtxRef.current.currentTime);
+        gainNodeRef.current.gain.linearRampToValueAtTime(0.05, audioCtxRef.current.currentTime + 3);
+
+        oscillatorRef.current.connect(gainNodeRef.current);
+        gainNodeRef.current.connect(audioCtxRef.current.destination);
+
+        oscillatorRef.current.start();
+      } catch (e) {
+        console.error("Audio Context failed:", e);
+      }
+    } else if (isAudioMuted || !isMasterpieceMode) {
+      if (gainNodeRef.current && audioCtxRef.current) {
+        gainNodeRef.current.gain.linearRampToValueAtTime(0, audioCtxRef.current.currentTime + 1);
+        setTimeout(() => {
+          if (oscillatorRef.current) {
+            oscillatorRef.current.stop();
+            oscillatorRef.current.disconnect();
+            oscillatorRef.current = null;
+          }
+          if (audioCtxRef.current) {
+            audioCtxRef.current.close();
+            audioCtxRef.current = null;
+          }
+        }, 1000);
+      }
+    }
+
+    return () => {
+      // Cleanup happens via the state changes, but we ensure destruction on unmount
+    };
+  }, [isAudioMuted, isMasterpieceMode]);
+
+  useEffect(() => {
+    return () => {
+      if (audioCtxRef.current) {
+        audioCtxRef.current.close();
+      }
+    };
+  }, []);
   
   const brandItems = useMemo(() => selectedBrand ? getItemsByBrand(selectedBrand) : [], [selectedBrand]);
   const currentItem = selectedItem || null;
@@ -1000,6 +1090,11 @@ export function FittingRoom() {
             <button onClick={() => setShowHeatmap(!showHeatmap)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${showHeatmap ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
                 🔥 Fit Heatmap
             </button>
+            {isMasterpieceMode && (
+                <button onClick={toggleAudioMute} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${!isAudioMuted ? 'bg-white text-black border-white' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
+                    {isAudioMuted ? '🔇 Audio Muted' : '🔊 Ambience On'}
+                </button>
+            )}
         </div>
 
         {/* Rotation hint */}
@@ -1010,15 +1105,34 @@ export function FittingRoom() {
           </motion.div>
         )}
 
-        <div className="absolute top-4 left-4 flex gap-2 z-20">
-            <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
-                <span>📤</span>
-            </button>
-            <motion.button onClick={() => setShowAITryOnModal(true)} 
-                           className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
-                           whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <span>✨</span> AI 피팅 <span className="text-[0.6rem] bg-white/20 px-1.5 py-0.5 rounded-full">NEW</span>
-            </motion.button>
+        <div className="absolute top-4 left-4 flex gap-2 z-20 flex-col">
+            <div className="flex gap-2">
+                <button onClick={() => setShowShareModal(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors">
+                    <span>📤</span>
+                </button>
+                <button onClick={() => setShowVault(true)} className="bg-charcoal/60 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-charcoal/80 transition-colors relative">
+                    <span>🔐</span>
+                    {vaultItems.length > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-cyber-lime text-black text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                            {vaultItems.length}
+                        </span>
+                    )}
+                </button>
+                <motion.button onClick={() => setShowAITryOnModal(true)}
+                               className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl flex items-center gap-2 border border-white/20"
+                               whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <span>✨</span> AI 피팅 <span className="text-[0.6rem] bg-white/20 px-1.5 py-0.5 rounded-full">NEW</span>
+                </motion.button>
+            </div>
+            {currentItem && (
+                <button
+                  onClick={() => addToVault(currentItem)}
+                  className="bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20 hover:bg-white/20 transition-colors text-[10px] font-bold text-white flex items-center justify-center gap-2 mt-1 self-start"
+                >
+                  <span className="material-symbols-outlined text-sm">bookmark_add</span>
+                  Save Look
+                </button>
+            )}
         </div>
 
         {topPicks.length > 0 && (
@@ -1112,6 +1226,16 @@ export function FittingRoom() {
             </div>
             <span className="text-[8px] text-soft-gray italic">Complete the Look</span>
           </div>
+          {currentItem.styleTip && (
+            <div className="mb-4 bg-void-black/50 border border-white/5 p-3 rounded-xl flex items-start gap-2">
+              <span className="text-cyber-lime text-sm mt-0.5">💡</span>
+              <div>
+                <p className="text-[10px] font-bold text-white uppercase tracking-wider mb-1">Styling Tip</p>
+                <p className="text-[11px] text-soft-gray leading-relaxed">{currentItem.styleTip}</p>
+              </div>
+            </div>
+          )}
+
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {/* These would normally come from lib/visionService.getComplementaryItems */}
             {brandItems.filter(i => i.id !== currentItem.id).slice(0, 3).map((compItem) => (
@@ -1148,6 +1272,60 @@ export function FittingRoom() {
         result={aiTryOnResult}
         onGenerateTryOn={handleGenerateAITryOn}
       />
+
+      {/* The Vault Drawer */}
+      <AnimatePresence>
+        {showVault && (
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed top-0 right-0 h-full w-64 bg-void-black/95 backdrop-blur-xl border-l border-border-color z-50 p-4 shadow-2xl flex flex-col"
+          >
+            <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">🔐 The Vault</h3>
+              <button onClick={() => setShowVault(false)} className="text-soft-gray hover:text-white">✕</button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
+              {vaultItems.length === 0 ? (
+                <div className="text-center text-soft-gray text-xs mt-10">
+                  <span className="text-4xl mb-2 block opacity-50">🗄️</span>
+                  Your vault is empty.<br/>Save looks to compare them later.
+                </div>
+              ) : (
+                vaultItems.map((item) => (
+                  <div key={item.id} className="bg-charcoal/50 rounded-xl p-3 border border-white/5 relative group">
+                    <button
+                      onClick={() => removeFromVault(item.id)}
+                      className="absolute top-2 right-2 text-soft-gray hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      ✕
+                    </button>
+                    <div className="flex gap-3 items-center">
+                      <div className="w-12 h-12 rounded-lg bg-black/50 overflow-hidden relative flex-shrink-0 flex items-center justify-center">
+                        <span className="text-xl">{getCategoryIcon(item.category)}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] uppercase text-soft-gray">{item.brand}</p>
+                        <p className="text-xs font-bold text-white truncate">{item.name}</p>
+                        <p className="text-[10px] text-cyber-lime mt-1">${item.price}</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => { setSelectedItem(item); setShowVault(false); }}
+                      className="w-full mt-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-[10px] font-bold transition-colors"
+                    >
+                      Try On Again
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
