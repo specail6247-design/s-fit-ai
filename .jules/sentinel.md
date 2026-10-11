@@ -1,0 +1,4 @@
+## 2023-10-27 - [Prevent Path Traversal/LFI by securely resolving local file paths]
+**Vulnerability:** The Try-On API dynamically generated local file paths for reading images by naively concatenating `process.cwd()`, `'public'`, and a user-provided `relativePath` using `path.join`.
+**Learning:** `path.join` does not guarantee that the resulting path remains within the intended base directory if the user-provided input contains directory traversal sequences like `../` or `../../`. This could lead to a Local File Inclusion (LFI) or Path Traversal vulnerability where sensitive files on the system could be read.
+**Prevention:** Instead of `path.join`, use `path.resolve` for both the base and target paths. Additionally, strictly enforce a security check confirming that the resulting `absolutePath` starts with the `baseDir` plus a path separator (e.g., `absolutePath.startsWith(baseDir + path.sep)`). This ensures the path is properly bounded.
