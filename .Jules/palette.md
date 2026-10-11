@@ -1,0 +1,3 @@
+## 2026-10-11 - Screen Reader Experience for Icon-Only Close Buttons
+**Learning:** Relying solely on raw text characters like '✕' for close buttons causes screen readers to redundantly announce 'multiplication x' alongside 'close', degrading the a11y experience. The preferred pattern is hiding the character visually from screen readers while providing semantic context to the interactive container.
+**Action:** When implementing icon-only utility buttons using raw characters, consistently apply `aria-hidden="true"` to the internal text/span element and an explicit `aria-label="[Action]"` to the parent button container.
