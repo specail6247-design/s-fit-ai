@@ -70,14 +70,14 @@ export function AuthButton() {
     return (
       <div className="flex items-center gap-3">
         <div className="text-right hidden md:block">
-          <p className="text-xs text-soft-gray">Welcome,</p>
-          <p className="text-sm font-medium text-white max-w-[100px] truncate">
+          <p className="text-xs text-[#C9B037] font-[family-name:var(--font-display)] tracking-widest uppercase">Member</p>
+          <p className="text-sm font-bold text-white max-w-[100px] truncate">
             {user.email?.split('@')[0]}
           </p>
         </div>
         <button
           onClick={handleLogout}
-          className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-xs font-medium transition-colors border border-white/10"
+          className="bg-transparent hover:bg-white/10 text-white/70 hover:text-white px-4 py-2 rounded-full text-xs font-bold tracking-widest transition-colors border border-white/20 uppercase"
         >
           Sign Out
         </button>
@@ -89,48 +89,64 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="bg-transparent border border-[#C9B037]/50 text-[#C9B037] px-6 py-2 rounded-full text-xs font-bold tracking-widest hover:bg-[#C9B037]/10 hover:border-[#C9B037] transition-all uppercase flex items-center gap-2 shadow-[0_0_15px_rgba(201,176,55,0.15)]"
       >
-        LOGIN
+        <span className="material-symbols-outlined text-[16px]">key</span>
+        MEMBER ACCESS
       </button>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-xl p-4">
+          <div className="bg-[#0A0A0A] border border-[#C9B037]/30 w-full max-w-md rounded-2xl p-8 relative shadow-[0_0_50px_rgba(201,176,55,0.1)] overflow-hidden">
+            {/* Ambient Glow */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1/2 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#C9B037]/10 via-transparent to-transparent pointer-events-none" />
+
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors"
             >
-              ✕
+              <span className="material-symbols-outlined">close</span>
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h2>
+            <div className="text-center mb-8 relative z-10">
+              <span className="material-symbols-outlined text-[#C9B037] text-4xl mb-2 opacity-80">diamond</span>
+              <h2 className="text-2xl text-white font-[family-name:var(--font-display)] tracking-[0.2em] uppercase" style={{ fontFamily: 'Cinzel, serif' }}>
+                {isLogin ? 'Sign In' : 'Join the Club'}
+              </h2>
+              <p className="text-[#C9B037] text-xs font-mono mt-2 tracking-widest uppercase opacity-70">
+                Exclusive Access
+              </p>
+            </div>
 
-            <form onSubmit={handleAuth} className="space-y-4 mb-6">
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
+            <form onSubmit={handleAuth} className="space-y-6 mb-8 relative z-10">
+              <div className="space-y-1">
+                <label className="text-[10px] text-white/50 uppercase tracking-widest ml-1 font-bold">Email Address</label>
+                <input
+                  type="email"
+                  placeholder="name@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-transparent border-b border-white/20 px-1 py-2 text-white text-sm focus:border-[#C9B037] outline-none transition-colors placeholder:text-white/20"
+                  required
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] text-white/50 uppercase tracking-widest ml-1 font-bold">Password</label>
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-transparent border-b border-white/20 px-1 py-2 text-white text-sm focus:border-[#C9B037] outline-none transition-colors placeholder:text-white/20"
+                  required
+                />
+              </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="w-full bg-gradient-to-r from-[#C9B037] to-[#e8d282] text-black font-bold py-3 rounded-xl hover:brightness-110 transition-all disabled:opacity-50 tracking-widest uppercase text-sm mt-4 shadow-[0_0_20px_rgba(201,176,55,0.3)]"
               >
-                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+                {loading ? 'Authenticating...' : (isLogin ? 'Enter' : 'Apply for Access')}
               </button>
             </form>
 

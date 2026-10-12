@@ -43,6 +43,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
+      {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+      <head>
+        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=optional" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=optional" rel="stylesheet" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-void-black text-pure-white`}
         suppressHydrationWarning
