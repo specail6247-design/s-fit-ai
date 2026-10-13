@@ -1,8 +1,8 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { User } from '@supabase/supabase-js';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function AuthButton() {
   const [user, setUser] = useState<User | null>(null);
@@ -44,40 +44,22 @@ export function AuthButton() {
     }
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'kakao' | 'apple' | 'discord') => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-      if (error) throw error;
-    } catch (error: unknown) {
-      alert(`${provider} Login Error: ` + (error as Error).message);
-    }
-  };
-
   const handleLogout = async () => {
     await supabase.auth.signOut();
   };
 
   if (user) {
     return (
-      <div className="flex items-center gap-3">
+      <div className="fixed top-6 right-6 z-40 flex items-center gap-4 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-lg">
         <div className="text-right hidden md:block">
-          <p className="text-xs text-soft-gray">Welcome,</p>
+          <p className="text-[10px] uppercase tracking-widest text-luxury-gold">Member</p>
           <p className="text-sm font-medium text-white max-w-[100px] truncate">
             {user.email?.split('@')[0]}
           </p>
         </div>
         <button
           onClick={handleLogout}
-          className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-xs font-medium transition-colors border border-white/10"
+          className="bg-white/5 hover:bg-white/10 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors border border-white/10"
         >
           Sign Out
         </button>
@@ -89,84 +71,89 @@ export function AuthButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-cyber-lime text-void-black px-5 py-2 rounded-full text-xs font-bold hover:brightness-110 transition-all"
+        className="fixed top-6 right-6 z-40 bg-black/40 backdrop-blur-md text-white border border-white/10 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300 shadow-lg"
       >
-        LOGIN
+        Member Access
       </button>
 
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
-            <button
+      <AnimatePresence>
+        {showModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/90 backdrop-blur-xl"
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-[#050505] border border-white/10 w-full max-w-md rounded-2xl p-10 relative z-10 shadow-2xl overflow-hidden"
             >
-              ✕
-            </button>
-            
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h2>
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-luxury-gold to-transparent opacity-50" />
 
-            <form onSubmit={handleAuth} className="space-y-4 mb-6">
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
-                required
-              />
               <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                onClick={() => setShowModal(false)}
+                className="absolute top-6 right-6 text-gray-500 hover:text-white transition-colors"
               >
-                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+                <span className="material-symbols-outlined" aria-hidden="true">close</span>
               </button>
-            </form>
 
-            <div className="flex items-center gap-2 mb-6">
-              <div className="h-px bg-white/10 flex-1" />
-              <span className="text-xs text-soft-gray">OR SOCIAL LOGIN</span>
-              <div className="h-px bg-white/10 flex-1" />
-            </div>
+              <div className="text-center mb-10">
+                <h2 className="text-3xl font-black italic tracking-tighter text-white mb-2 font-display">
+                  {isLogin ? 'SIGN IN' : 'JOIN THE CLUB'}
+                </h2>
+                <p className="text-xs text-luxury-gold uppercase tracking-[0.2em]">
+                  {isLogin ? 'Exclusive Access' : 'Become a Member'}
+                </p>
+              </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <button onClick={() => handleSocialLogin('google')} className="bg-white/5 hover:bg-white/10 border border-white/10 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🇬</span> <span className="text-xs text-white">Google</span>
-              </button>
-              <button onClick={() => handleSocialLogin('kakao')} className="bg-[#FAE100] hover:bg-[#FADB00] text-[#371D1E] py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">💬</span> <span className="text-xs font-bold">Kakao</span>
-              </button>
-              <button onClick={() => handleSocialLogin('apple')} className="bg-white hover:bg-gray-100 text-black py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🍎</span> <span className="text-xs font-bold">Apple</span>
-              </button>
-              <button onClick={() => handleSocialLogin('discord')} className="bg-[#5865F2] hover:bg-[#4752C4] text-white py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🎮</span> <span className="text-xs font-bold">Discord</span>
-              </button>
-            </div>
+              <form onSubmit={handleAuth} className="space-y-5 relative z-10">
+                <div>
+                  <input
+                    type="email"
+                    placeholder="EMAIL ADDRESS"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white text-sm focus:border-luxury-gold outline-none transition-colors placeholder:text-gray-600 uppercase tracking-wider"
+                    required
+                  />
+                </div>
+                <div>
+                  <input
+                    type="password"
+                    placeholder="PASSWORD"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-white text-sm focus:border-luxury-gold outline-none transition-colors placeholder:text-gray-600 uppercase tracking-wider"
+                    required
+                  />
+                </div>
+                <div className="pt-4">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-white text-black font-bold py-4 rounded-none hover:bg-gray-200 transition-colors disabled:opacity-50 uppercase tracking-widest text-sm"
+                  >
+                    {loading ? 'Authenticating...' : (isLogin ? 'Enter' : 'Apply')}
+                  </button>
+                </div>
+              </form>
 
-            <p className="mt-6 text-center text-xs text-soft-gray">
-              {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
-              <button
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-cyber-lime hover:underline ml-1"
-              >
-                {isLogin ? 'Sign up' : 'Log in'}
-              </button>
-            </p>
+              <div className="mt-8 text-center relative z-10">
+                <button
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="text-xs text-gray-500 hover:text-luxury-gold uppercase tracking-widest transition-colors"
+                >
+                  {isLogin ? 'Request Membership' : 'Existing Member? Sign In'}
+                </button>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </>
   );
 }
