@@ -1,0 +1,4 @@
+## 2024-05-24 - Path Resolution Vulnerability
+**Vulnerability:** The API endpoint `app/api/try-on/route.ts` used `path.join(process.cwd(), 'public', relativePath)` to resolve local image files provided by the user. This allowed users to supply paths with `../` to access files outside the intended public directory.
+**Learning:** `path.join` does not prevent users from escaping the base directory. When user input is combined with a base directory to read a file, it must be validated to ensure the resulting resolved path is still within the intended base directory.
+**Prevention:** Use `path.resolve` for both the base directory and the combined path, and explicitly verify that the resulting absolute path starts with the base directory plus a path separator (`absolutePath.startsWith(baseDir + path.sep)`).
