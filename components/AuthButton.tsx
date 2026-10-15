@@ -99,9 +99,10 @@ export function AuthButton() {
           <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              className="absolute top-4 right-4 text-soft-gray hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-lime rounded"
+              aria-label="Close modal"
             >
-              ✕
+              <span aria-hidden="true">✕</span>
             </button>
             
             <h2 className="text-xl font-bold text-white mb-6 text-center">
