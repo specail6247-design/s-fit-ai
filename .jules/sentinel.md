@@ -1,0 +1,4 @@
+## 2024-10-16 - Safe Local File Resolution
+**Vulnerability:** Path Traversal/LFI in Next.js API route `app/api/try-on/route.ts` via unsanitized user-provided local file path (`garmentImageUrl`) using `path.join()`.
+**Learning:** `path.join()` is vulnerable to path traversal (e.g. `../../etc/passwd`). When resolving local files from user input, even if the user input is intended to be a public asset path, the path must be strictly resolved and bounded to the intended directory.
+**Prevention:** Securely resolve paths by using `path.resolve` for both the base and target paths, and explicitly verify that the resulting absolute path starts with the base directory plus a path separator (e.g., `absolutePath.startsWith(baseDir + path.sep)`).
