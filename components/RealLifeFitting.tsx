@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LegalModal } from './LegalModal';
+import { SupportHub } from './SupportHub';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,8 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [isSupportHubOpen, setIsSupportHubOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -71,6 +75,56 @@ export default function RealLifeFitting() {
     }
   };
 
+  const handleShareToStory = () => {
+    if (!resultImage) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Fill background
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // If it's a cross origin image without CORS headers, it will fail to load with crossOrigin="anonymous".
+    // We can try loading without crossOrigin first, then draw it (which will taint the canvas, but we handle the error).
+    const fallbackImg = new Image();
+    fallbackImg.onload = () => {
+      try {
+        // Draw image in center, scaling to fit width or height while maintaining aspect ratio
+        const scale = Math.min(canvas.width / fallbackImg.width, (canvas.height - 400) / fallbackImg.height);
+        const w = fallbackImg.width * scale;
+        const h = fallbackImg.height * scale;
+        const x = (canvas.width - w) / 2;
+        const y = (canvas.height - h) / 2;
+
+        ctx.drawImage(fallbackImg, x, y, w, h);
+
+        // Add branding
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 60px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('S_FIT NEO', canvas.width / 2, 150);
+
+        ctx.fillStyle = '#007AFF';
+        ctx.font = '40px Arial';
+        ctx.fillText('AI VIRTUAL FITTING', canvas.width / 2, 220);
+
+        // Trigger download
+        const link = document.createElement('a');
+        link.download = 'sfit-neo-story.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } catch (e) {
+        console.error("Canvas tainted, opening in new window", e);
+        window.open(resultImage, '_blank');
+      }
+    };
+    fallbackImg.src = resultImage;
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
@@ -103,6 +157,11 @@ export default function RealLifeFitting() {
                   <div className="text-[10px] text-gray-500">Supports JPG, PNG (Max 5MB)</div>
                 </div>
               </label>
+            </div>
+            {/* Data Safety Badge */}
+            <div className="flex items-center gap-2 mt-2 text-[10px] text-gray-400 bg-black/20 px-3 py-2 rounded-lg border border-white/5">
+              <span className="text-[#007AFF]">🔒</span>
+              Photos are processed securely and not shared.
             </div>
           </div>
 
@@ -159,6 +218,17 @@ export default function RealLifeFitting() {
           </div>
 
         </div>
+
+        {/* Footer Links */}
+        <div className="mt-auto pt-8 flex gap-4 text-[10px] text-gray-500 justify-center">
+          <button onClick={() => setIsLegalModalOpen(true)} className="hover:text-white transition-colors">
+            Privacy & Terms
+          </button>
+          <span>|</span>
+          <button onClick={() => setIsSupportHubOpen(true)} className="hover:text-white transition-colors">
+            Report Issue
+          </button>
+        </div>
       </div>
 
       {/* RIGHT PANEL: 3D RESULT & ENVIRONMENT */}
@@ -205,10 +275,19 @@ export default function RealLifeFitting() {
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
+              <button
+                onClick={handleShareToStory}
+                className="absolute bottom-4 right-4 bg-[#007AFF] hover:bg-[#005bb5] text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg transition-colors flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
             </div>
           </motion.div>
         )}
       </div>
+
+      <LegalModal isOpen={isLegalModalOpen} onClose={() => setIsLegalModalOpen(false)} />
+      <SupportHub isOpen={isSupportHubOpen} onClose={() => setIsSupportHubOpen(false)} />
     </div>
   );
 }
