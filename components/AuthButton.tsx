@@ -100,8 +100,9 @@ export function AuthButton() {
             <button
               onClick={() => setShowModal(false)}
               className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              aria-label="Close modal"
             >
-              ✕
+              <span aria-hidden="true">✕</span>
             </button>
             
             <h2 className="text-xl font-bold text-white mb-6 text-center">
@@ -128,6 +129,7 @@ export function AuthButton() {
               <button
                 type="submit"
                 disabled={loading}
+                aria-busy={loading}
                 className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
               >
                 {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
@@ -142,16 +144,16 @@ export function AuthButton() {
 
             <div className="grid grid-cols-2 gap-3">
               <button onClick={() => handleSocialLogin('google')} className="bg-white/5 hover:bg-white/10 border border-white/10 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🇬</span> <span className="text-xs text-white">Google</span>
+                <span className="text-lg" aria-hidden="true">🇬</span> <span className="text-xs text-white">Google</span>
               </button>
               <button onClick={() => handleSocialLogin('kakao')} className="bg-[#FAE100] hover:bg-[#FADB00] text-[#371D1E] py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">💬</span> <span className="text-xs font-bold">Kakao</span>
+                <span className="text-lg" aria-hidden="true">💬</span> <span className="text-xs font-bold">Kakao</span>
               </button>
               <button onClick={() => handleSocialLogin('apple')} className="bg-white hover:bg-gray-100 text-black py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🍎</span> <span className="text-xs font-bold">Apple</span>
+                <span className="text-lg" aria-hidden="true">🍎</span> <span className="text-xs font-bold">Apple</span>
               </button>
               <button onClick={() => handleSocialLogin('discord')} className="bg-[#5865F2] hover:bg-[#4752C4] text-white py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <span className="text-lg">🎮</span> <span className="text-xs font-bold">Discord</span>
+                <span className="text-lg" aria-hidden="true">🎮</span> <span className="text-xs font-bold">Discord</span>
               </button>
             </div>
 
