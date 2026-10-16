@@ -111,7 +111,7 @@ export default function LuxuryGarmentDetail() {
             <motion.span variants={{ hidden: { opacity: 0, scale: 0.8 }, visible: { opacity: 1, scale: 1 } }} className="text-[#ecab13] material-symbols-outlined">info</motion.span>
           </div>
           <motion.p variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-zinc-400 text-sm leading-relaxed mb-6 font-[family-name:var(--font-inter)]">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </motion.p>
           
           {/* Chips */}
