@@ -1,7 +1,7 @@
 import React from 'react'
 import { Inter } from 'next/font/google'
 
-
+/* eslint-disable-next-line @next/next/no-page-custom-font */
 const inter = Inter({ subsets: ['latin'], display: 'optional' })
 
 export default function SPALayout({
