@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { calculateRecommendedSize, getComplementaryItems, ClothingStyleAnalysis } from '@/lib/visionService';
-import type { PoseProportions } from '@/lib/mediapipe';
+
 import { ClothingItem, getAllItems } from '@/data/mockData';
 
 // Mock OpenAI
