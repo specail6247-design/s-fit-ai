@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import CinematicViewer from './CinematicViewer';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +17,7 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [showCinematic, setShowCinematic] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -202,11 +204,30 @@ export default function RealLifeFitting() {
               >
                 ✕ Close
               </button>
+
+              {/* Cinematic Mode Button */}
+              <button
+                onClick={() => setShowCinematic(true)}
+                className="absolute bottom-4 right-4 bg-gradient-to-r from-[#005bb5] to-[#007AFF] text-white px-4 py-2 rounded-xl text-sm font-bold shadow-xl border border-white/20 hover:scale-105 transition-transform flex items-center gap-2"
+              >
+                <span>🎬</span> CINEMATIC MODE
+              </button>
+
               <div className="absolute bottom-4 left-4 bg-black/60 text-[#007AFF] px-3 py-1 rounded-md text-xs font-bold font-mono border border-[#007AFF]/30">
                 AI GENERATED_
               </div>
             </div>
           </motion.div>
+        )}
+
+        {/* Cinematic Viewer Overlay */}
+        {showCinematic && resultImage && (
+          <div className="absolute inset-0 z-30 bg-black/60 backdrop-blur-sm">
+            <CinematicViewer
+              initialImageUrl={resultImage}
+              onClose={() => setShowCinematic(false)}
+            />
+          </div>
         )}
       </div>
     </div>
