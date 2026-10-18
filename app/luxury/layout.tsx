@@ -7,6 +7,7 @@ const manrope = Manrope({
   variable: '--font-manrope',
 })
 
+/* eslint-disable-next-line @next/next/no-page-custom-font */
 export default function LuxuryLayout({
   children,
 }: {

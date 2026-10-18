@@ -1,0 +1,4 @@
+## 2024-05-24 - API Route Local File Handling Path Traversal
+**Vulnerability:** Path traversal vulnerability in `app/api/try-on/route.ts` allowed reading arbitrary files outside the intended `public` directory.
+**Learning:** Using `path.join` with unchecked user input to construct file paths is insufficient for security. Next.js API routes handling local files must strictly validate that the resolved absolute path remains within the intended sandbox boundary, especially when combining `process.cwd()` with dynamic user-provided paths.
+**Prevention:** Always use `path.resolve` for both the base directory and the target path. Explicitly verify that the resulting target path starts exactly with the base directory path plus the OS-specific path separator (e.g., `absolutePath.startsWith(baseDir + path.sep)`) before attempting file system access.
