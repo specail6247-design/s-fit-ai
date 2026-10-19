@@ -306,7 +306,7 @@ export const getCategoryIcon = (category: ClothingItem['category']) => {
 // --- 3D ENGINE COMPONENTS ---
 
 function Mannequin({ 
-  height = 170, opacity = 1.0 
+  height = 170, opacity: _opacity = 1.0
 }: { height?: number; opacity?: number; bodyShape?: string; proportions?: PoseProportions | null }) {
   const scale = height / 170;
   const animationUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RobotExpressive/glTF-Binary/RobotExpressive.glb";
@@ -626,7 +626,7 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
     else if (platform === 'instagram') { navigator.clipboard.writeText(shareText); alert('Text copied for Instagram! 📱'); return; }
     else if (platform === 'kakao') shareUrl = `https://story.kakao.com/share?url=${url}&text=${encodedText}`;
     
-    if (shareUrl) window.open(shareUrl, '_blank', 'width=600,height=400');
+    if (shareUrl) window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=400');
     onClose();
   };
 
