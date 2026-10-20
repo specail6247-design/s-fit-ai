@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import MemberAccessModal from './MemberAccessModal';
+import SupportHubDrawer from './SupportHubDrawer';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -12,6 +14,8 @@ const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), {
 // --- MAIN CONTROL COMPONENT ---
 export default function RealLifeFitting() {
   const [userImage, setUserImage] = useState<string | null>(null);
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
+  const [isSupportDrawerOpen, setIsSupportDrawerOpen] = useState(false);
   const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
@@ -72,8 +76,33 @@ export default function RealLifeFitting() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
+    <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden relative">
       
+      {/* GLOBAL ACTIONS: "Hidden until needed" style in top-right */}
+      <div className="absolute top-8 right-8 z-[60] flex gap-4 opacity-30 hover:opacity-100 transition-opacity duration-300">
+        <button
+          onClick={() => setIsSupportDrawerOpen(true)}
+          className="w-10 h-10 rounded-full border border-white/20 bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-white/10 hover:border-white/50 transition-colors"
+          aria-label="Support Hub"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </button>
+        <button
+          onClick={() => setIsMemberModalOpen(true)}
+          className="px-6 h-10 rounded-full border border-white/20 bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-white/10 hover:border-[#C9B037] hover:text-[#C9B037] transition-colors text-xs font-medium tracking-widest uppercase"
+        >
+          Login
+        </button>
+      </div>
+
+      {/* Modals & Drawers */}
+      <MemberAccessModal isOpen={isMemberModalOpen} onClose={() => setIsMemberModalOpen(false)} />
+      <SupportHubDrawer isOpen={isSupportDrawerOpen} onClose={() => setIsSupportDrawerOpen(false)} />
+
       {/* LEFT PANEL: CONTROLS */}
       <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
         {/* Background Ambience */}
@@ -96,7 +125,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} className="hidden" id="user-upload" />
               <label htmlFor="user-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {userImage ? <img src={userImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {userImage ? <img src={userImage} alt="User Photo" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Upload User Photo</div>
@@ -113,7 +143,8 @@ export default function RealLifeFitting() {
               <input type="file" onChange={(e) => handleFileUpload(e, setGarmentImage)} className="hidden" id="garment-upload" />
               <label htmlFor="garment-upload" className="cursor-pointer flex items-center gap-4">
                 <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-white/10">
-                  {garmentImage ? <img src={garmentImage} className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {garmentImage ? <img src={garmentImage} alt="Target Garment" className="w-full h-full object-cover" /> : <span className="text-2xl">👕</span>}
                 </div>
                 <div>
                   <div className="text-sm font-bold group-hover:text-white text-gray-300">Select Garment</div>
@@ -195,6 +226,7 @@ export default function RealLifeFitting() {
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
           >
             <div className="relative group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
               <button 
                 onClick={() => setResultImage(null)} 
