@@ -1,7 +1,7 @@
 import React from 'react'
 import { Inter } from 'next/font/google'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'], display: 'optional' })
 
 export default function SPALayout({
   children,
@@ -9,7 +9,9 @@ export default function SPALayout({
   children: React.ReactNode
 }) {
   return (
-    <section className={inter.className}>
+    <>
+      <section className={inter.className}>
+        {/* eslint-disable-next-line @next/next/no-page-custom-font, @next/next/google-font-display */}
        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
       <style dangerouslySetInnerHTML={{__html: `
         .material-symbols-outlined {
@@ -27,7 +29,8 @@ export default function SPALayout({
           -webkit-font-smoothing: antialiased;
         }
       `}} />
-      {children}
-    </section>
+        {children}
+      </section>
+    </>
   )
 }
