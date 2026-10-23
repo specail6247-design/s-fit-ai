@@ -3,7 +3,7 @@ import React from 'react'
 
 const manrope = Manrope({
   subsets: ['latin'],
-  display: 'swap',
+  display: 'optional',
   variable: '--font-manrope',
 })
 
@@ -13,7 +13,9 @@ export default function LuxuryLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className={manrope.className}>
+    <>
+      <div className={manrope.className}>
+        {/* eslint-disable-next-line @next/next/no-page-custom-font, @next/next/google-font-display */}
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
       <style dangerouslySetInnerHTML={{__html: `
         .material-symbols-outlined {
@@ -31,7 +33,8 @@ export default function LuxuryLayout({
           -webkit-font-smoothing: antialiased;
         }
       `}} />
-      {children}
-    </div>
+        {children}
+      </div>
+    </>
   )
 }
