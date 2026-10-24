@@ -36,12 +36,13 @@ export default function PhotoFitting() {
     osc2.start();
 
     return () => {
-      gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
+      gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.1);
       setTimeout(() => {
         oscillator.stop();
         osc2.stop();
         audioCtx.close();
-      }, 1000);
+      }, 100);
     };
   }, [isMuted]);
 
