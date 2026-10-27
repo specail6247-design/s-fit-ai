@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ModeSelector } from './ModeSelector';
+import { PrivacyPolicyModal } from './legal/PrivacyPolicyModal';
+import { SupportHubModal } from './support/SupportHubModal';
 
 export function LandingPage() {
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-void-black text-pure-white overflow-hidden relative selection:bg-cyber-lime selection:text-black">
       
@@ -57,15 +62,38 @@ export function LandingPage() {
             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
             <span>System Operational</span>
           </div>
-          <div className="flex gap-6 uppercase tracking-widest font-bold opacity-50">
+          <div className="flex gap-4 md:gap-6 uppercase tracking-widest font-bold opacity-50 flex-wrap justify-center">
             <span>Powered by</span>
             <span className="text-white">Ready Player Me</span>
             <span className="text-white">Three.js</span>
             <span className="text-white">Next.js 15</span>
           </div>
+          <div className="flex gap-4 mt-4 md:mt-0">
+            <button
+              onClick={() => setIsSupportModalOpen(true)}
+              className="hover:text-white transition-colors underline-offset-4 hover:underline"
+            >
+              Report Issue
+            </button>
+            <button
+              onClick={() => setIsPrivacyModalOpen(true)}
+              className="hover:text-white transition-colors underline-offset-4 hover:underline"
+            >
+              Privacy & Terms
+            </button>
+          </div>
           <p>© 2026 Antigravity. All rights reserved.</p>
         </div>
       </footer>
+
+      <PrivacyPolicyModal
+        isOpen={isPrivacyModalOpen}
+        onClose={() => setIsPrivacyModalOpen(false)}
+      />
+      <SupportHubModal
+        isOpen={isSupportModalOpen}
+        onClose={() => setIsSupportModalOpen(false)}
+      />
     </div>
   );
 }

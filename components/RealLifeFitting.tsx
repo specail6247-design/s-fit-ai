@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { DataSafetyBadge } from '@/components/legal/DataSafetyBadge';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -122,6 +123,8 @@ export default function RealLifeFitting() {
               </label>
             </div>
           </div>
+
+          <DataSafetyBadge />
         </div>
 
         {/* Action Button */}
