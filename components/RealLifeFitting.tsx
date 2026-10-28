@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { SupportDrawer } from '@/components/ui/SupportDrawer';
+import { AuthButton } from '@/components/AuthButton';
 
 // Dynamically import the 3D scene with SSR disabled
 const AvatarCanvas = dynamic(() => import('./AvatarCanvas'), { 
@@ -16,6 +18,7 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -74,6 +77,20 @@ export default function RealLifeFitting() {
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden">
       
+      {/* TOP RIGHT NAV */}
+      <div className="absolute top-8 right-8 z-50 flex items-center gap-4">
+        <button
+          onClick={() => setIsSupportOpen(true)}
+          className="text-gray-400 hover:text-white text-xs uppercase tracking-widest transition-colors flex items-center gap-2"
+        >
+          <span>?</span> Support
+        </button>
+        <div className="h-4 w-px bg-white/10" />
+        <AuthButton />
+      </div>
+
+      <SupportDrawer isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
+
       {/* LEFT PANEL: CONTROLS */}
       <div className="w-1/3 min-w-[400px] h-full p-8 flex flex-col z-10 glass-panel border-r border-white/10 relative">
         {/* Background Ambience */}
