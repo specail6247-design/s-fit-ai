@@ -1,0 +1,4 @@
+## 2026-10-31 - Path Traversal Prevention in API Routes
+**Vulnerability:** A path traversal vulnerability existed in `app/api/try-on/route.ts` where unvalidated user input (`localPath`) was passed to `path.join()`. This allowed access to files outside the intended `public/` directory (e.g., via `../../`).
+**Learning:** `path.join` resolves relative paths like `../` but does not guarantee the resulting path stays within the base directory. Using `path.resolve` combined with a check that the resolved absolute path starts with the base directory is necessary to ensure safety. Appending `path.sep` prevents partial path traversal attacks where an attacker accesses a sibling directory starting with the same prefix.
+**Prevention:** Always use `path.resolve()` on user-provided paths and strictly validate that the resolved path is contained within the allowed base directory using `resolvedPath.startsWith(baseDir + path.sep)`.
