@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { StoryShareModal } from '@/components/ui/StoryShareModal';
 
 interface FittingResultProps {
   originalImage: string;
@@ -16,6 +17,13 @@ export const FittingResult: React.FC<FittingResultProps> = ({
   onShare,
   onRetake,
 }) => {
+  const [showStoryShare, setShowStoryShare] = useState(false);
+
+  const handleShareClick = () => {
+    setShowStoryShare(true);
+    if (onShare) onShare();
+  };
+
   return (
     <div className="relative w-full max-w-md mx-auto overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-color)] bg-[var(--color-secondary)]">
       {/* AR Overlay UI */}
@@ -69,12 +77,18 @@ export const FittingResult: React.FC<FittingResultProps> = ({
           Retake
         </button>
         <button
-          onClick={onShare}
-          className="flex-1 py-3 px-4 rounded-full bg-[var(--color-primary)] text-[var(--color-secondary)] text-sm font-semibold hover:brightness-110 transition-all shadow-[var(--shadow-glow)]"
+          onClick={handleShareClick}
+          className="flex-1 py-3 px-4 rounded-full bg-[var(--color-primary)] text-[var(--color-secondary)] text-sm font-semibold hover:brightness-110 transition-all shadow-[var(--shadow-glow)] flex items-center justify-center gap-2"
         >
-          Share Look
+          <span aria-hidden="true">📸</span> Share Look
         </button>
       </div>
+
+      <StoryShareModal
+        isOpen={showStoryShare}
+        onClose={() => setShowStoryShare(false)}
+        imageUrl={resultImage}
+      />
     </div>
   );
 };
