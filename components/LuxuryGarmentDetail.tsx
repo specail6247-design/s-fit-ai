@@ -87,6 +87,7 @@ export default function LuxuryGarmentDetail({ item, onClose, onTryOn }: Props) {
                     activeImageIndex === idx ? 'border-[var(--color-primary)]' : 'border-transparent opacity-50 hover:opacity-100'
                   }`}
                 >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={img} alt={`Angle ${idx + 1}`} className="w-full h-full object-cover" />
                 </button>
               ))}
