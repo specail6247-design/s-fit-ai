@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import SimpleTryOn from '@/components/SimpleTryOn';
 
@@ -13,20 +13,9 @@ describe('SimpleTryOn', () => {
     expect(screen.getByText('Upload Garment')).toBeInTheDocument();
   });
 
-  it('shows alert if images are missing when clicking Try On', () => {
-    // Polyfill alert for happy-dom
-    window.alert = vi.fn();
-    const alertMock = vi.spyOn(window, 'alert');
+  it('button is disabled initially', () => {
     render(<SimpleTryOn />);
-    
     const button = screen.getByText('GENERATE FIT');
     expect(button).toBeDisabled();
-
-    // We can't click a disabled button, but if we could, we would check the alert
-    // fireEvent.click(button);
-    // expect(alertMock).toHaveBeenCalledWith('Please upload both images');
   });
-
-  // Note: Testing file upload and API interaction would require more complex mocking of URL.createObjectURL and fetch bodies
-  // but this basic test covers the UI presence logic.
 });
