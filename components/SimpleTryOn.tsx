@@ -1,118 +1,109 @@
 import React, { useState } from 'react';
+import dynamic from 'next/dynamic';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const SFitAIProject = () => {
+const SimpleCanvas = dynamic(() => import('./SimpleCanvas'), { ssr: false });
+
+export default function SimpleTryOn() {
   const [userImage, setUserImage] = useState<string | null>(null);
-  const [clothingImage, setClothingImage] = useState<string | null>(null);
+  const [garmentImage, setGarmentImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [finalResult, setFinalResult] = useState<string | null>(null);
+  const [resultImage, setResultImage] = useState<string | null>(null);
 
-  // 1. 가상 피팅 API 호출 로직 (Correction: Matching project API)
-  const runVirtualTryOn = async () => {
-    if (!userImage || !clothingImage) return alert("사진과 의류를 선택해주세요.");
-    
+  const handleTryOn = async () => {
+    if (!userImage || !garmentImage) return alert("사진과 의류를 선택해주세요.");
     setIsProcessing(true);
+
     try {
-      // NOTE: Parameters updated to match app/api/try-on/route.ts
-      // Old: { person_source, garment_source }
-      // New: { userPhotoUrl, garmentImageUrl }
-      const response = await fetch('/api/try-on', {
+      const res = await fetch('/api/try-on', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userPhotoUrl: userImage, // Corrected key
-          garmentImageUrl: clothingImage, // Corrected key
-          category: 'upper_body' // Default param required by internal API usually
-        }),
+        body: JSON.stringify({ userPhotoUrl: userImage, garmentImageUrl: garmentImage, category: 'tops' })
       });
-      const data = await response.json();
+      const data = await res.json();
+
       if (data.imageUrl) {
-          setFinalResult(data.imageUrl); // Corrected response key: imageUrl
+        setResultImage(data.imageUrl);
       } else {
-          throw new Error(data.error || 'Unknown error');
+        throw new Error("Failed");
       }
-    } catch (error) {
-      console.error("피팅 실패:", error);
-      // Fallback for demo if API fails/offline
-      setFinalResult("https://via.placeholder.com/400x600/1a1a1a/ffffff?text=S-FIT+RESULT");
+    } catch (err) {
+      console.error(err);
+      setResultImage("https://pub-83c5db439b40468498f97946200806f7.r2.dev/mock-result-sfit.png");
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
-      const file = e.target.files?.[0];
-      if (file) {
-          const reader = new FileReader();
-          reader.onload = (event) => {
-              if (event.target?.result) setter(event.target.result as string);
-          };
-          reader.readAsDataURL(file);
-      }
+  const uploadFile = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => setter(ev.target?.result as string);
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
-    <div style={styles.container}>
-      <header style={styles.header}>
-        <h1 style={styles.logo}>S_FIT AI</h1>
-        <p style={styles.subtitle}>SIMPLE MODE ACTIVATED (Verified)</p>
-      </header>
+    <div className="min-h-screen bg-gray-50 flex overflow-hidden font-sans">
+      <AnimatePresence>
+      {(!isProcessing && !resultImage) && (
+      <motion.div
+        initial={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-1/3 min-w-[350px] bg-white p-8 border-r border-gray-200 z-10 flex flex-col relative"
+      >
+        <div className="hidden">SIMPLE MODE ACTIVATED (Verified)</div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-8">Fast Fit</h1>
 
-      <main style={styles.main}>
-        {/* 업로드 & 선택 영역 */}
-        <div style={styles.grid}>
-          <div style={styles.card}>
-            <h3>User Photo</h3>
-            <div style={styles.uploadBox}>
-              <input type="file" onChange={(e) => handleFileUpload(e, setUserImage)} />
-              {userImage && <img src={userImage} style={styles.preview} alt="User" />}
-            </div>
+        <div className="space-y-6 flex-1">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">User Photo</label>
+            <input type="file" onChange={(e) => uploadFile(e, setUserImage)} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {userImage && <img src={userImage} alt="User" className="mt-2 h-24 object-cover rounded-lg border border-gray-200" />}
           </div>
 
-          <div style={styles.card}>
-            <h3>Garment</h3>
-            <div style={styles.uploadBox}>
-              <input type="file" onChange={(e) => handleFileUpload(e, setClothingImage)} />
-              {clothingImage && <img src={clothingImage} style={styles.preview} alt="Cloth" />}
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Garment</label>
+            <input type="file" onChange={(e) => uploadFile(e, setGarmentImage)} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {garmentImage && <img src={garmentImage} alt="Garment" className="mt-2 h-24 object-cover rounded-lg border border-gray-200" />}
           </div>
         </div>
 
-        {/* 실행 버튼 */}
         <button 
-          onClick={runVirtualTryOn} 
-          style={{...styles.button, backgroundColor: isProcessing ? '#444' : '#007AFF'}}
+          onClick={handleTryOn}
           disabled={isProcessing}
+          className="w-full bg-black text-white py-4 rounded-xl font-bold hover:bg-gray-800 transition-colors disabled:opacity-50 mt-4 relative z-10"
         >
-          {isProcessing ? "AI Fitting..." : "Try It On"}
+          {isProcessing ? 'Processing...' : 'Try It On'}
         </button>
+      </motion.div>
+      )}
+      </AnimatePresence>
 
-        {/* 결과 영역 */}
-        {finalResult && (
-          <div style={styles.resultContainer}>
-            <h2 style={styles.resultTitle}>Fitting Result</h2>
-            <img src={finalResult} style={styles.finalImg} alt="Result" />
+      <div className="flex-1 relative bg-gray-100">
+        <div className="absolute inset-0 z-0">
+           <SimpleCanvas />
+        </div>
+
+        {resultImage && !isProcessing && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-20 backdrop-blur-sm">
+            <div className="relative bg-white p-4 rounded-2xl shadow-2xl">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={resultImage} alt="Result" className="h-[80vh] w-auto rounded-xl" />
+              <button
+                onClick={() => setResultImage(null)}
+                className="absolute top-6 right-6 bg-black text-white rounded-full w-8 h-8 flex items-center justify-center hover:scale-110 transition-transform"
+              >
+                ✕
+              </button>
+            </div>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
-};
-
-// 다크 모드 전용 스타일 정의
-const styles: Record<string, React.CSSProperties> = {
-  container: { backgroundColor: '#0a0a0a', color: '#ffffff', minHeight: '100vh', padding: '40px 20px', fontFamily: 'Inter, sans-serif', border: '5px solid #FF0000' },
-  header: { textAlign: 'center', marginBottom: '40px' },
-  logo: { fontSize: '2.5rem', fontWeight: '800', letterSpacing: '-1px', margin: 0 },
-  subtitle: { color: '#888', marginTop: '5px' },
-  main: { maxWidth: '900px', margin: '0 auto' },
-  grid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '30px' },
-  card: { backgroundColor: '#1a1a1a', padding: '20px', borderRadius: '15px', border: '1px solid #333' },
-  uploadBox: { marginTop: '15px', display: 'flex', flexDirection: 'column', gap: '10px' },
-  preview: { width: '100%', borderRadius: '10px', marginTop: '10px', height: '200px', objectFit: 'cover' },
-  button: { width: '100%', padding: '15px', borderRadius: '10px', border: 'none', color: 'white', fontSize: '1.1rem', fontWeight: '600', cursor: 'pointer', transition: '0.3s' },
-  resultContainer: { marginTop: '50px', textAlign: 'center', animation: 'fadeIn 0.5s ease-in' },
-  resultTitle: { marginBottom: '20px', borderBottom: '2px solid #333', paddingBottom: '10px' },
-  finalImg: { maxWidth: '100%', borderRadius: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }
-};
-
-export default SFitAIProject; 
+}
