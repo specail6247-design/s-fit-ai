@@ -642,12 +642,25 @@ function ShareModal({ isOpen, onClose, itemName, brandName, fitScore, recommende
           <button onClick={() => handleShare('instagram')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gradient-to-r from-[#833AB4] to-[#F77737] text-xs"><span>📷</span> Instagram</button>
           <button onClick={() => handleShare('kakao')} className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[#FEE500] text-black text-xs"><span>💬</span> KakaoStory</button>
         </div>
-        <div className="pt-4 border-t border-border-color">
+        <div className="pt-4 border-t border-border-color space-y-2">
           {hasPublished ? (
             <div className="bg-cyber-lime/10 border border-cyber-lime/30 rounded-lg p-2 text-center text-[10px] text-cyber-lime font-bold">✨ Published to Community Runway!</div>
           ) : (
             <button onClick={() => { setHasPublished(true); setTimeout(() => setHasPublished(false), 3000); }} className="btn-primary w-full py-2 text-xs">✨ Publish to Community</button>
           )}
+          <button
+            onClick={() => {
+              // Simulate export
+              const a = document.createElement('a');
+              a.href = '#';
+              a.download = 'sfit-cinematic-4k.mp4';
+              alert('Exporting 4K Cinematic Clip... 🎬');
+              onClose();
+            }}
+            className="w-full py-2 text-xs bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
+          >
+            🎬 Export 4K Cinematic Clip
+          </button>
         </div>
         <button onClick={onClose} className="w-full mt-4 py-2 text-soft-gray hover:text-white transition-colors text-xs">Close</button>
       </motion.div>
@@ -711,8 +724,10 @@ interface AITryOnModalProps {
   onPhotoSelect: (file: File | null) => void;
   isLoading: boolean;
   result: string | null;
+  videoResult: string | null;
   error?: string | null;
   onGenerateTryOn: () => void;
+  isMasterpieceMode: boolean;
 }
 
 function AITryOnModal({
@@ -723,11 +738,14 @@ function AITryOnModal({
   onPhotoSelect,
   isLoading,
   result,
+  videoResult,
   error,
-  onGenerateTryOn
+  onGenerateTryOn,
+  isMasterpieceMode
 }: AITryOnModalProps) {
     const [isVideoLoading, setIsVideoLoading] = useState(false);
-    const [videoUrl, setVideoUrl] = useState<string | null>(null);
+    const [localVideoUrl, setLocalVideoUrl] = useState<string | null>(null);
+    const videoUrl = videoResult || localVideoUrl;
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     if (!isOpen) return null;
@@ -792,13 +810,13 @@ function AITryOnModal({
                                   <div className="absolute top-2 right-2 bg-cyber-lime/90 text-void-black text-[10px] font-bold px-2 py-0.5 rounded">ULTRA-FIT</div>
                                 </div>
                             )}
-                            {result && !videoUrl && (
+                            {result && !videoUrl && !isMasterpieceMode && (
                                 <button onClick={async () => {
                                     setIsVideoLoading(true);
                                     try {
                                         const res = await fetch('/api/cinematic-try-on', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({imageUrl: result}) });
                                         const data = await res.json();
-                                        if(data.success) setVideoUrl(data.videoUrl);
+                                        if(data.success) setLocalVideoUrl(data.videoUrl);
                                     } finally { setIsVideoLoading(false); }
                                 }} disabled={isVideoLoading} className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-xs">
                                     {isVideoLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : '🎬 Generate Cinematic Motion'}
@@ -816,7 +834,7 @@ function AITryOnModal({
 
                     {!result && (
                         <button onClick={onGenerateTryOn} disabled={isLoading || !userPhotoPreview || !selectedItem} className="btn-primary w-full py-4 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 text-xs">
-                            {isLoading ? <><div className="w-4 h-4 border-2 border-void-black/30 border-t-void-black rounded-full animate-spin" /><span>Rendering...</span></> : <><span className="text-base">👕</span><span>Generate AI Masterpiece Fit</span></>}
+                            {isLoading ? <><div className="w-4 h-4 border-2 border-void-black/30 border-t-void-black rounded-full animate-spin" /><span>Rendering...</span></> : <><span className="text-base">👕</span><span>{isMasterpieceMode ? 'Generate Full Masterpiece Pipeline' : 'Generate AI Try-On'}</span></>}
                         </button>
                     )}
                 </div>
@@ -836,6 +854,7 @@ export function FittingRoom() {
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [showAITryOnModal, setShowAITryOnModal] = useState(false);
   const [aiTryOnResult, setAITryOnResult] = useState<string | null>(null);
+  const [aiVideoResult, setAIVideoResult] = useState<string | null>(null);
   const [aiTryOnLoading, setAITryOnLoading] = useState(false);
   const [userPhotoPreview, setUserPhotoPreview] = useState<string | null>(null);
   const [isMasterpieceMode, setIsMasterpieceMode] = useState(true);
@@ -905,20 +924,25 @@ export function FittingRoom() {
     if (!userPhotoPreview || !currentItem?.imageUrl) return;
     setAITryOnLoading(true);
     try {
-      const response = await fetch('/api/try-on', {
+      const endpoint = isMasterpieceMode ? '/api/masterpiece-pipeline' : '/api/try-on';
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userPhotoUrl: userPhotoPreview,
           garmentImageUrl: currentItem.imageUrl,
-          category: currentItem.category 
+          category: currentItem.category,
+          isMasterpieceMode
         })
       });
       const data = await response.json();
-      if (data.success) setAITryOnResult(data.imageUrl);
+      if (data.success) {
+        setAITryOnResult(data.imageUrl);
+        if (data.videoUrl) setAIVideoResult(data.videoUrl);
+      }
     } catch (e) { console.error(e); }
     finally { setAITryOnLoading(false); }
-  }, [userPhotoPreview, currentItem]);
+  }, [userPhotoPreview, currentItem, isMasterpieceMode]);
 
   const resolvedHeight = userStats?.height ?? 170;
   const recommendedFit = useMemo(() => {
@@ -989,6 +1013,36 @@ export function FittingRoom() {
           </Suspense>
         )}
         
+        {/* Hyper-Zoom Micro-Fiber Overlay */}
+        <AnimatePresence>
+          {isMacroView && currentItem && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 pointer-events-none z-0 overflow-hidden mix-blend-overlay"
+              style={{
+                backgroundImage: (() => {
+                  const desc = (currentItem.description || '').toLowerCase();
+                  const name = (currentItem.name || '').toLowerCase();
+                  if (desc.includes('silk') || name.includes('silk')) {
+                     return 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\' opacity=\'0.2\'/%3E%3C/svg%3E"), linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%)';
+                  }
+                  if (desc.includes('denim') || name.includes('denim')) {
+                     return 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.95\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\' opacity=\'0.4\'/%3E%3C/svg%3E"), repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px)';
+                  }
+                  if (desc.includes('wool') || name.includes('wool') || desc.includes('knit') || name.includes('knit')) {
+                     return 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.75\' numOctaves=\'5\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\' opacity=\'0.3\'/%3E%3C/svg%3E"), radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.2) 100%)';
+                  }
+                  // Default subtle grain
+                  return 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\' opacity=\'0.15\'/%3E%3C/svg%3E")';
+                })(),
+                backgroundSize: '150px 150px'
+              }}
+            />
+          )}
+        </AnimatePresence>
+
         {/* Controls Overlay */}
         <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
             <button onClick={() => setIsMasterpieceMode(!isMasterpieceMode)} className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${isMasterpieceMode ? 'bg-cyber-lime text-black border-cyber-lime' : 'bg-black/50 text-gray-400 border-gray-600'}`}>
@@ -1137,7 +1191,7 @@ export function FittingRoom() {
       <CompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} picks={topPicks} onSelect={setSelectedItem} />
       <AITryOnModal
         isOpen={showAITryOnModal}
-        onClose={() => { setShowAITryOnModal(false); setAITryOnResult(null); }}
+        onClose={() => { setShowAITryOnModal(false); setAITryOnResult(null); setAIVideoResult(null); }}
         selectedItem={currentItem}
         userPhotoPreview={userPhotoPreview}
         onPhotoSelect={(file) => {
@@ -1146,7 +1200,9 @@ export function FittingRoom() {
         }}
         isLoading={aiTryOnLoading}
         result={aiTryOnResult}
+        videoResult={aiVideoResult}
         onGenerateTryOn={handleGenerateAITryOn}
+        isMasterpieceMode={isMasterpieceMode}
       />
     </div>
   );
