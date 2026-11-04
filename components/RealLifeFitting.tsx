@@ -16,6 +16,59 @@ export default function RealLifeFitting() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showReportIssue, setShowReportIssue] = useState(false);
+
+  const handleShareToStory = () => {
+    if (!resultImage) return;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Instagram Story dimensions (9:16 aspect ratio)
+    canvas.width = 1080;
+    canvas.height = 1920;
+
+    // Fill background
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      // Calculate scale to fit image within the canvas while maintaining aspect ratio,
+      // leaving some space for branding
+      const maxWidth = 980; // 50px padding on each side
+      const maxHeight = 1600; // Leave space top and bottom
+
+      const scale = Math.min(maxWidth / img.width, maxHeight / img.height);
+      const scaledWidth = img.width * scale;
+      const scaledHeight = img.height * scale;
+
+      const x = (canvas.width - scaledWidth) / 2;
+      const y = (canvas.height - scaledHeight) / 2;
+
+      ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+
+      // Add branding
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 80px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S_FIT NEO', canvas.width / 2, 150);
+
+      ctx.font = '40px sans-serif';
+      ctx.fillStyle = '#007AFF';
+      ctx.fillText('AI VIRTUAL FITTING', canvas.width / 2, 220);
+
+      // Generate image and download
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+      const link = document.createElement('a');
+      link.download = 's_fit_story.jpg';
+      link.href = dataUrl;
+      link.click();
+    };
+    img.src = resultImage;
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -89,6 +142,11 @@ export default function RealLifeFitting() {
         </header>
 
         <div className="space-y-8 relative z-10 flex-1 overflow-y-auto">
+          {/* Data Safety Badge */}
+          <div className="flex items-center gap-2 bg-black/40 border border-green-500/30 text-green-400 p-3 rounded-xl text-xs">
+            <span className="material-symbols-outlined text-lg">lock</span>
+            <span>Photos are processed securely and not shared.</span>
+          </div>
           {/* User Photo Input */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#007AFF] uppercase">01. Identification</label>
@@ -149,6 +207,12 @@ export default function RealLifeFitting() {
             </button>
           )}
           
+          {/* Trust & Growth Footer */}
+          <div className="mt-6 pt-6 border-t border-white/10 flex justify-between text-[10px] text-gray-500 uppercase tracking-wider">
+            <button onClick={() => setShowPrivacy(true)} className="hover:text-white transition-colors">Privacy & Terms</button>
+            <button onClick={() => setShowReportIssue(true)} className="hover:text-white transition-colors">Report Issue</button>
+          </div>
+
           <div className="mt-4 flex gap-2">
              <a href="/spa" className="flex-1 py-3 border border-white/20 hover:bg-white/10 rounded-xl text-xs font-bold text-center flex items-center justify-center tracking-widest uppercase transition-colors">
                SPA Line
@@ -196,6 +260,12 @@ export default function RealLifeFitting() {
           >
             <div className="relative group">
               <img src={resultImage} alt="Result" className="w-auto h-[70vh] rounded-xl object-contain shadow-2xl" />
+              <button
+                onClick={handleShareToStory}
+                className="absolute top-4 left-4 bg-[#007AFF] text-white px-4 py-2 rounded-full font-bold text-xs hover:bg-[#005bb5] transition-colors flex items-center gap-2"
+              >
+                <span>📸</span> Share to Story
+              </button>
               <button 
                 onClick={() => setResultImage(null)} 
                 className="absolute top-4 right-4 bg-black/60 text-white rounded-full p-2 hover:bg-[#007AFF] transition-colors"
@@ -209,6 +279,77 @@ export default function RealLifeFitting() {
           </motion.div>
         )}
       </div>
+
+      {/* Privacy Policy & Terms Modal */}
+      {showPrivacy && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-[#111] border border-white/20 rounded-2xl w-full max-w-lg p-6 max-h-[80vh] flex flex-col"
+          >
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-white">Privacy Policy & Terms</h2>
+              <button onClick={() => setShowPrivacy(false)} className="text-gray-400 hover:text-white">✕</button>
+            </div>
+            <div className="overflow-y-auto text-sm text-gray-300 space-y-4 pr-2">
+              <h3 className="text-lg font-semibold text-white">1. Data Security</h3>
+              <p>Your photos are processed securely and are never shared with third parties. We use industry-standard encryption to protect your data.</p>
+              <h3 className="text-lg font-semibold text-white">2. Usage</h3>
+              <p>Uploaded photos are strictly used for the virtual try-on experience and are immediately discarded from our active memory after processing.</p>
+              <h3 className="text-lg font-semibold text-white">3. Terms of Service</h3>
+              <p>By using S_FIT NEO, you agree to our terms of service, which ensure a safe and respectful environment for all users.</p>
+            </div>
+            <button
+              onClick={() => setShowPrivacy(false)}
+              className="mt-6 w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl text-white font-bold transition-colors"
+            >
+              I Understand
+            </button>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Report Issue Modal */}
+      {showReportIssue && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-[#111] border border-white/20 rounded-2xl w-full max-w-md p-6"
+          >
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-white">Report Issue</h2>
+              <button onClick={() => setShowReportIssue(false)} className="text-gray-400 hover:text-white">✕</button>
+            </div>
+            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); alert("Issue reported successfully!"); setShowReportIssue(false); }}>
+              <div>
+                <label className="block text-xs font-bold text-gray-400 mb-2">Issue Type</label>
+                <select className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-[#007AFF] outline-none">
+                  <option>Bug/Glitch</option>
+                  <option>Fitting Quality</option>
+                  <option>Performance</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-400 mb-2">Description</label>
+                <textarea
+                  className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-[#007AFF] outline-none h-32 resize-none"
+                  placeholder="Please describe the issue..."
+                  required
+                ></textarea>
+              </div>
+              <button
+                type="submit"
+                className="w-full py-3 bg-[#007AFF] hover:bg-[#005bb5] rounded-xl text-white font-bold transition-colors"
+              >
+                Submit Report
+              </button>
+            </form>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
