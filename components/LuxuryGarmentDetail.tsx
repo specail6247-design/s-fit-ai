@@ -1,10 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function LuxuryGarmentDetail() {
+  const [isVaultOpen, setIsVaultOpen] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+
   return (
     <div className="min-h-screen bg-[#f8f7f6] dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans">
       {/* Top Navigation */}
@@ -40,7 +43,27 @@ export default function LuxuryGarmentDetail() {
               <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">360</span></button>
               <button className="size-8 flex items-center justify-center text-white hover:bg-white/10 rounded"><span className="material-symbols-outlined text-sm">light_mode</span></button>
             </div>
+            <div className="absolute top-4 right-0 flex flex-col items-end gap-2">
+              <button
+                onClick={() => setIsSaved(!isSaved)}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-md border transition-all ${
+                  isSaved
+                    ? 'bg-[#ecab13]/20 border-[#ecab13] text-[#ecab13]'
+                    : 'bg-black/40 border-white/10 text-white hover:bg-white/10'
+                }`}
+              >
+                <span className="material-symbols-outlined text-sm">{isSaved ? 'bookmark_added' : 'bookmark_add'}</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider">{isSaved ? 'Saved to Vault' : 'Save Look'}</span>
+              </button>
+            </div>
             <div className="text-right">
+              <div className="flex flex-col items-end gap-1 mb-2">
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#ecab13]/20 border border-[#ecab13]/30">
+                  <span className="material-symbols-outlined text-[10px] text-[#ecab13]">lock</span>
+                  <span className="text-[#ecab13] text-[9px] font-bold tracking-widest uppercase">Locked Drop</span>
+                </div>
+                <p className="text-zinc-400 text-[9px] font-mono tracking-wider">Available in 02:00:00</p>
+              </div>
               <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase mb-1">Authentic Render</p>
               <h1 className="text-white text-3xl font-extralight leading-tight">Metallic Silk <br/><span className="font-bold">Evening Blazer</span></h1>
             </div>
@@ -67,6 +90,17 @@ export default function LuxuryGarmentDetail() {
           </div>
         </div>
 
+        {/* AI Stylist Note */}
+        <div className="mt-8 px-4">
+          <div className="bg-gradient-to-r from-[#ecab13]/10 to-transparent border-l-2 border-[#ecab13] p-4 rounded-r-xl">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="material-symbols-outlined text-[#ecab13] text-sm">auto_awesome</span>
+              <p className="text-[#ecab13] text-[10px] font-bold tracking-widest uppercase">AI Stylist Note</p>
+            </div>
+            <p className="text-white text-xs italic">&quot;Pair this with structured denim for a balanced silhouette.&quot;</p>
+          </div>
+        </div>
+
         {/* Material Science Description */}
         <div className="mt-8 px-4">
           <div className="flex items-center justify-between mb-4">
@@ -74,7 +108,7 @@ export default function LuxuryGarmentDetail() {
             <span className="text-[#ecab13] material-symbols-outlined">info</span>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            Engineered with S_FIT AI's proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
+            Engineered with S_FIT AI&apos;s proprietary light-refraction engine. This fabric blends high-twist Italian silk with microscopic aluminum particles, creating a finish that flows like liquid metal under studio lighting.
           </p>
           
           {/* Chips */}
@@ -140,6 +174,65 @@ export default function LuxuryGarmentDetail() {
           <span className="material-symbols-outlined font-bold">person_add_alt</span>
           <span className="font-bold text-sm tracking-widest uppercase">Try on Mannequin</span>
         </Link>
+      </div>
+
+      {/* The Vault Drawer */}
+      <AnimatePresence>
+        {isVaultOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsVaultOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]"
+            />
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed bottom-0 w-full h-[70vh] max-w-md mx-auto left-0 right-0 bg-[#0a0a0a] rounded-t-3xl border-t border-[#2d2d2d] z-[70] flex flex-col"
+            >
+              <div className="p-4 border-b border-[#2d2d2d] flex justify-between items-center">
+                <div className="flex items-center gap-2 text-white">
+                  <span className="material-symbols-outlined text-[#ecab13]">door_front</span>
+                  <h3 className="text-sm font-bold tracking-[0.2em] uppercase">The Vault</h3>
+                </div>
+                <button onClick={() => setIsVaultOpen(false)} className="text-zinc-500 hover:text-white transition-colors">
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+              <div className="p-6 flex-1 overflow-y-auto no-scrollbar">
+                {isSaved ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="group relative aspect-[3/4] rounded-xl overflow-hidden bg-zinc-900 border border-[#2d2d2d] hover:border-[#ecab13]/50 transition-colors">
+                      <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5m1trvvOgtFQZrHz7J1_8YKjIyJFwuTm6b_C9mQJtDJDsOl_xtHZHfLA3MDVgFSQv4zos6OnEPUwen36ZcXZRERoj4Bj3o87kdcXjQWJ8YNc33SLIAqJUET6o0yOwx_pVzx0OswcPQw2ivo6sLma8xEumxoFQDfDsbpY-obuXwXx9h6QOzOhEDJvrFuPoRkbJEz-kJUE5bbVxawyJiFfEmGOi47n8Jrh8-zVHq14XQL_snfcQ2Ia117Mk5S2bn_rRht21zxTm58E")' }} />
+                      <div className="absolute bottom-0 w-full p-2 bg-black/60 backdrop-blur-md">
+                        <p className="text-white text-[10px] font-bold tracking-widest uppercase">Metallic Silk</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full text-zinc-500 gap-4">
+                    <span className="material-symbols-outlined text-4xl opacity-50">inventory_2</span>
+                    <p className="text-xs uppercase tracking-widest text-center">Your vault is empty.<br/>Save looks to compare.</p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      <div className="fixed top-0 right-0 p-4 z-[55] w-full max-w-md mx-auto pointer-events-none flex justify-end">
+        <button
+          onClick={() => setIsVaultOpen(true)}
+          className="pointer-events-auto flex size-10 items-center justify-center rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-white hover:bg-white/20 transition-colors"
+        >
+          <span className="material-symbols-outlined">door_front</span>
+          {isSaved && <div className="absolute top-0 right-0 size-2.5 bg-[#ecab13] rounded-full border border-[#0a0a0a]" />}
+        </button>
       </div>
 
       <style jsx global>{`
