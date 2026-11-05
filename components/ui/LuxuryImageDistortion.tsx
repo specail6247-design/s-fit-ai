@@ -95,6 +95,16 @@ const DistortionMaterial: React.FC<DistortionMaterialProps> = ({ texture, hover 
   );
 };
 
+const InnerMesh: React.FC<{ src: string; hovered: boolean }> = ({ src, hovered }) => {
+  const texture = useLoader(THREE.TextureLoader, src);
+  return (
+    <mesh>
+      <planeGeometry args={[2, 2]} />
+      <DistortionMaterial texture={texture} hover={hovered ? 1 : 0} />
+    </mesh>
+  );
+};
+
 interface LuxuryImageDistortionProps {
   src: string;
   alt?: string;
@@ -107,7 +117,6 @@ export const LuxuryImageDistortion: React.FC<LuxuryImageDistortionProps> = ({
   className = "",
 }) => {
   const [hovered, setHovered] = useState(false);
-  const texture = useLoader(THREE.TextureLoader, src);
 
   return (
     <div
@@ -117,10 +126,9 @@ export const LuxuryImageDistortion: React.FC<LuxuryImageDistortionProps> = ({
     >
       <Canvas style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}>
         <ambientLight intensity={1} />
-        <mesh>
-          <planeGeometry args={[2, 2]} />
-          <DistortionMaterial texture={texture} hover={hovered ? 1 : 0} />
-        </mesh>
+        <React.Suspense fallback={null}>
+          <InnerMesh src={src} hovered={hovered} />
+        </React.Suspense>
       </Canvas>
     </div>
   );

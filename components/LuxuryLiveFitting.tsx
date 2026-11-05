@@ -8,8 +8,24 @@ import { LuxuryImageDistortion } from "./ui/LuxuryImageDistortion";
 
 const playfair = Playfair_Display({ subsets: ["latin"] });
 
+const BRANDS = [
+  {
+    id: "aura",
+    name: "Aura Collection",
+    description: "Exclusive Fall / Winter",
+    bannerImage: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&q=80&w=2000",
+  },
+  {
+    id: "lumina",
+    name: "Lumina Studios",
+    description: "Avant-Garde Spring",
+    bannerImage: "https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&q=80&w=2000",
+  }
+];
+
 export default function LuxuryLiveFitting() {
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedBrandIndex, setSelectedBrandIndex] = useState(0);
 
   // Simulate loading
   React.useEffect(() => {
@@ -66,14 +82,38 @@ export default function LuxuryLiveFitting() {
           </button>
         </div>
 
+        {/* Brand Banner Parallax Background */}
+        <div className="absolute inset-0 z-0 opacity-30 transition-opacity duration-1000 overflow-hidden">
+          <div
+            className="w-full h-[40%] bg-cover bg-center transition-transform duration-[2000ms] scale-105"
+            style={{
+              backgroundImage: `linear-gradient(to bottom, transparent, black), url('${BRANDS[selectedBrandIndex].bannerImage}')`,
+              transform: `translateY(${selectedBrandIndex * 5}px)`
+            }}
+          />
+        </div>
+
         {/* Upper HUD: Brand Banner & Status */}
-        <div className="mt-4 space-y-6 px-8 z-10 flex flex-col items-center">
-          <div className="text-center transition-all duration-1000">
-            <h1 className="text-3xl tracking-widest uppercase text-white drop-shadow-lg">Aura Collection</h1>
-            <p className="mt-2 text-xs font-light tracking-[0.3em] text-white/70 uppercase">Exclusive Fall / Winter</p>
+        <div className="mt-4 space-y-6 px-8 z-10 flex flex-col items-center relative">
+          <div
+            className="text-center transition-all duration-1000 cursor-pointer group"
+            onClick={() => setSelectedBrandIndex((prev) => (prev + 1) % BRANDS.length)}
+          >
+            <div className="flex items-center gap-4 justify-center">
+              <span className="material-symbols-outlined text-white/50 group-hover:text-white transition-colors">chevron_left</span>
+              <div>
+                <h1 className="text-3xl tracking-widest uppercase text-white drop-shadow-lg transition-all duration-700 group-hover:text-[#C9B037]">
+                  {BRANDS[selectedBrandIndex].name}
+                </h1>
+                <p className="mt-2 text-xs font-light tracking-[0.3em] text-white/70 uppercase">
+                  {BRANDS[selectedBrandIndex].description}
+                </p>
+              </div>
+              <span className="material-symbols-outlined text-white/50 group-hover:text-white transition-colors">chevron_right</span>
+            </div>
           </div>
 
-          <div className="w-[280px] rounded-xl border border-white/10 bg-black/40 p-5 backdrop-blur-xl transition-all duration-700 hover:border-[#C9B037]/50">
+          <div className="w-[280px] rounded-xl border border-white/10 bg-black/40 p-5 backdrop-blur-xl transition-all duration-700 hover:border-[#C9B037]/50 mt-4">
             <div className="flex flex-col gap-3">
               <div className="flex items-end justify-between">
                 <p className="text-xs font-light uppercase tracking-widest text-white/80">Alignment</p>
