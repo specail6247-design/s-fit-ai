@@ -10,7 +10,8 @@ const playfair = Playfair_Display({ subsets: ["latin"], display: "optional" });
 const inter = Inter({ subsets: ["latin"], display: "optional" });
 
 export default function LuxuryLiveFitting() {
-  const [selectedBrand, setSelectedBrand] = useState("AURA");
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+  const [selectedBrand, _setSelectedBrand] = useState("AURA");
   const [isLoading, setIsLoading] = useState(true);
 
   // Simulate loading state
@@ -82,7 +83,7 @@ export default function LuxuryLiveFitting() {
           {/* Brand Description */}
           <div className="mx-auto mt-4 max-w-md text-center">
             <p className="text-sm font-light leading-relaxed tracking-wider text-[#C9B037]/70">
-              Experience the pinnacle of craftsmanship. Our AI precisely maps every contour to ensure an impeccable fit for {selectedBrand}'s finest pieces.
+              Experience the pinnacle of craftsmanship. Our AI precisely maps every contour to ensure an impeccable fit for {selectedBrand}&apos;s finest pieces.
             </p>
           </div>
 

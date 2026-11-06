@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, extend } from '@react-three/fiber';
 import { useTexture, shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -82,11 +82,7 @@ const DistortionMaterial = shaderMaterial(
   `
 );
 
-// Register the custom material
-if (typeof window !== 'undefined') {
-  const { extend } = require('@react-three/fiber');
-  extend({ DistortionMaterial });
-}
+extend({ DistortionMaterial });
 
 interface ImageMeshProps {
   imageUrl: string;
@@ -94,7 +90,7 @@ interface ImageMeshProps {
 }
 
 const ImageMesh: React.FC<ImageMeshProps> = ({ imageUrl, isHovered }) => {
-  const materialRef = useRef<any>(null);
+  const materialRef = useRef<THREE.ShaderMaterial & { uTime: number; uHoverState: number }>(null);
   const texture = useTexture(imageUrl);
 
   useFrame((state, delta) => {
@@ -112,7 +108,7 @@ const ImageMesh: React.FC<ImageMeshProps> = ({ imageUrl, isHovered }) => {
   return (
     <mesh>
       <planeGeometry args={[2, 2.5]} />
-      {/* @ts-ignore */}
+      {/* @ts-expect-error R3F extension types */}
       <distortionMaterial
         ref={materialRef}
         uTexture={texture}
