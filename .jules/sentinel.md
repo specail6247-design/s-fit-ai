@@ -1,0 +1,5 @@
+## 2025-02-27 - Fix path traversal vulnerability in try-on API
+
+**Vulnerability:** Path traversal vulnerability in `app/api/try-on/route.ts` where user-controlled input could be resolved into a local path and read via `fs.readFileSync` without enforcing that the resulting path stays within the intended `public` directory.
+**Learning:** `path.join(process.cwd(), 'public', relativePath)` will implicitly normalize the path, but it doesn't prevent a malicious user from passing `../` sequences in `relativePath` that escape the `public` directory and point to arbitrary local files (e.g., secrets or code files). Base directory resolution alone does not restrict resulting paths without explicit checks.
+**Prevention:** Always perform an explicit validation after path resolution. Check if the newly computed `absolutePath` starts strictly with the intended base directory using `absolutePath.startsWith(publicDir + path.sep)`. Ensure that `path.sep` is appended to avoid partial path traversal bypasses.
