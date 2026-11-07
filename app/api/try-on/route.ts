@@ -11,8 +11,15 @@ export const maxDuration = 120;
 function localFileToDataUri(localPath: string): string | null {
   try {
     // Remove leading slash and resolve to public directory
+    const publicDir = path.join(process.cwd(), 'public');
     const relativePath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
-    const absolutePath = path.join(process.cwd(), 'public', relativePath);
+    const absolutePath = path.join(publicDir, relativePath);
+
+    // Ensure the resolved path is within the public directory
+    if (!absolutePath.startsWith(publicDir + path.sep)) {
+      console.error('Invalid file path:', absolutePath);
+      return null;
+    }
     
     console.log('Reading local file:', absolutePath);
     
