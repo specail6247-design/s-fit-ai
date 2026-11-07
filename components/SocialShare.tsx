@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { toPng } from 'html-to-image';
 import { BottomSheet } from './ui/BottomSheet';
-import { motion } from 'framer-motion';
+// import { motion } from 'framer-motion';
 
 interface SocialShareProps {
   isOpen: boolean;
