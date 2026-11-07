@@ -75,6 +75,29 @@ export function VIPLoginModal({ isOpen, onClose }: VIPLoginModalProps) {
                  <div className="mb-4 text-red-500 text-xs text-center font-mono uppercase">{errorMsg}</div>
               )}
 
+              <div className="flex flex-col gap-3 mb-6">
+                <button type="button" onClick={() => supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/auth/callback` } })} className="bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl flex items-center justify-center gap-2 transition-colors">
+                  <span className="text-lg">🇬</span> <span className="text-xs font-mono uppercase tracking-widest text-white">Google</span>
+                </button>
+                <div className="grid grid-cols-3 gap-3">
+                  <button type="button" onClick={() => supabase.auth.signInWithOAuth({ provider: 'kakao', options: { redirectTo: `${window.location.origin}/auth/callback` } })} className="bg-[#FAE100]/90 hover:bg-[#FAE100] text-[#371D1E] py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
+                    <span className="text-lg">💬</span> <span className="text-xs font-bold font-mono uppercase tracking-wide">Kakao</span>
+                  </button>
+                  <button type="button" onClick={() => supabase.auth.signInWithOAuth({ provider: 'apple', options: { redirectTo: `${window.location.origin}/auth/callback` } })} className="bg-white/90 hover:bg-white text-black py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
+                    <span className="text-lg">🍎</span> <span className="text-xs font-bold font-mono uppercase tracking-wide">Apple</span>
+                  </button>
+                  <button type="button" onClick={() => supabase.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo: `${window.location.origin}/auth/callback` } })} className="bg-[#5865F2]/90 hover:bg-[#5865F2] text-white py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
+                    <span className="text-lg">🎮</span> <span className="text-xs font-bold font-mono uppercase tracking-wide">Discord</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 mb-6 opacity-50">
+                 <div className="h-px bg-white/20 flex-1" />
+                 <span className="text-[10px] font-mono tracking-widest text-white">OR EMAIL</span>
+                 <div className="h-px bg-white/20 flex-1" />
+              </div>
+
               <form onSubmit={handleLogin} className="space-y-6">
                 <div>
                   <input
