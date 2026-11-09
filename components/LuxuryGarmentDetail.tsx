@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { AnimatePresence } from 'framer-motion';
 
 export default function LuxuryGarmentDetail() {
   return (
