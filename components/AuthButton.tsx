@@ -96,51 +96,57 @@ export function AuthButton() {
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void-black border border-white/10 w-full max-w-sm rounded-2xl p-6 relative">
+          <div className="bg-[#050505] border border-white/10 w-full max-w-md rounded-2xl p-8 relative shadow-2xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#00ffff]/5 to-[#007AFF]/10 pointer-events-none rounded-2xl" />
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-soft-gray hover:text-white"
+              className="absolute top-6 right-6 text-gray-500 hover:text-white transition-colors z-10"
             >
               ✕
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6 text-center">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h2>
+            <div className="mb-8 text-center relative z-10">
+              <h2 className="text-2xl font-black tracking-tighter italic mb-1 text-white">
+                S_FIT <span className="text-[#007AFF]">NEO</span>
+              </h2>
+              <p className="text-[10px] text-gray-400 tracking-[0.3em] uppercase">
+                {isLogin ? 'VIP Member Access' : 'VIP Registration'}
+              </p>
+            </div>
 
-            <form onSubmit={handleAuth} className="space-y-4 mb-6">
+            <form onSubmit={handleAuth} className="space-y-4 mb-6 relative z-10">
               <input
                 type="email"
-                placeholder="Email"
+                placeholder="EMAIL ADDRESS"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white text-xs font-mono focus:border-[#007AFF] outline-none transition-colors"
                 required
               />
               <input
                 type="password"
-                placeholder="Password"
+                placeholder="PASSWORD"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-cyber-lime outline-none"
+                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white text-xs font-mono focus:border-[#007AFF] outline-none transition-colors"
                 required
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="w-full bg-[#007AFF] text-white font-bold py-3 rounded-xl hover:bg-[#005bb5] transition-all disabled:opacity-50 tracking-widest text-xs uppercase shadow-[0_0_15px_rgba(0,122,255,0.3)] hover:shadow-[0_0_20px_rgba(0,122,255,0.5)]"
               >
-                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+                {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Join the Club')}
               </button>
             </form>
 
-            <div className="flex items-center gap-2 mb-6">
+            <div className="flex items-center gap-2 mb-6 relative z-10">
               <div className="h-px bg-white/10 flex-1" />
               <span className="text-xs text-soft-gray">OR SOCIAL LOGIN</span>
               <div className="h-px bg-white/10 flex-1" />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 relative z-10">
               <button onClick={() => handleSocialLogin('google')} className="bg-white/5 hover:bg-white/10 border border-white/10 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
                 <span className="text-lg">🇬</span> <span className="text-xs text-white">Google</span>
               </button>
@@ -155,7 +161,7 @@ export function AuthButton() {
               </button>
             </div>
 
-            <p className="mt-6 text-center text-xs text-soft-gray">
+            <p className="mt-6 text-center text-xs text-soft-gray relative z-10">
               {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
               <button
                 onClick={() => setIsLogin(!isLogin)}
